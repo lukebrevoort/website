@@ -1,4 +1,5 @@
 import React from 'react'
+import Chat from "./chat-component/Chat"
 import { Link } from "react-router-dom";
 
 function Sidebar() {
@@ -22,7 +23,7 @@ function Sidebar() {
         <div id="mySidenav" className='sidenav'>
             <h1 className="sidenav--title">Personal Passions</h1>
             <img src='./images/close.png' onClick={closeNav} className='sidenav--closebtn'/>
-            <h1>Super cool stuff to come!</h1>
+            <Chat />
         </div>
 
 
