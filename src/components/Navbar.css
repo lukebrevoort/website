@@ -88,7 +88,7 @@
     top: 0;
     left: 0;
     background-color: #464545;
-    overflow-x: hidden;
+    overflow: auto;
     transition: 0.5s;
     padding-top: 0px;
   }

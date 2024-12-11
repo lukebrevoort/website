@@ -161,12 +161,11 @@ function Chat() {
     }, [messages]);
 
     return (
-        <div>
-            <h1>Simple Chatbot</h1>
+        <div className='container'>
             
-            <p>Step 1: Initialize WebLLM and Download Model</p>
+            <h1>Initialize WebLLM and Download Model</h1>
             <div className="download-container">
-                <select 
+                <select className='chat--select'
                     value={selectedModel} 
                     onChange={(e) => setSelectedModel(e.target.value)}
                 >
@@ -185,7 +184,7 @@ function Chat() {
             
             {downloadStatus && <p>{downloadStatus}</p>}
 
-            <p>Step 2: Chat</p>
+            <h1>Chat</h1>
             <div className="chat-container">
                 <div 
                     ref={chatBoxRef} 
@@ -206,10 +205,26 @@ function Chat() {
                 )}
                 
                 <div className="chat-input-container">
-                    <input 
+                <textarea 
+                        className='chat-input'
                         ref={userInputRef}
-                        type="text" 
-                        placeholder="Type a message..." 
+                        placeholder="Type a message..."
+                        rows={1}
+                        style={{
+                            resize: 'none',
+                            overflow: 'hidden',
+                            minHeight: '40px',
+                            maxHeight: '150px',
+                            width: '100%',
+                            lineHeight: '20px',
+                            padding: '10px',
+                            boxSizing: 'border-box'
+                        }}
+                        onInput={(e) => {
+                            // Auto-resize logic
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
                     />
                     <button 
                         onClick={onMessageSend}
