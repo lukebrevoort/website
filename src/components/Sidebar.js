@@ -7,8 +7,8 @@ function Sidebar() {
 
     function openNav() {
         setisOpen(true)
-        document.getElementById("mySidenav").style.width = "215px";
-        document.getElementById("main").style.marginLeft = "140px";
+        document.getElementById("mySidenav").style.width = "100%";
+        document.getElementById("main").style.marginLeft = "0";
       }
 
       function closeNav() {
@@ -21,13 +21,20 @@ function Sidebar() {
     <div>
         <div id="mySidenav" className='sidenav'>
             <h1 className="sidenav--title">Personal Passions</h1>
+            <img src='./images/close.png' onClick={closeNav} className='sidenav--closebtn'/>
             <Link to="/notebook" className='sidenav--content'>Notebook</Link>
             <Link to="/traveling" className='sidenav--content'>Traveling</Link>
             <Link to="/lifting" className='sidenav--content'>Lifting</Link>
         </div>
-        <nav className="navBar-left" id="main"> 
+
+
+
+
+
+        
+        <nav className="navBar-left"> 
             <div className="navBar-left-image" id="mySidenav">
-                <img src={!isOpen ? "./images/dropDown.png" : "./images/close.png"} alt="logo" onClick={isOpen ? closeNav : openNav}/>
+                <img src="./images/dropDown.png" onClick={openNav}/>
             </div>
             <Link to="/">
                 <span className="navBar-left-blue">l</span>

@@ -8,7 +8,7 @@ import Lifting from "./pages/Lifting"
 
 export default function App() {
     return (
-        <div>
+        <div id="main">
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Navbar />}>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Outlet } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import Sidebar from "./Sidebar"
 import "./Navbar.css"
 
@@ -12,7 +12,7 @@ export default function Navbar() {
                 <div className="navBar-right">
                     <a href="#">About</a>
                     <a href="#">Projects</a>
-                    <a href="#">Photos</a>
+                    <Link to="/notebook" className='sidenav--content'>Notebook</Link>
                     <a href="#">Contact</a>
                 </div>
             </header>
