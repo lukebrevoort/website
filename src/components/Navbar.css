@@ -1,0 +1,136 @@
+.navBar-main {
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100; /* Add z-index to ensure it stays on top */
+    background-color: #333;
+}
+
+.navBar-right {
+    display: flex;
+
+}
+
+.navBar-right a {
+    color: #858383;
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 1.55em; 
+    font-family: monospace;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navBar-right a:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+    color: #f5f5f5;
+}
+
+.navBar-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 25px;
+}
+
+.navBar-left a {
+    font-size: 16px;
+    text-decoration: none;
+    font-family: monospace;
+    font-weight: bolder;
+}
+
+.navBar-left-blue {
+    color: #689ce0;
+}
+
+.navBar-left-red {
+    color: #d65831;
+}
+
+.navBar-left-purple {
+    color: #957db9;
+}
+
+.navBar-left-green {
+    color: #95db78;
+}
+
+.navBar-left a:hover {
+    text-decoration: underline;
+    color: #f5f5f5;
+    
+}
+
+.navBar-left-image img {
+    width: 35px;
+    height: auto;
+}
+
+.navBar-left-image img:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.navBar-left-image img:active {
+    opacity: 5%;
+    transform: rotate(90deg) scale(0.8);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    background-color: #464545;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 0px;
+  }
+  
+  
+  .sidenav--title {
+    font-family: monospace;
+    padding: 8px 8px 8px 32px;
+    margin-bottom: 5px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #f5f5f5;
+    transition: 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidenav--content {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 22px;
+    color: #818181;
+    transition: 0.3s;
+    font-family: monospace;
+    font-weight: 700;
+
+  }
+  
+  .sidenav .sidenav--content:hover {
+    color: #f5f5f5;
+  }
+  
+  @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+  }
+
+  #main {
+    transition: margin-left .5s;
+  }
