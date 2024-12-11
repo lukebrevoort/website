@@ -26,10 +26,10 @@ export default function Main() {
 
 
             <div className='project'>
-                <Project img="./images/Money Minimal Picture.jpg"/>
-                <Project  img="./images/MacBook Pro Plant Photo.jpg"/>
-                <Project img="./images/sql.jpg"/>
-                <Project img="./images/calc.png"/>
+                <Project img="./images/Money Minimal Picture.jpg" title="Sentiment Analysis Project"/>
+                <Project  img="./images/MacBook Pro Plant Photo.jpg" title="Personal Website"/>
+                <Project img="./images/sql.jpg" title="Football SQL"/>
+                <Project img="./images/calc.png" title="GO Calculator"/>
             </div>
 
             <Blog />

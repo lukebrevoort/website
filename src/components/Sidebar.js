@@ -22,16 +22,14 @@ function Sidebar() {
         <div id="mySidenav" className='sidenav'>
             <h1 className="sidenav--title">Personal Passions</h1>
             <img src='./images/close.png' onClick={closeNav} className='sidenav--closebtn'/>
-            <Link to="/notebook" className='sidenav--content'>Notebook</Link>
-            <Link to="/traveling" className='sidenav--content'>Traveling</Link>
-            <Link to="/lifting" className='sidenav--content'>Lifting</Link>
+            <h1>Super cool stuff to come!</h1>
         </div>
 
 
 
 
 
-        
+
         <nav className="navBar-left"> 
             <div className="navBar-left-image" id="mySidenav">
                 <img src="./images/dropDown.png" onClick={openNav}/>
