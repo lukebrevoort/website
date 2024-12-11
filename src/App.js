@@ -14,13 +14,13 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<Navbar />}>
                         <Route index element={<Main />} />
+                        <SpeedInsights />
                         <Route path="notebook" element={<Notebook />} />
                         <Route path="traveling" element={<Traveling />} />
                         <Route path="lifting" element={<Lifting />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
-            <SpeedInsights />
         </div>
     )
 }
