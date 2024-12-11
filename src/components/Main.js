@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 
 export default function Main() {
     return (
-        <body>
+        <div>
             <SpeedInsights />
             <h1 class="header">Hey, I'm Luke!</h1>
             <p>I am a freshman at Stevens Institute of Technology in Hoboken NJ who is studying  
@@ -36,6 +36,6 @@ export default function Main() {
 
             <Contact />
 
-        </body>
+        </div>
     )
 }
