@@ -1,7 +1,7 @@
 import React from "react"
-import Contact from "./main-components.js/Contact"
-import Projects from "./main-components.js/Projects"
-import Blog from "./main-components.js/Blog"
+import Contact from "./main-components/Contact"
+import Project from "./main-components/Project"
+import Blog from "./main-components/Blog"
 import "./Main.css"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
@@ -19,7 +19,18 @@ export default function Main() {
 
             <br /><p>I also really enjoy exploring <span className="p-bold">NYC</span> and <span className="p-bold">love spending time with my friends!</span></p><br />
 
-            <Projects />
+            <div className='title'>
+                <div className='title--number'>01.</div>
+                <div className='title--content'>projects</div>
+            </div>
+
+
+            <div className='project'>
+                <Project img="./images/Money Minimal Picture.jpg"/>
+                <Project  img="./images/MacBook Pro Plant Photo.jpg"/>
+                <Project img="./images/sql.jpg"/>
+                <Project img="./images/calc.png"/>
+            </div>
 
             <Blog />
 
