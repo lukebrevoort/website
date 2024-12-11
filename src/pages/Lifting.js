@@ -2,7 +2,7 @@ import React from 'react'
 
 function Weightlifting() {
   return (
-    <div>Weightlifting</div>
+    <div>lifting Cool stuff</div>
   )
 }
 
