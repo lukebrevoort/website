@@ -6,7 +6,8 @@ function Project(props) {
       <div className='project--image card'>
         <img src={props.img} alt='Image'/>
         <div className='project--content'>
-          <p>{props.title}</p>
+          <div>{props.desc}</div> 
+          <p className='project--title'>{props.title}</p>
         </div>
       </div>
     </div>

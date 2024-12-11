@@ -26,10 +26,10 @@ export default function Main() {
 
 
             <div className='project'>
-                <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project"/>
-                <Project  img="./images/website.png" title="Personal Website"/>
-                <Project img="./images/sql.jpg" title="Football SQL"/>
-                <Project img="./images/calc.png" title="GO Calculator"/>
+                <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
+                <Project  img="./images/website.png" title="Personal Website" desc="UI Design WebLLM"/>
+                <Project img="./images/sql.jpg" title="Football SQL" desc="SQL mySQL"/>
+                <Project img="./images/calc.png" title="GO Calculator" desc="GOlang React"/>
             </div>
 
             <Blog />

@@ -54,11 +54,22 @@
 }
 
 .project--content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #464545;
+  position: absolute;
+  bottom: 5%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .project--title {
+    font-size: 20px;
+    font-weight: 700;
     color: black;
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 
 .card {
