@@ -227,6 +227,7 @@ function Chat() {
                         }}
                     />
                     <button 
+                    
                         onClick={onMessageSend}
                         disabled={!isModelDownloaded}
                     >

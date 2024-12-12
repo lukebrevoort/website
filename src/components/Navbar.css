@@ -89,7 +89,7 @@
     left: 0;
     background-color: #464545;
     overflow: auto;
-    transition: 0.5s;
+    transition: 0.5s ease;
     padding-top: 0px;
   }
   
