@@ -11,9 +11,9 @@ export default function Navbar() {
                 <Sidebar />
                 <div className="navBar-right">
                     <Link to="/about">About</Link>
-                    <a href="#">Projects</a>
+                    <a href="/#project">Projects</a>
                     <Link to="/notebook" >Notebook</Link>
-                    <a href="#">Contact</a>
+                    <a href="/#contact">Contact</a>
                 </div>
             </header>
             <Outlet />
