@@ -52,6 +52,7 @@
   flex: 0 0;
   padding: 10px;
   font-size: 0.75rem;
+  border-radius: 10px;
 }
 
 .message-container {
