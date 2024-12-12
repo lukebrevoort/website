@@ -182,7 +182,7 @@ function Chat() {
                 </button>
             </div>
             
-            {downloadStatus && <p>{downloadStatus}</p>}
+            {downloadStatus && <p className='chat--download'>{downloadStatus}</p>}
 
             <h1>Chat</h1>
             <div className="chat-container">
@@ -227,7 +227,7 @@ function Chat() {
                         }}
                     />
                     <button 
-                    
+
                         onClick={onMessageSend}
                         disabled={!isModelDownloaded}
                     >
