@@ -37,7 +37,7 @@ export default function Main() {
             <Contact />
 
             <footer className="navbar-left">
-                <a href="/">
+                <a href="#head">
                     <span className="navBar-left-blue">l</span>
                     <span className="navBar-left-red">u</span>
                     <span className="navBar-left-purple">k</span>

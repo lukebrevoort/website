@@ -6,7 +6,7 @@ import "./Navbar.css"
 
 export default function Navbar() {
     return (
-        <div>
+        <div id="head">
             <header className="navBar-main">
                 <Sidebar />
                 <div className="navBar-right">
