@@ -10,9 +10,9 @@ export default function Navbar() {
             <header className="navBar-main">
                 <Sidebar />
                 <div className="navBar-right">
-                    <a href="#">About</a>
+                    <Link to="/about">About</Link>
                     <a href="#">Projects</a>
-                    <Link to="/notebook" className='sidenav--content'>Notebook</Link>
+                    <Link to="/notebook" >Notebook</Link>
                     <a href="#">Contact</a>
                 </div>
             </header>

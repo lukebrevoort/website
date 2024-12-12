@@ -1,6 +1,6 @@
 body {
     background-color: #333;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Newsreader";
     color: #979696;
     padding: 0;
 }
@@ -10,7 +10,7 @@ p {
     font-size: 20px;
     max-width: 800px;
     margin: 0 auto;
-    font-family: monospace;
+    font-family: "Newsreader";
 }
 
 h1 {
@@ -22,6 +22,20 @@ h1 {
     color: #f5f5f5;
 
 }
+
+@font-face {
+    font-family: 'luke.brev-font';
+    src: url('/Users/lbrevoort/Desktop/personal-website/public/images/Luke Brevoort Regular Font.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .newsreader {
+    font-family: "Newsreader", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
 
 
 

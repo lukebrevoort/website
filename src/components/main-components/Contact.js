@@ -3,10 +3,6 @@ import React from 'react'
 export default function Contact() {
   return (
     <div>
-        <div className='title'>
-            <div className='title--number'>03.</div>
-            <div className='title--content'>contact</div>
-        </div>
         <div className='contact'>
             <div className='contact--bar'>
                 <a href='https://www.instagram.com/luke.brev/' target="_blank" rel="noreferrer">

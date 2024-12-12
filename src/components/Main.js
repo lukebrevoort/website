@@ -1,7 +1,7 @@
 import React from "react"
 import Contact from "./main-components/Contact"
 import Project from "./main-components/Project"
-import Blog from "./main-components/Blog"
+import Notebook from "./main-components/Notebook"
 import "./Main.css"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
@@ -10,20 +10,12 @@ export default function Main() {
     return (
         <div>
             <SpeedInsights />
-            <h1 class="header">Hey, I'm Luke!</h1>
-            <p>I am a freshman at Stevens Institute of Technology in Hoboken NJ who is studying  
-                <span className="p-bold"> Computer Science!</span> I am passionate about <span className="p-bold">AI and Fullstack Development.</span>
-            </p>
-
-            <br /><p>I enjoy <span className="p-bold">Frisbee, Hiking, Weightlifting, and Lacrosse</span>, so really anything active :)</p>
-
-            <br /><p>I also really enjoy exploring <span className="p-bold">NYC</span> and <span className="p-bold">love spending time with my friends!</span></p><br />
+            <h1 class="header myfont">Luke is a student from Stevens who likes to code</h1>
 
             <div className='title'>
-                <div className='title--number'>01.</div>
-                <div className='title--content'>projects</div>
+                <div className='title--number'>01. </div>
+                <div className='title--content'> projects</div>
             </div>
-
 
             <div className='project'>
                 <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
@@ -32,7 +24,15 @@ export default function Main() {
                 <Project img="./images/calc.png" title="GO Calculator" desc="GOlang React"/>
             </div>
 
-            <Blog />
+            <div className='title'>
+                <div className='title--number'>02. </div>
+                <div className='title--content'> notebooks</div>
+            </div>    
+
+            <div className='title'>
+                <div className='title--number'>03. </div>
+                <div className='title--content'> contact</div>
+            </div>
 
             <Contact />
 
