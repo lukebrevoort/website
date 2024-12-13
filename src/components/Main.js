@@ -3,6 +3,7 @@ import Contact from "./main-components/Contact"
 import Project from "./main-components/Project"
 import Notebook from "./main-components/Notebook"
 import "./Main.css"
+import { Link } from "react-router-dom"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
 
@@ -18,7 +19,10 @@ export default function Main() {
             </div>
 
             <div className='project'>
-                <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
+                <Link to="/sentiment">
+                    <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
+                </Link>
+                
                 <Project  img="./images/website.png" title="Personal Website" desc="UI Design WebLLM"/>
                 <Project img="./images/sql.jpg" title="Football SQL" desc="SQL mySQL"/>
                 <Project img="./images/calc.png" title="GO Calculator" desc="GOlang React"/>

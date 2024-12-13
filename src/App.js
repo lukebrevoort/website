@@ -4,6 +4,7 @@ import Main from "./components/Main"
 import Navbar from "./components/Navbar"
 import Notebooks from "./pages/Notebooks"
 import About from "./pages/About"
+import Sentiment from "./pages/Sentiment";
 
 export default function App() {
     return (
@@ -14,6 +15,7 @@ export default function App() {
                         <Route index element={<Main />} />
                         <Route path="notebook" element={<Notebooks />} />
                         <Route path="about" element={<About />} />
+                        <Route path="sentiment" element={<Sentiment />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
