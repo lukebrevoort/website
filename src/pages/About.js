@@ -28,11 +28,37 @@ function About() {
             I am actively involved in the School's Student Government Association and love giving back to the Hoboken Community.
           </p>
           <br />
-          <p>I also really enjoy exploring NYC and love spending time with my friends outside of class! Its a nice getaway from
+          <p>I also really enjoy exploring NYC and love spending time with my friends outside of class! It's a nice getaway from
             school and work.
           </p>
           <br />
 
+        </div>
+      </div>
+
+      <div className='about--photos'>
+        <img src='./images/NYC.jpg' alt='Photo' className='about--photo'/>
+        <img src='./images/Lacrosse.jpg' alt='Photo' className='about--photo photo2'/>
+        <img src='./images/Skiing.jpg' alt='Photo' className='about--photo photo3'/>
+      </div>
+      <div className='about--container'>
+        <h2 className='myfont about--title'>Experience:</h2>
+        <div className='about--experience--container'>
+          <div className='about--experience'>
+            <p className='p-bold'>EH Yang Lab</p>
+            <p>Undergraduate Researcher</p>
+            <p className='about--experience-date'>2024 – Present</p>
+          </div>
+          <div className='about--experience'>
+            <p className='about--experience--job p-bold'>Student Government Organization</p>
+            <p>Senator</p>
+            <p className='about--experience-date'>2024 – Present</p>
+          </div>
+          <div className='about--experience'>
+            <p className='about--experience--job p-bold'>Student Government Organization and NHS</p>
+            <p>Student Body President and National Honors Society VP</p>
+            <p className='about--experience-date'>2023 – 2024</p>
+          </div>
         </div>
       </div>
 
