@@ -10,7 +10,7 @@ export default function Main() {
     return (
         <div>
             <SpeedInsights />
-            <h1 class="header myfont header--underline">Luke is a student from Stevens who likes to code</h1>
+            <h1 class="header myfont">Luke is a student from Stevens who likes to code</h1>
 
             <div className='title' id="project">
                 <div className='title--number'>01. </div>

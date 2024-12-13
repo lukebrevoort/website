@@ -1,15 +1,40 @@
 import React from 'react'
+import "./About.css"
 
 function About() {
   return (
     <div>
-            <p>I am a freshman at Stevens Institute of Technology in Hoboken NJ who is studying  
-                <span className="p-bold"> Computer Science!</span> I am passionate about <span className="p-bold">AI and Fullstack Development.</span>
-            </p>
+      <div className='about--header'>
+        <h1 className='about--header--text myfont'>I like to building things in my freetime. coding, writing, and creating :)</h1>
+        <img src='./images/greenSweater.jpg' alt='photo of me' className='about--image'/>
+      </div>
+      <div className='about--container'>
 
-            <br /><p>I enjoy <span className="p-bold">Frisbee, Hiking, Weightlifting, and Lacrosse</span>, so really anything active :)</p>
+        <h2 className='myfont about--title'>About:</h2>
+        <div className='about--content'>
+          <p>I'm Luke Brevoort a freshman at Stevens Institute of Technology in Hoboken NJ who is studying  
+               Computer Science! I am passionate about AI, Fullstack Development, and Natural Langauge Processing.</p>
+          <br />
+          <p>I work on a variety of projects of different fields to learn as much as possible.
+            From Machine Learning, Frontend Development, to Concurrency im always trying to 
+            expand my horizons which inclues joining research and trying to learn as much as possible
+          </p>
+          <br />
+          <p>In my spare time I like creating projects that I find everyday value in like this website or 
+            my Stock Sentiment Analysis program.
+          </p>
+          <br />
+          <p>Outside of school I enjoy Frisbee, Hiking, Weightlifting, and Lacrosse, so really anything active :).
+            I am actively involved in the School's Student Government Association and love giving back to the Hoboken Community.
+          </p>
+          <br />
+          <p>I also really enjoy exploring NYC and love spending time with my friends outside of class! Its a nice getaway from
+            school and work.
+          </p>
+          <br />
 
-            <br /><p>I also really enjoy exploring <span className="p-bold">NYC</span> and <span className="p-bold">love spending time with my friends!</span></p><br />
+        </div>
+      </div>
 
     </div>
   )

@@ -1,0 +1,40 @@
+.about--header {
+    display: flex;
+    justify-content:flex-end;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.about--header--text {
+    color: #f5f5f5;
+    width: 500px;
+
+}
+
+.about--image {
+    width: 500px;
+    height: auto;
+    padding: 40px;
+    opacity: 75%;
+    position: relative;
+}
+
+.about--container {
+    display: flex;
+    justify-content: center;
+    text-align: left;
+    align-items:normal;
+    gap: 40px;
+    color: #f5f5f5;
+}
+
+.about--title {
+    margin-top: 0;
+}
+
+.about--content {
+    width: 28em;
+    margin-top: 10px;
+    line-height: 35px;
+}
