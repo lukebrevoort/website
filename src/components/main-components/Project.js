@@ -3,7 +3,7 @@ import React from 'react'
 function Project(props) {
   return (
     <div>
-      <div className='project--image card'>
+      <div className='project--image project--card'>
         <img src={props.img} alt='Image'/>
         <div className='project--content'>
           <div>{props.desc}</div> 

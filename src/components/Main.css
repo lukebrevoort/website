@@ -101,7 +101,7 @@
     color: black;
   }
 
-.card {
+.project--card {
     border-radius: 8px;
     color: white;
     overflow: hidden;
@@ -112,12 +112,12 @@
     cursor: pointer;
   }
   
-  .card:hover {
+  .project--card:hover {
     transform: rotateY(10deg) rotateX(10deg) scale(1.05);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
   
-  .card:before {
+  .project--card:before {
     content: "";
     position: absolute;
     top: 0;
@@ -129,11 +129,11 @@
     z-index: 1;
   }
   
-  .card:hover:before {
+  .project--card:hover:before {
     transform: translateX(-100%);
   }
   
-  .card:after {
+  .project--card:after {
     content: "";
     position: absolute;
     top: 0;
@@ -145,9 +145,10 @@
     z-index: 1;
   }
   
-  .card:hover:after {
+  .project--card:hover:after {
     transform: translateX(100%);
   }
+
 
 .contact {
     display: flex;
