@@ -9,6 +9,27 @@
     margin-block: 150px;
 }
 
+.header--underline {
+  position: relative;
+}
+
+.header--underline::before {
+  content: "";
+  position: absolute;
+  border-radius: 10px;
+  height: 5px; 
+  left: 0;
+  bottom: 0;
+  width: 0;
+  margin-inline: 250px;
+  background-color: #bbbbbb;
+  transition: width 0.2s ease;
+}
+
+.header--underline:hover::before {
+  width: 50%;
+}
+
 .myfont {
   font-family: 'luke.brev-font';
 }
