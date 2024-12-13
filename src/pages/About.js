@@ -24,7 +24,7 @@ function About() {
             my Stock Sentiment Analysis program.
           </p>
           <br />
-          <p>Outside of school I enjoy Frisbee, Hiking, Weightlifting, and Lacrosse, so really anything active :).
+          <p>Outside of school I enjoy Frisbee, Skiing, Weightlifting, and Lacrosse, so really anything active :).
             I am actively involved in the School's Student Government Association and love giving back to the Hoboken Community.
           </p>
           <br />
@@ -60,6 +60,7 @@ function About() {
             <p className='about--experience-date'>2023 – 2024</p>
           </div>
         </div>
+
       </div>
 
     </div>
