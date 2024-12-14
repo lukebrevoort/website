@@ -1,12 +1,11 @@
 .header {
-
-    left: 30%;
-    justify-content: center;
-    max-width: 700px;
-    color: #f5f5f5;
-    font-size: 4em;
-    font-family: monospace;
-    margin-block: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 700px;
+  color: #f5f5f5;
+  font-size: 4em;
+  margin: 150px auto;
 }
 
 .myfont {
