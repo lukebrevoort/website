@@ -53,9 +53,10 @@
 }
 
 .sentiment--image {
-    height: 250px;
+    height: 200px;
     width: auto;
     align-self: center;
+    border-radius: 15px;
 }
 
 #intro2 {

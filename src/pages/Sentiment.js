@@ -44,6 +44,7 @@ function Sentiment() {
         </div>
 
         <div className='sentiment--intro' id='intro2'>
+            <img src='./images/stocksImagePage.jpg' alt='CSV logo' className='sentiment--image'/>
             <h2 className='sentiment--intro--title myfont'>The Idea:</h2>
             <div className='sentiment--intro--content'>
                 <p>The idea was to take in a .csv and sort through alphebetically to find which stock the user was interested in; this goes through a 
@@ -54,6 +55,7 @@ function Sentiment() {
 
         
         <div className='sentiment--intro' id='intro3'>
+            <img src='./images/google.webp' alt='Google logo' className='sentiment--image'/>
             <h2 className='sentiment--intro--title myfont'>Google Search and Parse:</h2>
             <div className='sentiment--intro--content'>
                 <p>Then after the stock is found, the code pushes a request through googles seaches and we note the URL's of these websites we take from.
@@ -78,6 +80,9 @@ function Sentiment() {
         </div>  
 
         <div className='sentiment--intro' id="intro5">
+
+        
+        <img src='./images/apple.webp' alt='Apple Logo Example' className='sentiment--image'/>
 
         <h1 className='sentiment--intro--title myfont'>Here is the result:</h1>
 
