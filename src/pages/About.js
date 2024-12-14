@@ -63,6 +63,20 @@ function About() {
 
       </div>
 
+      <footer className="navbar-left">
+        <a href="#head">
+            <span className="navBar-left-blue">l</span>
+            <span className="navBar-left-red">u</span>
+            <span className="navBar-left-purple">k</span>
+            <span className="navBar-left-green">e</span>
+            <span className="navBar-left-green">.</span>
+            <span className="navBar-left-red">b</span>
+            <span className="navBar-left-purple">r</span>
+            <span className="navBar-left-green">e</span>
+            <span className="navBar-left-blue">v</span>
+        </a>
+      </footer>
+
     </div>
   )
 }
