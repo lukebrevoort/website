@@ -2,7 +2,7 @@ import React from 'react'
 
 function Notebook() {
   return (
-    <div>Notebook</div>
+    <h1>WIP!</h1>
   )
 }
 
