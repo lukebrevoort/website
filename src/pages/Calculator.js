@@ -45,7 +45,7 @@ function Calculator() {
             </div>
         </div>
 
-        <div className='calculator--intro' id='intro2'>
+        <div className='calculator--intro' id='intro2-yellow'>
             <img src='./images/calculatorUI.png' alt='Calculator UI' className='calculator--image'/>
             <h2 className='calculator--intro--title myfont'>The Idea:</h2>
             <div className='calculator--intro--content'>
