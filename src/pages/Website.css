@@ -1,7 +1,155 @@
+.website--container {
+    display: flex;
+    color: #f5f5f5;
+    flex-direction: column;
+}
+
 .website--title--page {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     background-color: #6370f0;
     width: 100%;
+    border-radius: 15px;
+}
+
+.grey {
+    color: lightgray;
+}
+
+.website--title {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-size: x-large;
+    padding: 10px 15px;
+    margin-top: 60px;
+    margin-left: 150px;
+    font-family: "luke.brev-font";
+}
+
+.website--skills {
+    position: relative;
+    color: black;
+    display: flex;
+    width: 75%;
+    height: max-content;
+    margin: 0 auto;
+    padding-bottom: 10px;
+    background-color: #f5f5f5;
+    justify-self: center;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 10px;
+    margin-top: -40px;
+}
+
+.website--intro {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    color: #f5f5f5;
+}
+
+.website--image {
+    height: 200px;
+    width: auto;
+    align-self: flex-start;
+    border-radius: 15px;
+    padding: 15px;
+}
+
+#intro2 {
+    justify-content: right;
+    background-color: #45ba7e;
+    border-radius: 30px;
+}
+
+#intro3 {
+    justify-content: left;
+}
+
+#intro4 {
+    background-color: #BA4581;
+    border-radius: 30px;
+    margin-bottom: 100px;
+}
+
+#intro5 {
+    justify-content:center;
+}
+
+.website--intro--title {
+    margin-top: 0;
+}
+
+.website--intro--content {
+    width: 350px;
+    margin-top: 0;
+    line-height: 35px;
+}
+
+.website--intro--result {
+    display: flex;
+    gap: 30px;
+}
+
+.intro--color-blue {
+    background-color: #4547BA;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.intro--color-red {
+    background-color: #BA4581;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.intro--color-green {
+    background-color: #45BA7E;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.website--link {
+    font-family: Newsreader;
+    color: black;
+    font-size: 25;
+}
+
+.website--flexbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.website--flexbox {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.website--box {
+    width: 400px;
+    height: 400px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.website--box-red {
+    background-color: #ff4c4c;
+}
+
+.website--box-green {
+    background-color: #45ba7e;
+}
+
+.website--box-blue {
+    background-color: #4c4cff;
 }

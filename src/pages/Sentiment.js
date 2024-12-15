@@ -32,6 +32,10 @@ function Sentiment() {
                 <h3>Date</h3>
                 <p>2024</p>
             </div>
+            <div>
+                <h3>Repo</h3>
+                <a href='https://github.com/lukebrevoort/sentimentAnalysis' target='_blank' rel='noreferrer' className='webiste--link'>Link</a>
+            </div>
         </div>
 
         <div className='sentiment--intro' id='intro1'>

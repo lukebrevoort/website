@@ -33,7 +33,7 @@ function Sidebar() {
 
         <nav className="navBar-left"> 
             <div className="navBar-left-image" id="mySidenav">
-                <img src="./images/dropDown.png" onClick={openNav}/>
+                <img src="./images/llama.webp" onClick={openNav}/>
             </div>
             <Link to="/">
                 <span className="navBar-left-blue">l</span>
