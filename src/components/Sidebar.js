@@ -22,7 +22,7 @@ function Sidebar() {
     <div>
         <div id="mySidenav" className='sidenav'>
             <h1 className="sidenav--title">Chatbot</h1>
-            <img src='./images/close.png' onClick={closeNav} className='sidenav--closebtn'/>
+            <img src='./images/close.png' alt='close button' onClick={closeNav} className='sidenav--closebtn' loading='lazy'/>
             <Chat />
         </div>
 
@@ -33,7 +33,7 @@ function Sidebar() {
 
         <nav className="navBar-left"> 
             <div className="navBar-left-image" id="mySidenav">
-                <img src="./images/llama.webp" onClick={openNav}/>
+                <img src="./images/llama.webp" alt='Llama' onClick={openNav} loading='lazy'/>
             </div>
             <Link to="/">
                 <span className="navBar-left-blue">l</span>

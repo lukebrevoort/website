@@ -6,10 +6,9 @@ function About() {
     <div>
       <div className='about--header'>
         <h1 className='about--header--text myfont'>I like to building things in my freetime. coding, writing, and creating :)</h1>
-        <img src='./images/greenSweater.jpg' alt='photo of me' className='about--image'/>
+        <img src='./images/greenSweater.jpg' alt='Me!' className='about--image' loading="lazy"/>
       </div>
       <div className='about--container'>
-
         <h2 className='myfont about--title'>About:</h2>
         <div className='about--content'>
           <p>I'm Luke Brevoort a freshman at Stevens Institute of Technology in Hoboken NJ who is studying  
@@ -32,14 +31,12 @@ function About() {
             school and work.
           </p>
           <br />
-
         </div>
       </div>
-
       <div className='about--photos'>
-        <img src='./images/NYC.jpg' alt='Photo' className='about--photo'/>
-        <img src='./images/Lacrosse.jpg' alt='Photo' className='about--photo photo2'/>
-        <img src='./images/Skiing.jpg' alt='Photo' className='about--photo photo3'/>
+        <img src='./images/NYC.jpg' alt='NYC' className='about--photo' loading="lazy"/>
+        <img src='./images/Lacrosse.jpg' alt='Lacrosse' className='about--photo photo2' loading="lazy"/>
+        <img src='./images/Skiing.jpg' alt='Ski Mountain' className='about--photo photo3' loading="lazy"/>
       </div>
       <div className='about--container'>
         <h2 className='myfont about--title'>Experience:</h2>
@@ -60,9 +57,7 @@ function About() {
             <p className='about--experience-date'>2023 – 2024</p>
           </div>
         </div>
-
       </div>
-
       <footer className="navbar-left">
         <a href="#head">
             <span className="navBar-left-blue">l</span>
