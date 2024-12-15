@@ -102,7 +102,8 @@ return (
                         <p>Implemented a chatbot that uses the Llama 3.2 3B model to generate responses to user input.
                             The chatbot can answer questions, provide information, and engage in conversation with users.
                             It is designed to be user-friendly and accessible, with a clean and modern interface.
-                            THis chatbot is a proof of concept that shows my skills in machine learning and natural language processing.
+                            This chatbot is a proof of concept that shows my skills in machine learning and natural language processing.
+                            
                         </p>
                     </div>
                 </div>
