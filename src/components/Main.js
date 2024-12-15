@@ -19,15 +19,17 @@ export default function Main() {
             </div>
 
             <div className='project'>
-                <Link to="/sentiment">
+                <Link to="/sentiment" onClick={() => window.scrollTo(0, 0)}>
                     <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
                 </Link>
                 
-                <Link to="/website">
+                <Link to="/website" onClick={() => window.scrollTo(0, 0)}>
                     <Project  img="./images/website.png" title="Personal Website" desc="UI Design WebLLM"/>
                 </Link>
+                <Link to="/calculator" onClick={() => window.scrollTo(0, 0)}>
+                    <Project img="./images/calc.png" title="GO Calculator" desc="GOlang React"/>
+                </Link>
                 <Project img="./images/sql.jpg" title="Football SQL" desc="SQL mySQL"/>
-                <Project img="./images/calc.png" title="GO Calculator" desc="GOlang React"/>
             </div>
 
             <div className='title' id="contact">

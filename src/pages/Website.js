@@ -17,15 +17,15 @@ return (
             <div className='website--skills'>
                     <div>
                             <h3>Language</h3>
-                            <p>JavaScript</p>
+                            <p>JavaScript, HTML, CSS</p>
                     </div>
                     <div>
                             <h3>Framework</h3>
                             <p>React</p>
                     </div>
                     <div>
-                            <h3>Styling</h3>
-                            <p>CSS</p>
+                            <h3>Model</h3>
+                            <p>WebLLM & Llama 3.2</p>
                     </div>
                     <div>
                             <h3>Date</h3>
@@ -83,12 +83,27 @@ return (
                 <div className='website--flexbox'>
                     <div className='website--box website--box-red'>
                         <h3>Itializing WebLLM API</h3>
+                        <p>Implemented WebLLM which WebLLM enables running <strong>large language models (LLMs)</strong>
+                            directly in web browsers using <strong>WebGPU</strong> for hardware-accelerated computations. 
+                            It performs text generation <strong>locally on the user's device</strong>, ensuring privacy and 
+                            offline access without server dependencies. Optimized for browser constraints, 
+                            it provides seamless and <strong>accessible AI interactions.</strong></p>
                     </div>
                     <div className='website--box website--box-green'>
                         <h3>Training Llama 3.2 Personal Model</h3>
+                        <p>Trained a custom Llam 3.2 Instruct 3B model which is specalized on the  
+                            <a href='https://huggingface.co/datasets/theatticusproject/cuad-qa'> CUDA</a> dataset.
+                            This prototype model is a proof of concept that shows my skills in understanding, training, implementing,
+                            and deploying personalized fine-tuned Llama models. Looking forward to implenting a multi-modal model soon.</p>
+                        
                     </div>
                     <div className='website--box website--box-blue'>
-                        <h3>Implementing Models</h3>
+                        <h3>AI Chatbot</h3>
+                        <p>Implemented a chatbot that uses the Llama 3.2 3B model to generate responses to user input.
+                            The chatbot can answer questions, provide information, and engage in conversation with users.
+                            It is designed to be user-friendly and accessible, with a clean and modern interface.
+                            THis chatbot is a proof of concept that shows my skills in machine learning and natural language processing.
+                        </p>
                     </div>
                 </div>
             </div>

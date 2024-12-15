@@ -51,6 +51,7 @@
     justify-content: center;
     gap: 40px;
     color: #f5f5f5;
+    padding: 20px;
 }
 
 .website--image {
@@ -139,7 +140,19 @@
     width: 400px;
     height: 400px;
     border-radius: 10px;
+    padding: 10px;
     text-align: center;
+}
+
+.website--box p {
+    line-height: 35px;
+}
+
+.website--box a {
+    font-family: Newsreader;
+    color: rgb(0, 132, 255);
+    font-size: 25;
+    text-decoration: none;
 }
 
 .website--box-red {

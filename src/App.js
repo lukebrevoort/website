@@ -6,6 +6,7 @@ import Notebooks from "./pages/Notebooks"
 import About from "./pages/About"
 import Sentiment from "./pages/Sentiment";
 import Website from "./pages/Website";
+import Calculator from "./pages/Calculator";
 
 export default function App() {
     return (
@@ -18,6 +19,7 @@ export default function App() {
                         <Route path="about" element={<About />} />
                         <Route path="sentiment" element={<Sentiment />} />
                         <Route path="website" element={<Website />} />
+                        <Route path="calculator" element={<Calculator />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

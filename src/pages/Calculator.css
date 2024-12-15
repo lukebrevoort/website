@@ -1,0 +1,87 @@
+.calculator--container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.calculator--title--page {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #edd9d8;
+    border-radius: 15px;
+    z-index: -1;
+}
+
+.calculator--title--page img {
+    width: 100%;
+    height: inherit;
+    z-index: -1;
+    margin-bottom: 20px;
+    height: auto;
+    border-radius: 15px;
+}
+
+.calculator--title {
+    text-align: left;
+}
+
+.calculator--title h2 {
+    font-size: 2em;
+    color: black;
+}
+
+.calculator--title h1 {
+    font-size: 3.5em;
+    color: black;
+}
+
+.calculator--skills {
+    display: flex;
+    justify-content: space-around;
+    align-self: center;
+    margin-top: -20px;
+    background-color: #f5f5f5;
+    color: black;
+    border-radius: 15px;
+    padding-bottom: 20px;
+}
+
+.calculator--skills div {
+    text-align: center;
+}
+
+.calculator--intro {
+    margin-top: 40px;
+}
+
+.calculator--intro--title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.calculator--intro--content {
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.calculator--image {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+}
+
+.calculator--intro--result {
+    margin-top: 40px;
+}
+
+.intro--color-blue {
+    color: blue;
+}
+
+.intro--color-red {
+    color: red;
+}
+
+.intro--color-green {
+    color: green;
+}
