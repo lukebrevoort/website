@@ -2,8 +2,8 @@ import React from 'react'
 
 function Notebook() {
   return (
-    <div>
-      <h1>Yur</h1>
+    <div style={{ textAlign: 'center' }}>
+      <h1 style={{}}>WIP!</h1>
     </div>
   )
 }

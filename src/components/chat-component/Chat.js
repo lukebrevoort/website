@@ -4,7 +4,7 @@ import "./Chat.css"
 
 function Chat() {
 
-    const [selectedModel, setSelectedModel] = useState("llama-3.2-3b-it-Legal-Chatbot");
+    const [selectedModel, setSelectedModel] = useState("Llama-3-8B-Instruct-q4f32_1-MLC");
     const [engine, setEngine] = useState(null);
 
     const appConfig = {

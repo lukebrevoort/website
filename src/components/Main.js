@@ -35,7 +35,9 @@ export default function Main() {
             <div className='title' id="contact">
                 <div className='title--number'>02. </div>
                 <div className='title--content'> notebooks</div>
-            </div>    
+            </div>  
+
+            <Notebook />  
 
             <div className='title'>
                 <div className='title--number'>03. </div>
