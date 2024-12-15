@@ -23,7 +23,9 @@ export default function Main() {
                     <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
                 </Link>
                 
-                <Project  img="./images/website.png" title="Personal Website" desc="UI Design WebLLM"/>
+                <Link to="/website">
+                    <Project  img="./images/website.png" title="Personal Website" desc="UI Design WebLLM"/>
+                </Link>
                 <Project img="./images/sql.jpg" title="Football SQL" desc="SQL mySQL"/>
                 <Project img="./images/calc.png" title="GO Calculator" desc="GOlang React"/>
             </div>

@@ -1,0 +1,7 @@
+.website--title--page {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #6370f0;
+    width: 100%;
+}

@@ -3,6 +3,47 @@ import * as webllm from "@mlc-ai/web-llm";
 import "./Chat.css"
 
 function Chat() {
+
+    const [selectedModel, setSelectedModel] = useState("llama-3.2-3b-it-Legal-Chatbot");
+    const [engine, setEngine] = useState(null);
+
+    const appConfig = {
+        model_list: [
+            {
+                model: "https://huggingface.co/mlc-ai/Llama-3-8B-Instruct-q4f32_1-MLC",
+                model_id: "Llama-3-8B-Instruct-q4f32_1-MLC",
+                model_lib:
+                    webllm.modelLibURLPrefix +
+                    webllm.modelVersion +
+                    "/Llama-3-8B-Instruct-q4f32_1-ctx4k_cs1k-webgpu.wasm",
+            },
+            {
+                model: "https://huggingface.co/lbrevoort/llama-3.2-3b-it-Legal-Chatbot",
+                model_id: "llama-3.2-3b-it-Legal-Chatbot",
+                model_lib:
+                    webllm.modelLibURLPrefix +
+                    webllm.modelVersion +
+                    "/Llama-3-8B-Instruct-q4f32_1-ctx4k_cs1k-webgpu.wasm",
+            },
+        ],
+    };
+
+    useEffect(() => {
+        const initializeWebLLMEngine = async () => {
+            try {
+                const engine = await webllm.CreateMLCEngine(selectedModel, { appConfig: appConfig });
+                setEngine(engine);
+            } catch (error) {
+                console.error("Failed to initialize engine:", error);
+            }
+        };
+
+        initializeWebLLMEngine();
+    }, [selectedModel]);
+
+    // ...
+
+    
     // State for managing messages, model, and UI
     const [messages, setMessages] = useState([
         {
@@ -11,7 +52,6 @@ function Chat() {
         }
     ]);
     const [availableModels, setAvailableModels] = useState([]);
-    const [selectedModel, setSelectedModel] = useState("Llama-3.1-8B-Instruct-q4f32_1-1k");
     const [downloadStatus, setDownloadStatus] = useState("");
     const [chatStats, setChatStats] = useState("");
     const [isModelDownloaded, setIsModelDownloaded] = useState(false);
@@ -160,21 +200,22 @@ function Chat() {
         }
     }, [messages]);
 
+    const handleModelChange = (event) => {
+        setSelectedModel(event.target.value);
+    };
+
     return (
         <div className='container'>
             
             <h1>Initialize WebLLM and Download Model</h1>
             <div className="download-container">
-                <select className='chat--select'
-                    value={selectedModel} 
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                >
-                    {availableModels.map((modelId) => (
-                        <option key={modelId} value={modelId}>
-                            {modelId}
-                        </option>
-                    ))}
-                </select>
+            <select value={selectedModel} onChange={handleModelChange}>
+                {appConfig.model_list.map((model) => (
+                    <option key={model.model_id} value={model.model_id}>
+                        {model.model_id}
+                    </option>
+                ))}
+            </select>
                 <button 
                     onClick={initializeWebLLMEngine}
                 >
@@ -227,7 +268,6 @@ function Chat() {
                         }}
                     />
                     <button 
-
                         onClick={onMessageSend}
                         disabled={!isModelDownloaded}
                     >
@@ -235,6 +275,7 @@ function Chat() {
                     </button>
                 </div>
             </div>
+
         </div>
     )
 }
