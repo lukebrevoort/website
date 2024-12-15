@@ -24,8 +24,8 @@ function Calculator() {
                 <p>React</p>
             </div>
             <div>
-                <h3>API</h3>
-                <p>eval()</p>
+                <h3>Documentation</h3>
+                <p>Python eval()</p>
             </div>
             <div>
                 <h3>Date</h3>
