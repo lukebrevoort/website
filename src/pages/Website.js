@@ -49,7 +49,7 @@ return (
                     <img src='./images/websiteDesign.png' alt='Website Design' className='website--image' loading='lazy'/>
                     <h2 className='website--intro--title myfont'>Design:</h2>
                     <div className='website--intro--content'>
-                            <p>The design of the website is clean and modern, with a focus on usability and accessibility. It includes a responsive layout that works well on both desktop and mobile devices.</p>
+                            <p>The design of the website is clean and modern, with a focus on usability and accessibility. It includes a responsive layout that works well on both desktop and mobile devices (WIP).</p>
                     </div>
             </div>
 
