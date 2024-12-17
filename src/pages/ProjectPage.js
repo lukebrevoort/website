@@ -29,7 +29,7 @@ function ProjectPage({ project }) {
             </div>
 
             {project.intros.map((intro, index) => (
-                <div className='project--intro' id={`intro${index + 1}`} key={index}>
+                <div className={`project--intro ${intro.color}`} id={`intro${index + 1}`} key={index}>
                     {intro.image && <img src={intro.image} alt={intro.title} className='project--image' loading='lazy' />}
                     <h2 className='project--intro--title myfont'>{intro.title}</h2>
                     <div className='project--intro--content'>

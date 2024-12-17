@@ -27,7 +27,8 @@ export default function App() {
             {
                 title: "The Idea:",
                 content: "The idea was to take in a .csv and sort through alphebetically to find which stock the user was interested in; this goes through a validate function which checks first if the stock is in the .csv and second scans to find the selected stock.",
-                image: "./images/stocksImagePage.jpg"
+                image: "./images/stocksImagePage.jpg",
+                color: "green"
             },
             {
                 title: "Google Search and Parse:",
@@ -38,7 +39,8 @@ export default function App() {
                 title: "ChatGPT Integration:",
                 content: "Then after it completes we stop the completed file at the max number of tokens that can go through a ChatGPT query. At this point when this project was made the max tokens was 15500.",
                 content2: "ChatGPT is then given a specific prompt to try and reduce temperature of responses and ensure the most consistent results possible. This prompt engineering was made possible through googles resources and went through multiple iterations to ensure accuracy.",
-                image: "./images/chat.webp"
+                image: "./images/chat.webp",
+                color: "red"
             },
             {
                 title: "The Results:",
@@ -90,7 +92,8 @@ export default function App() {
             {
                 title: "Design:",
                 content: "The design of the website is clean and modern, with a focus on usability and accessibility. It includes a responsive layout that works well on both desktop and mobile devices (WIP).",
-                image: "./images/websiteDesign.png"
+                image: "./images/websiteDesign.png",
+                color: "green"
             },
             {
                 title: "Development:",
@@ -100,7 +103,8 @@ export default function App() {
             {
                 title: "Styling:",
                 content: "The styling of the website is done using CSS. Custom styles are applied to ensure a consistent look and feel across all pages.",
-                image: "./images/cssLogo.png"
+                image: "./images/cssLogo.png",
+                color: "red"
             },
             {
                 title: "Portfolio:",
