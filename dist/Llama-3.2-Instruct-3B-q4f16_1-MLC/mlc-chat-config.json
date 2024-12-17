@@ -48,7 +48,7 @@
     "strip_space_in_decode": false
   },
   "conv_template": {
-    "name": "llama-3_1",
+    "name": "llama-3",
     "system_template": "<|start_header_id|>system<|end_header_id|>\n\n{system_message}<|eot_id|>",
     "system_message": "You are a helpful, respectful and honest assistant.",
     "system_prefix_token_ids": [
@@ -57,8 +57,7 @@
     "add_role_after_system_message": true,
     "roles": {
       "user": "<|start_header_id|>user",
-      "assistant": "<|start_header_id|>assistant",
-      "tool": "<|start_header_id|>ipython"
+      "assistant": "<|start_header_id|>assistant"
     },
     "role_templates": {
       "user": "{user_message}",
@@ -71,10 +70,12 @@
     ],
     "role_content_sep": "<|end_header_id|>\n\n",
     "role_empty_sep": "<|end_header_id|>\n\n",
-    "stop_str": [],
+    "stop_str": [
+      "<|end_of_text|>",
+      "<|eot_id|>"
+    ],
     "stop_token_ids": [
       128001,
-      128008,
       128009
     ],
     "function_string": "",

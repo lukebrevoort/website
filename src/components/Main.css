@@ -64,24 +64,32 @@
     justify-content: center;
 }
 
-.project--image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    text-align: center;
+.project-component {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,400px));
+  gap: 30px;
+  place-items: center;
+  justify-content: center;
 }
 
-.project--image img {
-    max-width: 378px;
-    max-height: 800px;
-    object-fit: cover;
-    width: 100%;
-    height: 550px;
-    border-radius: 20px;
+.project-component--image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  text-align: center;
 }
 
-.project--content {
+.project-component--image img {
+  max-width: 378px;
+  max-height: 800px;
+  object-fit: cover;
+  width: 100%;
+  height: 550px;
+  border-radius: 20px;
+}
+
+.project-component--content {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -94,58 +102,58 @@
   font-family: "Newsreader";
   }
 
-  .project--title {
-    font-size: 20px;
-    font-weight: 700;
-    color: black;
+  .project-component--title {
+  font-size: 20px;
+  font-weight: 700;
+  color: black;
   }
 
-.project--card {
-    border-radius: 8px;
-    color: white;
-    overflow: hidden;
-    position: relative;
-    transform-style: preserve-3d;
-    perspective: 1000px;
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
-    cursor: pointer;
+.project-component--card {
+  border-radius: 8px;
+  color: white;
+  overflow: hidden;
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+  cursor: pointer;
   }
   
-  .project--card:hover {
-    transform: rotateY(10deg) rotateX(10deg) scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  .project-component--card:hover {
+  transform: rotateY(10deg) rotateX(10deg) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
   
-  .project--card:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
-    transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1);
-    z-index: 1;
+  .project-component--card:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+  z-index: 1;
   }
   
-  .project--card:hover:before {
-    transform: translateX(-100%);
+  .project-component--card:hover:before {
+  transform: translateX(-100%);
   }
   
-  .project--card:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
-    transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1);
-    z-index: 1;
+  .project-component--card:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+  z-index: 1;
   }
   
-  .project--card:hover:after {
-    transform: translateX(100%);
+  .project-component--card:hover:after {
+  transform: translateX(100%);
   }
 
 

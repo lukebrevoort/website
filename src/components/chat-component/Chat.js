@@ -85,6 +85,7 @@ function Chat() {
         const config = {
             temperature: 1.0,
             top_p: 1,
+            cache: false, // Prevent looking at ndarray-cache.json
         };
 
         try {

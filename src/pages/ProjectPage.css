@@ -1,0 +1,149 @@
+.project--container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.project--title--page {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #45ba7e;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.project--title {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-size: x-large;
+    padding: 10px 15px;
+    margin-top: 60px;
+    margin-left: 150px;
+    font-family: "luke.brev-font";
+}
+
+.project--title h2 {
+    color: lightgray;
+    margin: 0;
+}
+
+.project--title h1 {
+    margin: 0;
+}
+
+.project--skills {
+    position: relative;
+    color: black;
+    display: flex;
+    width: 75%;
+    height: max-content;
+    margin: 0 auto;
+    padding-bottom: 10px;
+    background-color: #f5f5f5;
+    justify-self: center;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 10px;
+    margin-top: -40px;
+}
+
+.project--skills h3 {
+    margin: 10px 0;
+}
+
+.project--skills p {
+    margin: 5px 0;
+}
+
+.project--link {
+    color: blue;
+    text-decoration: none;
+}
+
+.project--intro {
+    padding: 10px;
+    width: 100%;
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    color: #f5f5f5;
+    margin-bottom: 20px;
+}
+
+.project--image {
+    height: 200px;
+    width: auto;
+    align-self: center;
+    border-radius: 15px;
+}
+
+.project--intro--title {
+    margin-top: 0;
+    font-family: 'luke.brev-font', sans-serif;
+    font-size: 2rem;
+}
+
+.project--intro--content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px;
+    margin-top: 0;
+    line-height: 35px;
+}
+
+.project--flexbox {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    justify-content: space-around;
+    gap: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.project--box {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 10px;
+    width: 330px;
+    height: auto;
+    text-align: left;
+    overflow: hidden;
+}
+
+.project--box h3 {
+    align-self: center;
+    margin: 0;
+    color: #f5f5f5;
+    margin-bottom: 10px;
+}
+
+.project--box p {
+    margin: 0;
+    color: #f5f5f5;
+    line-height: 35px;
+}
+
+.project--box-red {
+    background-color: #BA4581;
+}
+
+.project--box-blue {
+    background-color: #4547BA;
+}
+
+.project--box-green {
+    background-color: #45BA7E;
+}
+
+.project--box-purple {
+    background-color: #6370f0;
+}
