@@ -17,14 +17,6 @@ function Chat() {
                     webllm.modelVersion +
                     "/Llama-3-8B-Instruct-q4f32_1-ctx4k_cs1k-webgpu.wasm",
             },
-            {
-                model: "https://huggingface.co/lbrevoort/llama-3.2-3b-it-Legal-Chatbot",
-                model_id: "llama-3.2-3b-it-Legal-Chatbot",
-                model_lib: 
-                    webllm.modelLibURLPrefix +
-                    webllm.modelVersion +
-                    "/Llama-3-8B-Instruct-q4f32_1-ctx4k_cs1k-webgpu.wasm",
-            }
         ],
     };
 
