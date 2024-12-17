@@ -5,7 +5,7 @@ function ProjectPage({ project }) {
 
     return (
         <div className='project--container'>
-            <div className='project--title--page'>
+            <div className={`project--title--page ${project.color}`}>
                 <div className='project--title'>
                     <h2 className='grey'>Project</h2>
                     <h1>{project.title}</h1>

@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar"
 import Notebooks from "./pages/Notebooks"
 import About from "./pages/About"
 import ProjectPage from "./pages/ProjectPage";
-import Website from "./pages/Website";
 import Calculator from "./pages/Calculator";
 
 export default function App() {
@@ -71,6 +70,66 @@ export default function App() {
         repo: "https://github.com/lukebrevoort/sentimentAnalysis"
     };
 
+    const websiteProject = {
+        title: "Personal Website",
+        description: "A personal website built using React to showcase my portfolio and skills.",
+        skills: [
+            { name: "Language", details: "JavaScript, HTML, CSS" },
+            { name: "Framework", details: "React" },
+            { name: "Model", details: "WebLLM & Llama 3.2" },
+            { name: "Date", details: "2024" }
+        ],
+        image: "./images/websiteimg.png",
+        link: "/website",
+        color: "purple",
+        intros: [
+            {
+                title: "Intro:",
+                content: "This project is a personal website built using React. It showcases my portfolio and provides information about my skills and projects."
+            },
+            {
+                title: "Design:",
+                content: "The design of the website is clean and modern, with a focus on usability and accessibility. It includes a responsive layout that works well on both desktop and mobile devices (WIP).",
+                image: "./images/websiteDesign.png"
+            },
+            {
+                title: "Development:",
+                content: "The website is built using React, a popular JavaScript library for building user interfaces. React allows for the creation of reusable components, making the development process more efficient.",
+                image: "./images/reactLogo.png"
+            },
+            {
+                title: "Styling:",
+                content: "The styling of the website is done using CSS. Custom styles are applied to ensure a consistent look and feel across all pages.",
+                image: "./images/cssLogo.png"
+            },
+            {
+                title: "Portfolio:",
+                content: "The website includes a portfolio section that showcases my projects. Each project includes a description, technologies used, and a link to the live demo or source code.",
+                image: "./images/portfolio.png"
+            }
+        ],
+        flexbar: {
+            boxes: [
+                {
+                    title: "WebLLM Implementation",
+                    content: "Implemented WebLLM which enables running large language models (LLMs) directly in web browsers using WebGPU for hardware-accelerated computations. It performs text generation locally on the user's device, ensuring privacy and offline access without server dependencies. Optimized for browser constraints, it provides seamless and accessible AI interactions.",
+                    color: "red"
+                },
+                {
+                    title: "Training Llama 3.2 Personal Model",
+                    content: "Trained a custom Llam 3.2 Instruct 3B model which is specialized on the CUDA dataset. This prototype model is a proof of concept that shows my skills in understanding, training, implementing, and deploying personalized fine-tuned Llama models. Looking forward to implementing a multi-modal model soon.",
+                    color: "green"
+                },
+                {
+                    title: "AI Chatbot",
+                    content: "Implemented a chatbot that uses the Llama 3.2 3B model to generate responses to user input. The chatbot can answer questions, provide information, and engage in conversation with users. It is designed to be user-friendly and accessible, with a clean and modern interface. This chatbot is a proof of concept that shows my skills in machine learning and natural language processing.",
+                    color: "blue"
+                }
+            ]
+        },
+        repo: "https://github.com/lukebrevoort/website"
+    };
+
     return (
         <div id="main">
             <BrowserRouter>
@@ -80,7 +139,7 @@ export default function App() {
                         <Route path="notebook" element={<Notebooks />} />
                         <Route path="about" element={<About />} />
                         <Route path="sentiment" element={<ProjectPage project={sentimentProject} />} />
-                        <Route path="website" element={<Website />} />
+                        <Route path="website" element={<ProjectPage project={websiteProject} />} />
                         <Route path="calculator" element={<Calculator />} />
                     </Route>
                 </Routes>
