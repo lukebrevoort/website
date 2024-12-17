@@ -15,6 +15,12 @@
     margin-bottom: 20px;
 }
 
+.project--title--page img {
+    width: 400px;
+    height: auto;
+    margin: 20px;
+}
+
 .project--title {
     display: flex;
     justify-content: center;
@@ -78,7 +84,7 @@
 }
 
 .project--image {
-    height: 200px;
+    height: 300px;
     width: auto;
     align-self: center;
     border-radius: 15px;
@@ -163,4 +169,8 @@
 
 .blue {
     background-color: #4547BA;
+}
+
+.yellow {
+    background-color: #E1C16E;
 }

@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar"
 import Notebooks from "./pages/Notebooks"
 import About from "./pages/About"
 import ProjectPage from "./pages/ProjectPage";
-import Calculator from "./pages/Calculator";
 
 export default function App() {
     const sentimentProject = {
@@ -134,6 +133,63 @@ export default function App() {
         repo: "https://github.com/lukebrevoort/website"
     };
 
+    const calculatorProject = {
+        title: "Calculator",
+        description: "A simple calculator built using JavaScript to perform basic arithmetic operations.",
+        skills: [
+            { name: "Language", details: "Go, JavaScript" },
+            { name: "Framework", details: "React" },
+            {name: "Documentation", details: "Python eval()" },
+            { name: "Date", details: "2024" }
+        ],
+        image: "./images/calculator.png",
+        link: "/calculator",
+        color: "blue",
+        intros: [
+            {
+                title: "Intro:",
+                content: "This project is a simple calculator built using React and Go. It uses the eval() function to evaluate mathematical expressions."
+            },
+            {
+                title: "The Idea:",
+                content: "The idea was to create a user-friendly calculator that can handle basic arithmetic operations. The calculator UI is built with React, and the backend logic is handled by Go.",
+                image: "../images/calculatorUI.png",
+                color: "yellow"
+            },
+            {
+                title: "Go Backend:",
+                content: "The backend is built using Go, which handles the evaluation of mathematical expressions using the eval() function. This ensures that the calculations are performed efficiently and accurately.",
+                image: "./images/goLogo.png"
+            },
+            {
+                title: "React Frontend:",
+                content: "The frontend is built using React, providing a responsive and interactive user interface. The calculator UI is designed to be intuitive and easy to use.",
+                image: "./images/reactLogo.png",
+                color: "red"
+            },
+            {
+                title: "The Result:",
+                content: "Input any mathematical expression and get the result instantly. For example, 2 + 2 will give you 4.",
+                image: "./images/result.png",
+            }
+        ],
+        flexbar: {
+            boxes: [
+                {
+                    title: "Collaborative Frontend and Backend",
+                    content: "Put Together two local servers for Go and React to communicate with each other. This was done to ensure that the frontend and backend could communicate with each other and provide a seamless user experience.",
+                    color: "blue"
+                },
+                {
+                    title: "Tokenization",
+                    content: "Tokenized the operators and operands in the mathematical expression to evaluate the expression to create a pseudo eval() function. This process ensures that the expression is parsed correctly and the calculations are performed accurately.",
+                    color: "green"
+                },
+            ]
+        },
+        repo: "https://github.com/lukebrevoort/calculator"
+    };
+
     return (
         <div id="main">
             <BrowserRouter>
@@ -144,7 +200,7 @@ export default function App() {
                         <Route path="about" element={<About />} />
                         <Route path="sentiment" element={<ProjectPage project={sentimentProject} />} />
                         <Route path="website" element={<ProjectPage project={websiteProject} />} />
-                        <Route path="calculator" element={<Calculator />} />
+                        <Route path="calculator" element={<ProjectPage project={calculatorProject} />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
