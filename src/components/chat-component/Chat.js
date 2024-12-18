@@ -7,6 +7,9 @@ function Chat() {
     const [selectedModel, setSelectedModel] = useState("Llama-3-8B-Instruct-q4f32_1-MLC");
     const [engine, setEngine] = useState(null);
 
+    const modelLibURLPrefix = webllm.modelLibURLPrefix; // Define modelLibURLPrefix
+    const modelVersion = webllm.modelVersion; // Define modelVersion
+
     const appConfig = {
         model_list: [
             {
@@ -17,6 +20,19 @@ function Chat() {
                     webllm.modelVersion +
                     "/Llama-3-8B-Instruct-q4f32_1-ctx4k_cs1k-webgpu.wasm",
             },
+            {
+                model: "https://huggingface.co/lbrevoort/llama-3.2-3b-it-Leetcode-Chatbot",
+                model_id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+                model_lib:
+                  modelLibURLPrefix +
+                  modelVersion +
+                  "/Llama-3.2-3B-Instruct-q4f16_1-ctx4k_cs1k-webgpu.wasm",
+                vram_required_MB: 2263.69,
+                low_resource_required: true,
+                overrides: {
+                  context_window_size: 4096,
+                },
+              },
         ],
     };
 
