@@ -797,11 +797,8 @@ h1 {
 
 @font-face {
   font-family: 'luke.brev-font';
-
-  src: url('/public/fonts/Luke\ Brevoort\ Regular\ Font.otf') format('opentype');
-
+  src: url('/fonts/Luke Brevoort Regular Font.otf') format('opentype');
   font-weight: normal;
-
   font-style: normal;
 }
 
@@ -842,11 +839,8 @@ h1 {
 
 @font-face {
   font-family: 'luke.brev-font';
-
-  src: url('/public/fonts/Luke\ Brevoort\ Regular\ Font.otf') format('opentype');
-
+  src: url('/fonts/Luke Brevoort Regular Font.otf') format('opentype');
   font-weight: normal;
-
   font-style: normal;
 }
 
