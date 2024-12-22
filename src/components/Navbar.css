@@ -1,51 +1,3 @@
-.navBar-main {
-  padding: 10px 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100; /* Add z-index to ensure it stays on top */
-  background-color: #333;
-  scroll-behavior: smooth; /* Add smooth scrolling behavior */
-}
-
-.navBar-right {
-    display: flex;
-
-}
-
-.navBar-right a {
-    color: #858383;
-    padding: 15px 20px;
-    text-decoration: none;
-    font-size: 1.55em; 
-    font-family: "Newsreader";
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.navBar-right a:hover {
-    transform: scale(1.05);
-    cursor: pointer;
-    color: #f5f5f5;
-}
-
-.navBar-left {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 25px;
-}
-
-.navBar-left a {
-    font-size: 32px;
-    text-decoration: none;
-    font-family: 'luke.brev-font';
-    font-weight: bolder;
-}
-
 .navBar-left-blue {
     color: #689ce0;
 }
@@ -62,31 +14,13 @@
     color: #95db78;
 }
 
-.navBar-left a:hover {
-    transform: scale(1.05);
-    transition: transform 0.3s ease;
-    cursor: pointer;
-    
-}
-
-.navBar-left-image img {
-    width: 85px;
-    height: auto;
-}
-
-.navBar-left-image img:hover {
-    transform: scale(1.05);
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-
 .sidenav {
     height: 100%;
     width: 0;
     display: flex;
     flex-direction: column;
     position: fixed;
-    z-index: 10;
+    z-index: 100;
     top: 0;
     left: 0;
     background-color: #464545;

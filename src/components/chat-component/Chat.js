@@ -214,10 +214,10 @@ function Chat() {
     };
 
     return (
-        <div className='container'>
+        <div className='font-news py-2.5 px-5'>
             
-            <h1>Initialize WebLLM and Download Model</h1>
-            <div className="download-container">
+            <h1 className='text-3xl mb-10 text-center'>Initialize WebLLM and Download Model</h1>
+            <div className="flex flex-col justify-center items-center gap-5 mb-5">
             <select value={selectedModel} onChange={handleModelChange}>
                 {appConfig.model_list.map((model) => (
                     <option key={model.model_id} value={model.model_id}>

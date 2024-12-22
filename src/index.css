@@ -1,3 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #333;
+    font-family: "Newsreader";
+    color: #979696;
+    padding: 0;
+}
+
+p {
+    text-align: left;
+    font-size: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: "Newsreader";
+}
+
+h1 {
+    color: #f5f5f5;
+}
+
+.p-bold {
+    font-weight: bolder;
+    color: #f5f5f5;
+
+}
+
+@font-face {
+    font-family: 'luke.brev-font';
+    src: url('/public/fonts/Luke\ Brevoort\ Regular\ Font.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .newsreader {
+    font-family: "Newsreader", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
+
 html {
     scroll-behavior: smooth;
 }

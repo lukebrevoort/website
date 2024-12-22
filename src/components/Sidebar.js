@@ -28,14 +28,11 @@ function Sidebar() {
 
 
 
-
-
-
-        <nav className="navBar-left"> 
-            <div className="navBar-left-image" id="mySidenav">
+        <nav className="flex justify-start items-center gap-6 myfont text-4xl"> 
+            <div className="w-20 sm:w-16 md:w-24 h-auto hover:scale-105 transition-transform ease delay-10 cursor-pointer" id="mySidenav">
                 <img src="./images/llama.png" alt='Llama' onClick={openNav} loading='lazy'/>
             </div>
-            <Link to="/">
+            <Link to="/" className='hover:scale-105 transition-transform ease delay-10'>
                 <span className="navBar-left-blue">l</span>
                 <span className="navBar-left-red">u</span>
                 <span className="navBar-left-purple">k</span>

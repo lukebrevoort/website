@@ -3,7 +3,7 @@ import React from 'react'
 function Notebook() {
   return (
     <div style={{ textAlign: 'center' }}>
-      <h1 style={{}}>WIP!</h1>
+      <h1 className='text-3xl font-bold'>WIP!</h1>
     </div>
   )
 }

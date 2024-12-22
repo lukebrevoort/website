@@ -1,16 +1,15 @@
 import React from 'react'
-import "./About.css"
 
 function About() {
   return (
     <div>
-      <div className='about--header'>
-        <h1 className='about--header--text myfont'>I like to building things in my freetime. coding, writing, and creating :)</h1>
-        <img src='./images/greenSweater.jpg' alt='Me!' className='about--image' loading="lazy"/>
+      <div className='flex flex-col-reverse justify-end items-center relative overflow-hidden text-ellipsis lg:flex-row'>
+        <h1 className='text-classicWhite max-w-screen-sm mb-12 text-3xl myfont'>I like to building things in my freetime. coding, writing, and creating :)</h1>
+        <img src='./images/greenSweater.jpg' alt='Me!' className='w-96 h-auto p-10 opacity-75 relative transition-width delay-150 ease lg:w-5/12' loading="lazy"/>
       </div>
-      <div className='about--container'>
-        <h2 className='myfont about--title'>About:</h2>
-        <div className='about--content'>
+      <div className='flex justify-center text-left items-normal gap-10 text-classicWhite'>
+        <h2 className='myfont mt-0 text-3xl'>About:</h2>
+        <div className='mt-3 leading-9 w-96 lg:w-1/3'>
           <p>I'm Luke Brevoort a freshman at Stevens Institute of Technology in Hoboken NJ who is studying  
                Computer Science! I am passionate about AI, Fullstack Development, and Natural Langauge Processing.</p>
           <br />
@@ -33,28 +32,28 @@ function About() {
           <br />
         </div>
       </div>
-      <div className='about--photos'>
-        <img src='./images/NYC.jpg' alt='NYC' className='about--photo' loading="lazy"/>
-        <img src='./images/Lacrosse.jpg' alt='Lacrosse' className='about--photo photo2' loading="lazy"/>
-        <img src='./images/Skiing.jpg' alt='Ski Mountain' className='about--photo photo3' loading="lazy"/>
+      <div className='flex flex-col justify-evenly items-center mb-20 lg:flex-row gap-10'>
+        <img src='./images/NYC.jpg' alt='NYC' className='w-96 h-auto lg:w-3/12' loading="lazy"/>
+        <img src='./images/Lacrosse.jpg' alt='Lacrosse' className='w-96 h-auto mb-0 lg:w-3/12 lg:mb-12' loading="lazy"/>
+        <img src='./images/Skiing.jpg' alt='Ski Mountain' className='w-96 h-auto mb-0 lg:w-3/12 lg:mb-28' loading="lazy"/>
       </div>
-      <div className='about--container'>
-        <h2 className='myfont about--title'>Experience:</h2>
-        <div className='about--experience--container'>
-          <div className='about--experience'>
+      <div className='flex justify-center text-left items-normal gap-10 text-classicWhite'>
+        <h2 className='myfont mt-0 text-3xl'>Experience:</h2>
+        <div className='flex flex-col gap-20 mt-3'>
+          <div className='leading-9'>
             <p className='p-bold'>EH Yang Lab</p>
             <p>Undergraduate Researcher</p>
-            <p className='about--experience-date'>2024 – Present</p>
+            <p className='text-classicGrey'>2024 – Present</p>
           </div>
-          <div className='about--experience'>
+          <div className='leading-9'>
             <p className='about--experience--job p-bold'>Student Government Organization</p>
             <p>Senator</p>
-            <p className='about--experience-date'>2024 – Present</p>
+            <p className='text-classicGrey'>2024 – Present</p>
           </div>
-          <div className='about--experience'>
+          <div className='leading-9'>
             <p className='about--experience--job p-bold'>Student Government Organization and NHS</p>
             <p>Student Body President and National Honors Society VP</p>
-            <p className='about--experience-date'>2023 – 2024</p>
+            <p className='text-classicGrey'>2023 – 2024</p>
           </div>
         </div>
       </div>

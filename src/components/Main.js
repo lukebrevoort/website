@@ -11,14 +11,14 @@ export default function Main() {
     return (
         <div>
             <SpeedInsights />
-            <h1 class="header myfont header--underline">Luke is a student from Stevens who likes to code</h1>
+            <h1 className="text-7xl flex justify-center items-center max-w-3xl text-classicWhite my-36 mx-10 myfont header--underline md:mx-auto">Luke is a student from Stevens who likes to code</h1>
 
-            <div className='title' id="project">
-                <div className='title--number'>01. </div>
-                <div className='title--content'> projects</div>
+            <div className='flex items-center p-10 gap-3 text-left max-w-3xl my-0 mx-auto font-news' id="project">
+                <div className='text-lg text-lightgrey'>01. </div>
+                <div className='text-3xl font-bold text-classicWhite'> projects</div>
             </div>
 
-            <div className='project'>
+            <div className='flex flex-col items-center justify-center gap-8 md:grid grid-cols-2'>
                 <Link to="/sentiment" onClick={() => window.scrollTo(0, 0)}>
                     <Project img="./images/sentiment.jpg" title="Sentiment Analysis Project" desc="ChatGPT-API Python"/>
                 </Link>
@@ -32,16 +32,16 @@ export default function Main() {
                 <Project img="./images/sql.jpg" title="Football SQL" desc="SQL mySQL"/>
             </div>
 
-            <div className='title' id="contact">
-                <div className='title--number'>02. </div>
-                <div className='title--content'> notebooks</div>
+            <div className='flex items-center p-10 gap-3 text-left max-w-3xl my-0 mx-auto font-news' id="contact">
+                <div className='text-lg text-lightgrey'>02. </div>
+                <div className='text-3xl font-bold text-classicWhite'> notebooks</div>
             </div>  
 
             <Notebook />  
 
-            <div className='title'>
-                <div className='title--number'>03. </div>
-                <div className='title--content'> contact</div>
+            <div className='flex items-center p-10 gap-3 text-left max-w-3xl my-0 mx-auto font-news'>
+                <div className='text-lg text-lightgrey'>03. </div>
+                <div className='text-3xl font-bold text-classicWhite'> contact</div>
             </div>
 
             <Contact />

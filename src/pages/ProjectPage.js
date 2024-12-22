@@ -4,35 +4,37 @@ import "./ProjectPage.css";
 function ProjectPage({ project }) {
 
     return (
-        <div className='project--container'>
-            <div className={`project--title--page ${project.color}`}>
-                <div className='project--title'>
-                    <h2 className='grey'>Project</h2>
-                    <h1>{project.title}</h1>
+        <div className='flex flex-col items-center my-0 mx-auto'>
+            <div className={`flex justify-evenly items-center w-full mb-4 rounded-3xl ${project.color}`}>
+                <div className='flex justify-center content-center flex-col py-2.5 px-5 mt-7 ml-3/5 myfont'>
+                    <div className='text-classicWhite text-4xl'>Project</div>
+                    <div className='text-5xl text-classicWhite'>{project.title}</div>
                 </div>
                 <div>
-                    <img src={project.image} alt={project.title} loading='lazy' />
+                    <img src={project.image} alt={project.title} loading='lazy' className='w-4/5 h-auto m-4'/>
                 </div>
             </div>
 
-            <div className='project--skills'>
+            <div 
+            className='relative text-black flex w-full h-max my-0 mx-auto p-4 bg-classicWhite justify-self-center justify-around 
+            items-center rounded-lg -mt-10 md:w-3/4'>
                 {project.skills.map((skill, index) => (
                     <div key={index}>
-                        <h3>{skill.name}</h3>
-                        <p>{skill.details}</p>
+                        <h3 className='mx-3 my-0 font-bold text-xl'>{skill.name}</h3>
+                        <p className='mx-3 my-0 text-xl'>{skill.details}</p>
                     </div>
                 ))}
                 <div>
                     <h3>Repo</h3>
-                    <a href={project.repo} target='_blank' rel='noreferrer' className='project--link'>Link</a>
+                    <a href={project.repo} target='_blank' rel='noreferrer' className='text-classicBlue hover:underline'>Link</a>
                 </div>
             </div>
 
             {project.intros.map((intro, index) => (
-                <div className={`project--intro ${intro.color}`} id={`intro${index + 1}`} key={index}>
-                    {intro.image && <img src={intro.image} alt={intro.title} className='project--image' loading='lazy' />}
-                    <h2 className='project--intro--title myfont'>{intro.title}</h2>
-                    <div className='project--intro--content'>
+                <div className={`flex flex-col p-3 justify-center items-center gap-10 text-classicWhite mt-10 mb-4 rounded-xl w-11/12 lg:flex-row lg:items-start ${intro.color}`} id={`intro${index + 1}`} key={index}>
+                    {intro.image && <img src={intro.image} alt={intro.title} className='h-80 w-auto self-center rounded-md' loading='lazy' />}
+                    <h2 className='mt-0 text-4xl myfont'>{intro.title}</h2>
+                    <div className='flex flex-col items-center w-80 leading-9 text-center'>
                         <p>{intro.content}</p>
                         <br />
                         {intro.content2 && <p>{intro.content2}</p>}
@@ -42,13 +44,13 @@ function ProjectPage({ project }) {
             ))}
 
             {project.flexbar && (
-                <div className='project--flexbar'>
+                <div>
                     <h2>{project.flexbar.title}</h2>
-                    <div className='project--flexbox'>
+                    <div className='flex flex-col items-center p-4 justify-center gap-5 rounded-lg gap-6 lg:flex-row justify-around'>
                         {project.flexbar.boxes.map((box, index) => (
-                            <div className={`project--box project--box-${box.color}`} key={index}>
-                                <h3>{box.title}</h3>
-                                <p>{box.content}</p>
+                            <div className={`flex flex-col p-4 rounded-lg w-7/12 h-auto text-left text-classicWhite lg:w-80 project--box-${box.color}`} key={index}>
+                                <h3 className='text-center m-0 mb-4 text-xl font-bold'>{box.title}</h3>
+                                <p className='m-0 leading-9'>{box.content}</p>
                             </div>
                         ))}
                     </div>

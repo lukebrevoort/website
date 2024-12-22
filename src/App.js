@@ -18,6 +18,7 @@ export default function App() {
         ],
         image: "./images/stockmarket.png",
         link: "/sentiment",
+        color: "green",
         intros: [
             {
                 title: "Intro:",

@@ -3,8 +3,8 @@ import React from 'react'
 export default function Contact() {
   return (
     <div>
-        <div className='contact'>
-            <div className='contact--bar'>
+        <div className='flex justify-center text-classicWhite relative mb-10'>
+            <div className='flex p-3 gap-14 w-60 justify-center items-center rounded-lg hover:bg-hoverGrey transition duration-300 ease'>
                 <a href='https://www.instagram.com/luke.brev/' target="_blank" rel="noreferrer">
                     <img src='/images/instagram.png' alt='insta' className='contact--icon' loading='lazy'/>
                 </a>
@@ -17,7 +17,7 @@ export default function Contact() {
                     <img src='/images/github.png' alt='github' className='contact--icon' loading='lazy'/>
                 </a>
             </div>
-            <div className='contact--bar'>
+            <div className='flex p-3 gap-14 w-60 justify-center items-center rounded-lg hover:bg-hoverGrey transition duration-300 ease'>
                 <a href='https://bsky.app/profile/luke-brev.bsky.social' target="_blank" rel="noreferrer">
                     <img src='/images/bluesky.png' alt='bluesky' className='contact--icon' loading='lazy'/>
                 </a>
