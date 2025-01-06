@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import Sidebar from "./Sidebar";
 import "./Navbar.css";
 
@@ -29,11 +30,18 @@ const DropDown = ({ children, dropDownContent }) => {
                     {children}
                 </div>
             </div>
-            {isOpen && (
-                <div className="absolute right-0 top-12 mt-2 w-48 bg-classicBackground shadow-lg rounded-md py-2">
+            <Transition
+                show={isOpen}
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-150"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+            >
+                <div className="absolute right-0 top-12 mt-2 w-64 bg-classicBackground shadow-lg rounded-md py-3 px-2">
                     {dropDownContent}
                 </div>
-            )}
+            </Transition>
         </div>
     );
 };
