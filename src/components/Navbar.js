@@ -38,7 +38,7 @@ const DropDown = ({ children, dropDownContent }) => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
             >
-                <div className="absolute right-0 top-12 mt-2 w-64 bg-classicBackground shadow-lg rounded-md py-3 px-2">
+                <div className="absolute right-0 top-12 mt-2 w-52 bg-classicBackground shadow-lg rounded-md py-3 px-2">
                     {dropDownContent}
                 </div>
             </Transition>
