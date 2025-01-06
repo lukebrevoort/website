@@ -2,25 +2,6 @@
   font-family: 'luke.brev-font';
 }
 
-.header--underline {
-  position: relative;
-}
-
-.header--underline::before {
-  content: "";
-  position: absolute;
-  height: 5px; 
-  left: 0;
-  bottom: 0;
-  width: 0;
-  background-color: #747474;
-  transition: width 0.2s ease;
-}
-
-.header--underline:hover::before {
-  width: 90%;
-}
-
 .project-component {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,400px));

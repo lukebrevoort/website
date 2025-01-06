@@ -1,90 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { forwardRef } from "react";
 import { Outlet, Link } from "react-router-dom";
-import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
+import { HashLink } from 'react-router-hash-link';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import Sidebar from "./Sidebar";
 import "./Navbar.css";
 
-const DropDown = ({ children, dropDownContent }) => {
-    const [isOpen, setIsOpen] = useState(window.innerWidth <= 400);
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsOpen(window.innerWidth <= 400);
-        };
-
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
-
+const MyLink = forwardRef((props, ref) => {
+    let { href, children, onClick } = props
     return (
-        <div className="relative">
-            <div className="flex items-center md:hidden" onClick={toggleDropdown}>
-                <div className="space-x-4">
-                    {children}
-                </div>
-            </div>
-            <Transition
-                show={isOpen}
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-150"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
+      href.includes('#') ? (
+        <HashLink 
+          smooth
+          to={href} 
+          ref={ref} 
+          onClick={onClick}
+          className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 hover:bg-white/10"
+        >
+          {children}
+        </HashLink>
+      ) : (
+        <Link 
+          to={href} 
+          ref={ref} 
+          onClick={onClick}
+          className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 hover:bg-white/10"
+        >
+          {children}
+        </Link>
+      )
+    )
+})
+
+const DropDown = () => {
+    return (
+        <Menu as="div" unmount>
+            <MenuButton>
+                <img src="./images/menuDrop.png" alt="dropdown" className="w-12 h-auto hover:scale-105 transition-transform duration-300 ease cursor-pointer md:hidden" />
+            </MenuButton>
+            <MenuItems           
+                transition
+                anchor="bottom end"
+                className="w-52 origin-top-right z-50 rounded-xl border border-white/5 bg-white/5 p-1 mt-5 text-lg text-white transition-all duration-200 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none enter:opacity-100 enter:scale-100 leave:opacity-0 leave:scale-95 absolute"
+                style={{ maxHeight: '80vh', overflowY: 'auto' }}
             >
-                <div className="absolute right-0 top-12 mt-2 w-52 bg-classicBackground shadow-lg rounded-md py-3 px-2">
-                    {dropDownContent}
-                </div>
-            </Transition>
-        </div>
+                <MenuItem>
+                    {({ close }) => (
+                        <MyLink href="/about" onClick={() => {
+                            window.scrollTo(0, 0);
+                            close();
+                        }}>
+                            About
+                        </MyLink>
+                    )}
+                </MenuItem>
+                <MenuItem>
+                    {({ close }) => (
+                        <MyLink href="/#project" onClick={() => close()}>
+                            Projects
+                        </MyLink>
+                    )}
+                </MenuItem>
+                <MenuItem>
+                    {({ close }) => (
+                        <MyLink href="/#contact" onClick={() => close()}>
+                            Contact
+                        </MyLink>
+                    )}
+                </MenuItem>
+            </MenuItems>
+        </Menu>
     );
 };
 
 function Navbar() {
     return (
         <div id="head">
-            <header className="px-5 py-4 shadow-md flex justify-between items-center sticky top-0 z-10 bg-classicBackground scroll-smooth">
+            <header className="px-5 py-4 h-32 shadow-md flex justify-between items-center sticky top-0 z-10 bg-classicBackground scroll-smooth">
                 <Sidebar />
-                <DropDown
-                    dropDownContent={
-                        <>
-                            <Link
-                                to="/about"
-                                onClick={() => window.scrollTo(0, 0)}
-                                className="block px-4 py-2 bg-classicBackground text-classicGrey hover:text-classicWhite hover:bg-hoverGrey"
-                            >
-                                About
-                            </Link>
-                            <a
-                                href="/#project"
-                                className="block px-4 py-2 bg-classicBackground text-classicGrey hover:text-classicWhite hover:bg-hoverGrey"
-                            >
-                                Projects
-                            </a>
-                            <Link
-                                to="/notebook"
-                                className="block px-4 py-2 bg-classicBackground text-classicGrey hover:text-classicWhite hover:bg-hoverGrey"
-                            >
-                                Notebook
-                            </Link>
-                            <a
-                                href="/#contact"
-                                className="block px-4 py-2 bg-classicBackground text-classicGrey hover:text-classicWhite hover:bg-hoverGrey"
-                            >
-                                Contact
-                            </a>
-                        </>
-                    }
-                >
-                    <img src="./images/menuDrop.png" alt="dropdown" className="w-12 h-auto hover:scale-105 transition-transform duration-300 ease cursor-pointer md:hidden" />
-                </DropDown>
-                <div className="hidden md:visible md:flex md:space-x-6 md:font-bold md:text-2xl">
+                <div className="block md:hidden">
+                    <DropDown />
+                </div>
+                <div className="hidden md:flex md:space-x-6 md:font-bold md:text-2xl">
                     <Link
                         to="/about"
                         onClick={() => window.scrollTo(0, 0)}
@@ -92,24 +88,20 @@ function Navbar() {
                     >
                         About
                     </Link>
-                    <a
-                        href="/#project"
+                    <HashLink
+                        smooth
+                        to="/#project"
                         className="text-classicGrey hover:text-classicWhite py-1 px-2 hover:scale-105 transition-colors ease delay-3 transition-transform ease delay-3"
                     >
                         Projects
-                    </a>
-                    <Link
-                        to="/notebook"
-                        className="text-classicGrey py-1 px-2 hover:text-classicWhite hover:scale-105 transition-colors ease delay-3 transition-transform ease delay-3"
-                    >
-                        Notebook
-                    </Link>
-                    <a
-                        href="/#contact"
+                    </HashLink>
+                    <HashLink
+                        smooth
+                        to="/#contact"
                         className="text-classicGrey py-1 px-2 hover:text-classicWhite hover:scale-105 transition-colors ease delay-3 transition-transform ease delay-3"
                     >
                         Contact
-                    </a>
+                    </HashLink>
                 </div>
             </header>
             <Outlet />

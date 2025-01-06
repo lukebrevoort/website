@@ -21,7 +21,7 @@ function Sidebar() {
   return (
     <div>
         <div id="mySidenav" className='sidenav'>
-            <h1 className="sidenav--title">Chatbot</h1>
+            <h1 className="sidenav--title font-news text-3xl">Chatbot</h1>
             <img src='./images/close.png' alt='close button' onClick={closeNav} className='sidenav--closebtn' loading='lazy'/>
             <Chat />
         </div>

@@ -225,7 +225,8 @@ function Chat() {
                     </option>
                 ))}
             </select>
-                <button 
+                <button
+                    className="chat-button font-news" 
                     onClick={initializeWebLLMEngine}
                 >
                     Download
@@ -276,7 +277,8 @@ function Chat() {
                             e.target.style.height = `${e.target.scrollHeight}px`;
                         }}
                     />
-                    <button 
+                    <button
+                        className="chat-button font-news" 
                         onClick={onMessageSend}
                         disabled={!isModelDownloaded}
                     >

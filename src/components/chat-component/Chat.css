@@ -89,7 +89,7 @@
   color: #f5f5f5;
 }
 
-button {
+.chat-button {
   padding: 10px 20px;
   height: 3rem;
   width: 10rem;
@@ -107,19 +107,19 @@ button {
   outline: none;
 }
 
-button:disabled {
+.chat-button:disabled {
   background-color: lightgray;
   cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
+.chat-button:hover:not(:disabled) {
   background-color: #2394c4;
   box-shadow: 0px 15px 20px rgba(46, 192, 229, 0.4);
   color: #fff;
   transform: translateY(-7px);
 }
 
-button:active {
+.chat-button:active {
   transform: translateY(-1px);
 }
 
