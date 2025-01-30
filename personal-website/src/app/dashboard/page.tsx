@@ -86,9 +86,15 @@ export default function Page() {
         </motion.div>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-10">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50">
+              <img src="/images/nycSunset.jpg" alt="NYC Sunset" className="w-full h-full object-cover rounded-xl" />
+            </div>
+            <div className="aspect-video rounded-xl bg-muted/50">
+              <img src="/images/jellyfish.jpg" alt="Jellyfish" className="w-full h-full object-cover rounded-xl" />
+            </div>
+            <div className="aspect-video rounded-xl bg-muted/50">
+              <img src="/images/sunset.jpg" alt="Sunset" className="w-full h-full object-cover rounded-xl" />
+            </div>
           </div>
         </div>
       </SidebarInset>
