@@ -1,9 +1,9 @@
 "use client"
 
-import { Raleway } from "next/font/google"
+import { Berkshire_Swash, Raleway } from "next/font/google"
 import { AppSidebar } from "@/components/app-sidebar"
 
-import { lukesFont } from "@/app/fonts"
+import { lukesFont, berkshireSwash, crimsonText } from "@/app/fonts"
 
 
 import {
@@ -50,7 +50,7 @@ export default function Page() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
+          transition={{ duration: 1 }}
           className="h-[500px] flex-1 rounded-xl bg-muted/50 relative"
         >
           <img 
@@ -61,10 +61,28 @@ export default function Page() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.75 }}
+            transition={{ delay: 1, duration: 0.75 }}
             className={`absolute bottom-1/2 left-1/3 text-white text-5xl font-bold max-w-[50%] ${lukesFont.className}`}>
             I am Luke Brevoort, I like to build stuff
           </motion.div>
+        </motion.div>
+        <motion.div 
+          className="text-3xl font-bold mt-8 text-center leading-[1.5]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.75 }}
+          >
+          <h1 className={`${crimsonText.className}`}>Welcome to my Website!</h1>
+            <h3 className={`${crimsonText.className} max-w-[50%] mx-auto`}>I host my personal projects, photos, and other stuff I find cool on here!</h3>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2, duration: 0.75 }}
+          className="flex flex-row items-center justify-center mt-8"
+        >
+          <h3 className={`${berkshireSwash.className} ml-14 text-4xl`}>Enjoy your Stay!</h3>
+          <img src="/images/Explode.png" alt="Explosion" className="relative h-16 w-16 -top-4 -left-4" />
         </motion.div>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-10">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
