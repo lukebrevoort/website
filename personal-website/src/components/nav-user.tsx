@@ -2,9 +2,9 @@
 
 import {
   Github,
-  Bell,
+  Radio,
   ChevronsUpDown,
-  CreditCard,
+  Linkedin,
   LogOut,
   Sparkles,
 } from "lucide-react"
@@ -93,11 +93,11 @@ export function NavUser({
                 Github
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCard />
+                <Linkedin />
                 Linkedin
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
+                <Radio />
                 Bluesky
               </DropdownMenuItem>
             </DropdownMenuGroup>

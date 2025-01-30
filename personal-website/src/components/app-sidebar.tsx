@@ -7,7 +7,7 @@ import {
   Bot,
   Command,
   BookText,
-  GalleryVerticalEnd,
+  Atom,
   LaptopMinimalCheck,
   PieChart,
   SquareTerminal,
@@ -35,18 +35,8 @@ const data = {
   teams: [
     {
       name: "luke.brev",
-      logo: GalleryVerticalEnd,
+      logo: Atom,
       plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
     },
   ],
   navMain: [

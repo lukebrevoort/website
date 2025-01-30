@@ -5,7 +5,6 @@ export default function Home() {
   return (
     <div>
       <Sidebar />
-      <h1>Hello There!</h1>
     </div>
   );
 }
