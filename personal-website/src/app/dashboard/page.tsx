@@ -4,6 +4,7 @@ import { Berkshire_Swash, Raleway } from "next/font/google"
 import { AppSidebar } from "@/components/app-sidebar"
 
 import { lukesFont, berkshireSwash, crimsonText } from "@/app/fonts"
+import { ProjectCard } from "@/components/project-card"
 
 
 import {
@@ -122,6 +123,26 @@ export default function Page() {
           </div>
         </div>
         </motion.div>
+
+        <motion.div
+          className="mt-16"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
+        >
+          <h2 className={`${crimsonText.className} text-3xl font-bold mb-8 text-center`}>
+            Featured Projects
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <ProjectCard />
+            <ProjectCard />
+            <ProjectCard />
+          </div>
+        </motion.div>
+
+
+
+
       </SidebarInset>
     </SidebarProvider>
   )
