@@ -68,7 +68,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         <CardFooter className="gap-2 pt-6">
           <Button asChild variant="default">
-            <Link href={project.link}>View Project</Link>
+          <Link href={`/projects/${project.link.split('/').pop()}`}>
+            View Project
+          </Link>
           </Button>
           <Button asChild variant="outline">
             <a 

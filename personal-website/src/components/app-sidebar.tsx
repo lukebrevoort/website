@@ -42,40 +42,40 @@ const data = {
   navMain: [
     {
       title: "About Me",
-      url: "#",
+      url: "/about", // Updated URL
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "History",
-          url: "#",
+          url: "/about#history",
         },
         {
           title: "Experience",
-          url: "#",
+          url: "/about#experience", 
         },
         {
           title: "Contact",
-          url: "#",
+          url: "/about#contact",
         },
       ],
     },
     {
       title: "Models",
-      url: "#",
+      url: "/models",
       icon: Bot,
       items: [
         {
           title: "Llama",
-          url: "#",
+          url: "/models#llama",
         },
         {
           title: "DeepSeekR1",
-          url: "#",
+          url: "/models#deepseekr1",
         },
         {
           title: "Quantum",
-          url: "#",
+          url: "/models#quantum",
         },
       ],
     },
