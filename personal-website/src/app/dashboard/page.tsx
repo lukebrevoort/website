@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 
 import { lukesFont, berkshireSwash, crimsonText } from "@/app/fonts"
 import { ProjectCard } from "@/components/project-card"
+import projects from "@/data/project-data"
 
 
 import {
@@ -22,7 +23,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { motion } from "framer-motion"
+import { motion, MotionConfig } from "framer-motion"
 
 export default function Page() {
 
@@ -31,6 +32,7 @@ export default function Page() {
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
+      <MotionConfig reducedMotion="user">
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -134,9 +136,9 @@ export default function Page() {
             Featured Projects
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <ProjectCard />
-            <ProjectCard />
-            <ProjectCard />
+            {projects.map((project, index) => (
+              <ProjectCard key={index} project={project} />
+            )).slice(0, 3)}
           </div>
         </motion.div>
 
@@ -144,6 +146,7 @@ export default function Page() {
 
 
       </SidebarInset>
+      </MotionConfig>
     </SidebarProvider>
   )
 }
