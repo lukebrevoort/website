@@ -24,6 +24,9 @@ import {
 import { motion } from "framer-motion"
 
 export default function Page() {
+
+
+  
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -51,18 +54,18 @@ export default function Page() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="h-[500px] flex-1 rounded-xl bg-muted/50 relative"
+          className="flex-1 rounded-xl bg-muted/50 relative"
         >
           <img 
             src="/images/hawaii.jpg" 
             alt="Hawaii" 
-            className="w-full h-full object-cover rounded-xl" 
+            className="w-full h-[75vh] object-cover rounded-xl" 
           />
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 0.75 }}
-            className={`absolute bottom-1/2 left-1/3 text-white text-5xl font-bold max-w-[50%] ${lukesFont.className}`}>
+            className={`absolute bottom-1/2 left-1/3 text-white font-bold max-w-[50%] text-3xl md:text-5xl ${lukesFont.className}`}>
             I am Luke Brevoort, I like to build stuff
           </motion.div>
         </motion.div>
@@ -79,12 +82,16 @@ export default function Page() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 0.75 }}
-          className="flex flex-row items-center justify-center mt-8"
+          className="flex flex-row items-center justify-center my-8"
         >
           <h3 className={`${berkshireSwash.className} ml-14 text-4xl`}>Enjoy your Stay!</h3>
           <img src="/images/Explode.png" alt="Explosion" className="relative h-16 w-16 -top-4 -left-4" />
         </motion.div>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-10">
+        <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        >
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
             <div className="aspect-video rounded-xl bg-muted/50">
               <img src="/images/nycSunset.jpg" alt="NYC Sunset" className="w-full h-full object-cover rounded-xl" />
@@ -96,7 +103,25 @@ export default function Page() {
               <img src="/images/sunset.jpg" alt="Sunset" className="w-full h-full object-cover rounded-xl" />
             </div>
           </div>
+        </motion.div>
+        <motion.div
+        className="mt-2"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+        >
+        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+          <div className="aspect-video rounded-xl bg-muted/50">
+            <img src="/images/train.jpg" alt="NYC Sunset" className="w-full h-full object-cover rounded-xl" />
+          </div>
+          <div className="aspect-video rounded-xl bg-muted/50">
+            <img src="/images/tower.jpg" alt="Jellyfish" className="w-full h-full object-cover rounded-xl" />
+          </div>
+          <div className="aspect-video rounded-xl bg-muted/50">
+            <img src="/images/theBoys.jpg" alt="Sunset" className="w-full h-full object-cover rounded-xl" />
+          </div>
         </div>
+        </motion.div>
       </SidebarInset>
     </SidebarProvider>
   )
