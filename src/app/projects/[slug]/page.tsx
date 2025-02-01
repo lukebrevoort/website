@@ -22,37 +22,6 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 
-interface Box {
-  title: string
-  content: string
-  color: string
-}
-
-interface FlexBar {
-  boxes: Box[]
-}
-
-interface Skill {
-  name: string
-  details: string
-}
-
-interface IntroSection {
-  title: string
-  content: string
-  content2?: string
-  image?: string
-}
-
-interface Project {
-  title: string
-  description: string
-  link: string
-  image: string
-  skills: Skill[]
-  intros: IntroSection[]
-  flexbar: FlexBar
-}
 
 export default function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params)

@@ -2,10 +2,8 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
   BookText,
   Atom,
   LaptopMinimalCheck,
@@ -13,8 +11,6 @@ import {
   SquareTerminal,
   MoreHorizontal,
 } from "lucide-react"
-
-import Link from "next/link"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"

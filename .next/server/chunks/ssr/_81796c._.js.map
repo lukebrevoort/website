@@ -8,7 +8,7 @@
     {"offset": {"line": 29, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
     {"offset": {"line": 35, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
     {"offset": {"line": 39, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
-    {"offset": {"line": 45, "column": 0}, "map": {"version":3,"sources":["file:///Users/lbrevoort/Desktop/projects/personal-website/src/app/page.tsx"],"sourcesContent":["import Image from \"next/image\";\nimport Sidebar from \"@/app/dashboard/page\";\n\nexport default function Home() {\n  return (\n    <div>\n      <Sidebar />\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AACA;;;AAEe,SAAS;IACtB,qBACE,8OAAC;kBACC,cAAA,8OAAC,gIAAA,CAAA,UAAO;;;;;;;;;;AAGd"}},
+    {"offset": {"line": 45, "column": 0}, "map": {"version":3,"sources":["file:///Users/lbrevoort/Desktop/projects/personal-website/src/app/page.tsx"],"sourcesContent":["import Sidebar from \"@/app/dashboard/page\";\n\nexport default function Home() {\n  return (\n    <div>\n      <Sidebar />\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AAAA;;;AAEe,SAAS;IACtB,qBACE,8OAAC;kBACC,cAAA,8OAAC,gIAAA,CAAA,UAAO;;;;;;;;;;AAGd"}},
     {"offset": {"line": 65, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
     {"offset": {"line": 76, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
     {"offset": {"line": 76, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
