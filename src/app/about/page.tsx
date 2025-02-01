@@ -62,7 +62,7 @@ export default function Page() {
             <CardContent className="p-6">
               <h2 className={`${lukesFont.className} text-3xl mb-6`}>About:</h2>
               <div className="space-y-4 text-lg leading-relaxed">
-                <p>I&apos;mm Luke Brevoort a freshman at Stevens Institute of Technology in Hoboken NJ who is studying Computer Science! I am passionate about AI, Fullstack Development, and Natural Language Processing.</p>
+                <p>I&apos;m Luke Brevoort a freshman at Stevens Institute of Technology in Hoboken NJ who is studying Computer Science! I am passionate about AI, Fullstack Development, and Natural Language Processing.</p>
                 <p>I work on a variety of projects of different fields to learn as much as possible. From Machine Learning, Frontend Development, to Concurrency im always trying to expand my horizons which includes joining research and trying to learn as much as possible.</p>
                 <p>Outside of school I enjoy Frisbee, Skiing, Weightlifting, and Lacrosse, so really anything active :). I am actively involved in the Schools Student Government Association and love giving back to the Hoboken Community.</p>
               </div>
