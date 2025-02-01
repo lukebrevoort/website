@@ -21,6 +21,8 @@ import {
 
 import { motion, MotionConfig } from "framer-motion"
 
+import Image from 'next/image'
+
 export default function Page() {
 
 
@@ -52,9 +54,11 @@ export default function Page() {
           transition={{ duration: 1 }}
           className="flex-1 rounded-xl bg-muted/50 relative"
         >
-          <img 
+          <Image 
             src="/images/hawaii.jpg" 
             alt="Hawaii" 
+            width={1920}
+            height={1080}
             className="w-full h-[75vh] object-cover rounded-xl" 
           />
           <motion.div
@@ -81,7 +85,13 @@ export default function Page() {
           className="flex flex-row items-center justify-center my-8"
         >
           <h3 className={`${lukesFont.className} ml-14 text-4xl`}>Enjoy your Stay!</h3>
-          <img src="/images/Explode.png" alt="Explosion" className="relative h-16 w-16 -top-4 -left-4" />
+          <Image 
+            src="/images/Explode.png" 
+            alt="Explosion" 
+            width={64}
+            height={64}
+            className="relative -top-4 -left-4"
+          />
         </motion.div>
         <motion.div 
         initial={{ opacity: 0 }}
@@ -90,13 +100,31 @@ export default function Page() {
         >
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
             <div className="aspect-video rounded-xl bg-muted/50">
-              <img src="/images/nycSunset.jpg" alt="NYC Sunset" className="w-full h-full object-cover rounded-xl" />
+              <Image
+                src="/images/nycSunset.jpg"
+                alt="NYC Sunset"
+                width={1920}
+                height={1080}
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
             <div className="aspect-video rounded-xl bg-muted/50">
-              <img src="/images/jellyfish.jpg" alt="Jellyfish" className="w-full h-full object-cover rounded-xl" />
+              <Image
+                src="/images/jellyfish.jpg" 
+                alt="Jellyfish"
+                width={1920}
+                height={1080}  
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
             <div className="aspect-video rounded-xl bg-muted/50">
-              <img src="/images/sunset.jpg" alt="Sunset" className="w-full h-full object-cover rounded-xl" />
+              <Image
+                src="/images/sunset.jpg"
+                alt="Sunset" 
+                width={1920}
+                height={1080}
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
           </div>
         </motion.div>
@@ -108,13 +136,31 @@ export default function Page() {
         >
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
           <div className="aspect-video rounded-xl bg-muted/50">
-            <img src="/images/train.jpg" alt="NYC Sunset" className="w-full h-full object-cover rounded-xl" />
+            <Image
+              src="/images/train.jpg"
+              alt="NYC Sunset"
+              width={1920}
+              height={1080}
+              className="w-full h-full object-cover rounded-xl"
+            />
           </div>
           <div className="aspect-video rounded-xl bg-muted/50">
-            <img src="/images/tower.jpg" alt="Jellyfish" className="w-full h-full object-cover rounded-xl" />
+            <Image
+              src="/images/tower.jpg"
+              alt="Jellyfish"
+              width={1920}
+              height={1080}
+              className="w-full h-full object-cover rounded-xl"
+            />
           </div>
           <div className="aspect-video rounded-xl bg-muted/50">
-            <img src="/images/theBoys.jpg" alt="Sunset" className="w-full h-full object-cover rounded-xl" />
+            <Image
+              src="/images/theBoys.jpg"
+              alt="Sunset"
+              width={1920}
+              height={1080}
+              className="w-full h-full object-cover rounded-xl"
+            />
           </div>
         </div>
         </motion.div>

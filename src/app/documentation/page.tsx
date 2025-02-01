@@ -4,8 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { lukesFont, crimsonText } from "../fonts"
+import { lukesFont } from "../fonts"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
@@ -133,7 +132,7 @@ export default function DocumentationPage() {
                   <ol className='text-lg'>
                     <li>Select a model from the dropdown menu</li>
                     <br />
-                    <li>Click "Download Model" and wait for initialization</li>
+                    <li>Click Download Model and wait for initialization</li>
                     <Image 
                       src='/images/progress.png' 
                       alt='Progress Bar' 
@@ -195,7 +194,7 @@ export default function DocumentationPage() {
                   <h4 className="font-bold text-2xl">2. Model Initialization</h4>
                   <p>After selecting your model:</p>
                   <ul>
-                    <li>Click "Download Model"</li>
+                    <li>Click Download Model</li>
                     <li>Monitor the progress bar</li>
                     <li>Wait for completion message</li>
                   </ul>

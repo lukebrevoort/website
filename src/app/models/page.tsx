@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react'
-import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import * as webllm from "@mlc-ai/web-llm"
 import { modelVersion, modelLibURLPrefix } from "@mlc-ai/web-llm"
@@ -27,21 +26,22 @@ interface Message {
   role: "system" | "user" | "assistant";
 }
 
-interface ModelConfig {
-  model: string;
-  model_id: string;
-  model_lib: string;
-  vram_required_MB?: number;
-  low_resource_required?: boolean;
-  overrides?: {
-    context_window_size: number;
+interface InitProgressCallback {
+  text: string;
+  progress: number;
+}
+
+interface ModelUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  extra: {
+    prefill_tokens_per_s: number;
+    decode_tokens_per_s: number;
   };
 }
 
 export default function Page() {
-  const [mounted, setMounted] = useState(false)
   const [selectedModel, setSelectedModel] = useState<string>("Llama-3-8B-Instruct-q4f32_1-MLC")
-  const [engine, setEngine] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([
     { content: "You are a helpful AI agent helping users.", role: "system" }
   ]);
@@ -52,14 +52,13 @@ export default function Page() {
 
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const userInputRef = useRef<HTMLTextAreaElement>(null);
-  const engineRef = useRef<any>(null);
+  const engineRef = useRef<webllm.MLCEngine>(null);
 
   useEffect(() => {
-    setMounted(true)
-    engineRef.current = new webllm.MLCEngine()
-
+    engineRef.current = new webllm.MLCEngine();
+    
     // Get hash from URL and set selected model
-    const hash = window.location.hash.slice(1) // Remove #
+    const hash = window.location.hash.slice(1)
     if (hash && hash in MODEL_HASH_MAP && MODEL_HASH_MAP[hash as keyof typeof MODEL_HASH_MAP]) {
       setSelectedModel(MODEL_HASH_MAP[hash as keyof typeof MODEL_HASH_MAP])
     }
@@ -85,13 +84,9 @@ export default function Page() {
         },
       },
       {
-        model:
-          "https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Llama-8B-q4f16_1-MLC",
+        model: "https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Llama-8B-q4f16_1-MLC",
         model_id: "DeepSeek-R1-Distill-Llama-8B-q4f16_1-MLC",
-        model_lib:
-          modelLibURLPrefix +
-          modelVersion +
-          "/Llama-3_1-8B-Instruct-q4f16_1-ctx4k_cs1k-webgpu.wasm",
+        model_lib: modelLibURLPrefix + modelVersion + "/Llama-3_1-8B-Instruct-q4f16_1-ctx4k_cs1k-webgpu.wasm",
         model_name: "DeepSeek-R1-Distill-Llama-8B",
         vram_required_MB: 5001.0,
         low_resource_required: false,
@@ -102,7 +97,7 @@ export default function Page() {
     ],
   };
 
-  const updateEngineInitProgressCallback = (report: any) => {
+  const updateEngineInitProgressCallback = (report: InitProgressCallback) => {
     setDownloadStatus(report.text);
     setDownloadProgress(report.progress * 100);
   };
@@ -131,12 +126,15 @@ export default function Page() {
   const streamingGenerating = async (
     currentMessages: Message[],
     onUpdate: (content: string) => void,
-    onFinish: (message: string, usage: any) => void,
-    onError: (error: any) => void
+    onFinish: (message: string, usage: ModelUsage) => void,
+    onError: (error: Error) => void
   ) => {
     try {
       let curMessage = "";
-      let usage;
+      let usage: ModelUsage | undefined;
+      
+      if (!engineRef.current) throw new Error("Engine not initialized");
+
       const completion = await engineRef.current.chat.completions.create({
         stream: true,
         messages: currentMessages,
@@ -155,9 +153,10 @@ export default function Page() {
       }
 
       const finalMessage = await engineRef.current.getMessage();
+      if (!usage) throw new Error("No usage data available");
       onFinish(finalMessage, usage);
     } catch (err) {
-      onError(err);
+      onError(err instanceof Error ? err : new Error(String(err)));
     }
   };
 
