@@ -11,6 +11,7 @@ import {
   LaptopMinimalCheck,
   PieChart,
   SquareTerminal,
+  MoreHorizontal,
 } from "lucide-react"
 
 import Link from "next/link"
@@ -117,6 +118,11 @@ const data = {
       url: "/projects/website",
       icon: LaptopMinimalCheck,
     },
+    {
+      name: "More",
+      url: "/projects",
+      icon: MoreHorizontal,
+    }
   ],
 }
 
