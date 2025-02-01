@@ -1,0 +1,21 @@
+/* [project]/src/app/lukesfont_fb47b7be.module.css [app-client] (css) */
+@font-face {
+  font-family: lukesFont;
+  src: url("../media/Luke Brevoort Regular Font-s.p.bb48c9a4.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: lukesFont Fallback;
+  src: local(Arial);
+  ascent-override: 91.21%;
+  descent-override: 62.12%;
+  line-gap-override: 10.47%;
+  size-adjust: 85.96%;
+}
+
+.lukesfont_fb47b7be-module__tQcX5W__className {
+  font-family: lukesFont, lukesFont Fallback;
+}
+
+/*# sourceMappingURL=src_app_lukesfont_fb47b7be_module_b52d8e.css.map*/

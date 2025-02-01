@@ -1,0 +1,14 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/src/app/projects/[slug]/page": [
+      "static/media/gyByhwUxId8gMEwcGFWNOITd-s.p.da1ebef7.woff2",
+      "static/media/or3nQ6H_1_WfwkMZI_qYFrcdmhHkjko-s.p.be19f591.woff2",
+      "static/media/Luke Brevoort Regular Font-s.p.bb48c9a4.otf",
+      "static/media/ptRRTi_cavZOGqCvnNJDl5m5XmN_qs4zT305QQ-s.p.26ebc12d.woff2",
+      "static/media/wlppgwHKFkZgtmSR3NB0oRJXsCxGDNNQ9rJPfw-s.p.75e441a8.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}
