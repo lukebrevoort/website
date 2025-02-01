@@ -77,8 +77,8 @@ const data = {
           url: "/models#deepseekr1",
         },
         {
-          title: "Quantum",
-          url: "/models#quantum",
+          title: "Leetcode",
+          url: "/models#leetcode",
         },
       ],
     },
@@ -89,15 +89,15 @@ const data = {
       items: [
         {
           title: "Introduction",
-          url: "#",
+          url: "/documentation#introduction",
         },
         {
           title: "Get Started",
-          url: "#",
+          url: "/documentation#gettingstarted",
         },
         {
           title: "Tutorials",
-          url: "#",
+          url: "/documentation#tutorials",
         },
       ],
     },

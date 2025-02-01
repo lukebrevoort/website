@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import * as webllm from "@mlc-ai/web-llm"
+import { modelVersion, modelLibURLPrefix } from "@mlc-ai/web-llm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -14,6 +15,12 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
+
+const MODEL_HASH_MAP = {
+  'llama': "Llama-3-8B-Instruct-q4f32_1-MLC",
+  'deepseekr1': "DeepSeek-R1-Distill-Llama-8B-q4f16_1-MLC",
+  'leetcode': "Llama-3.2-3B-Instruct-q4f16_1-MLC"
+}
 
 interface Message {
   content: string;
@@ -32,7 +39,8 @@ interface ModelConfig {
 }
 
 export default function Page() {
-  const [selectedModel, setSelectedModel] = useState<string>("Llama-3-8B-Instruct-q4f32_1-MLC");
+  const [mounted, setMounted] = useState(false)
+  const [selectedModel, setSelectedModel] = useState<string>("Llama-3-8B-Instruct-q4f32_1-MLC")
   const [engine, setEngine] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([
     { content: "You are a helpful AI agent helping users.", role: "system" }
@@ -46,29 +54,53 @@ export default function Page() {
   const userInputRef = useRef<HTMLTextAreaElement>(null);
   const engineRef = useRef<any>(null);
 
+  useEffect(() => {
+    setMounted(true)
+    engineRef.current = new webllm.MLCEngine()
+
+    // Get hash from URL and set selected model
+    const hash = window.location.hash.slice(1) // Remove #
+    if (hash && hash in MODEL_HASH_MAP && MODEL_HASH_MAP[hash as keyof typeof MODEL_HASH_MAP]) {
+      setSelectedModel(MODEL_HASH_MAP[hash as keyof typeof MODEL_HASH_MAP])
+    }
+  }, [])
+
   const appConfig = {
     model_list: [
       {
         model: "https://huggingface.co/mlc-ai/Llama-3-8B-Instruct-q4f32_1-MLC",
         model_id: "Llama-3-8B-Instruct-q4f32_1-MLC",
         model_lib: `${webllm.modelLibURLPrefix}${webllm.modelVersion}/Llama-3-8B-Instruct-q4f32_1-ctx4k_cs1k-webgpu.wasm`,
+        model_name: "Llama-3.8B-Instruct",
       },
       {
         model: "https://huggingface.co/lbrevoort/llama-3.2-3b-it-Leetcode-Chatbot",
         model_id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",
         model_lib: `${webllm.modelLibURLPrefix}${webllm.modelVersion}/Llama-3.2-3B-Instruct-q4f16_1-ctx4k_cs1k-webgpu.wasm`,
+        model_name: "Llama-3.8B-Leetcode",
         vram_required_MB: 2263.69,
         low_resource_required: true,
         overrides: {
           context_window_size: 4096,
         },
       },
+      {
+        model:
+          "https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Llama-8B-q4f16_1-MLC",
+        model_id: "DeepSeek-R1-Distill-Llama-8B-q4f16_1-MLC",
+        model_lib:
+          modelLibURLPrefix +
+          modelVersion +
+          "/Llama-3_1-8B-Instruct-q4f16_1-ctx4k_cs1k-webgpu.wasm",
+        model_name: "DeepSeek-R1-Distill-Llama-8B",
+        vram_required_MB: 5001.0,
+        low_resource_required: false,
+        overrides: {
+          context_window_size: 4096,
+        },
+      },
     ],
   };
-
-  useEffect(() => {
-    engineRef.current = new webllm.MLCEngine();
-  }, []);
 
   const updateEngineInitProgressCallback = (report: any) => {
     setDownloadStatus(report.text);
@@ -237,7 +269,7 @@ export default function Page() {
                 <SelectContent>
                   {appConfig.model_list.map((model) => (
                     <SelectItem key={model.model_id} value={model.model_id}>
-                      {model.model_id}
+                      {model.model_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
