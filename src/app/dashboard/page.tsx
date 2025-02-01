@@ -1,8 +1,6 @@
 "use client"
 
-import { Berkshire_Swash, Raleway } from "next/font/google"
-
-import { lukesFont, berkshireSwash, crimsonText } from "@/app/fonts"
+import { lukesFont, crimsonText } from "@/app/fonts"
 import { ProjectCard } from "@/components/project-card"
 import projects from "@/data/project-data"
 
@@ -12,7 +10,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
@@ -83,7 +80,7 @@ export default function Page() {
           transition={{ delay: 2, duration: 0.75 }}
           className="flex flex-row items-center justify-center my-8"
         >
-          <h3 className={`${berkshireSwash.className} ml-14 text-4xl`}>Enjoy your Stay!</h3>
+          <h3 className={`${lukesFont.className} ml-14 text-4xl`}>Enjoy your Stay!</h3>
           <img src="/images/Explode.png" alt="Explosion" className="relative h-16 w-16 -top-4 -left-4" />
         </motion.div>
         <motion.div 
