@@ -81,29 +81,37 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
+              <DropdownMenuItem asChild>
+              <a href="#contact">
+                <Sparkles className="mr-2" />
                 Contact
+              </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Github />
+              <DropdownMenuItem asChild>
+              <a href="https://github.com/lukebrevoort" target="_blank" rel="noopener noreferrer">
+                <Github className="mr-2" />
                 Github
+              </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Linkedin />
+              <DropdownMenuItem asChild>
+              <a href="https://www.linkedin.com/in/luke-brevoort-6a545626a/" target="_blank" rel="noopener noreferrer">
+                <Linkedin className="mr-2" />
                 Linkedin
+              </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Radio />
+              <DropdownMenuItem asChild>
+              <a href="https://bsky.app/profile/luke-brev.bsky.social" target="_blank" rel="noopener noreferrer">
+                <Radio className="mr-2" />
                 Bluesky
+              </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
+              <LogOut className="mr-2" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
