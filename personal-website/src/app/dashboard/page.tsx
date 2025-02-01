@@ -1,13 +1,12 @@
 "use client"
 
 import { Berkshire_Swash, Raleway } from "next/font/google"
-import { AppSidebar } from "@/components/app-sidebar"
 
 import { lukesFont, berkshireSwash, crimsonText } from "@/app/fonts"
 import { ProjectCard } from "@/components/project-card"
 import projects from "@/data/project-data"
 
-
+import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,14 +40,11 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
+                  <BreadcrumbLink href="/">
+                    Home
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>

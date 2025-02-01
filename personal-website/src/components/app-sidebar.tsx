@@ -13,10 +13,12 @@ import {
   SquareTerminal,
 } from "lucide-react"
 
+import Link from "next/link"
+
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { HomeButton } from "@/components/home-button"
 import {
   Sidebar,
   SidebarContent,
@@ -102,17 +104,17 @@ const data = {
   projects: [
     {
       name: "Assignment Tracker",
-      url: "#",
+      url: "/projects/canvas-notion",
       icon: BookText,
     },
     {
       name: "Sentiment Analysis",
-      url: "#",
+      url: "/projects/canvas-notion",
       icon: PieChart,
     },
     {
       name: "Personal Website",
-      url: "#",
+      url: "/projects/website",
       icon: LaptopMinimalCheck,
     },
   ],
@@ -122,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <HomeButton />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
