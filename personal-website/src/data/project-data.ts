@@ -166,7 +166,7 @@ export const projects: ProjectData[] = [
       { name: "Database", details: "Notion DB" },
       { name: "System", details: "macOS" }
     ],
-    image: "/images/notion.jpg",
+    image: "/images/canvasNotion.png",
     link: "/canvas-notion",
     color: "blue",
     intros: [
@@ -178,7 +178,7 @@ export const projects: ProjectData[] = [
       {
         title: "Technical Architecture",
         content: "Leveraging Python 3.8+ and RESTful APIs, the system implements a robust integration between Canvas and Notion. It uses macOS's launchctl for persistent background operation, with automated startup and failure recovery. The application maintains detailed logs and implements comprehensive error handling for reliable 24/7 operation.",
-        image: "/images/canvasNotion.jpg",
+        image: "/images/notion.jpg",
         color: "green"
       },
       {
