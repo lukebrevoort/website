@@ -35,7 +35,7 @@ export default function Page() {
           </div>
         </header>
         
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-8 px-4" id="history">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,6 +91,102 @@ export default function Page() {
             </CardContent>
           </Card>
 
+            <motion.div 
+            className="flex justify-center w-full mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 0.85, y: 0 }}
+            viewport={{ 
+              once: true,  // Makes the animation happen only once
+              amount: 0.3, // Triggers when 30% of the element is in view
+              margin: "0px 0px -100px 0px" // Offset for when animation triggers
+            }}
+            transition={{ 
+              duration: 0.5,
+              ease: "easeOut"
+            }}
+            whileHover={{ opacity: 1 }}
+            >
+            <div className="w-1/2">
+              <Image 
+              src="/images/rainnyc.jpg" 
+              alt="NYC rainy" 
+              width={600} 
+              height={300} 
+              className="rounded-lg w-full"
+              />
+            </div>
+            </motion.div>
+
+          <Card className="mb-16">
+            <CardContent className="p-6">
+              <h2 className={`${lukesFont.className} text-4xl mb-6`}>Skills:</h2>
+              <div className={`space-y-6 ${crimsonText.className}`}>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Programming Languages</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge>Python</Badge>
+                    <Badge>TypeScript</Badge>
+                    <Badge>JavaScript</Badge>
+                    <Badge>Java</Badge>
+                    <Badge>SQL</Badge>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Web Technologies</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge>React</Badge>
+                    <Badge>Next.js</Badge>
+                    <Badge>Node.js</Badge>
+                    <Badge>TailwindCSS</Badge>
+                    <Badge>HTML/CSS</Badge>
+                    <Badge>REST APIs</Badge>
+                    <Badge>WebLLM</Badge>
+                    <Badge>NumPy</Badge>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Tools & Platforms</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge>Git</Badge>
+                    <Badge>Docker</Badge>
+                    <Badge>AWS</Badge>
+                    <Badge>Linux</Badge>
+                    <Badge>VS Code</Badge>
+                    <Badge>PostgreSQL</Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <motion.div 
+            className="flex justify-center w-full mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 0.85, y: 0 }}
+            viewport={{ 
+              once: true,  // Makes the animation happen only once
+              amount: 0.3, // Triggers when 30% of the element is in view
+              margin: "0px 0px -100px 0px" // Offset for when animation triggers
+            }}
+            transition={{ 
+              duration: 0.5,
+              ease: "easeOut"
+            }}
+            whileHover={{ opacity: 1 }}
+            id="experience"
+            >
+            <div className="w-1/2">
+              <Image 
+              src="/images/crocs.jpg" 
+              alt="NYC rainy" 
+              width={600} 
+              height={300} 
+              className="rounded-lg w-full"
+              />
+            </div>
+            </motion.div>
+
+
           <Card>
             <CardContent className="p-6">
               <h2 className={`${lukesFont.className} text-3xl mb-6`}>Experience:</h2>
@@ -122,7 +218,34 @@ export default function Page() {
 
             </CardContent>
           </Card>
+
+
+
         </div>
+
+        <Card className="mt-16 mb-8" id="contact">
+          <CardContent className="p-6">
+            <h2 className={`${lukesFont.className} text-3xl mb-6`}>Contact:</h2>
+            <div className="flex justify-center gap-6">
+              <a href="https://github.com/lukebrevoort" target="_blank" rel="noopener noreferrer">
+                <Image src="/icons/github-mark.svg" alt="GitHub" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
+              </a>
+              <a href="https://bsky.app/profile/luke.zip" target="_blank" rel="noopener noreferrer">
+                <Image src="/icons/bluesky.png" alt="Bluesky" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
+              </a>
+              <a href="https://linkedin.com/in/luke-brevoort" target="_blank" rel="noopener noreferrer">
+                <Image src="/icons/linkedin.png" alt="LinkedIn" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
+              </a>
+              <a href="mailto:lbrevoort@stevens.edu">
+                <Image src="/icons/gmail.svg" alt="Email" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
+              </a>
+              <a href="https://instagram.com/luke.brevoort" target="_blank" rel="noopener noreferrer">
+                <Image src="/icons/instagram.svg" alt="Instagram" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+
       </SidebarInset>
       </MotionConfig>
     </SidebarProvider>
