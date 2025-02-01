@@ -180,25 +180,28 @@ export default function DocumentationPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="prose dark:prose-invert max-w-none">
-                  <h3>Step-by-Step Guide</h3>
+                  <h3 className="font-bold text-3xl">Step-by-Step Guide</h3>
+                  <br />
                   
-                  <h4>1. Model Selection</h4>
+                  <h4 className="font-bold text-2xl">1. Model Selection</h4>
                   <p>Choose the appropriate model based on your needs:</p>
                   <ul>
                     <li><strong>Llama 3.8B</strong> - Best for general conversations and tasks</li>
                     <li><strong>DeepSeek R1</strong> - Ideal for complex problem-solving</li>
                     <li><strong>LeetCode Assistant</strong> - Perfect for programming help</li>
                   </ul>
+                  <br />
 
-                  <h4>2. Model Initialization</h4>
+                  <h4 className="font-bold text-2xl">2. Model Initialization</h4>
                   <p>After selecting your model:</p>
                   <ul>
                     <li>Click "Download Model"</li>
                     <li>Monitor the progress bar</li>
                     <li>Wait for completion message</li>
                   </ul>
+                  <br />
 
-                  <h4>3. Using the Chat Interface</h4>
+                  <h4 className="font-bold text-2xl">3. Using the Chat Interface</h4>
                   <p>Best practices for interaction:</p>
                   <ul>
                     <li>Be specific in your questions</li>
@@ -206,6 +209,7 @@ export default function DocumentationPage() {
                     <li>Check the usage stats for performance metrics</li>
                     <li>Press Shift + Enter for new lines</li>
                   </ul>
+                  <br />
 
                   <div className="bg-muted p-4 rounded-lg mt-4">
                     <h4>Pro Tips</h4>

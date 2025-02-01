@@ -97,7 +97,7 @@ const data = {
         },
         {
           title: "Tutorials",
-          url: "/documentation#tutorials",
+          url: "/documentation#tutorial",
         },
       ],
     },
