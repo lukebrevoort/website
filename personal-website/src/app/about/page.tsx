@@ -187,37 +187,54 @@ export default function Page() {
             </motion.div>
 
 
-          <Card>
+            <Card>
             <CardContent className="p-6">
               <h2 className={`${lukesFont.className} text-3xl mb-6`}>Experience:</h2>
               <div className={`space-y-8 ${crimsonText.className}`}>
+              {[
+                {
+                title: "Stevens NLP Lab",
+                role: "Research Assistant",
+                date: "December 2024 – Present"
+                },
+                {
+                title: "EH Yang Lab",
+                role: "Undergraduate Researcher",
+                date: "September 2024 – January 2025"
+                },
+                {
+                title: "Student Government Organization",
+                role: "Assistant Vice President of Finance",
+                date: "September 2024 – Present"
+                },
+                {
+                title: "Student Government Organization and NHS",
+                role: "Student Body President and National Honors Society VP",
+                date: "August 2023 – May 2024"
+                }
+              ].map((item, index) => (
+                <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -100 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  duration: 0.5,
+                  delay: index * 0.2,
+                  ease: "easeOut"
+                }}
+                >
                 <div>
-                  <h3 className="text-2xl font-bold">Stevens NLP Lab</h3>
-                  <p className="text-muted-foreground text-lg">Research Assistant</p>
-                  <Badge variant="outline">December 2024 – Present</Badge>
+                  <h3 className="text-2xl font-bold">{item.title}</h3>
+                  <p className="text-muted-foreground text-lg">{item.role}</p>
+                  <Badge variant="outline">{item.date}</Badge>
                 </div>
-                <Separator />
-                <div>
-                  <h3 className="text-2xl font-bold">EH Yang Lab</h3>
-                  <p className="text-muted-foreground text-lg">Undergraduate Researcher</p>
-                  <Badge variant="outline">September 2024 – January 2025</Badge>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="text-2xl font-bold">Student Government Organization</h3>
-                  <p className="text-muted-foreground text-lg">Assistant Vice President of Finance</p>
-                  <Badge variant="outline">September 2024 – Present</Badge>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="text-2xl font-bold">Student Government Organization and NHS</h3>
-                  <p className="text-muted-foreground text-lg">Student Body President and National Honors Society VP</p>
-                  <Badge variant="outline">August 2023 – May 2024</Badge>
-                </div>
+                {index < 3 && <Separator className="mt-8" />}
+                </motion.div>
+              ))}
               </div>
-
             </CardContent>
-          </Card>
+            </Card>
 
 
 
@@ -227,21 +244,54 @@ export default function Page() {
           <CardContent className="p-6">
             <h2 className={`${lukesFont.className} text-3xl mb-6`}>Contact:</h2>
             <div className="flex justify-center gap-6">
-              <a href="https://github.com/lukebrevoort" target="_blank" rel="noopener noreferrer">
-                <Image src="/icons/github-mark.svg" alt="GitHub" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
-              </a>
-              <a href="https://bsky.app/profile/luke.zip" target="_blank" rel="noopener noreferrer">
-                <Image src="/icons/bluesky.png" alt="Bluesky" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
-              </a>
-              <a href="https://linkedin.com/in/luke-brevoort" target="_blank" rel="noopener noreferrer">
-                <Image src="/icons/linkedin.png" alt="LinkedIn" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
-              </a>
-              <a href="mailto:lbrevoort@stevens.edu">
-                <Image src="/icons/gmail.svg" alt="Email" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
-              </a>
-              <a href="https://instagram.com/luke.brevoort" target="_blank" rel="noopener noreferrer">
-                <Image src="/icons/instagram.svg" alt="Instagram" width={64} height={64} className="opacity-85 hover:opacity-100 transition-all" />
-              </a>
+              {[
+          {
+            href: "https://github.com/lukebrevoort",
+            src: "/icons/github-mark.svg",
+            alt: "GitHub"
+          },
+          {
+            href: "https://bsky.app/profile/luke.zip",
+            src: "/icons/bluesky.png", 
+            alt: "Bluesky"
+          },
+          {
+            href: "https://linkedin.com/in/luke-brevoort",
+            src: "/icons/linkedin.png",
+            alt: "LinkedIn"
+          },
+          {
+            href: "mailto:lbrevoort@stevens.edu",
+            src: "/icons/gmail.svg",
+            alt: "Email"
+          },
+          {
+            href: "https://instagram.com/luke.brevoort",
+            src: "/icons/instagram.svg",
+            alt: "Instagram" 
+          }
+              ].map((item, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.2,
+              ease: "easeOut"
+            }}
+          >
+            <a href={item.href} target="_blank" rel="noopener noreferrer">
+              <Image 
+                src={item.src} 
+                alt={item.alt} 
+                width={64} 
+                height={64} 
+                className="opacity-85 hover:opacity-100 transition-all"
+              />
+            </a>
+          </motion.div>
+              ))}
             </div>
           </CardContent>
         </Card>
