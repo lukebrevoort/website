@@ -251,22 +251,22 @@ export default function Page() {
             alt: "GitHub"
           },
           {
-            href: "https://bsky.app/profile/luke.zip",
+            href: "https://bsky.app/profile/luke-brev.bsky.social",
             src: "/icons/bluesky.png", 
             alt: "Bluesky"
           },
           {
-            href: "https://linkedin.com/in/luke-brevoort",
+            href: "https://www.linkedin.com/in/luke-brevoort-6a545626a/",
             src: "/icons/linkedin.png",
             alt: "LinkedIn"
           },
           {
-            href: "mailto:lbrevoort@stevens.edu",
+            href: "mailto:luke@brevoort.com",
             src: "/icons/gmail.svg",
             alt: "Email"
           },
           {
-            href: "https://instagram.com/luke.brevoort",
+            href: "https://instagram.com/luke.brev",
             src: "/icons/instagram.svg",
             alt: "Instagram" 
           }
