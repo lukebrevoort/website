@@ -158,59 +158,61 @@ export const projects: ProjectData[] = [
   },
 {
     title: "Canvas to Notion Sync",
-    description: "An automated system that syncs Canvas assignments to a Notion database, running via launchctl on macOS.",
+    description: "An automated system that syncs Canvas assignments to a Notion database, providing real-time academic task management with automatic updates every 15 minutes.",
     skills: [
-      { name: "Language", details: "Python" },
+      { name: "Language", details: "Python 3.8+" },
       { name: "APIs", details: "Canvas API, Notion API" },
-      { name: "Automation", details: "launchctl" },
-      { name: "Date", details: "2024" }
+      { name: "Automation", details: "launchctl, cron" },
+      { name: "Database", details: "Notion DB" },
+      { name: "System", details: "macOS" }
     ],
-    image: "/images/canvasNotion.png",
+    image: "/images/notion.jpg",
     link: "/canvas-notion",
     color: "blue",
     intros: [
       {
-        title: "Intro:",
-        content: "Created an automated system that monitors Canvas for new assignments and syncs them to a Notion database in real-time, providing a streamlined workflow for managing academic tasks."
+        title: "Overview",
+        content: "Built as a solution for streamlined academic task management, this automated system creates a bridge between Canvas LMS and Notion. It continuously monitors Canvas for new assignments and updates, maintaining a comprehensive database in Notion that serves as a central hub for academic planning.",
+        color: "blue"
       },
       {
-        title: "System Architecture:",
-        content: "The application runs as a background service on macOS using launchctl, performing syncs every 15 minutes and maintaining detailed assignment information including due dates, course details, and submission status.",
+        title: "Technical Architecture",
+        content: "Leveraging Python 3.8+ and RESTful APIs, the system implements a robust integration between Canvas and Notion. It uses macOS's launchctl for persistent background operation, with automated startup and failure recovery. The application maintains detailed logs and implements comprehensive error handling for reliable 24/7 operation.",
         image: "/images/canvasNotion.jpg",
         color: "green"
       },
       {
-        title: "API Integration:",
-        content: "Integrated with both Canvas and Notion APIs to enable seamless data transfer, with proper error handling and logging for reliability.",
+        title: "Implementation Details",
+        content: "The core synchronization service runs every 15 minutes through launchctl automation. It maintains state between runs, efficiently detecting and syncing only changed assignments. The system uses environment variables for secure credential management and implements rate limiting to respect API constraints.",
         color: "blue"
       },
       {
-        title: "Automation:",
-        content: "Implemented system-level automation using launchctl, ensuring the service starts automatically on login and maintains continuous operation with automatic restart capabilities.",
+        title: "Documentation",
+        content: "Comprehensive documentation includes detailed setup instructions, environment configuration guides, and troubleshooting steps. The system's logs are stored in the standardized location at ~/Library/Logs/assignmentTracker/sync.log, making monitoring and debugging straightforward.",
         color: "red"
       }
     ],
     flexbar: {
       boxes: [
         {
-          title: "Real-time Sync",
-          content: "Maintains up-to-date assignment information by regularly checking Canvas for new or updated assignments and reflecting changes in Notion immediately.",
+          title: "Automated Sync Engine",
+          content: "Implements a sophisticated synchronization engine that runs every 15 minutes, detecting new assignments, updates, and deletions in Canvas and reflecting them in Notion. Includes smart conflict resolution and change tracking.",
           color: "blue"
         },
         {
-          title: "Comprehensive Data",
-          content: "Tracks multiple assignment attributes including due dates, course information, descriptions, submission status, priority levels, and direct URLs to assignments.",
+          title: "Robust Data Management",
+          content: "Maintains comprehensive assignment data including due dates, course information, descriptions, submission status, and priority levels. Implements efficient data storage and retrieval with proper error handling and validation.",
           color: "green"
         },
         {
-          title: "Robust Error Handling",
-          content: "Implements comprehensive logging and error handling to ensure reliable operation, with logs stored in the system's designated logging directory.",
+          title: "System Integration",
+          content: "Seamlessly integrates with macOS through launchctl for automated startup and operation. Features automatic restart capabilities, detailed logging, and proper system resource management.",
           color: "red"
         }
       ]
     },
     repo: "https://github.com/lukebrevoort/assignmentTracker"
-  },
+},
 
   {
     title: "Calculator",
