@@ -121,8 +121,8 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                 className="mb-8"
                 >
                 <h2 className="text-2xl font-bold mb-4">{section.title}</h2>
-                <p className="mb-4 text-muted-foreground">{section.content}</p>
-                {section.content2 && <p className="mb-4 text-muted-foreground">{section.content2}</p>}
+                <p className="mb-4 text-lg">{section.content}</p>
+                {section.content2 && <p className="mb-4 text-lg">{section.content2}</p>}
                 {section.image && (
                   <motion.div
                   whileHover={{ scale: 1.02 }}
@@ -132,8 +132,8 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                   <Image
                     src={section.image}
                     alt={section.title}
-                    width={500}
-                    height={250}
+                    width={250}
+                    height={125}
                     className="rounded-lg shadow-lg"
                   />
                   </motion.div>
@@ -148,10 +148,10 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                   variants={itemVariants}
                   whileHover={{ scale: 1.03, translateY: -5 }}
                   className="p-6 rounded-lg bg-muted/50 backdrop-blur-sm shadow-lg"
-                  style={{ borderTop: `4px solid ${box.color}` }}
+                  style={{ borderTop: `6px solid ${box.color}` }}
                 >
                   <h3 className="text-xl font-bold mb-2">{box.title}</h3>
-                  <p className="text-muted-foreground">{box.content}</p>
+                  <p className="text-lg">{box.content}</p>
                 </motion.div>
               ))}
             </div>

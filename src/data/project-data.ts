@@ -110,29 +110,36 @@ export const projects: ProjectData[] = [
     intros: [
       {
         title: "Intro:",
-        content: "This project is a personal website built using React. It showcases my portfolio and provides information about my skills and projects."
+        content: "This project is a personal website built using React and NextJS. It showcases my portfolio and provides information about my skills and projects. You would know since you are on it right now! \nHere is how the website works:",
+      },
+      {
+        title: "Development:",
+        content: "The website is built using React and NextJS, a popular JavaScript library for building user interfaces. React allows for the creation of reusable components, making the development process more efficient. The website is also optimized for performance and SEO using built in Vercel tools.",
+        image: "/images/reactLogo.png"
       },
       {
         title: "Design:",
-        content: "The design of the website is clean and modern, with a focus on usability and accessibility. It includes a responsive layout that works well on both desktop and mobile devices (WIP).",
+        content: "The design of the website is clean and modern, with a focus on usability and accessibility. It includes a responsive layout that works well on both desktop and mobile devices. Incuded components from ShadCN/UI and Radix UI for simplicity on the frontend. These components give the website a professional look and feel.",
         image: "/images/websiteDesign.png",
         color: "green"
       },
       {
-        title: "Development:",
-        content: "The website is built using React, a popular JavaScript library for building user interfaces. React allows for the creation of reusable components, making the development process more efficient.",
-        image: "/images/reactLogo.png"
-      },
-      {
         title: "Styling:",
-        content: "The styling of the website is done using CSS. Custom styles are applied to ensure a consistent look and feel across all pages.",
+        content: "The styling of the website is done using Tailwind CSS. Custom styles are applied to ensure a consistent look and feel across all pages. A modern approach to reduce CSS bloat and improve performance on the frontend. It also allows me to implement custom themes and styles easily.",
         image: "/images/cssLogo.png",
         color: "red"
       },
       {
         title: "Portfolio:",
-        content: "The website includes a portfolio section that showcases my projects. Each project includes a description, technologies used, and a link to the live demo or source code.",
+        content: "The website includes a portfolio section that showcases my projects. Each project includes a description, technologies used, and a link to the live demo or source code. This section is designed to highlight my skills and experience in web development and other aspects of computer science.",
         image: "/images/portfolio.png"
+      },
+      {
+        title: "Documentation and Models:",
+        content: "I have also started to experiment more with LLM's and decided to add a WebLLM integration into the website. This allows me to run Llama 3.2 models directly in the browser and generate responses to user input. This is a proof of concept that shows my skills in machine learning and natural language processing.",
+        content2: "I have also added a documentation section that provides information about the website and its features. This section includes a guide on how to use the website and its features, as well as information about the technologies used to build it. Here is a creative common photo of a llama I found on the internet :)",
+        color: "blue",
+        image: "/images/llama-photo.jpg"
       }
     ],
     flexbar: {
@@ -144,7 +151,7 @@ export const projects: ProjectData[] = [
         },
         {
           title: "Training Llama 3.2 Personal Model",
-          content: "Trained a custom Llam 3.2 Instruct 3B model which is specialized on the CUDA dataset. This prototype model is a proof of concept that shows my skills in understanding, training, implementing, and deploying personalized fine-tuned Llama models. Looking forward to implementing a multi-modal model soon.",
+          content: "Trained a custom Llama 3.2 Instruct 3B model which is specialized on a Leetcode dataset I found on HuggingFace. This prototype model is a proof of concept that shows my skills in understanding, training, implementing, and deploying personalized fine-tuned Llama models. Looking forward to implementing a multi-modal model soon.",
           color: "green"
         },
         {

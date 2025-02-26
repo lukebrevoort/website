@@ -825,6 +825,9 @@ video {
 .mt-8 {
   margin-top: 2rem;
 }
+.mb-12 {
+  margin-bottom: 3rem;
+}
 .flex {
   display: flex;
 }
@@ -1340,6 +1343,9 @@ video {
 }
 .pt-6 {
   padding-top: 1.5rem;
+}
+.pb-12 {
+  padding-bottom: 3rem;
 }
 .text-left {
   text-align: left;
