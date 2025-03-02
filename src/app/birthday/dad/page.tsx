@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, JSX } from 'react'
 import { Gift, Cake, Heart, PartyPopper } from 'lucide-react'
 import { lukesFont } from "../../fonts"
 import { motion } from 'framer-motion'
