@@ -12,7 +12,6 @@ import {
   MoreHorizontal,
   Gift,
 } from "lucide-react"
-import { TeamSwitcher } from "@/components/team-switcher"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
@@ -32,12 +31,6 @@ const data = {
     avatar: "/images/avatar.jpg",
   },
   teams: [
-    {
-      name: "Mike Brevoort",
-      logo: Gift, // You'll need to import this
-      plan: "Birthday",
-      url: "/birthday/dad"
-    },
     {
       name: "luke.brev",
       logo: Atom,
@@ -133,7 +126,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <HomeButton />
-        <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
