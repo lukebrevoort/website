@@ -1,86 +1,68 @@
 {
-  "app/birthday/dad/page.tsx -> lucide-react": {
-    "id": 31006,
-    "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
-    ]
-  },
   "app/models/page.tsx -> @mlc-ai/web-llm": {
-    "id": 60475,
+    "id": "app/models/page.tsx -> @mlc-ai/web-llm",
     "files": [
-      "static/chunks/fbe89ba5.d5920c1363819b29.js",
-      "static/chunks/714.4feef463996b0d60.js"
+      "static/chunks/_app-pages-browser_node_modules_mlc-ai_web-llm_lib_index_js.js"
     ]
   },
   "components/app-sidebar.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/app-sidebar.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/home-button.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/home-button.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/nav-main.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/nav-main.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/nav-projects.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/nav-projects.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/nav-user.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/nav-user.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/ui/breadcrumb.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/ui/breadcrumb.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/ui/dropdown-menu.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/ui/dropdown-menu.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/ui/select.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/ui/select.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/ui/sheet.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/ui/sheet.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   },
   "components/ui/sidebar.tsx -> lucide-react": {
-    "id": 31006,
+    "id": "components/ui/sidebar.tsx -> lucide-react",
     "files": [
-      "static/chunks/b1644e8c.2b36e716fef6f25d.js",
-      "static/chunks/245.6977d04886af5d0e.js"
+      "static/chunks/_app-pages-browser_node_modules_lucide-react_dist_esm_lucide-react_js.js"
     ]
   }
 }

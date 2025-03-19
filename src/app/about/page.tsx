@@ -236,6 +236,33 @@ export default function Page() {
             </CardContent>
             </Card>
 
+            <motion.div 
+            className="flex justify-center w-full mb-2 mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 0.85, y: 0 }}
+            viewport={{ 
+              once: true,  // Makes the animation happen only once
+              amount: 0.3, // Triggers when 30% of the element is in view
+              margin: "0px 0px -100px 0px" // Offset for when animation triggers
+            }}
+            transition={{ 
+              duration: 0.5,
+              ease: "easeOut"
+            }}
+            whileHover={{ opacity: 1 }}
+            id="experience"
+            >
+            <div className="w-1/2">
+              <Image 
+              src="/images/babyluke.jpeg" 
+              alt="Baby Luke!" 
+              width={300} 
+              height={250} 
+              className="rounded-lg w-full"
+              />
+            </div>
+            </motion.div>
+
 
 
         </div>
