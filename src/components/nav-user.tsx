@@ -104,10 +104,10 @@ export function NavUser({
                       <div className="mr-2 flex h-5 w-5 items-center justify-center">
                         {team.logo && <team.logo className="h-4 w-4" />}
                       </div>
-                      <div className="flex flex-1 items-center justify-between">
+                      <a href="/about" className="flex flex-1 items-center justify-between">
                         <span>{team.name}</span>
                         <span className="ml-2 text-xs text-muted-foreground">{team.plan}</span>
-                      </div>
+                      </a>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
@@ -117,10 +117,10 @@ export function NavUser({
             
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <a href="#contact">
+                <div>
                   <Sparkles className="mr-2" />
                   Contact
-                </a>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -145,10 +145,6 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut className="mr-2" />
-              Log out
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
