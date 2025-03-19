@@ -1,6 +1,6 @@
 import { Client } from '@notionhq/client';
 import { NotionConverter } from 'notion-to-md';
-import { StringExporter } from 'notion-to-md/plugins/exporter';
+import { DefaultExporter } from 'notion-to-md/plugins/exporter';
 
 // Initialize Notion client
 const notion = new Client({
@@ -37,18 +37,22 @@ export async function getBlogPost(pageId: string) {
   // First, retrieve the page data
   const page = await notion.pages.retrieve({ page_id: pageId });
   
-  // Create a string exporter to get markdown as a string
-  const stringExporter = new StringExporter();
+  const buffer: { [key: string]: string } = {};
+
+  const exporter = new DefaultExporter({
+      outputType: 'buffer',
+      buffer: buffer
+  });
   
   // Initialize the converter with the string exporter
   const n2m = new NotionConverter(notion)
-    .withExporter(stringExporter);
+    .withExporter(exporter);
     
   // Convert the page to markdown
   await n2m.convert(pageId);
   
   // Get the markdown content
-  const markdown = stringExporter.getMarkdown();
+  const markdown = buffer[pageId] || '';
   
   return {
     page,

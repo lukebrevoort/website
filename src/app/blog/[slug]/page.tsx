@@ -2,14 +2,17 @@ import { getBlogPost, getBlogPosts } from '@/lib/notion';
 import { lukesFont, crimsonText } from '@/app/fonts';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 
 export const revalidate = 3600; // Revalidate every hour at most
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  // Ensure params is awaited
+  const slug = await params.slug;
+  
   try {
-    const { page } = await getBlogPost(params.id);
+    const { page } = await getBlogPost(slug);
     const title = page.properties.Title.title[0]?.plain_text || 'Blog Post';
     const description = page.properties.Description?.rich_text[0]?.plain_text || '';
     
@@ -27,16 +30,18 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
 // Generate static paths for all published blog posts
 export async function generateStaticParams() {
-  const posts = await getBlogPosts();
-  
-  return posts.map((post: any) => ({
-    id: post.id,
-  }));
+    const posts = await getBlogPosts();
+    return posts.map((post: any) => ({
+      slug: post.id,
+    }));
 }
 
-export default async function BlogPostPage({ params }: { params: { id: string } }) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   try {
-    const { page, markdown } = await getBlogPost(params.id);
+    // Ensure params is awaited
+    const slug = await params.slug;
+    
+    const { page, markdown } = await getBlogPost(slug);
     
     const title = page.properties.Title.title[0]?.plain_text || 'Untitled';
     const date = page.properties.Date?.date?.start 
