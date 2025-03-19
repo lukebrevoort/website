@@ -100,7 +100,7 @@ const data = {
       title: "Blog",
       url: "/blog",
       icon: NotebookPen,
-      items: [
+      items: [ // Placeholders, will eventually be fetched from most recent posts
         {
           title: "Tech",
           url: "/blog#tech",
