@@ -10,7 +10,7 @@ import {
   PieChart,
   SquareTerminal,
   MoreHorizontal,
-  Gift,
+  NotebookPen,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -93,6 +93,25 @@ const data = {
         {
           title: "Tutorials",
           url: "/documentation#tutorial",
+        },
+      ],
+    },
+    {
+      title: "Blog",
+      url: "/blog",
+      icon: NotebookPen,
+      items: [
+        {
+          title: "Tech",
+          url: "/blog#tech",
+        },
+        {
+          title: "Personal",
+          url: "/blog#personal",
+        },
+        {
+          title: "Projects",
+          url: "/blog#projects",
         },
       ],
     },
