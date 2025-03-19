@@ -1,6 +1,10 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import dynamic from "next/dynamic"
+import { ComponentType } from "react"
+
+const ChevronRight = dynamic(() => import("lucide-react").then(mod => mod.ChevronRight), { ssr: false })
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -24,7 +28,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon?: ComponentType<any>
     isActive?: boolean
     items?: {
       title: string
