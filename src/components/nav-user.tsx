@@ -1,14 +1,14 @@
 "use client"
 
-import {
-  Github,
-  Radio,
-  ChevronsUpDown,
-  Linkedin,
-  LogOut,
-  Sparkles,
-  Users,
-} from "lucide-react"
+import dynamic from "next/dynamic"
+
+const Github = dynamic(() => import("lucide-react").then(mod => mod.Github), { ssr: false })
+const Radio = dynamic(() => import("lucide-react").then(mod => mod.Radio), { ssr: false })
+const ChevronsUpDown = dynamic(() => import("lucide-react").then(mod => mod.ChevronsUpDown), { ssr: false })
+const Linkedin = dynamic(() => import("lucide-react").then(mod => mod.Linkedin), { ssr: false })
+const LogOut = dynamic(() => import("lucide-react").then(mod => mod.LogOut), { ssr: false })
+const Sparkles = dynamic(() => import("lucide-react").then(mod => mod.Sparkles), { ssr: false })
+const Users = dynamic(() => import("lucide-react").then(mod => mod.Users), { ssr: false })
 
 import {
   Avatar,

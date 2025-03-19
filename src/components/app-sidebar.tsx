@@ -1,17 +1,21 @@
 "use client"
 
 import * as React from "react"
-import {
-  BookOpen,
-  Bot,
-  BookText,
-  Atom,
-  LaptopMinimalCheck,
-  PieChart,
-  SquareTerminal,
-  MoreHorizontal,
-  NotebookPen,
-} from "lucide-react"
+import { lazy } from "react"
+
+// Lazy load Lucide icons
+const BookOpen = lazy(() => import('lucide-react').then(mod => ({ default: mod.BookOpen })))
+const Bot = lazy(() => import('lucide-react').then(mod => ({ default: mod.Bot })))
+const BookText = lazy(() => import('lucide-react').then(mod => ({ default: mod.BookText })))
+const Atom = lazy(() => import('lucide-react').then(mod => ({ default: mod.Atom })))
+const LaptopMinimalCheck = lazy(() => import('lucide-react').then(mod => ({ default: mod.LaptopMinimalCheck })))
+const PieChart = lazy(() => import('lucide-react').then(mod => ({ default: mod.PieChart })))
+const SquareTerminal = lazy(() => import('lucide-react').then(mod => ({ default: mod.SquareTerminal })))
+const MoreHorizontal = lazy(() => import('lucide-react').then(mod => ({ default: mod.MoreHorizontal })))
+const NotebookPen = lazy(() => import('lucide-react').then(mod => ({ default: mod.NotebookPen })))
+
+// Fallback component for loading state
+const IconFallback = () => <div className="w-4 h-4 bg-muted animate-pulse rounded-sm" />
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
