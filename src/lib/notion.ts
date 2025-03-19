@@ -1,8 +1,12 @@
 import { Client } from '@notionhq/client';
 import { NotionConverter } from 'notion-to-md';
 import { DefaultExporter } from 'notion-to-md/plugins/exporter';
+import dotenv from 'dotenv';
 
 // Initialize Notion client
+// Load environment variables
+dotenv.config();
+
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
