@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
 import * as crypto from 'crypto';
+import { generateBlogPosts, commitAndPushChanges } from '@/lib/blog-generator';
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
     
     // Verify signature
-    const signingSecret = process.env.NOTION_WEBHOOK_SECRET;
+    const signingSecret = process.env.NOTION_TOKEN;
     if (signingSecret) {
       const hmac = crypto.createHmac('sha256', signingSecret);
       const signature = hmac
@@ -34,12 +34,27 @@ export async function POST(request: Request) {
     
     // Handle the webhook payload
     if (body.type === 'page.update' || body.type === 'page.create') {
-      // Revalidate the blog pages
-      revalidatePath('/blog');
-      revalidatePath(`/blog/${body.payload.page.id}`);
+      const pageId = body.payload.page.id;
+      console.log(`Received update for page ${pageId}`);
       
-      console.log(`Revalidated blog and post ${body.payload.page.id}`);
-      return NextResponse.json({ success: true, revalidated: true });
+      // Generate the specific post that was updated
+      const generateResult = await generateBlogPosts(pageId);
+      
+      if (generateResult.success) {
+        // Commit and push the changes
+        const commitResult = await commitAndPushChanges();
+        
+        return NextResponse.json({ 
+          success: true, 
+          generated: generateResult.message,
+          committed: commitResult.message
+        });
+      } else {
+        return NextResponse.json({ 
+          success: false, 
+          error: generateResult.error 
+        }, { status: 500 });
+      }
     }
     
     return NextResponse.json({ success: true, message: 'No action required' });
