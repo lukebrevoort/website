@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
-  // Store processed markdown in state to avoid exposing credentials in the source
+  // Store processed markdown in state
   const [content, setContent] = useState(`# This is my super cool thing 
 
 
@@ -26,38 +26,22 @@ Thanks for coming to my ted talk!
 
   // Process image URLs at runtime
   useEffect(() => {
-    // This map will hold placeholders to real URLs
-    const imageMap = new Map();
-    
-    // Extract all AWS S3 URLs from the original markdown and map them to placeholders
-    const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
-    let match;
-    let originalMarkdown = `# This is my super cool thing 
-
-
-- I like apples
-- Bananas
-- and more!
-Thanks for coming to my ted talk!
-`;
-    
-    while ((match = regex.exec(originalMarkdown)) !== null) {
-      const url = match[0];
-      const urlHash = btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-      const placeholder = `image-placeholder-${urlHash}`;
-      imageMap.set(placeholder, url);
-    }
-    
-    // Replace placeholders with actual URLs
-    let processedContent = content;
-    imageMap.forEach((url, placeholder) => {
-      processedContent = processedContent.replace(
-        new RegExp(placeholder, 'g'),
-        url
-      );
-    });
-    
-    setContent(processedContent);
+    // Load image map (placeholders -> URLs) from external API or server-side logic
+    // This avoids storing credentials in client-side code
+    fetch('/api/image-map?postId=1bbf7879-ec1d-8017-bb68-cc8af95b0ed9')
+      .then(res => res.json())
+      .then(imageMap => {
+        let processedContent = content;
+        // Replace placeholders with actual URLs
+        Object.entries(imageMap).forEach(([placeholder, url]) => {
+          processedContent = processedContent.replace(
+            new RegExp(placeholder, 'g'),
+            url
+          );
+        });
+        setContent(processedContent);
+      })
+      .catch(err => console.error('Error fetching image map:', err));
   }, []);
 
   return (
