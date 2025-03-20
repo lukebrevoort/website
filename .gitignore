@@ -11,6 +11,7 @@
 
 # Cached images
 public/image-cache/
+.private
 
 # Temporary files that might contain credentials
 **/temp-*.txt
