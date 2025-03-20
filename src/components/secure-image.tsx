@@ -16,17 +16,20 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Local placeholder path
+  const placeholderImage = '/placeholders/default.jpg';
+
   useEffect(() => {
     if (!src) {
+      setImageSrc(placeholderImage);
       setIsLoading(false);
       return;
     }
     
     // Check if src is a placeholder
     if (src.startsWith('image-placeholder-')) {
-      console.log('Detected image placeholder:', src);
-      // Use a placeholder image for now
-      setImageSrc('https://via.placeholder.com/800x600');
+      console.log('Using local placeholder for:', src);
+      setImageSrc(placeholderImage);
       setIsLoading(false);
       return;
     }
@@ -58,8 +61,8 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
         })
         .catch(err => {
           console.error('Image proxy error:', err);
-          // Fallback to a placeholder
-          setImageSrc('https://via.placeholder.com/800x600');
+          // Fallback to placeholder
+          setImageSrc(placeholderImage);
           setError('Failed to load image');
           setIsLoading(false);
         });
@@ -84,7 +87,6 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     return null;
   }
 
-  // For placeholder.com or actual images
   return (
     <Image 
       src={imageSrc}

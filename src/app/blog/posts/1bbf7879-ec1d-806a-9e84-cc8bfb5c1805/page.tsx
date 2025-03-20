@@ -38,7 +38,7 @@ That is the end of this first post!
         Object.entries(imageMap).forEach(([placeholder, url]) => {
           processedContent = processedContent.replace(
             new RegExp(placeholder, 'g'),
-            url
+            String(url)
           );
         });
         setContent(processedContent);
