@@ -9,10 +9,17 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
+import { useState } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
+  const [content] = useState(`I wanted to update something!!
+
+# Here is something new!!
+
+`);
+
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -60,11 +67,7 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}>I wanted to update something!!
-
-# Here is something new!!
-
-</ReactMarkdown>
+              }}>{content}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>

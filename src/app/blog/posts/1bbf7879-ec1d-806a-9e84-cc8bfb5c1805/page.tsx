@@ -9,10 +9,22 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
+import { useState } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
+  const [content] = useState(`# This is my very first Blog Post! 🤨
+
+
+Here is some content and an image!
+
+![[Image]](![](https://prod-files-secure.s3.us-west-2.amazonaws.com/c41a9cb2-d354-461a-84e7-dc2c10a616fc/544aa699-eacb-46d3-bf01-14b552406bb0/IMG_5936.heic?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Z7ENC7W7%2F20250320%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250320T021223Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECoaCXVzLXdlc3QtMiJHMEUCIQCeyHVzhv1mDJ1InERQ3G%2B4pA%2BBcAmtDdl8Ge0NmYDt8wIgaZI9HIQg40LwrdiXtCT2jIZqsFjnfdxiU10zxdFDO9QqiAQIg%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDBpc7b5Oi2RVOEsOiCrcA2GBAx6FeRda48iZhKpsmyAumtrAt7AY%2BXrOE9fEFmGB3LMYT1FqAblVTNX27v5Ig%2FxMgFi8ehYAdnw20VqIcfoznjV0uPTRlyVYYcheZXrPbqch0OmmV8P71MWJYvGHjeZi4OtIGzXD%2FjHHIZopd30ZlgFbCS4nEkFsvCsklNmzRQnt0HI041Zt5W0BHJV1IXQZYhRlEJN5KbubARCIZvsagNnLKROt93PCLdJNHxPPQ7dtr2Uiudl9Mv54Ai6fl6gT8CTVWrLJB5NZKdjD82nWI0aUuGd3qtg1Uc2wRNaAfNJRMZUsrYvPCNQqPmg6yM8nUNxDheFts3c7XjHkxYHCNc%2BeWK%2FMEsBsgIwaBJcK%2BsAZHttjYb6Ki2C8zvOkdN2NztHnRaIfXc8F%2B4g7KJDndmcFK%2FCZGKw0kJqcG%2BBKN2VT1Vhui6ju%2Fvwn32ghoQr16bu80GYVpcDfMnl7AXzpsxqVwRa0gzccPDE82NJRS5ZnaquKOnZPEX5vspShv5F80rdvHdRmpCgLD1mZ50fqYIqc%2FrMa5730oPz0s%2FjvWGQtnBkrQGr2q4FqG%2BFpXluK2pENYncvcDWOpZe9SKIJ9hFDxj4kLWrt08QldMsoaSQkqhK34ln%2BlMheMKnq7b4GOqUBzRDsoqeanIVUmXMMnJvDIhJqd9z69HDwPo1gbFuLZsX%2BtH5yddojUeA5SasORRlwFvDCw%2FV%2Famvgp1ENBsOcl94D8RS8nJ76Qslstai3unqqr2NXHHXoKGn%2FkXFDKnfp6dK5st%2B7fC%2FTaygPvcekIECmJ5E2%2BP6kYUpFvmfqFA7xciB9OqGUyiI7tCvcwVMvq4ezkNA4ENQGt2mHLSVIXPLqtETQ&X-Amz-Signature=1413712ae6009b6674241ad1bc3ace128df5a61b91aa3b781cf70a86e11983a9&X-Amz-SignedHeaders=host&x-id=GetObject))
+
+
+That is the end of this first post!
+`);
+
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -60,16 +72,7 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}># This is my very first Blog Post! 🤨
-
-
-Here is some content and an image!
-
-<SecureImage src="https://prod-files-secure.s3.us-west-2.amazonaws.com/c41a9cb2-d354-461a-84e7-dc2c10a616fc/544aa699-eacb-46d3-bf01-14b552406bb0/IMG_5936.heic?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4664MCPGL74%2F20250320%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250320T020125Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECoaCXVzLXdlc3QtMiJHMEUCIQDqLaVvc0p%2BDTD7ykKhLgEPOVYhzO5Djjf4EUYyA7Vh%2BAIgV11ChBow2g5vdMUUcdGNjGo3kK8I5VdJzd1VKFm3LjgqiAQIg%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDJclTU5G1j%2FVZ9xa%2BCrcAwltvWNglBLbn1eRKPyqzbl481q5%2F%2BKdhuRdtXWJgGgFxQaEuTIBYkFp0RhCCuj1UFUZuMyoKxvncyx9MlOVrYzKyBE3pVPZL90OqaFjoXgt9LmTaj4TK9tqAZJhqFIGb75r4NYU1okT5zpfexONqpy5ere1ho5R2Va2kyp%2FZj2t2oJIFzBwJAWSppeNInJLnLSgy5eXu0n9hBts4gbpClU4EU4dBYLydT9E%2F738SNewf5%2FrGm3Iy7rC04NgE%2BVXRwM7TyMX4zLq2LIzQfXMfvpv7f%2FIvRcEz7KYgqG8rlieGQOBnzglRIrg08AMf5zF6laQgu04SAEGc9%2BEuty5IWNZemvDnA8m%2B9lIxLoD2ptFvi2mjLEhhusIlJz%2Fw7KgObQP54PoAA8WvyVRoroYJZ%2FEMywaNIexZXgg4lfx%2BdRE9v4GbX4TTvDsw0amQ5A0Zrb5WVLGdN0FtEgYqh2FsUitmO9scG9GtsklVrJRtkcJfsivUu1k0tC78gE7oIF7yYtQU2APzA3xTowuH3%2FogLmxpM9IjI8ROhq3ezGFdLEBCgMl56y15uZWqET4dlqeuTNcRJ0h2uMmb2TNwm3xJdweatagZqKrZy6%2FCPaWIP8EByyQCusCdjxtQzh4MNXq7b4GOqUBZk%2FylhpvMdcwb6QvsqYDD3XgwXDHAUIydJXJyZTZFaCVZK2xilP3zsB6cJdNj5%2FyJ84PijUjX4oazdJzm9IzFGeeHG0N7VMMI%2B%2FBWrz%2FoESbK68nPUbEKfLCF9g%2FWn9WIUq%2FzPEDgcXabawK7xTjZVbfEQwVPXHRRonXVKe3Pax%2FjLfC4a%2Fq1PXUDEswXGQ0n6i%2FoG%2FJ5d9Np%2Fa5luIQttiQrLDd&X-Amz-Signature=a6144c6d64babeb9df3939b0ad83e8a6250d0763cc3b75d3b0fd70896f403d72&X-Amz-SignedHeaders=host&x-id=GetObject" alt="Image" />
-
-
-That is the end of this first post!
-</ReactMarkdown>
+              }}>{content}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>
