@@ -9,6 +9,13 @@
 # testing
 /coverage
 
+# Cached images
+public/image-cache/
+
+# Temporary files that might contain credentials
+**/temp-*.txt
+**/temp-*.json
+
 # production
 /build
 

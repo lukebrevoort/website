@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
+import SecureImage from "@/components/secure-image";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
@@ -28,7 +29,7 @@ export default function BlogPost() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+                    <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
@@ -51,11 +52,15 @@ export default function BlogPost() {
             </header>
             
             <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
-              <ReactMarkdown>{`I wanted to update something!!
-
-# Here is something new!!
-
-`}</ReactMarkdown>
+              <ReactMarkdown components={{
+                img: ({ node, ...props }) => (
+                  <SecureImage 
+                    src={props.src || ''} 
+                    alt={props.alt || ''} 
+                    className="my-4 rounded-md" 
+                  />
+                ),
+              }}>{processedMarkdown}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>
