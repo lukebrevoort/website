@@ -136,7 +136,8 @@ function processMarkdownImages(markdown: string): string {
   return processed;
 }
 
-// Then update your generatePostPageContent function:
+// Update the generatePostPageContent function
+
 function generatePostPageContent(post: any, markdown: string) {
   const properties = post.properties;
   const title = properties.Title?.title[0]?.plain_text || 'Untitled';
@@ -144,12 +145,21 @@ function generatePostPageContent(post: any, markdown: string) {
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
 
-  // First, process the markdown to replace AWS URLs with placeholders
-  const processedMarkdown = processMarkdownImages(markdown);
+  // Extract image URLs and create maps
+  const imageMap = new Map();
+  const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
+  let match;
   
-  // Then, in the page content, restore the placeholders with our secure image component
-  // But store the actual URLs in a separate constant
-  const originalMarkdown = markdown;
+  // Process markdown to replace S3 URLs with placeholders
+  let processedMarkdown = markdown.replace(regex, (url) => {
+    const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+    const placeholder = `image-placeholder-${urlHash}`;
+    imageMap.set(placeholder, url);
+    return placeholder;
+  });
+  
+  // Create JSON of the image map to embed in the component
+  const imageMapJSON = JSON.stringify(Object.fromEntries(imageMap));
 
   return `"use client"
 
@@ -167,36 +177,27 @@ import { useState, useEffect } from "react";
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
-  // Store processed markdown in state to avoid exposing credentials in the source
+  // Store processed markdown in state
   const [content, setContent] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
 
   // Process image URLs at runtime
   useEffect(() => {
-    // This map will hold placeholders to real URLs
-    const imageMap = new Map();
-    
-    // Extract all AWS S3 URLs from the original markdown and map them to placeholders
-    const regex = /(https:\\/\\/prod-files-secure\\.s3[^)"\\s]+)/g;
-    let match;
-    let originalMarkdown = \`${originalMarkdown.replace(/`/g, '\\`')}\`;
-    
-    while ((match = regex.exec(originalMarkdown)) !== null) {
-      const url = match[0];
-      const urlHash = btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-      const placeholder = \`image-placeholder-\${urlHash}\`;
-      imageMap.set(placeholder, url);
-    }
-    
-    // Replace placeholders with actual URLs
-    let processedContent = content;
-    imageMap.forEach((url, placeholder) => {
-      processedContent = processedContent.replace(
-        new RegExp(placeholder, 'g'),
-        url
-      );
-    });
-    
-    setContent(processedContent);
+    // Load image map (placeholders -> URLs) from external API or server-side logic
+    // This avoids storing credentials in client-side code
+    fetch('/api/image-map?postId=${post.id}')
+      .then(res => res.json())
+      .then(imageMap => {
+        let processedContent = content;
+        // Replace placeholders with actual URLs
+        Object.entries(imageMap).forEach(([placeholder, url]) => {
+          processedContent = processedContent.replace(
+            new RegExp(placeholder, 'g'),
+            url
+          );
+        });
+        setContent(processedContent);
+      })
+      .catch(err => console.error('Error fetching image map:', err));
   }, []);
 
   return (
