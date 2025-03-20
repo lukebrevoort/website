@@ -9,16 +9,50 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
-  const [content] = useState(`I wanted to update something!!
+  // Store processed markdown in state to avoid exposing credentials in the source
+  const [content, setContent] = useState(`I wanted to update something!!
 
 # Here is something new!!
 
 `);
+
+  // Process image URLs at runtime
+  useEffect(() => {
+    // This map will hold placeholders to real URLs
+    const imageMap = new Map();
+    
+    // Extract all AWS S3 URLs from the original markdown and map them to placeholders
+    const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
+    let match;
+    let originalMarkdown = `I wanted to update something!!
+
+# Here is something new!!
+
+`;
+    
+    while ((match = regex.exec(originalMarkdown)) !== null) {
+      const url = match[0];
+      const urlHash = btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      const placeholder = `image-placeholder-${urlHash}`;
+      imageMap.set(placeholder, url);
+    }
+    
+    // Replace placeholders with actual URLs
+    let processedContent = content;
+    imageMap.forEach((url, placeholder) => {
+      processedContent = processedContent.replace(
+        new RegExp(placeholder, 'g'),
+        url
+      );
+    });
+    
+    setContent(processedContent);
+  }, []);
 
   return (
     <SidebarProvider defaultOpen={false}>
