@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       if (postId === '1bbf7879-ec1d-806a-9e84-cc8bfb5c1805') {
         // Create a dummy mapping for testing
         const dummyMapping = {
-          "image-placeholder-aHR0cHM6Ly9wcm9kLWZpbGVzLXNlY3Vy": "https://via.placeholder.com/800x600"
+          "image-placeholder-aHR0cHM6Ly9wcm9kLWZpbGVzLXNlY3Vy": "/placeholders/default.jpg"
         };
         
         // Ensure directory exists

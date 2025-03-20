@@ -36,7 +36,7 @@ Thanks for coming to my ted talk!
         Object.entries(imageMap).forEach(([placeholder, url]) => {
           processedContent = processedContent.replace(
             new RegExp(placeholder, 'g'),
-            url
+            String(url)
           );
         });
         setContent(processedContent);

@@ -62,8 +62,13 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch original image, using placeholder'
       });
     }
-  } catch (error) {
-    console.error('Error in image proxy:', error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  } catch (fetchError) {
+    console.error('Error fetching image:', fetchError);
+    
+    // Return path to placeholder as fallback
+    return NextResponse.json({ 
+      imagePath: '/placeholders/default.jpg',
+      error: 'Failed to fetch original image, using placeholder'
+    });
   }
 }
