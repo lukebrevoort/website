@@ -113,53 +113,58 @@ export async function commitAndPushChanges() {
   }
 }
 
-function processMarkdownImages(markdown: string): string {
-  // Clean up Notion's nested image syntax
-  let processed = markdown;
+// This function should be in your generateBlogPosts function
+function createImageMapping(postId: string, markdown: string) {
+  // Extract image URLs from markdown
+  const imageMap: Record<string, string> = {};
+  const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
+  let match;
   
-  // Fix the double-nested format: ![[text]](![](url))
-  processed = processed.replace(
-    /!\[\[(.*?)\]\]\(!\[\]\((.*?)\)\)/g,
-    '![$1]($2)'
+  while ((match = regex.exec(markdown)) !== null) {
+    const url = match[0];
+    const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+    const placeholder = `image-placeholder-${urlHash}`;
+    imageMap[placeholder] = url;
+  }
+  
+  // Save the mapping
+  const privateDir = path.join(process.cwd(), '.private');
+  if (!fs.existsSync(privateDir)) {
+    fs.mkdirSync(privateDir, { recursive: true });
+  }
+  
+  fs.writeFileSync(
+    path.join(privateDir, `${postId}.json`),
+    JSON.stringify(imageMap, null, 2)
   );
   
-  // Replace AWS S3 URLs with placeholders
-  processed = processed.replace(
-    /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g,
-    (match) => {
-      // Create a simple hash for this URL
-      const urlHash = Buffer.from(match).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-      return `image-placeholder-${urlHash}`;
-    }
-  );
+  console.log(`Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
   
-  return processed;
+  return imageMap;
 }
 
-// Update the generatePostPageContent function
-
 function generatePostPageContent(post: any, markdown: string) {
+  // Get properties as before
   const properties = post.properties;
   const title = properties.Title?.title[0]?.plain_text || 'Untitled';
   const date = properties.Date?.date?.start 
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
-
-  // Extract image URLs and create maps
-  const imageMap = new Map();
-  const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
-  let match;
+    
+  // Create image mapping (this also saves it to a file)
+  const imageMap = createImageMapping(post.id, markdown);
   
-  // Process markdown to replace S3 URLs with placeholders
-  let processedMarkdown = markdown.replace(regex, (url) => {
-    const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-    const placeholder = `image-placeholder-${urlHash}`;
-    imageMap.set(placeholder, url);
-    return placeholder;
+  // Process the markdown to replace AWS URLs with placeholders
+  let processedMarkdown = markdown;
+  Object.entries(imageMap).forEach(([placeholder, url]) => {
+    processedMarkdown = processedMarkdown.replace(
+      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+      placeholder
+    );
   });
   
   // Create JSON of the image map to embed in the component
-  const imageMapJSON = JSON.stringify(Object.fromEntries(imageMap));
+  const imageMapJSON = JSON.stringify(imageMap);
 
   return `"use client"
 

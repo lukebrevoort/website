@@ -22,48 +22,58 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
       return;
     }
     
-    // Process URLs with AWS credentials
+    // Check if src is a placeholder
+    if (src.startsWith('image-placeholder-')) {
+      console.log('Detected image placeholder:', src);
+      // Use a placeholder image for now
+      setImageSrc('https://via.placeholder.com/800x600');
+      setIsLoading(false);
+      return;
+    }
+    
+    // Handle AWS S3 URLs
     if (src.includes('prod-files-secure.s3') || 
         src.includes('amazonaws.com') || 
         src.includes('X-Amz-Credential')) {
       
-      // Create a simple hash from URL
+      // Create a hash for the URL
       const urlHash = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
       
-      // Fetch via proxy
-      console.log(`Proxying image via /api/image-proxy`);
+      console.log('Proxying S3 image:', src.substring(0, 30) + '...');
+      
+      // Use our proxy API
       fetch(`/api/image-proxy?url=${encodeURIComponent(src)}&hash=${urlHash}`)
         .then(response => {
-          if (!response.ok) throw new Error(`Proxy response: ${response.status}`);
+          if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
           return response.json();
         })
         .then(data => {
-          console.log('Image proxy response:', data);
           if (data.imagePath) {
+            console.log('Using cached image:', data.imagePath);
             setImageSrc(data.imagePath);
-            setIsLoading(false);
           } else {
             throw new Error('No image path returned');
           }
+          setIsLoading(false);
         })
         .catch(err => {
           console.error('Image proxy error:', err);
-          setError(err.message);
+          // Fallback to a placeholder
+          setImageSrc('https://via.placeholder.com/800x600');
+          setError('Failed to load image');
           setIsLoading(false);
-          // Fallback to direct URL as last resort
-          setImageSrc(src);
         });
     } else {
-      // Non-AWS URLs can be used directly
+      // Regular URL, use directly
+      console.log('Using direct image URL:', src);
       setImageSrc(src);
       setIsLoading(false);
     }
   }, [src]);
 
-  // Use spans instead of divs for loading/error states to avoid nesting issues
+  // Use span instead of div for loading state to avoid nesting errors
   if (isLoading) {
-    // Use a span for loading state to avoid nesting issues when inside <p> tags
-    return <span className="inline-block bg-gray-200 dark:bg-gray-800 rounded animate-pulse" style={{ width, height, maxWidth: '100%' }} />;
+    return <span className="inline-block animate-pulse bg-gray-200 dark:bg-gray-800 rounded" style={{ width, height }} />;
   }
 
   if (error) {
@@ -74,6 +84,7 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     return null;
   }
 
+  // For placeholder.com or actual images
   return (
     <Image 
       src={imageSrc}
