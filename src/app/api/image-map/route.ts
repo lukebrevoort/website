@@ -4,7 +4,7 @@ import path from 'path';
 import { Client } from '@notionhq/client';
 
 export const notionClient = new Client({
-  auth: process.env.NOTION_API_KEY,
+  auth: process.env.NOTION_TOKEN,
 });
 
 // Store image maps in a secure location separate from code
