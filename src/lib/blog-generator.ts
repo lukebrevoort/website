@@ -114,11 +114,25 @@ export async function commitAndPushChanges() {
 }
 
 function processMarkdownImages(markdown: string): string {
-  // Replace standard markdown image syntax with our SecureImage component
-  return markdown.replace(
-    /!\[(.*?)\]\((https:\/\/prod-files-secure\.s3.*?)\)/g,
-    '<SecureImage src="$2" alt="$1" />'
+  // First, handle standard markdown image syntax
+  let processed = markdown.replace(
+    /!\[(.*?)\]\((https?:\/\/.*?prod-files-secure\.s3.*?|https?:\/\/.*?amazonaws\.com.*?)\)/g,
+    '![[$1]]($2)'
   );
+  
+  // Handle HTML img tags
+  processed = processed.replace(
+    /<img.*?src=["'](https?:\/\/.*?prod-files-secure\.s3.*?|https?:\/\/.*?amazonaws\.com.*?)["'].*?>/g,
+    '<img src="$1" />'
+  );
+  
+  // Handle any other URL patterns
+  processed = processed.replace(
+    /(https?:\/\/.*?prod-files-secure\.s3.*?|https?:\/\/.*?amazonaws\.com.*?)(?=[\s"')<]|$)/g,
+    match => `![](${match})`
+  );
+  
+  return processed;
 }
 
 function generatePostPageContent(post: any, markdown: string) {
@@ -142,10 +156,13 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
+import { useState } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
+  const [content] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -193,7 +210,7 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}>${processedMarkdown}</ReactMarkdown>
+              }}>{content}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>

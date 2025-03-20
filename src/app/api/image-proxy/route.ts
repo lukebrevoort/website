@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
-import { promises as fsPromises } from 'fs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,33 +14,36 @@ export async function GET(request: NextRequest) {
     
     // Create directory for cached images if it doesn't exist
     const cacheDir = path.join(process.cwd(), 'public', 'image-cache');
-    if (!fs.existsSync(cacheDir)) {
-      await fsPromises.mkdir(cacheDir, { recursive: true });
+    try {
+      await fs.mkdir(cacheDir, { recursive: true });
+    } catch (err) {
+      console.error('Error creating cache directory:', err);
     }
     
     const cachedImagePath = path.join(cacheDir, `${imageHash}.jpg`);
     const cachedImagePublicPath = `/image-cache/${imageHash}.jpg`;
     
     // Check if image is already cached
-    if (fs.existsSync(cachedImagePath)) {
+    try {
+      await fs.access(cachedImagePath);
+      // Image exists in cache
+      return NextResponse.json({ imagePath: cachedImagePublicPath });
+    } catch (error) {
+      // Image doesn't exist in cache, fetch it
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        return new NextResponse('Failed to fetch image', { status: 500 });
+      }
+      
+      // Get image as buffer
+      const imageBuffer = await response.arrayBuffer();
+      
+      // Save image to cache
+      await fs.writeFile(cachedImagePath, Buffer.from(imageBuffer));
+      
       // Return the cached image path
       return NextResponse.json({ imagePath: cachedImagePublicPath });
     }
-    
-    // Fetch the image
-    const response = await fetch(imageUrl);
-    if (!response.ok) {
-      return new NextResponse('Failed to fetch image', { status: 500 });
-    }
-    
-    // Get image as buffer
-    const imageBuffer = await response.arrayBuffer();
-    
-    // Save image to cache
-    await fsPromises.writeFile(cachedImagePath, Buffer.from(imageBuffer));
-    
-    // Return the cached image path
-    return NextResponse.json({ imagePath: cachedImagePublicPath });
   } catch (error) {
     console.error('Error proxying image:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

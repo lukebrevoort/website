@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import crypto from 'crypto';
 
 interface SecureImageProps {
   src: string;
@@ -21,9 +20,13 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     if (!src) return;
     
     // Only proxy Notion S3 URLs
-    if (src.includes('prod-files-secure.s3') || src.includes('amazonaws.com')) {
+    if (src.includes('prod-files-secure.s3') || 
+        src.includes('amazonaws.com') || 
+        src.includes('X-Amz-Credential')) {
+      
       // Create a hash of the original URL to use as the filename
-      const urlHash = crypto.createHash('md5').update(src).digest('hex');
+      // Using a simplified hash approach that works in browser
+      const urlHash = btoa(src).replace(/[^a-zA-Z0-9]/g, '').slice(0, 32);
       
       // Fetch from our proxy
       fetch(`/api/image-proxy?url=${encodeURIComponent(src)}&hash=${urlHash}`)
