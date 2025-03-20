@@ -113,12 +113,23 @@ export async function commitAndPushChanges() {
   }
 }
 
+function processMarkdownImages(markdown: string): string {
+  // Replace standard markdown image syntax with our SecureImage component
+  return markdown.replace(
+    /!\[(.*?)\]\((https:\/\/prod-files-secure\.s3.*?)\)/g,
+    '<SecureImage src="$2" alt="$1" />'
+  );
+}
+
 function generatePostPageContent(post: any, markdown: string) {
   const properties = post.properties;
   const title = properties.Title?.title[0]?.plain_text || 'Untitled';
   const date = properties.Date?.date?.start 
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
+
+  // Process the markdown to handle image URLs securely
+  const processedMarkdown = processMarkdownImages(markdown);
 
   return `"use client"
 
@@ -130,6 +141,7 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
+import SecureImage from "@/components/secure-image";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
@@ -150,7 +162,7 @@ export default function BlogPost() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+                    <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
@@ -173,13 +185,20 @@ export default function BlogPost() {
             </header>
             
             <div className={\`prose dark:prose-invert max-w-none \${crimsonText.className}\`}>
-              <ReactMarkdown>{\`${markdown.replace(/`/g, '\\`')}\`}</ReactMarkdown>
+              <ReactMarkdown components={{
+                img: ({ node, ...props }) => (
+                  <SecureImage 
+                    src={props.src || ''} 
+                    alt={props.alt || ''} 
+                    className="my-4 rounded-md" 
+                  />
+                ),
+              }}>{processedMarkdown}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>
       </MotionConfig>
     </SidebarProvider>
   );
-}
-`;
+}`;
 }

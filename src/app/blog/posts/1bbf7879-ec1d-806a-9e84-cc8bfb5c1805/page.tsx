@@ -8,6 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
+<<<<<<< HEAD
+=======
+import SecureImage from "@/components/secure-image";
+>>>>>>> 1888b80 (Update blog posts from Notion via webhook)
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
@@ -28,7 +32,11 @@ export default function BlogPost() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
+<<<<<<< HEAD
                     <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+=======
+                    <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
+>>>>>>> 1888b80 (Update blog posts from Notion via webhook)
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
@@ -51,6 +59,7 @@ export default function BlogPost() {
             </header>
             
             <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
+<<<<<<< HEAD
               <ReactMarkdown>{`# This is my very first Blog Post! 🤨
 
 
@@ -61,10 +70,25 @@ Here is some content and an image!
 
 That is the end of this first post!
 `}</ReactMarkdown>
+=======
+              <ReactMarkdown components={{
+                img: ({ node, ...props }) => (
+                  <SecureImage 
+                    src={props.src || ''} 
+                    alt={props.alt || ''} 
+                    className="my-4 rounded-md" 
+                  />
+                ),
+              }}>{processedMarkdown}</ReactMarkdown>
+>>>>>>> 1888b80 (Update blog posts from Notion via webhook)
             </div>
           </motion.article>
         </SidebarInset>
       </MotionConfig>
     </SidebarProvider>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1888b80 (Update blog posts from Notion via webhook)
