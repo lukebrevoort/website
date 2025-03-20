@@ -62,7 +62,7 @@ That is the end of this first post!
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
+                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>

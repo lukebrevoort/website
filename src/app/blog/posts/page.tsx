@@ -41,7 +41,7 @@ export default function BlogPage() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
+                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
