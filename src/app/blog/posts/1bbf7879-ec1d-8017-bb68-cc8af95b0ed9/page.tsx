@@ -60,7 +60,14 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}>{processedMarkdown}</ReactMarkdown>
+              }}># This is my super cool thing 
+
+
+- I like apples
+- Bananas
+- and more!
+Thanks for coming to my ted talk!
+</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>

@@ -60,7 +60,11 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}>{processedMarkdown}</ReactMarkdown>
+              }}>I wanted to update something!!
+
+# Here is something new!!
+
+</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>
