@@ -102,7 +102,7 @@ const data = {
     },
     {
       title: "Blog",
-      url: "/blog",
+      url: "/blog/posts",
       icon: NotebookPen,
       items: [ // Placeholders, will eventually be fetched from most recent posts
         {
