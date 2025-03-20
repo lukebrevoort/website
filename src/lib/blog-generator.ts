@@ -193,7 +193,7 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}>{processedMarkdown}</ReactMarkdown>
+              }}>${processedMarkdown}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>

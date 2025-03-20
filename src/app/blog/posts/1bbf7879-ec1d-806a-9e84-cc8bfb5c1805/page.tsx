@@ -8,10 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
-<<<<<<< HEAD
-=======
 import SecureImage from "@/components/secure-image";
->>>>>>> 1888b80 (Update blog posts from Notion via webhook)
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
@@ -32,11 +29,7 @@ export default function BlogPost() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-<<<<<<< HEAD
-                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
-=======
                     <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
->>>>>>> 1888b80 (Update blog posts from Notion via webhook)
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
@@ -59,18 +52,6 @@ export default function BlogPost() {
             </header>
             
             <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
-<<<<<<< HEAD
-              <ReactMarkdown>{`# This is my very first Blog Post! 🤨
-
-
-Here is some content and an image!
-
-![Image](https://prod-files-secure.s3.us-west-2.amazonaws.com/c41a9cb2-d354-461a-84e7-dc2c10a616fc/544aa699-eacb-46d3-bf01-14b552406bb0/IMG_5936.heic?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Q2FEY5U7%2F20250319%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250319T235416Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECUaCXVzLXdlc3QtMiJGMEQCIBldfbKqUsJTVp4gvD5GPOPm3wrwdMnDf8S0Oc4mIHbbAiBU3fYXRMfslU6GUnnLQEa80%2FISVLsSJNBjGbJ6%2FqY2Kyr%2FAwh%2BEAAaDDYzNzQyMzE4MzgwNSIMF4NqP3PPqGk8NXseKtwD%2Bkc6kyByIef4hxAopq7d7X%2B5kuu2PLyUxaSPOwSXBHWoa2SUnghxJd1UXOTUlYaXHd%2FG1MBHUDfgPU65fecX4r%2FLNmwAXqKG5jvBbOCI%2B3cnJIkbL%2Fd%2FS4XmjnHETOoN1YIi8ZgogvgVf6mblJ7gF2GIfpQ0%2BcOYYsDGrmJOJQtw3fTi2qpozibkaRiAMOWRayWOIj1vNUWRu0se2wvCzqu7elnQFAOAhUmiM%2FQnQvY%2FME3O0%2FZilMs%2BKZXoAi4avnoNZq1BNzoMsvkuTznlIeXTO7ZvpctWe8sPew89HoBQq4qGvmoZLGuepO6xlu31JVcw8%2FZUlikkAXuYcipqETdPDbRQopNbj6Z9THK%2BqoaG%2F0TyN96u38GjLf8Dfx1rqjiEK946kPSMgxQ%2F2z7TJzPkjsK9ACz2YIqrpVOUT3WhnfrGw6lbGS3WOuSM0T%2FNvVuSYv0eq4bzFluzWDVx243fWlb7tRMBytZeK%2FNE24vNLw1IDvtIxa2RhcqkGKQx6muU%2B0lm0MiYziM%2Bc8CQ8oceRhwKOvbgyzkk6mRC9pC3pRYTIAlDXqWrcK9ag0WX7bnrjADEql2oaY2gv6CY0EOGM0wh7hrtMwQjIEHMSy%2BJXDKAn%2F1mBmouCY8w19jsvgY6pgHMgo4Hu5H2%2FYF30F7%2BrOVzpS5f5sCE%2FA77wLR4nnNYYWxBqEgHQvu2mpR7pgeU9EN%2FcRsys%2BEJ6X97Xr2TjQTzED7tfC8x9I42cYJXAoQcb7IaiLKu6nQ1injeiHoYogJhZmNZOpHG7gpgQPlp7cEm31V3v1Y1jXeRHmnERnzlXtWf6v8LLGziWI5sx71ZtwuwnxNm6ri4tMN7TGlX2Mh3Z3PgN6Dl&X-Amz-Signature=00504e5af394fd440ded2f04db9a6d199312f21a0cd53204a9f044fc79542c79&X-Amz-SignedHeaders=host&x-id=GetObject)
-
-
-That is the end of this first post!
-`}</ReactMarkdown>
-=======
               <ReactMarkdown components={{
                 img: ({ node, ...props }) => (
                   <SecureImage 
@@ -79,16 +60,20 @@ That is the end of this first post!
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}>{processedMarkdown}</ReactMarkdown>
->>>>>>> 1888b80 (Update blog posts from Notion via webhook)
+              }}># This is my very first Blog Post! 🤨
+
+
+Here is some content and an image!
+
+<SecureImage src="https://prod-files-secure.s3.us-west-2.amazonaws.com/c41a9cb2-d354-461a-84e7-dc2c10a616fc/544aa699-eacb-46d3-bf01-14b552406bb0/IMG_5936.heic?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4664MCPGL74%2F20250320%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250320T020125Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECoaCXVzLXdlc3QtMiJHMEUCIQDqLaVvc0p%2BDTD7ykKhLgEPOVYhzO5Djjf4EUYyA7Vh%2BAIgV11ChBow2g5vdMUUcdGNjGo3kK8I5VdJzd1VKFm3LjgqiAQIg%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDJclTU5G1j%2FVZ9xa%2BCrcAwltvWNglBLbn1eRKPyqzbl481q5%2F%2BKdhuRdtXWJgGgFxQaEuTIBYkFp0RhCCuj1UFUZuMyoKxvncyx9MlOVrYzKyBE3pVPZL90OqaFjoXgt9LmTaj4TK9tqAZJhqFIGb75r4NYU1okT5zpfexONqpy5ere1ho5R2Va2kyp%2FZj2t2oJIFzBwJAWSppeNInJLnLSgy5eXu0n9hBts4gbpClU4EU4dBYLydT9E%2F738SNewf5%2FrGm3Iy7rC04NgE%2BVXRwM7TyMX4zLq2LIzQfXMfvpv7f%2FIvRcEz7KYgqG8rlieGQOBnzglRIrg08AMf5zF6laQgu04SAEGc9%2BEuty5IWNZemvDnA8m%2B9lIxLoD2ptFvi2mjLEhhusIlJz%2Fw7KgObQP54PoAA8WvyVRoroYJZ%2FEMywaNIexZXgg4lfx%2BdRE9v4GbX4TTvDsw0amQ5A0Zrb5WVLGdN0FtEgYqh2FsUitmO9scG9GtsklVrJRtkcJfsivUu1k0tC78gE7oIF7yYtQU2APzA3xTowuH3%2FogLmxpM9IjI8ROhq3ezGFdLEBCgMl56y15uZWqET4dlqeuTNcRJ0h2uMmb2TNwm3xJdweatagZqKrZy6%2FCPaWIP8EByyQCusCdjxtQzh4MNXq7b4GOqUBZk%2FylhpvMdcwb6QvsqYDD3XgwXDHAUIydJXJyZTZFaCVZK2xilP3zsB6cJdNj5%2FyJ84PijUjX4oazdJzm9IzFGeeHG0N7VMMI%2B%2FBWrz%2FoESbK68nPUbEKfLCF9g%2FWn9WIUq%2FzPEDgcXabawK7xTjZVbfEQwVPXHRRonXVKe3Pax%2FjLfC4a%2Fq1PXUDEswXGQ0n6i%2FoG%2FJ5d9Np%2Fa5luIQttiQrLDd&X-Amz-Signature=a6144c6d64babeb9df3939b0ad83e8a6250d0763cc3b75d3b0fd70896f403d72&X-Amz-SignedHeaders=host&x-id=GetObject" alt="Image" />
+
+
+That is the end of this first post!
+</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>
       </MotionConfig>
     </SidebarProvider>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 1888b80 (Update blog posts from Notion via webhook)
