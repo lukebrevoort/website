@@ -9,10 +9,20 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
+import { useState } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
+  const [content] = useState(`# This is my super cool thing 
+
+
+- I like apples
+- Bananas
+- and more!
+Thanks for coming to my ted talk!
+`);
+
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -60,14 +70,7 @@ export default function BlogPost() {
                     className="my-4 rounded-md" 
                   />
                 ),
-              }}># This is my super cool thing 
-
-
-- I like apples
-- Bananas
-- and more!
-Thanks for coming to my ted talk!
-</ReactMarkdown>
+              }}>{content}</ReactMarkdown>
             </div>
           </motion.article>
         </SidebarInset>
