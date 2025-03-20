@@ -60,7 +60,7 @@ Thanks for coming to my ted talk!
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
+                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
