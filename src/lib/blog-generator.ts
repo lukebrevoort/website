@@ -114,27 +114,29 @@ export async function commitAndPushChanges() {
 }
 
 function processMarkdownImages(markdown: string): string {
-  // First, handle standard markdown image syntax
-  let processed = markdown.replace(
-    /!\[(.*?)\]\((https?:\/\/.*?prod-files-secure\.s3.*?|https?:\/\/.*?amazonaws\.com.*?)\)/g,
-    '![[$1]]($2)'
+  // Clean up Notion's nested image syntax
+  let processed = markdown;
+  
+  // Fix the double-nested format: ![[text]](![](url))
+  processed = processed.replace(
+    /!\[\[(.*?)\]\]\(!\[\]\((.*?)\)\)/g,
+    '![$1]($2)'
   );
   
-  // Handle HTML img tags
+  // Replace AWS S3 URLs with placeholders
   processed = processed.replace(
-    /<img.*?src=["'](https?:\/\/.*?prod-files-secure\.s3.*?|https?:\/\/.*?amazonaws\.com.*?)["'].*?>/g,
-    '<img src="$1" />'
-  );
-  
-  // Handle any other URL patterns
-  processed = processed.replace(
-    /(https?:\/\/.*?prod-files-secure\.s3.*?|https?:\/\/.*?amazonaws\.com.*?)(?=[\s"')<]|$)/g,
-    match => `![](${match})`
+    /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g,
+    (match) => {
+      // Create a simple hash for this URL
+      const urlHash = Buffer.from(match).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      return `image-placeholder-${urlHash}`;
+    }
   );
   
   return processed;
 }
 
+// Then update your generatePostPageContent function:
 function generatePostPageContent(post: any, markdown: string) {
   const properties = post.properties;
   const title = properties.Title?.title[0]?.plain_text || 'Untitled';
@@ -142,8 +144,12 @@ function generatePostPageContent(post: any, markdown: string) {
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
 
-  // Process the markdown to handle image URLs securely
+  // First, process the markdown to replace AWS URLs with placeholders
   const processedMarkdown = processMarkdownImages(markdown);
+  
+  // Then, in the page content, restore the placeholders with our secure image component
+  // But store the actual URLs in a separate constant
+  const originalMarkdown = markdown;
 
   return `"use client"
 
@@ -156,12 +162,42 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
-  const [content] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+  // Store processed markdown in state to avoid exposing credentials in the source
+  const [content, setContent] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+
+  // Process image URLs at runtime
+  useEffect(() => {
+    // This map will hold placeholders to real URLs
+    const imageMap = new Map();
+    
+    // Extract all AWS S3 URLs from the original markdown and map them to placeholders
+    const regex = /(https:\\/\\/prod-files-secure\\.s3[^)"\\s]+)/g;
+    let match;
+    let originalMarkdown = \`${originalMarkdown.replace(/`/g, '\\`')}\`;
+    
+    while ((match = regex.exec(originalMarkdown)) !== null) {
+      const url = match[0];
+      const urlHash = btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      const placeholder = \`image-placeholder-\${urlHash}\`;
+      imageMap.set(placeholder, url);
+    }
+    
+    // Replace placeholders with actual URLs
+    let processedContent = content;
+    imageMap.forEach((url, placeholder) => {
+      processedContent = processedContent.replace(
+        new RegExp(placeholder, 'g'),
+        url
+      );
+    });
+    
+    setContent(processedContent);
+  }, []);
 
   return (
     <SidebarProvider defaultOpen={false}>
