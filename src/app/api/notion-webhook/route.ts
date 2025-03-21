@@ -66,3 +66,12 @@ export async function OPTIONS(request: NextRequest) {
     },
   });
 }
+
+export async function GET(request: NextRequest) {
+  console.log('Debug GET endpoint hit');
+  return NextResponse.json({ 
+    status: 'online',
+    message: 'Webhook endpoint is active',
+    time: new Date().toISOString()
+  });
+}
