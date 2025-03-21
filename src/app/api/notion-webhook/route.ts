@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { generateBlogPosts, commitAndPushChanges } from '@/lib/blog-generator';
 
 // For debugging
-const DEBUG_MODE = process.env.NODE_ENV !== 'production';
+const DEBUG_MODE = process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV === 'preview';
 
 // Maximum execution time
 export const maxDuration = 60;
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     });
     
     // Only enforce signature in production
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV !== 'preview') {
       if (!notionSignature || !notionTimestamp) {
         return NextResponse.json({ 
           success: false, 
@@ -176,4 +176,12 @@ export async function POST(request: Request) {
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ 
+    status: 'healthy', 
+    environment: process.env.NODE_ENV,
+    vercelEnv: process.env.VERCEL_ENV || 'unknown'
+  });
 }
