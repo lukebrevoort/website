@@ -1,4 +1,10 @@
 {
+  "app/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page.tsx -> react-markdown": {
+    "id": "app/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page.tsx -> react-markdown",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_react-markdown_index_js.js"
+    ]
+  },
   "components/app-sidebar.tsx -> lucide-react": {
     "id": "components/app-sidebar.tsx -> lucide-react",
     "files": [

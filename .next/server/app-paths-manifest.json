@@ -1,5 +1,8 @@
 {
   "/api/notion-webhook/route": "app/api/notion-webhook/route.js",
-  "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/image-map/route": "app/api/image-map/route.js",
+  "/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page": "app/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page.js",
   "/blog/posts/page": "app/blog/posts/page.js"
 }

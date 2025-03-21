@@ -22,6 +22,22 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/notion-webhook/route.js"
+    ],
+    "/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page.css",
+      "static/chunks/app/blog/posts/1bbf7879-ec1d-80d8-9198-c968115d62cb/page.js"
+    ],
+    "/api/image-map/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/image-map/route.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
