@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 // Specify runtime (optional but recommended)
-export const runtime = 'edge'; // or 'nodejs' if you need Node.js features
+export const runtime = 'nodejs'; // or 'nodejs' if you need Node.js features
 
 // Maximum execution time
 export const maxDuration = 60;
