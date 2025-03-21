@@ -1,4 +1,10 @@
 {
+  "app/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page.tsx -> react-markdown": {
+    "id": "app/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page.tsx -> react-markdown",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_react-markdown_index_js.js"
+    ]
+  },
   "app/blog/posts/1bdf7879-ec1d-8055-b3e7-fd3303827356/page.tsx -> react-markdown": {
     "id": "app/blog/posts/1bdf7879-ec1d-8055-b3e7-fd3303827356/page.tsx -> react-markdown",
     "files": [

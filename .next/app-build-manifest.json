@@ -33,6 +33,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/notion-webhook/route.js"
+    ],
+    "/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page.css",
+      "static/chunks/app/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page.js"
     ]
   }
 }
