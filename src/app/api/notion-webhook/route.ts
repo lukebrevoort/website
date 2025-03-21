@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import * as crypto from 'crypto';
-import { generateBlogPosts, commitAndPushChanges } from '@/lib/blog-generator';
 
 // For debugging
 const DEBUG_MODE = process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV === 'preview';
@@ -49,24 +48,6 @@ export async function POST(request: Request) {
           message: 'Missing signature headers' 
         }, { status: 401 });
       }
-      
-      // Verify signature if we have the secret
-      if (process.env.NOTION_SIGNING_SECRET) {
-        const hmac = crypto.createHmac('sha256', process.env.NOTION_SIGNING_SECRET);
-        const signature = hmac
-          .update(`${notionTimestamp}:${rawBody}`)
-          .digest('hex');
-        
-        if (signature !== notionSignature) {
-          console.error('⚠️ Signature verification failed');
-          return NextResponse.json({ 
-            success: false, 
-            message: 'Invalid signature' 
-          }, { status: 401 });
-        }
-        
-        console.log('✓ Signature verified');
-      }
     }
     
     // Parse the body
@@ -82,90 +63,73 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
     
-    // Log the parsed body for debugging
-    if (DEBUG_MODE) {
-      console.log('Parsed body:', body);
-    }
-    
     // Handle Notion URL verification (needed when setting up webhooks)
     if (body.type === 'url_verification') {
       console.log('🔄 Responding to Notion URL verification challenge');
       return NextResponse.json({ challenge: body.challenge });
     }
     
-    // Extract page ID from the body, with multiple fallback paths
-    let pageId = null;
+    // Extract page ID from the body
+    let pageId = extractPageId(body);
     
-    // Try various possible payload structures
-    if (body.payload?.page?.id) {
-      pageId = body.payload.page.id;
-    } else if (body.page?.id) {
-      pageId = body.page.id;
-    } else if (body.id) {
-      pageId = body.id;
-    }
-
-    if (!pageId && body.data?.page_id) {
-      pageId = body.data.page_id;
-    } else if (!pageId && body.data?.id) {
-      pageId = body.data.id;
-    } else if (!pageId && body.data?.page?.id) {
-      pageId = body.data.page.id;
-    }
-    
-    // If we still don't have a page ID, check for database ID
-    if (!pageId && body.database_id) {
-      console.log('Using database ID instead of page ID');
-      pageId = body.database_id;
-    }
-
-    if (DEBUG_MODE && !pageId) {
-      console.log('Debug - Payload structure:', JSON.stringify(body, null, 2));
-    }
-    
-    // If we can't find a page ID, we can't proceed
     if (!pageId) {
       console.error('📛 Could not find page ID in payload');
       return NextResponse.json({ 
         success: false, 
-        message: 'Could not find page ID in payload',
-        payloadReceived: DEBUG_MODE ? body : 'REDACTED'
+        message: 'Could not find page ID in payload'
       }, { status: 400 });
     }
     
     console.log(`📝 Processing update for page/database ${pageId}`);
     
-    // Generate blog post - now this happens for ANY webhook (not just page.update/create)
-    console.log('Generating blog post...');
-    const generateResult = await generateBlogPosts(pageId);
+    // Instead of generating blog posts directly, trigger a GitHub workflow
+    const githubRepoOwner = process.env.GITHUB_REPO_OWNER || 'lbrevoort';
+    const githubRepoName = process.env.GITHUB_REPO_NAME || 'personal-website';
     
-    if (generateResult.success) {
-      console.log('✅ Blog post generated successfully');
+    console.log(`🚀 Triggering GitHub workflow for ${githubRepoOwner}/${githubRepoName}...`);
+    
+    try {
+      const githubResponse = await fetch(
+        `https://api.github.com/repos/${githubRepoOwner}/${githubRepoName}/dispatches`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `token ${process.env.GITHUB_PAT}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            event_type: 'notion_update',
+            client_payload: { 
+              pageId,
+              timestamp: new Date().toISOString()
+            }
+          })
+        }
+      );
       
-      // Commit and push changes to GitHub
-      console.log('� Committing changes to GitHub...');
-      try {
-        const commitResult = await commitAndPushChanges();
-        console.log('✅ Changes committed and pushed successfully');
-        
-        return NextResponse.json({ 
-          success: true, 
-          generated: generateResult.message,
-          committed: commitResult.message
-        });
-      } catch (commitError) {
-        console.error('📛 Error committing changes:', commitError);
+      if (!githubResponse.ok) {
+        const errorText = await githubResponse.text();
+        console.error(`📛 GitHub API error: ${githubResponse.status} - ${errorText}`);
         return NextResponse.json({ 
           success: false, 
-          generated: generateResult.message,
-          error: `Git commit failed: ${commitError instanceof Error ? commitError.message : String(commitError)}` 
+          message: `Failed to trigger GitHub workflow: ${githubResponse.status}`,
+          error: errorText
         }, { status: 500 });
       }
-    } else {
-      console.error('📛 Failed to generate blog post:', generateResult.error);
+      
+      console.log('✅ GitHub workflow triggered successfully');
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Notion webhook processed and GitHub workflow triggered',
+        pageId
+      });
+    } catch (githubError) {
+      console.error('📛 Error triggering GitHub workflow:', githubError);
       return NextResponse.json({ 
         success: false, 
-        error: generateResult.error 
+        message: 'Error triggering GitHub workflow',
+        error: githubError instanceof Error ? githubError.message : String(githubError)
       }, { status: 500 });
     }
   } catch (error) {
@@ -176,6 +140,39 @@ export async function POST(request: Request) {
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
+}
+
+// Helper function to extract page ID from various payload formats
+// Define interfaces for different Notion webhook payload structures
+interface NotionPagePayload {
+  payload?: {
+    page?: {
+      id?: string;
+    };
+  };
+  page?: {
+    id?: string;
+  };
+  id?: string;
+  data?: {
+    page_id?: string;
+    id?: string;
+    page?: {
+      id?: string;
+    };
+  };
+  database_id?: string;
+}
+
+function extractPageId(body: NotionPagePayload): string | null {
+  if (body.payload?.page?.id) return body.payload.page.id;
+  if (body.page?.id) return body.page.id;
+  if (body.id) return body.id;
+  if (body.data?.page_id) return body.data.page_id;
+  if (body.data?.id) return body.data.id;
+  if (body.data?.page?.id) return body.data.page.id;
+  if (body.database_id) return body.database_id;
+  return null;
 }
 
 export async function GET() {
