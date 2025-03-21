@@ -18,27 +18,10 @@
       "static/css/app/blog/posts/page.css",
       "static/chunks/app/blog/posts/page.js"
     ],
-    "/blog/posts/1bdf7879-ec1d-8055-b3e7-fd3303827356/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/blog/posts/1bdf7879-ec1d-8055-b3e7-fd3303827356/page.css",
-      "static/chunks/app/blog/posts/1bdf7879-ec1d-8055-b3e7-fd3303827356/page.js"
-    ],
-    "/api/image-map/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/image-map/route.js"
-    ],
     "/api/notion-webhook/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/notion-webhook/route.js"
-    ],
-    "/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page.css",
-      "static/chunks/app/blog/posts/1bdf7879-ec1d-801b-9ead-c6a9e38b2151/page.js"
     ]
   }
 }

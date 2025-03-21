@@ -1,5 +1,19 @@
 [
   {
+    "id": "1bdf7879-ec1d-808f-bd80-dcc4c1c35238",
+    "slug": "1bdf7879-ec1d-808f-bd80-dcc4c1c35238",
+    "title": "Another new thing",
+    "description": "pls work",
+    "date": "2025-03-21"
+  },
+  {
+    "id": "1bdf7879-ec1d-8073-b886-d8dfd7999b84",
+    "slug": "1bdf7879-ec1d-8073-b886-d8dfd7999b84",
+    "title": "The moment of truth!",
+    "description": "The moment!",
+    "date": "2025-03-21"
+  },
+  {
     "id": "1bdf7879-ec1d-801b-9ead-c6a9e38b2151",
     "slug": "1bdf7879-ec1d-801b-9ead-c6a9e38b2151",
     "title": "This is a new blog post im making",
