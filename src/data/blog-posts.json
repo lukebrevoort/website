@@ -1,9 +1,23 @@
 [
   {
+    "id": "1bdf7879-ec1d-8055-b3e7-fd3303827356",
+    "slug": "1bdf7879-ec1d-8055-b3e7-fd3303827356",
+    "title": "How I made the blog!",
+    "description": "This is how I created this stuff",
+    "date": "2025-03-20"
+  },
+  {
     "id": "1bbf7879-ec1d-8017-bb68-cc8af95b0ed9",
     "slug": "1bbf7879-ec1d-8017-bb68-cc8af95b0ed9",
     "title": "This is a super cool thing!",
     "description": "",
+    "date": "2025-03-19"
+  },
+  {
+    "id": "1bbf7879-ec1d-80d8-9198-c968115d62cb",
+    "slug": "1bbf7879-ec1d-80d8-9198-c968115d62cb",
+    "title": "A Third Blog",
+    "description": "Anything thing ",
     "date": "2025-03-19"
   },
   {
