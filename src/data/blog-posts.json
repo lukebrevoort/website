@@ -1,5 +1,12 @@
 [
   {
+    "id": "1bdf7879-ec1d-801b-9ead-c6a9e38b2151",
+    "slug": "1bdf7879-ec1d-801b-9ead-c6a9e38b2151",
+    "title": "This is a new blog post im making",
+    "description": "Finally done writing this",
+    "date": "2025-03-21"
+  },
+  {
     "id": "1bdf7879-ec1d-8055-b3e7-fd3303827356",
     "slug": "1bdf7879-ec1d-8055-b3e7-fd3303827356",
     "title": "How I made the blog!",
