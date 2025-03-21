@@ -1,9 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-// CRITICAL: Set this to the maximum allowed
+// Force dynamic rendering for API routes
+export const dynamic = 'force-dynamic';
+
+// Specify runtime (optional but recommended)
+export const runtime = 'edge'; // or 'nodejs' if you need Node.js features
+
+// Maximum execution time
 export const maxDuration = 60;
 
-export async function POST(request: Request) {
+// Handle POST requests
+export async function POST(request: NextRequest) {
   try {
     console.log('🔔 Notion webhook received');
     
@@ -12,10 +19,10 @@ export async function POST(request: Request) {
     const rawBody = await requestClone.text();
     
     try {
-      // Try to parse JSON - this is the minimum needed to respond to URL verification
+      // Try to parse JSON
       const body = JSON.parse(rawBody);
       
-      // Handle URL verification immediately - this is critical
+      // Handle URL verification 
       if (body.type === 'url_verification') {
         console.log('🔄 Responding to Notion URL verification challenge');
         return NextResponse.json({ challenge: body.challenge });
@@ -24,34 +31,38 @@ export async function POST(request: Request) {
       // Acknowledge receipt immediately
       console.log('Responding with acknowledgement...');
       
-      // Instead of background processing, do minimal work then trigger deploy hook
+      // Trigger deploy hook
       if (process.env.VERCEL_DEPLOY_HOOK_URL) {
-        console.log('🚀 Triggering Vercel deployment directly...');
+        console.log('🚀 Triggering Vercel deployment...');
         fetch(process.env.VERCEL_DEPLOY_HOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trigger: 'notion-update' }),
-        }).catch(err => console.error('Deploy hook error (non-blocking):', err));
+        }).catch(err => console.error('Deploy hook error:', err));
       }
       
-      // Return success immediately without waiting for the deployment trigger
-      return new Response(JSON.stringify({ success: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      // Return success immediately
+      return NextResponse.json({ success: true });
       
     } catch (parseError) {
       console.error('Failed to parse JSON:', parseError);
-      return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
   } catch (error) {
     console.error('Webhook error:', error);
-    return new Response(JSON.stringify({ error: 'Server error' }), {
-      status: 200, // Still return 200 to prevent Notion from disabling the webhook
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return NextResponse.json({ error: 'Server error' }, { status: 200 });
   }
+}
+
+// Add OPTIONS for CORS
+export async function OPTIONS(request: NextRequest) {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Allow': 'POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Notion-Signature, Notion-Timestamp',
+    },
+  });
 }
