@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { put, list, del } from '@vercel/blob';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,25 +10,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
     
-    // Make sure cache directory exists
-    const cacheDir = path.join(process.cwd(), 'public', 'image-cache');
-    if (!fs.existsSync(cacheDir)) {
-      fs.mkdirSync(cacheDir, { recursive: true });
+    // Define blob name/path (will be used in URL)
+    const blobName = `blog-images/${imageHash}.jpg`;
+    
+    // Check if the blob already exists - list blob with a prefix
+    const { blobs } = await list({ prefix: blobName });
+    
+    // If we found the image in blob storage, return its URL
+    if (blobs.length > 0) {
+      console.log(`Found existing image in Blob storage: ${blobs[0].url}`);
+      return NextResponse.json({ imagePath: blobs[0].url });
     }
     
-    const cachedImagePath = path.join(cacheDir, `${imageHash}.jpg`);
-    const publicPath = `/image-cache/${imageHash}.jpg`;
-    
-    // Return cached image if it exists
-    if (fs.existsSync(cachedImagePath)) {
-      console.log(`Serving cached image: ${imageHash}`);
-      return NextResponse.json({ imagePath: publicPath });
-    }
-    
-    console.log(`Fetching new image: ${imageUrl.substring(0, 50)}...`);
+    console.log(`Fetching new image from: ${imageUrl.substring(0, 50)}...`);
     
     try {
-      // Download the image
+      // Fetch the image
       const response = await fetch(imageUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; BlogImageFetcher/1.0)'
@@ -40,35 +36,33 @@ export async function GET(request: NextRequest) {
         throw new Error(`Failed to fetch image: ${response.status}`);
       }
       
-      // Get image data
-      const buffer = Buffer.from(await response.arrayBuffer());
+      // Get the image data
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      const imageBuffer = await response.arrayBuffer();
       
-      // Save to cache
-      fs.writeFileSync(cachedImagePath, buffer);
-      console.log(`Cached new image: ${imageHash}`);
+      // Upload to Vercel Blob
+      const blob = await put(blobName, imageBuffer, {
+        contentType: contentType,
+        access: 'public',
+      });
       
-      return NextResponse.json({ imagePath: publicPath });
+      console.log(`Uploaded to Blob storage: ${blob.url}`);
+      
+      return NextResponse.json({ imagePath: blob.url });
     } catch (fetchError) {
-      console.error('Error fetching image:', fetchError);
+      console.error('Error fetching/uploading image:', fetchError);
       
-      // Create an empty placeholder image as fallback
-      const fallbackPath = `/image-cache/${imageHash}.jpg`;
-      // Create a simple 1x1 transparent pixel
-      const emptyImageBuffer = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
-      fs.writeFileSync(cachedImagePath, emptyImageBuffer);
-      
+      // Return path to placeholder as fallback
       return NextResponse.json({ 
-        imagePath: fallbackPath,
+        imagePath: '/placeholders/default.jpg',
         error: 'Failed to fetch original image, using placeholder'
       });
     }
-  } catch (fetchError) {
-    console.error('Error fetching image:', fetchError);
-    
-    // Return path to placeholder as fallback
+  } catch (error) {
+    console.error('Error in image proxy:', error);
     return NextResponse.json({ 
-      imagePath: '/placeholders/default.jpg',
-      error: 'Failed to fetch original image, using placeholder'
-    });
+      error: 'Server error',
+      imagePath: '/placeholders/default.jpg' 
+    }, { status: 200 });
   }
 }
