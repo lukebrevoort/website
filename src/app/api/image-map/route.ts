@@ -32,10 +32,12 @@ export async function GET(request: NextRequest) {
         
         // Save the dummy mapping
         fs.writeFileSync(mapFile, JSON.stringify(dummyMapping));
+        
+        // Return the mapping
         return NextResponse.json(dummyMapping);
       }
       
-      // Return empty mapping
+      // Return empty mapping if we reach here
       return NextResponse.json({});
     }
     
