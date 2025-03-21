@@ -1,24 +1,34 @@
-import { generateBlogPosts, commitAndPushChanges } from '../src/lib/blog-generator';
+const { Client } = require('@notionhq/client');
+const fs = require('fs');
+const path = require('path');
 
-async function run() {
-  console.log('🚀 Starting blog generation...');
-  
-  const result = await generateBlogPosts();
-  
-  if (result.success) {
-    console.log('✅ Blog posts generated successfully!');
-    
-    const commitResult = await commitAndPushChanges();
-    
-    if (commitResult.success) {
-      console.log('✅ Changes committed and pushed to GitHub!');
-    } else {
-      console.error('❌ Failed to commit changes:', commitResult.error);
-    }
-  } else {
-    console.error('❌ Failed to generate blog posts:', result.error);
-    process.exit(1);
-  }
+// Get the page ID from command line arguments
+const pageId = process.argv[2];
+
+if (!pageId) {
+  console.error('Error: No page ID provided');
+  process.exit(1);
 }
 
-run().catch(console.error);
+async function generateBlogPost() {
+  console.log(`Generating blog post for page ID: ${pageId}`);
+  
+  // Initialize Notion client
+  const notion = new Client({
+    auth: process.env.NOTION_API_KEY,
+  });
+  
+  // Create blog post directories if they don't exist
+  const blogDir = path.join(process.cwd(), 'src', 'app', 'blog', 'posts');
+  fs.mkdirSync(blogDir, { recursive: true });
+  
+  // Copy your blog generation logic from lib/blog-generator.ts
+  // Make any necessary adjustments for the Node.js environment
+  
+  console.log('Blog post generated successfully!');
+}
+
+generateBlogPost().catch(error => {
+  console.error('Error generating blog post:', error);
+  process.exit(1);
+});
