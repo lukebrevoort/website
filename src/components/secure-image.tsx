@@ -10,9 +10,18 @@ interface SecureImageProps {
   height?: number;
   className?: string;
   postId?: string;
+  imageMap?: Record<string, string>;
 }
 
-export default function SecureImage({ src, alt, width = 800, height = 600, className, postId }: SecureImageProps) {
+export default function SecureImage({ 
+  src, 
+  alt, 
+  width = 800, 
+  height = 600, 
+  className, 
+  postId,
+  imageMap = {} 
+}: SecureImageProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +30,10 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
   const placeholderImage = '/placeholders/default.jpg';
 
   useEffect(() => {
+    console.log('SecureImage processing src:', src);
+    
     if (!src) {
+      console.log('Empty src, using placeholder');
       setImageSrc(placeholderImage);
       setIsLoading(false);
       return;
@@ -29,6 +41,7 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     
     // Handle Vercel Blob URLs directly
     if (src.includes('vercel-blob.com') || src.includes('blob.vercel-storage.com')) {
+      console.log('Direct blob URL detected:', src.substring(0, 30) + '...');
       setImageSrc(src);
       setIsLoading(false);
       return;
@@ -36,14 +49,30 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     
     // Handle image placeholders
     if (src.startsWith('image-placeholder-')) {
-      // Log for debugging
       console.log('Processing placeholder:', src);
+      
+      // First check if we have this placeholder in the imageMap prop
+      if (imageMap && imageMap[src]) {
+        const mappedUrl = imageMap[src];
+        console.log('Found mapping in props:', src, '->', mappedUrl.substring(0, 30) + '...');
+        
+        // If it's already a blob URL, use it directly
+        if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com')) {
+          console.log('Using blob URL from map:', mappedUrl.substring(0, 30) + '...');
+          setImageSrc(mappedUrl);
+          setIsLoading(false);
+          return;
+        }
+      }
+      
+      // If no mapping in props, or mapping isn't a blob URL, try the API
+      const currentPostId = postId || window.location.pathname.split('/').pop();
       
       // Extract the hash from the placeholder
       const hash = src.replace('image-placeholder-', '');
-      const currentPostId = postId || window.location.pathname.split('/').pop();
       
       // First check image-map API to get the actual URL
+      console.log(`Fetching image map for post ${currentPostId}`);
       fetch(`/api/image-map?postId=${currentPostId}`)
         .then(res => res.json())
         .then(imageMap => {
@@ -59,6 +88,7 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
               console.log('Using blob URL directly:', mappedUrl.substring(0, 30) + '...');
               setImageSrc(mappedUrl);
               setIsLoading(false);
+              return;
             } else {
               // Otherwise proxy it through our api
               console.log('Proxying through API:', mappedUrl.substring(0, 30) + '...');
@@ -134,18 +164,18 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     }
     
     // For all other cases, use the src directly
-    console.log('Using src directly:', src.substring(0, 30) + '...');
+    console.log('Using src directly:', src);
     setImageSrc(src);
     setIsLoading(false);
-  }, [src, postId]);
+  }, [src, postId, imageMap]);
 
   // Show loading state
   if (isLoading) {
-    return <span className="inline-block animate-pulse bg-gray-200 dark:bg-gray-800 rounded" style={{ width, height }} />;
+    return <div className="inline-block animate-pulse bg-gray-200 dark:bg-gray-800 rounded" style={{ width, height }} />;
   }
 
   if (error) {
-    return <span className="text-red-500 inline-block">{error}</span>;
+    return <div className="text-red-500 inline-block">{error}</div>;
   }
 
   if (!imageSrc) {

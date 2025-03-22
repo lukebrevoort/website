@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         
         for (const blob of blobs) {
           // Extract the hash from the blob name
-          const hashMatch = blob.pathname.match(/blog-images\/(.+)\.jpg$/);
+          const hashMatch = (blob.pathname || blob.url || '').match(/blog-images\/(.+)\.(jpg|jpeg|png|gif)$/);
           if (hashMatch && hashMatch[1]) {
             const hash = hashMatch[1];
             // Reconstruct the placeholder

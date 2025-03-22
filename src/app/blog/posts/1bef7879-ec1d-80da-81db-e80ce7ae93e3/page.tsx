@@ -124,15 +124,63 @@ After getting into production everything has been moving smoothly! Hopefully at 
 Email: luke@brevoort.com
 `);
 
-  // Process image URLs at runtime
+  // Update your useEffect to actually replace REDACTED with placeholders
   useEffect(() => {
     // Load image map (placeholders -> URLs) from external API
     fetch(`/api/image-map?postId=1bef7879-ec1d-80da-81db-e80ce7ae93e3`)
       .then(res => res.json())
       .then(imageMap => {
         console.log('Loaded image map with', Object.keys(imageMap).length, 'images');
-        // No direct replacements in the client - let SecureImage handle placeholders
-        setContent(content);
+        
+        // Check if we have any mappings
+        if (Object.keys(imageMap).length === 0) {
+          // If no mappings, we need to create some for the REDACTED URLs
+          const redactedPattern = /!\[Image\]\(https:\/\/REDACTED\.amazonaws\.com\/REDACTED\)/g;
+          let updatedContent = content;
+          let match;
+          let index = 0;
+          
+          // Replace each REDACTED URL with a temporary placeholder
+          while ((match = redactedPattern.exec(content)) !== null) {
+            const placeholder = `image-placeholder-temp${index}`;
+            // Create a unique hash for each image
+            const hash = btoa(`temp-image-${index}-${Date.now()}`).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+            const fullPlaceholder = `image-placeholder-${hash}`;
+            
+            // Replace in the content
+            updatedContent = updatedContent.replace(match[0], `![Image](${fullPlaceholder})`);
+            
+            // Create a proxy request for each image to create a blob entry
+            fetch(`/api/create-placeholder?hash=${hash}`)
+              .then(res => res.json())
+              .then(data => {
+                console.log(`Created placeholder for image ${index}:`, data);
+              })
+              .catch(err => console.error(`Error creating placeholder ${index}:`, err));
+            
+            index++;
+          }
+          
+          if (index > 0) {
+            console.log(`Replaced ${index} REDACTED URLs with placeholders`);
+            setContent(updatedContent);
+          }
+        } else {
+          // We have mappings, but need to ensure they're properly used
+          // Check if we still have REDACTED URLs
+          if (content.includes('REDACTED.amazonaws.com')) {
+            console.log('Found REDACTED URLs, replacing with placeholders');
+            
+            // Replace with the first available placeholder
+            const firstPlaceholder = Object.keys(imageMap)[0];
+            let updatedContent = content.replace(
+              /!\[Image\]\(https:\/\/REDACTED\.amazonaws\.com\/REDACTED\)/g, 
+              `![Image](${firstPlaceholder})`
+            );
+            
+            setContent(updatedContent);
+          }
+        }
       })
       .catch(err => console.error('Error fetching image map:', err));
   }, []);
