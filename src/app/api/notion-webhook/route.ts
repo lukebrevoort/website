@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import * as crypto from 'crypto';
 
-// For debugging
-const DEBUG_MODE = process.env.NODE_ENV == 'production' || process.env.VERCEL_ENV === 'preview';
+// Fix your DEBUG_MODE logic - it's currently inverted!
+// It should be true in development or preview, not in production
+const DEBUG_MODE = process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV === 'preview';
 
 // Maximum execution time
 export const maxDuration = 60;
@@ -32,20 +33,18 @@ export async function POST(request: Request) {
     const notionSignature = request.headers.get('notion_signing_secret') || 
                            request.headers.get('x-notion-signature') ||
                            request.headers.get('notion-signature');
-    const notionTimestamp = request.headers.get('x-notion-timestamp') ||
-                           request.headers.get('notion-timestamp');
     
     console.log('Signature check:', { 
-      hasSignature: !!notionSignature, 
-      hasTimestamp: !!notionTimestamp 
+      hasSignature: !!notionSignature
     });
     
-    // Only enforce signature in production
+    // Only enforce signature in production, and only if it's not a preview
+    // Modified to check only for signature, not timestamp
     if (process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV !== 'preview') {
-      if (!notionSignature || !notionTimestamp) {
+      if (!notionSignature) {
         return NextResponse.json({ 
           success: false, 
-          message: 'Missing signature headers' 
+          message: 'Missing signature header' 
         }, { status: 401 });
       }
     }
