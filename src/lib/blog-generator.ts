@@ -75,37 +75,77 @@ export async function generateBlogPosts(specificPostId?: string) {
 
     // NEW: Add post-generation security check to catch any remaining credentials
     console.log("Running final security checks...");
-    const generatedFiles = fs.readdirSync(POSTS_DIR, { recursive: true });
-    const awsCredentialPatterns = [
-      /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^\s"'`<>)]+/gi,
-      /Credential=[A-Z0-9/]+/gi,
-      /X-Amz-Credential=[A-Z0-9/]+/gi,
-      /AWSAccessKeyId=[A-Z0-9]+/gi,
-      /Security-Token=[A-Za-z0-9%]+/gi,
-      /(AKIA|ASIA|AROA)[A-Z0-9]{16}/g,
-      /[A-Za-z0-9+/]{40}/g
-    ];
     
-    let foundCredentials = false;
+    // Track which files we've already processed
+    const processedFiles = new Set<string>();
+    let securityCheckFailed = false;
     
-    for (const filePath of generatedFiles) {
-      if (typeof filePath === 'string' && filePath.endsWith('.tsx')) {
-        const fullPath = path.join(POSTS_DIR, filePath);
-        const content = fs.readFileSync(fullPath, 'utf8');
+    // Function to scan directories recursively
+    function scanDirectory(dir: string) {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
         
-        for (const pattern of awsCredentialPatterns) {
-          const matches = content.match(pattern);
-          if (matches) {
-            console.error(`Found potential credentials in ${fullPath}`);
-            // Clean up - don't let the file remain with credentials
-            fs.unlinkSync(fullPath);
-            foundCredentials = true;
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          
+          if (entry.isDirectory()) {
+            // Recursively scan subdirectories
+            scanDirectory(fullPath);
+          } else if (entry.name === 'page.tsx' && !processedFiles.has(fullPath)) {
+            // Mark this file as processed to avoid double-checking
+            processedFiles.add(fullPath);
+            
+            // Check this file for credentials
+            try {
+              const content = fs.readFileSync(fullPath, 'utf8');
+              let hasCredentials = false;
+              
+              const awsCredentialPatterns = [
+                /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^\s"'`<>)]+/gi,
+                /Credential=[A-Z0-9/]+/gi,
+                /X-Amz-Credential=[A-Z0-9/]+/gi,
+                /AWSAccessKeyId=[A-Z0-9]+/gi,
+                /Security-Token=[A-Za-z0-9%]+/gi,
+                /(AKIA|ASIA|AROA)[A-Z0-9]{16}/g,
+                /[A-Za-z0-9+/]{40}/g
+              ];
+              
+              // Check all patterns
+              for (const pattern of awsCredentialPatterns) {
+                const matches = content.match(pattern);
+                if (matches) {
+                  hasCredentials = true;
+                  console.error(`Found potential credentials in ${fullPath}`);
+                  break; // No need to check other patterns
+                }
+              }
+              
+              // Only try to delete if we found credentials
+              if (hasCredentials) {
+                securityCheckFailed = true;
+                try {
+                  fs.unlinkSync(fullPath);
+                  console.log(`Successfully deleted ${fullPath}`);
+                } catch (err) {
+                  if (err && typeof err === 'object' && 'code' in err && err.code !== 'ENOENT') { // Ignore "file not found" errors
+                    console.error(`Warning: Failed to delete ${fullPath}:`, err);
+                  }
+                }
+              }
+            } catch (fileError) {
+              console.error(`Error processing file ${fullPath}:`, fileError);
+            }
           }
         }
+      } catch (dirError) {
+        console.error(`Error scanning directory ${dir}:`, dirError);
       }
     }
     
-    if (foundCredentials) {
+    // Start scanning at the posts directory
+    scanDirectory(POSTS_DIR);
+    
+    if (securityCheckFailed) {
       throw new Error("Security check failed: AWS credentials found in generated files");
     }
 
