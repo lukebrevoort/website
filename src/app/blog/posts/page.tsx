@@ -47,16 +47,60 @@ export default function BlogPage() {
               </Breadcrumb>
             </div>
           </header>
+
           
           <div className="container mx-auto py-10 px-4">
-            <motion.h1 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`${lukesFont.className} text-4xl font-bold mb-10`}
-            >
-              Blog
-            </motion.h1>
-            
+            <div className="py-10"></div>
+                <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12"
+                >
+                <motion.div 
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.8 }}
+                  className="hidden md:block md:w-1/4 lg:w-1/5 xl:w-1/6 overflow-hidden rounded-xl shadow-md"
+                >
+                  <img src="/images/car.jpg" alt="car" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
+                </motion.div>
+                
+                <motion.h1 
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className={`${lukesFont.className} text-6xl font-bold text-center`}
+                >
+                  My Personal Blog 🖋️
+                </motion.h1>
+
+                <motion.div 
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 30 }}
+                  transition={{ duration: 0.8 }}
+                  className="md:hidden w-[90%] sm:w-[60%] overflow-hidden rounded-xl shadow-md"
+                >
+                  <img src="/images/car.jpg" alt="car" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
+                </motion.div>
+                
+                <motion.div 
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 30 }}
+                  transition={{ duration: 0.8 }}
+                  className="w-[90%] sm:w-[60%] md:w-1/4 lg:w-1/5 xl:w-1/6 overflow-hidden rounded-xl shadow-md"
+                >
+                  <img src="/images/street.jpg" alt="street" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
+                </motion.div>
+              </motion.div>
+          </div>
+        
+          <div className="container mx-auto px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -71,24 +115,24 @@ export default function BlogPage() {
                 >
                   <Link 
                     href={`/blog/posts/${post.id}`} 
-                    className="block border border-gray-200 dark:border-gray-800 rounded-lg p-6 hover:shadow-md transition-shadow"
+                    className="block border border-gray-300 dark:border-gray-800 rounded-lg p-6 hover:shadow-md transition-shadow"
                   >
                     <article>
-                      <h2 className={`${crimsonText.className} text-2xl font-semibold mb-2`}>{post.title}</h2>
-                      {post.date && <time className="text-sm text-gray-500">{new Date(post.date).toLocaleDateString()}</time>}
-                      {post.description && <p className="mt-3 text-gray-700 dark:text-gray-300">{post.description}</p>}
+                      <h2 className={`${crimsonText.className} text-4xl font-semibold mb-2`}>{post.title}</h2>
+                      {post.date && <time className="text-sm text-lg text-gray-500">{new Date(post.date).toLocaleDateString()}</time>}
+                      {post.description && <p className="mt-3 text-gray-700 text-xl dark:text-gray-300">{post.description}</p>}
                     </article>
                   </Link>
                 </motion.div>
               ))}
             </motion.div>
             
-            {posts.length === 0 && (
-              <div className="text-center py-10">
-                <p className="text-gray-500">No blog posts found.</p>
-              </div>
-            )}
-          </div>
+              {posts.length === 0 && (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">No blog posts found.</p>
+                </div>
+              )}
+            </div>
         </SidebarInset>
       </MotionConfig>
     </SidebarProvider>
