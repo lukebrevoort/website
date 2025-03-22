@@ -94,7 +94,7 @@ export async function POST(request: Request) {
         {
           method: 'POST',
           headers: {
-            'Authorization': `token ${process.env.GITHUB_PAT}`,
+            'Authorization': `Bearer ${process.env.GITHUB_PAT}`,
             'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json'
           },
