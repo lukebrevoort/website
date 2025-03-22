@@ -1,40 +1,9 @@
 {
   "pages": {
-    "/layout": [
+    "/api/notion-webhook/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
-    ],
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/page.css",
-      "static/chunks/app/page.js"
-    ],
-    "/blog/posts/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/blog/posts/page.css",
-      "static/chunks/app/blog/posts/page.js"
-    ],
-    "/about/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/about/page.css",
-      "static/chunks/app/about/page.js"
-    ],
-    "/models/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/models/page.css",
-      "static/chunks/app/models/page.js"
-    ],
-    "/documentation/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/documentation/page.css",
-      "static/chunks/app/documentation/page.js"
+      "static/chunks/app/api/notion-webhook/route.js"
     ]
   }
 }

@@ -1,7 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/models/page": "app/models/page.js",
-  "/documentation/page": "app/documentation/page.js",
-  "/blog/posts/page": "app/blog/posts/page.js",
-  "/about/page": "app/about/page.js"
+  "/api/notion-webhook/route": "app/api/notion-webhook/route.js"
 }

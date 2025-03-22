@@ -28,20 +28,41 @@ function ensureDirectories() {
 }
 
 function createImageMapping(postId, markdown) {
-  // Extract image URLs from markdown - use a more robust regex
   const imageMap = {};
-  // This improved regex captures all AWS URLs, including those in different contexts
-  const regex = /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`']+)/g;
+  
+  // This improved regex captures all AWS URLs, including those in code blocks
+  // Use a two-part approach
+  
+  // First, regular image URLs
+  const standardRegex = /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`']+)/g;
   let match;
   
-  while ((match = regex.exec(markdown)) !== null) {
+  while ((match = standardRegex.exec(markdown)) !== null) {
     const url = match[0];
     const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
     const placeholder = `image-placeholder-${urlHash}`;
     imageMap[placeholder] = url;
   }
   
-  // Save the mapping
+  // Second, find URLs inside code blocks (more challenging)
+  const codeBlockRegex = /```[^\n]*\n([\s\S]*?)```/g;
+  let codeMatch;
+  
+  while ((codeMatch = codeBlockRegex.exec(markdown)) !== null) {
+    const codeBlock = codeMatch[1];
+    // Find URLs inside code blocks
+    const urlRegex = /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^"\s`]+)/g;
+    let urlMatch;
+    
+    while ((urlMatch = urlRegex.exec(codeBlock)) !== null) {
+      const url = urlMatch[0];
+      const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      const placeholder = `code-image-placeholder-${urlHash}`;
+      imageMap[placeholder] = url;
+    }
+  }
+  
+  // Save the mapping as before
   const privateDir = path.join(process.cwd(), '.private');
   if (!fs.existsSync(privateDir)) {
     fs.mkdirSync(privateDir, { recursive: true });
@@ -52,44 +73,26 @@ function createImageMapping(postId, markdown) {
     JSON.stringify(imageMap, null, 2)
   );
   
-  console.log(`Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
-  
+  console.log(`Created image mapping with ${Object.keys(imageMap).length} images`);
   return imageMap;
 }
 
 function generatePostPageContent(post, markdown) {
-  // Get properties
-  const properties = post.properties;
-  const title = properties.Title?.title[0]?.plain_text || 'Untitled';
-  const date = properties.Date?.date?.start 
-    ? new Date(properties.Date.date.start).toLocaleDateString()
-    : '';
-    
-  // Create image mapping
-  const imageMap = createImageMapping(post.id, markdown);
+  // ...existing code...
   
-  // Process the markdown to replace AWS URLs with placeholders - use a more thorough approach
-  let processedMarkdown = markdown;
+  // Double-check for any remaining AWS URLs in entire content, including code blocks
+  const finalCheckRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com).+?(?:Credential=([A-Z0-9]+)|Security-Token=[A-Za-z0-9%]+)/g;
+  const remainingMatches = processedMarkdown.match(finalCheckRegex);
   
-  // Sort URLs by length (longest first) to prevent partial replacements
-  const sortedEntries = Object.entries(imageMap).sort((a, b) => b[1].length - a[1].length);
-  
-  // Replace each URL with its placeholder
-  sortedEntries.forEach(([placeholder, url]) => {
-    // Escape special regex characters in the URL
-    const escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    processedMarkdown = processedMarkdown.replace(
-      new RegExp(escapedUrl, 'g'),
-      placeholder
-    );
-  });
-  
-  // Double-check for any remaining AWS URLs and warn if found
-  const checkRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`']+/g;
-  const remainingMatches = processedMarkdown.match(checkRegex);
   if (remainingMatches) {
-    console.warn('WARNING: Some AWS URLs were not replaced with placeholders:');
-    remainingMatches.forEach(url => console.warn(`- ${url.substring(0, 50)}...`));
+    console.error('CRITICAL ERROR: AWS credentials still detected in processed markdown');
+    console.error('Aborting to prevent credential leakage!');
+    remainingMatches.forEach(url => {
+      // Show partial URL to identify location, but mask credentials
+      const maskedUrl = url.replace(/(Credential=|Security-Token=)[^&]+/g, '$1***REDACTED***');
+      console.error(`- ${maskedUrl.substring(0, 100)}...`);
+    });
+    process.exit(1); // Stop execution to prevent leaking credentials
   }
 
   return `"use client"
