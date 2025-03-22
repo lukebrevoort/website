@@ -94,7 +94,7 @@ export async function POST(request: Request) {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${process.env.GITHUB_PAT}`,
+            'Authorization': `Bearer ${process.env.GITHUB_PAT}`, // Make sure it's 'Bearer' not 'token'
             'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json'
           },
@@ -110,7 +110,15 @@ export async function POST(request: Request) {
       
       if (!githubResponse.ok) {
         const errorText = await githubResponse.text();
-        console.error(`📛 GitHub API error: ${githubResponse.status} - ${errorText}`);
+        console.error(`📛 GitHub API error: ${githubResponse.status}`);
+        console.error(`Response body: ${errorText}`);
+        console.error(`Request details: 
+          - Repository: ${githubRepoOwner}/${githubRepoName}
+          - Event type: notion_update
+          - Authorization header: Bearer ${process.env.GITHUB_PAT ? process.env.GITHUB_PAT.substring(0, 4) + '...' : 'undefined'}
+          - Token length: ${process.env.GITHUB_PAT?.length || 0}
+        `);
+        
         return NextResponse.json({ 
           success: false, 
           message: `Failed to trigger GitHub workflow: ${githubResponse.status}`,
