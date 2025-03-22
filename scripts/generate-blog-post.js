@@ -5,7 +5,6 @@ const { execSync } = require('child_process');
 const { NotionConverter } = require('notion-to-md');
 const { DefaultExporter } = require('notion-to-md/plugins/exporter');
 
-// Get the page ID from command line arguments
 const pageId = process.argv[2];
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
@@ -15,12 +14,10 @@ if (!pageId) {
   process.exit(1);
 }
 
-// Define directories
 const BLOG_DIR = path.join(process.cwd(), 'src/app/blog');
 const POSTS_DIR = path.join(BLOG_DIR, 'posts');
 const DATA_DIR = path.join(process.cwd(), 'src/data');
 
-// Ensure directories exist
 function ensureDirectories() {
   if (!fs.existsSync(POSTS_DIR)) {
     fs.mkdirSync(POSTS_DIR, { recursive: true });
@@ -30,7 +27,6 @@ function ensureDirectories() {
   }
 }
 
-// Create image mapping function (from blog-generator.ts)
 function createImageMapping(postId, markdown) {
   // Extract image URLs from markdown
   const imageMap = {};
@@ -60,7 +56,6 @@ function createImageMapping(postId, markdown) {
   return imageMap;
 }
 
-// Page content generator function (from blog-generator.ts)
 function generatePostPageContent(post, markdown) {
   // Get properties
   const properties = post.properties;
@@ -81,7 +76,6 @@ function generatePostPageContent(post, markdown) {
     );
   });
 
-  // Return the full React component code (as it is in blog-generator.ts)
   return `"use client"
 
 import { lukesFont, crimsonText } from '@/app/fonts';
@@ -177,7 +171,6 @@ export default function BlogPost() {
 }`;
 }
 
-// Functions to fetch data from Notion using notion-to-md
 async function getBlogPosts() {
   const notion = new Client({ auth: process.env.NOTION_API_KEY });
   const databaseId = process.env.NOTION_BLOG_DATABASE_ID;

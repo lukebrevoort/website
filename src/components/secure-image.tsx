@@ -34,7 +34,6 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
       return;
     }
     
-    // Check if src is a placeholder
     if (src.startsWith('image-placeholder-')) {
       console.log('Detected placeholder, fetching real image via API:', src);
       
@@ -45,7 +44,6 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
       fetch(`/api/image-map?postId=${postId}`)
         .then(res => res.json())
         .then(imageMap => {
-          // Find the URL for this placeholder
           const realUrl = imageMap[src];
           
           if (realUrl) {
@@ -63,7 +61,6 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
               setImageSrc(realUrl);
               setIsLoading(false);
             } 
-            // External URL needs proxying
             else {
               console.log('Proxying external URL:', realUrl.substring(0, 30) + '...');
               const urlHash = btoa(realUrl).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
@@ -87,7 +84,6 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
                 });
             }
           } else {
-            // Placeholder not found in map, try direct proxy with hash from placeholder
             console.log('Placeholder not found in map, trying direct proxy');
             const hash = src.replace('image-placeholder-', '');
             
