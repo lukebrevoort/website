@@ -44,36 +44,56 @@ async function runTypescriptGenerator() {
     
     console.log('Blog post generation complete');
     
-// Add safer JSON parsing
-try {
-  // Trim the output to remove any unexpected characters
-  const trimmedOutput = output.trim();
-  
-  // Extract just the JSON part using regex to find the complete JSON object
-  const jsonRegex = /\{[\s\S]*\}/;
-  const jsonMatch = trimmedOutput.match(jsonRegex);
-  
-  if (!jsonMatch) {
-    console.error('Could not find valid JSON in output');
-    console.error('Raw output:', trimmedOutput);
-    return { success: false, error: 'No JSON found in generator output' };
+    // Add safer JSON parsing
+    try {
+      // Log some debug info about the output
+      console.log(`Output length: ${output.length} bytes`);
+      
+      // Find the last JSON object in the output (most likely to be our result)
+      const lastJsonStart = output.lastIndexOf('{');
+      const lastJsonEnd = output.lastIndexOf('}') + 1;
+      
+      if (lastJsonStart >= 0 && lastJsonEnd > lastJsonStart) {
+        const jsonStr = output.substring(lastJsonStart, lastJsonEnd);
+        try {
+          const result = JSON.parse(jsonStr);
+          console.log('Successfully parsed result:', result.success ? 'SUCCESS' : 'FAILED');
+          return result;
+        } catch (innerParseError) {
+          console.error('Error parsing extracted JSON:', innerParseError);
+          // Fall through to alternative method
+        }
+      }
+      
+      // Fallback to regex method if direct extraction fails
+      const trimmedOutput = output.trim();
+      const jsonRegex = /\{[\s\S]*\}/;
+      const jsonMatch = trimmedOutput.match(jsonRegex);
+      
+      if (!jsonMatch) {
+        console.error('Could not find valid JSON in output');
+        console.error('Raw output first 200 chars:', trimmedOutput.substring(0, 200));
+        console.error('Raw output last 200 chars:', trimmedOutput.substring(trimmedOutput.length - 200));
+        return { success: false, error: 'No JSON found in generator output' };
+      }
+      
+      // Parse the extracted JSON
+      const result = JSON.parse(jsonMatch[0]);
+      
+      // Log for debugging
+      console.log('Successfully parsed result with regex:', result.success ? 'SUCCESS' : 'FAILED');
+      
+      return result;
+    } catch (parseError) {
+      console.error('Error parsing output:', parseError);
+      console.error('Raw output excerpt:', output.substring(output.length - 300));
+      return { success: false, error: 'Failed to parse generator output' };
+    }
+  } catch (error) {
+    console.error('Error executing TypeScript generator:', error);
+    return { success: false, error: error.message || String(error) };
   }
-  
-  // Parse the extracted JSON
-  const result = JSON.parse(jsonMatch[0]);
-  
-  // Log for debugging
-  console.log('Successfully parsed result:', result.success ? 'SUCCESS' : 'FAILED');
-  
-  return result;
-} catch (parseError) {
-  console.error('Error parsing output:', parseError);
-  console.error('Raw output:', output);
-  return { success: false, error: 'Failed to parse generator output' };
 }
-}
-}
-
 
 // Main execution - handle errors at the top level
 (async function main() {
