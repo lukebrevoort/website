@@ -89,14 +89,14 @@ First, where the images were stored. My original idea was to simply have some fo
 
 \`\`\`javascript
     // Define blob name/path (will be used in URL)
-    const blobName = \`blog-images/${imageHash}.jpg\`;
+    const blobName = \`blog-images/${'someimage'}.jpg\`;
     
     // Check if the blob already exists - list blob with a prefix
     const { blobs } = await list({ prefix: blobName });
     
     // If we found the image in blob storage, return its URL
     if (blobs.length > 0) {
-      console.log(\`Found existing image in Blob storage: ${blobs[0].url}\`);
+      console.log(\`Found existing image in Blob storage: {blobs[0].url}\`);
       return NextResponse.json({ imagePath: blobs[0].url });
     }
 \`\`\`
