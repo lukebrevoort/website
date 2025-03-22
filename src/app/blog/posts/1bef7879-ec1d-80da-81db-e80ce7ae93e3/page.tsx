@@ -89,15 +89,15 @@ First, where the images were stored. My original idea was to simply have some fo
 
 \`\`\`javascript
     // Define blob name/path (will be used in URL)
-    const blobName = \`blog-images/${'someimage'}.jpg\`;
+    const blobName = \`blog-images/${'somehash'}.jpg\`;
     
     // Check if the blob already exists - list blob with a prefix
     const { blobs } = await list({ prefix: blobName });
     
     // If we found the image in blob storage, return its URL
     if (blobs.length > 0) {
-      console.log(\`Found existing image in Blob storage: {blobs[0].url}\`);
-      return NextResponse.json({ imagePath: blobs[0].url });
+      console.log(\`Found existing image in Blob storage: ${blobs[0].url}\`);
+      return NextResponse.json({ imagePath: 'blobs[0].url' });
     }
 \`\`\`
 
@@ -123,67 +123,84 @@ After getting into production everything has been moving smoothly! Hopefully at 
 
 Email: luke@brevoort.com
 `);
+  const [imageMap, setImageMap] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Update your useEffect to actually replace REDACTED with placeholders
+  // Process image URLs at runtime
   useEffect(() => {
+    console.log('BlogPost mounted, fetching image map...');
+    
+    // First check if we still have REDACTED URLs that need to be fixed
+    const hasRedactedImages = content.includes('REDACTED.amazonaws.com');
+    
+    if (hasRedactedImages) {
+      console.log('Found REDACTED URLs in content, will attempt to replace them');
+    }
+    
     // Load image map (placeholders -> URLs) from external API
     fetch(`/api/image-map?postId=1bef7879-ec1d-80da-81db-e80ce7ae93e3`)
-      .then(res => res.json())
-      .then(imageMap => {
-        console.log('Loaded image map with', Object.keys(imageMap).length, 'images');
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then(fetchedMap => {
+        console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
+        setImageMap(fetchedMap);
         
-        // Check if we have any mappings
-        if (Object.keys(imageMap).length === 0) {
-          // If no mappings, we need to create some for the REDACTED URLs
-          const redactedPattern = /!\[Image\]\(https:\/\/REDACTED\.amazonaws\.com\/REDACTED\)/g;
+        // If we have REDACTED URLs and we got an image map
+        if (hasRedactedImages && Object.keys(fetchedMap).length > 0) {
+          console.log('Replacing REDACTED URLs with image placeholders');
+          
+          // Create a new version of the content with REDACTED URLs replaced
           let updatedContent = content;
-          let match;
-          let index = 0;
           
-          // Replace each REDACTED URL with a temporary placeholder
-          while ((match = redactedPattern.exec(content)) !== null) {
-            const placeholder = `image-placeholder-temp${index}`;
-            // Create a unique hash for each image
-            const hash = btoa(`temp-image-${index}-${Date.now()}`).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-            const fullPlaceholder = `image-placeholder-${hash}`;
-            
-            // Replace in the content
-            updatedContent = updatedContent.replace(match[0], `![Image](${fullPlaceholder})`);
-            
-            // Create a proxy request for each image to create a blob entry
-            fetch(`/api/create-placeholder?hash=${hash}`)
-              .then(res => res.json())
-              .then(data => {
-                console.log(`Created placeholder for image ${index}:`, data);
-              })
-              .catch(err => console.error(`Error creating placeholder ${index}:`, err));
-            
-            index++;
-          }
+          // Replace all REDACTED URLs with the first available placeholder
+          // In a more sophisticated version, we'd match images to placeholders intelligently
+          const allPlaceholders = Object.keys(fetchedMap);
           
-          if (index > 0) {
-            console.log(`Replaced ${index} REDACTED URLs with placeholders`);
-            setContent(updatedContent);
-          }
-        } else {
-          // We have mappings, but need to ensure they're properly used
-          // Check if we still have REDACTED URLs
-          if (content.includes('REDACTED.amazonaws.com')) {
-            console.log('Found REDACTED URLs, replacing with placeholders');
+          if (allPlaceholders.length > 0) {
+            // Replace each instance of a REDACTED URL with a sequential placeholder
+            let placeholderIndex = 0;
             
-            // Replace with the first available placeholder
-            const firstPlaceholder = Object.keys(imageMap)[0];
-            let updatedContent = content.replace(
-              /!\[Image\]\(https:\/\/REDACTED\.amazonaws\.com\/REDACTED\)/g, 
-              `![Image](${firstPlaceholder})`
+            updatedContent = updatedContent.replace(
+              /!\[([^\]]*)\]\(https:\/\/REDACTED\.amazonaws\.com\/REDACTED\)/g,
+              (match, altText) => {
+                const placeholder = allPlaceholders[placeholderIndex % allPlaceholders.length];
+                placeholderIndex++;
+                console.log(`Replaced REDACTED URL with placeholder: ${placeholder.substring(0, 30)}...`);
+                return `![${altText}](${placeholder})`;
+              }
             );
             
+            console.log('Updated content with placeholders');
             setContent(updatedContent);
           }
         }
+        
+        setIsLoading(false);
       })
-      .catch(err => console.error('Error fetching image map:', err));
+      .catch(err => {
+        console.error('Error fetching image map:', err);
+        setIsLoading(false);
+      });
   }, []);
+
+  // Debugging button to help diagnose image issues
+  const debugImage = () => {
+    console.log('Current content contains image placeholders:', 
+                content.includes('image-placeholder-'));
+    console.log('Current image map:', imageMap);
+    
+    // Force image map reload
+    fetch(`/api/image-map?postId=1bef7879-ec1d-80da-81db-e80ce7ae93e3&force=true`)
+      .then(res => res.json())
+      .then(fetchedMap => {
+        console.log('Reloaded image map:', fetchedMap);
+        setImageMap(fetchedMap);
+      });
+  };
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -221,20 +238,66 @@ Email: luke@brevoort.com
             <header className="mb-10">
               <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>My First Post</h1>
               <time className="text-gray-500">3/21/2025</time>
+              
+              {/* Add debugging button that's only visible during development */}
+              {process.env.NODE_ENV === 'development' && (
+                <button 
+                  onClick={debugImage}
+                  className="mt-2 px-3 py-1 text-xs bg-gray-200 dark:bg-gray-800 rounded"
+                >
+                  Debug Images
+                </button>
+              )}
             </header>
             
-            <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
-              <ReactMarkdown components={{
-                img: ({ node, ...props }) => (
-                  <SecureImage 
-                    src={props.src || ''} 
-                    alt={props.alt || ''} 
-                    className="my-4 rounded-md" 
-                    postId="1bef7879-ec1d-80da-81db-e80ce7ae93e3"
-                  />
-                ),
-              }}>{content}</ReactMarkdown>
-            </div>
+            {isLoading ? (
+              <div className="animate-pulse">Loading content...</div>
+            ) : (
+              <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
+                <ReactMarkdown components={{
+                  img: ({ node, ...props }) => {
+                    console.log('Rendering image with src:', props.src);
+                    
+                    // Check if this is a placeholder that needs to be handled specially
+                    const isPlaceholder = props.src && props.src.startsWith('image-placeholder-');
+                    
+                    if (isPlaceholder) {
+                      console.log('Detected image placeholder:', props.src);
+                      
+                      // If we have a mapping for this placeholder in our imageMap
+                      if (imageMap[props.src]) {
+                        console.log('Found mapping for placeholder:', imageMap[props.src].substring(0, 30) + '...');
+                      } else {
+                        console.log('No mapping found for placeholder:', props.src);
+                      }
+                    }
+                    
+                    return (
+                      <SecureImage 
+                        src={props.src || ''} 
+                        alt={props.alt || ''} 
+                        className="my-4 rounded-md" 
+                        postId="1bef7879-ec1d-80da-81db-e80ce7ae93e3"
+                        imageMap={imageMap}
+                      />
+                    );
+                  },
+                  // Also fix code formatting issues in the rendered markdown
+                  code: ({ node, inline, className, children, ...props }) => {
+                    // For code blocks in the blog content
+                    return inline ? (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    ) : (
+                      <pre className={className} {...props}>
+                        <code>{children}</code>
+                      </pre>
+                    );
+                  },
+                }}>{content}</ReactMarkdown>
+              </div>
+            )}
           </motion.article>
         </SidebarInset>
       </MotionConfig>
