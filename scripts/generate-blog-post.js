@@ -280,19 +280,7 @@ async function generateBlogPost() {
     }`);
     
     // Commit and push changes
-    console.log('Checking for changes to commit...');
-    const hasChanges = execSync('git status --porcelain').toString().trim().length > 0;
-    
-    if (hasChanges) {
-      console.log('Committing changes...');
-      execSync('git add .');
-      execSync(`git commit -m "Update blog post from Notion: ${pageId}"`);
-      console.log('Pushing to GitHub...');
-      execSync('git push');
-      console.log('Changes pushed to GitHub');
-    } else {
-      console.log('No changes to commit');
-    }
+    console.log('Checking for changes...');
     
     console.log('Blog post generated successfully!');
   } catch (error) {
