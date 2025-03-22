@@ -73,6 +73,42 @@ export async function generateBlogPosts(specificPostId?: string) {
       }`);
     }
 
+    // NEW: Add post-generation security check to catch any remaining credentials
+    console.log("Running final security checks...");
+    const generatedFiles = fs.readdirSync(POSTS_DIR, { recursive: true });
+    const awsCredentialPatterns = [
+      /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^\s"'`<>)]+/gi,
+      /Credential=[A-Z0-9/]+/gi,
+      /X-Amz-Credential=[A-Z0-9/]+/gi,
+      /AWSAccessKeyId=[A-Z0-9]+/gi,
+      /Security-Token=[A-Za-z0-9%]+/gi,
+      /(AKIA|ASIA|AROA)[A-Z0-9]{16}/g,
+      /[A-Za-z0-9+/]{40}/g
+    ];
+    
+    let foundCredentials = false;
+    
+    for (const filePath of generatedFiles) {
+      if (typeof filePath === 'string' && filePath.endsWith('.tsx')) {
+        const fullPath = path.join(POSTS_DIR, filePath);
+        const content = fs.readFileSync(fullPath, 'utf8');
+        
+        for (const pattern of awsCredentialPatterns) {
+          const matches = content.match(pattern);
+          if (matches) {
+            console.error(`Found potential credentials in ${fullPath}`);
+            // Clean up - don't let the file remain with credentials
+            fs.unlinkSync(fullPath);
+            foundCredentials = true;
+          }
+        }
+      }
+    }
+    
+    if (foundCredentials) {
+      throw new Error("Security check failed: AWS credentials found in generated files");
+    }
+
     return {
       success: true,
       postsGenerated: postsToGenerate.length,
@@ -113,19 +149,27 @@ export async function commitAndPushChanges() {
   }
 }
 
-// This function should be in your generateBlogPosts function
 function createImageMapping(postId: string, markdown: string) {
   // Extract image URLs from markdown
   const imageMap: Record<string, string> = {};
-  const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
-  let match;
   
-  while ((match = regex.exec(markdown)) !== null) {
-    const url = match[0];
-    const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-    const placeholder = `image-placeholder-${urlHash}`;
-    imageMap[placeholder] = url;
-  }
+  // Use a more comprehensive regex to catch all AWS URL patterns
+  const awsUrlPatterns = [
+    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
+    /(https:\/\/[^\s"`'<>)]+(?:Credential=|X-Amz-Credential=|AWSAccessKeyId=|Security-Token=)[^\s"`'<>)]+)/g,
+    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g
+  ];
+  
+  // Process all patterns
+  awsUrlPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(markdown)) !== null) {
+      const url = match[0];
+      const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      const placeholder = `image-placeholder-${urlHash}`;
+      imageMap[placeholder] = url;
+    }
+  });
   
   // Save the mapping
   const privateDir = path.join(process.cwd(), '.private');
@@ -151,6 +195,19 @@ function generatePostPageContent(post: any, markdown: string) {
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
     
+  // FIRST - Check for any AWS credentials before we do anything else
+  const preCheckRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com).+?(?:Credential=|Security-Token=|X-Amz-Credential=|AWSAccessKeyId=|[A-Z0-9]{20})/gi;
+  const preCheckMatches = markdown.match(preCheckRegex);
+  
+  if (preCheckMatches) {
+    console.error('⚠️ AWS credentials detected in raw markdown - Logging patterns to help debugging:');
+    const uniquePatterns = [...new Set(preCheckMatches.map(url => {
+      // Extract just the beginning of the URL pattern to help identify it
+      return url.substring(0, 50) + '...';
+    }))];
+    uniquePatterns.forEach(pattern => console.error(`- Pattern found: ${pattern}`));
+  }
+    
   // Create image mapping (this also saves it to a file)
   const imageMap = createImageMapping(post.id, markdown);
   
@@ -161,6 +218,26 @@ function generatePostPageContent(post: any, markdown: string) {
       new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
       placeholder
     );
+  });
+  
+  // NEW - ADDITIONAL DIRECT CREDENTIAL REPLACEMENT
+  // This addresses credentials that might appear outside of full URLs
+  const credentialReplacements: Record<string, string> = {
+    // Find and replace any standalone credential patterns
+    'Credential=[A-Z0-9/]+': 'Credential=REPLACED_CREDENTIAL',
+    'X-Amz-Credential=[A-Z0-9/]+': 'X-Amz-Credential=REPLACED_CREDENTIAL',
+    'AWSAccessKeyId=[A-Z0-9]+': 'AWSAccessKeyId=REPLACED_KEY',
+    'Security-Token=[A-Za-z0-9%]+': 'Security-Token=REPLACED_TOKEN',
+    // AWS Access Key ID pattern (20 character alphanumeric string starting with specific prefixes)
+    '(AKIA|ASIA|AROA)[A-Z0-9]{16}': 'REPLACED_ACCESS_KEY_ID',
+    // AWS Secret Access Key pattern (40 character base64 string)
+    '[A-Za-z0-9+/]{40}': 'REPLACED_SECRET_KEY'
+  };
+  
+  // Apply each credential replacement pattern
+  Object.entries(credentialReplacements).forEach(([pattern, replacement]) => {
+    const regex = new RegExp(pattern, 'g');
+    processedMarkdown = processedMarkdown.replace(regex, replacement);
   });
   
   // Create JSON of the image map to embed in the component
