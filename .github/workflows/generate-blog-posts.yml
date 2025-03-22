@@ -1,16 +1,18 @@
 name: Generate Blog Posts
 
 on:
-  repository_dispatch:
-    types: [notion_update]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'  # Run every 12 hours
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
-      
+        
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -18,25 +20,14 @@ jobs:
           
       - name: Install dependencies
         run: npm ci
-
-      - name: Debug directory structure
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Repository contents:"
-          ls -la
-          echo "Scripts directory:"
-          ls -la scripts || echo "Scripts directory not found"
         
-      - name: Generate blog post
-        run: node scripts/generate-blog-post.js ${{ github.event.client_payload.pageId }}
-        env:
-          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
-          NOTION_BLOG_DATABASE_ID: ${{ secrets.NOTION_BLOG_DATABASE_ID }}
-          
-      - name: Commit and push if changed
+      - name: Debug environment
         run: |
-          git config --local user.email "luke@brevoort.com"
-          git config --local user.name "lukebrevoort"
-          git add .
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update blog post from Notion (Page ID: ${{ github.event.client_payload.pageId }})"
-          git push
+          echo "Checking for NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID != '' }}"
+          echo "Checking for NOTION_TOKEN: ${{ secrets.NOTION_TOKEN != '' }}"
+        
+      - name: Generate blog posts
+        run: node scripts/generate-blog-post.js
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}

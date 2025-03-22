@@ -10,6 +10,11 @@ if (!pageId) {
   process.exit(1);
 }
 
+// Show environment variables for debugging (masking sensitive values)
+console.log('Environment variables check:');
+console.log('- NOTION_TOKEN: ' + (process.env.NOTION_TOKEN ? 'Set (value hidden)' : 'Not set ❌'));
+console.log('- NOTION_DATABASE_ID: ' + (process.env.NOTION_DATABASE_ID ? 'Set (value hidden)' : 'Not set ❌'));
+
 async function runTypescriptGenerator() {
   try {
     // Run the TypeScript generator with the specific post ID
@@ -25,10 +30,15 @@ async function runTypescriptGenerator() {
     }
     
     // Execute the TypeScript generator with the specific post ID
+    // Important: Pass the environment variables to the child process
     const command = `ts-node -e "import { generateBlogPosts } from './src/lib/blog-generator'; generateBlogPosts('${pageId}').then(result => console.log(JSON.stringify(result)))"`;
     
     const output = execSync(command, { 
-      env: { ...process.env },
+      env: { 
+        ...process.env,
+        NOTION_TOKEN: process.env.NOTION_TOKEN,
+        NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID
+      },
       encoding: 'utf-8' 
     });
     
