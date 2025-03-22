@@ -49,7 +49,19 @@ export async function generateBlogPosts(specificPostId?: string) {
       ? posts.filter((post: any) => post.id === specificPostId)
       : posts;
 
-    // Create individual files for each post
+    // Pre-process step: Extract all AWS URLs and create a master mapping
+    const masterImageMap: Record<string, Record<string, string>> = {};
+    
+    // First pass: Extract all image mappings before generating any files
+    for (const post of postsToGenerate) {
+      const postId = post.id;
+      const { markdown } = await getBlogPost(postId);
+      
+      // Create and store image mapping
+      masterImageMap[postId] = createImageMapping(postId, markdown);
+    }
+
+    // Second pass: Generate the page files using the pre-created mappings
     for (const post of postsToGenerate) {
       const postId = post.id;
       const { markdown } = await getBlogPost(postId);
@@ -60,9 +72,16 @@ export async function generateBlogPosts(specificPostId?: string) {
         fs.mkdirSync(postDir, { recursive: true });
       }
 
+      // Double process to ensure no credentials remain
+      let processedMarkdown = sanitizeMarkdown(markdown, masterImageMap[postId]);
+
       // Write the page.tsx file
-      const pageContent = generatePostPageContent(post, markdown);
-      fs.writeFileSync(path.join(postDir, 'page.tsx'), pageContent);
+      const pageContent = generatePostPageContent(post, processedMarkdown);
+      
+      // Final credential sweep before writing
+      const cleanPageContent = performFinalCredentialSweep(pageContent);
+      
+      fs.writeFileSync(path.join(postDir, 'page.tsx'), cleanPageContent);
       
       console.log(`✅ Generated page for: ${
         'properties' in post && 
@@ -73,7 +92,22 @@ export async function generateBlogPosts(specificPostId?: string) {
       }`);
     }
 
-    // NEW: Add post-generation security check to catch any remaining credentials
+    // Post-processing cleanup - additional safeguard
+    console.log("Performing post-processing cleanup...");
+    for (const post of postsToGenerate) {
+      const postId = post.id;
+      const postDir = path.join(POSTS_DIR, postId);
+      const pagePath = path.join(postDir, 'page.tsx');
+      
+      if (fs.existsSync(pagePath)) {
+        let content = fs.readFileSync(pagePath, 'utf8');
+        // Apply one final cleansing pass
+        content = performFinalCredentialSweep(content);
+        fs.writeFileSync(pagePath, content);
+      }
+    }
+
+    // Existing security check
     console.log("Running final security checks...");
     
     // Track which files we've already processed
@@ -189,23 +223,110 @@ export async function commitAndPushChanges() {
   }
 }
 
+// ENHANCED: Sanitizes markdown by applying credential removal patterns
+function sanitizeMarkdown(markdown: string, imageMap: Record<string, string>): string {
+  let processedMarkdown = markdown;
+  
+  // First replace all AWS URLs with placeholders
+  Object.entries(imageMap).forEach(([placeholder, url]) => {
+    processedMarkdown = processedMarkdown.replace(
+      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+      placeholder
+    );
+  });
+  
+  // Then apply additional credential scrubbing
+  const credentialPatterns = [
+    // Query parameter credentials
+    { pattern: /Credential=[A-Za-z0-9/+=]+/gi, replacement: 'Credential=REDACTED' },
+    { pattern: /X-Amz-Credential=[A-Za-z0-9/+=]+/gi, replacement: 'X-Amz-Credential=REDACTED' },
+    { pattern: /AWSAccessKeyId=[A-Za-z0-9/+=]+/gi, replacement: 'AWSAccessKeyId=REDACTED' },
+    { pattern: /Security-Token=[A-Za-z0-9%+=]+/gi, replacement: 'Security-Token=REDACTED' },
+    { pattern: /X-Amz-Security-Token=[A-Za-z0-9%+=]+/gi, replacement: 'X-Amz-Security-Token=REDACTED' },
+    { pattern: /X-Amz-Date=[0-9TZ]+/gi, replacement: 'X-Amz-Date=REDACTED' },
+    { pattern: /X-Amz-Signature=[0-9a-f]+/gi, replacement: 'X-Amz-Signature=REDACTED' },
+    
+    // Access and secret keys
+    { pattern: /(AKIA|ASIA|AROA)[A-Z0-9]{16,17}/g, replacement: 'REDACTED_AWS_KEY' },
+    { pattern: /[A-Za-z0-9+/]{35,40}(?:[=]{0,2})/g, replacement: 'REDACTED_SECRET_KEY' },
+    
+    // Any remaining AWS URLs
+    { pattern: /https:\/\/[^\s"'<>)]*amazonaws\.com[^\s"'<>)]*/gi, replacement: 'https://REDACTED.amazonaws.com/REDACTED' },
+  ];
+  
+  // Apply each pattern
+  credentialPatterns.forEach(({ pattern, replacement }) => {
+    processedMarkdown = processedMarkdown.replace(pattern, replacement);
+  });
+  
+  return processedMarkdown;
+}
+
+// ENHANCED: Performs a final credential sweep on content before saving
+function performFinalCredentialSweep(content: string): string {
+  // One final pass of credential patterns on the entire file
+  const finalPatterns = [
+    // AWS domain names with credentials
+    { pattern: /https:\/\/[^\s"'<>)]*amazonaws\.com[^\s"'<>)]*\?[^\s"'<>)]*(?:Credential|X-Amz-Credential|AWSAccessKeyId|Security-Token)=[^\s"'<>)]*/gi, 
+      replacement: 'https://REDACTED.amazonaws.com?REDACTED' },
+    // Access key patterns
+    { pattern: /(AKIA|ASIA|AROA)[A-Z0-9]{16,17}/g, replacement: 'REDACTED_KEY' },
+    // Secret key patterns
+    { pattern: /[A-Za-z0-9+/]{35,40}(?:[=]{0,2})/g, replacement: 'REDACTED_SECRET' },
+    // Any remaining credential fragments
+    { pattern: /Credential=[^&"\s]+/gi, replacement: 'Credential=REDACTED' },
+    { pattern: /X-Amz-Credential=[^&"\s]+/gi, replacement: 'X-Amz-Credential=REDACTED' },
+    { pattern: /AWSAccessKeyId=[^&"\s]+/gi, replacement: 'AWSAccessKeyId=REDACTED' },
+    { pattern: /X-Amz-Security-Token=[^&"\s]+/gi, replacement: 'X-Amz-Security-Token=REDACTED' },
+    { pattern: /Security-Token=[^&"\s]+/gi, replacement: 'Security-Token=REDACTED' },
+  ];
+  
+  let cleanContent = content;
+  finalPatterns.forEach(({ pattern, replacement }) => {
+    cleanContent = cleanContent.replace(pattern, replacement);
+  });
+  
+  return cleanContent;
+}
+
+// ENHANCED: Improved image mapping detection
 function createImageMapping(postId: string, markdown: string) {
   // Extract image URLs from markdown
   const imageMap: Record<string, string> = {};
   
-  // Use a more comprehensive regex to catch all AWS URL patterns
+  // More comprehensive regex patterns to catch all AWS URL variations
   const awsUrlPatterns = [
+    // Standard S3 URLs
     /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
+    // URLs with credential parameters
     /(https:\/\/[^\s"`'<>)]+(?:Credential=|X-Amz-Credential=|AWSAccessKeyId=|Security-Token=)[^\s"`'<>)]+)/g,
-    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g
+    // Any amazonaws.com URL
+    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g,
+    // Image URLs in markdown syntax
+    /!\[.*?\]\((https?:\/\/[^"\s)]+)\)/g,
+    // HTML image tags
+    /<img[^>]*src=["'](https?:\/\/[^"'\s>]+)["'][^>]*>/g,
   ];
   
-  // Process all patterns
+  // Use Set to avoid processing the same URL multiple times
+  const processedUrls = new Set<string>();
+  
   awsUrlPatterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(markdown)) !== null) {
-      const url = match[0];
-      const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      let url = match[1] || match[0];
+      
+      // Skip if not an AWS URL or already processed
+      if (!url.includes('amazonaws.com') && !url.includes('Credential=')) continue;
+      if (processedUrls.has(url)) continue;
+      
+      processedUrls.add(url);
+      
+      // Create a more robust hash for the URL
+      const urlHash = Buffer.from(url).toString('base64')
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .substring(0, 32);
+      
       const placeholder = `image-placeholder-${urlHash}`;
       imageMap[placeholder] = url;
     }
@@ -227,61 +348,16 @@ function createImageMapping(postId: string, markdown: string) {
   return imageMap;
 }
 
+// UPDATED: Uses sanitized markdown with placeholders
 function generatePostPageContent(post: any, markdown: string) {
-  // Get properties as before
+  // Get properties
   const properties = post.properties;
   const title = properties.Title?.title[0]?.plain_text || 'Untitled';
   const date = properties.Date?.date?.start 
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
     
-  // FIRST - Check for any AWS credentials before we do anything else
-  const preCheckRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com).+?(?:Credential=|Security-Token=|X-Amz-Credential=|AWSAccessKeyId=|[A-Z0-9]{20})/gi;
-  const preCheckMatches = markdown.match(preCheckRegex);
-  
-  if (preCheckMatches) {
-    console.error('⚠️ AWS credentials detected in raw markdown - Logging patterns to help debugging:');
-    const uniquePatterns = [...new Set(preCheckMatches.map(url => {
-      // Extract just the beginning of the URL pattern to help identify it
-      return url.substring(0, 50) + '...';
-    }))];
-    uniquePatterns.forEach(pattern => console.error(`- Pattern found: ${pattern}`));
-  }
-    
-  // Create image mapping (this also saves it to a file)
-  const imageMap = createImageMapping(post.id, markdown);
-  
-  // Process the markdown to replace AWS URLs with placeholders
-  let processedMarkdown = markdown;
-  Object.entries(imageMap).forEach(([placeholder, url]) => {
-    processedMarkdown = processedMarkdown.replace(
-      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-      placeholder
-    );
-  });
-  
-  // NEW - ADDITIONAL DIRECT CREDENTIAL REPLACEMENT
-  // This addresses credentials that might appear outside of full URLs
-  const credentialReplacements: Record<string, string> = {
-    // Find and replace any standalone credential patterns
-    'Credential=[A-Z0-9/]+': 'Credential=REPLACED_CREDENTIAL',
-    'X-Amz-Credential=[A-Z0-9/]+': 'X-Amz-Credential=REPLACED_CREDENTIAL',
-    'AWSAccessKeyId=[A-Z0-9]+': 'AWSAccessKeyId=REPLACED_KEY',
-    'Security-Token=[A-Za-z0-9%]+': 'Security-Token=REPLACED_TOKEN',
-    // AWS Access Key ID pattern (20 character alphanumeric string starting with specific prefixes)
-    '(AKIA|ASIA|AROA)[A-Z0-9]{16}': 'REPLACED_ACCESS_KEY_ID',
-    // AWS Secret Access Key pattern (40 character base64 string)
-    '[A-Za-z0-9+/]{40}': 'REPLACED_SECRET_KEY'
-  };
-  
-  // Apply each credential replacement pattern
-  Object.entries(credentialReplacements).forEach(([pattern, replacement]) => {
-    const regex = new RegExp(pattern, 'g');
-    processedMarkdown = processedMarkdown.replace(regex, replacement);
-  });
-  
-  // Create JSON of the image map to embed in the component
-  const imageMapJSON = JSON.stringify(imageMap);
+  // We're now working with pre-sanitized markdown that already has placeholders
 
   return `"use client"
 
@@ -300,24 +376,17 @@ const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
   // Store processed markdown in state
-  const [content, setContent] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+  const [content, setContent] = useState(\`${markdown.replace(/`/g, '\\`')}\`);
 
   // Process image URLs at runtime
   useEffect(() => {
-    // Load image map (placeholders -> URLs) from external API or server-side logic
-    // This avoids storing credentials in client-side code
-    fetch('/api/image-map?postId=${post.id}')
+    // Load image map (placeholders -> URLs) from external API
+    fetch(\`/api/image-map?postId=${post.id}\`)
       .then(res => res.json())
       .then(imageMap => {
-        let processedContent = content;
-        // Replace placeholders with actual URLs
-        Object.entries(imageMap).forEach(([placeholder, url]) => {
-          processedContent = processedContent.replace(
-            new RegExp(placeholder, 'g'),
-            String(url)
-          );
-        });
-        setContent(processedContent);
+        console.log('Loaded image map with', Object.keys(imageMap).length, 'images');
+        // No direct replacements in the client - let SecureImage handle placeholders
+        setContent(content);
       })
       .catch(err => console.error('Error fetching image map:', err));
   }, []);
@@ -367,6 +436,7 @@ export default function BlogPost() {
                     src={props.src || ''} 
                     alt={props.alt || ''} 
                     className="my-4 rounded-md" 
+                    postId="${post.id}"
                   />
                 ),
               }}>{content}</ReactMarkdown>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put, list, del } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     // Define blob name/path (will be used in URL)
     const blobName = `blog-images/${imageHash}.jpg`;
     
-    // Check if the blob already exists - list blob with a prefix
+    // First check if this blob already exists
     const { blobs } = await list({ prefix: blobName });
     
     // If we found the image in blob storage, return its URL
@@ -22,9 +22,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ imagePath: blobs[0].url });
     }
     
-    console.log(`Fetching new image from: ${imageUrl.substring(0, 50)}...`);
+    console.log(`Fetching new image from: ${imageUrl.substring(0, 30)}...`);
     
     try {
+      // Sanitize the URL again just to be safe
+      const sanitizedUrl = imageUrl
+        .replace(/Credential=[^&]+/g, 'Credential=REDACTED')
+        .replace(/X-Amz-Credential=[^&]+/g, 'X-Amz-Credential=REDACTED')
+        .replace(/X-Amz-Security-Token=[^&]+/g, 'X-Amz-Security-Token=REDACTED')
+        .replace(/X-Amz-Signature=[^&]+/g, 'X-Amz-Signature=REDACTED');
+        
       // Fetch the image
       const response = await fetch(imageUrl, {
         headers: {

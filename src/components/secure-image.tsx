@@ -9,9 +9,10 @@ interface SecureImageProps {
   width?: number;
   height?: number;
   className?: string;
+  postId?: string;
 }
 
-export default function SecureImage({ src, alt, width = 800, height = 600, className }: SecureImageProps) {
+export default function SecureImage({ src, alt, width = 800, height = 600, className, postId }: SecureImageProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,49 +29,34 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     
     // Handle Vercel Blob URLs directly
     if (src.includes('vercel-blob.com') || src.includes('blob.vercel-storage.com')) {
-      console.log('Using direct Vercel Blob URL:', src);
       setImageSrc(src);
       setIsLoading(false);
       return;
     }
     
+    // Handle image placeholders
     if (src.startsWith('image-placeholder-')) {
-      console.log('Detected placeholder, fetching real image via API:', src);
+      // First check if we have the mapping
+      const currentPostId = postId || window.location.pathname.split('/').pop();
       
-      // Extract post ID from URL
-      const postId = window.location.pathname.split('/').pop();
-      
-      // Fetch the actual image for this placeholder
-      fetch(`/api/image-map?postId=${postId}`)
+      fetch(`/api/image-map?postId=${currentPostId}`)
         .then(res => res.json())
         .then(imageMap => {
-          const realUrl = imageMap[src];
-          
-          if (realUrl) {
-            console.log('Found mapping for placeholder:', realUrl);
+          // Check if we have a direct mapping
+          if (imageMap[src]) {
+            const mappedUrl = imageMap[src];
             
-            // Check if it's already a blob URL
-            if (realUrl.includes('vercel-blob.com') || realUrl.includes('blob.vercel-storage.com')) {
-              console.log('Using Blob URL directly:', realUrl);
-              setImageSrc(realUrl);
+            // If it's already a blob URL, use it directly
+            if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com') || mappedUrl.startsWith('/')) {
+              setImageSrc(mappedUrl);
               setIsLoading(false);
-            } 
-            // Check if it's a local image path
-            else if (realUrl.startsWith('/')) {
-              console.log('Using local image:', realUrl);
-              setImageSrc(realUrl);
-              setIsLoading(false);
-            } 
-            else {
-              console.log('Proxying external URL:', realUrl.substring(0, 30) + '...');
-              const urlHash = btoa(realUrl).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-              
-              // Call image proxy
-              fetch(`/api/image-proxy?url=${encodeURIComponent(realUrl)}&hash=${urlHash}`)
+            } else {
+              // Otherwise proxy it through our api
+              const urlHash = btoa(mappedUrl).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+              fetch(`/api/image-proxy?url=${encodeURIComponent(mappedUrl)}&hash=${urlHash}`)
                 .then(response => response.json())
                 .then(data => {
                   if (data.imagePath) {
-                    console.log('Image proxy returned:', data.imagePath);
                     setImageSrc(data.imagePath);
                   } else {
                     throw new Error('No image path returned');
@@ -84,18 +70,14 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
                 });
             }
           } else {
-            console.log('Placeholder not found in map, trying direct proxy');
+            // If no mapping found, try direct hash lookup
             const hash = src.replace('image-placeholder-', '');
-            
-            // Check if blob exists with this hash
             fetch(`/api/image-proxy-check?hash=${hash}`)
               .then(response => response.json())
               .then(data => {
                 if (data.imagePath) {
-                  console.log('Found image in blob storage:', data.imagePath);
                   setImageSrc(data.imagePath);
                 } else {
-                  console.warn('No image found for placeholder:', src);
                   setImageSrc(placeholderImage);
                 }
                 setIsLoading(false);
@@ -115,17 +97,13 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
       return;
     }
     
-    // Direct handling of AWS S3 URLs
+    // Final safeguard - If we somehow get an AWS URL directly, proxy it
     if (src.includes('amazonaws.com') || src.includes('prod-files-secure.s3')) {
-      console.log('Detected S3 URL, proxying:', src.substring(0, 30) + '...');
       const urlHash = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-      
-      // Proxy through our API
       fetch(`/api/image-proxy?url=${encodeURIComponent(src)}&hash=${urlHash}`)
         .then(response => response.json())
         .then(data => {
           if (data.imagePath) {
-            console.log('Image proxy returned:', data.imagePath);
             setImageSrc(data.imagePath);
           } else {
             throw new Error('No image path returned');
@@ -140,13 +118,12 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
       return;
     }
     
-    // Handle all other direct image URLs
-    console.log('Using direct image URL:', src);
+    // For all other cases, use the src directly
     setImageSrc(src);
     setIsLoading(false);
-  }, [src]);
+  }, [src, postId]);
 
-  // Use span for loading state to avoid nesting errors
+  // Show loading state
   if (isLoading) {
     return <span className="inline-block animate-pulse bg-gray-200 dark:bg-gray-800 rounded" style={{ width, height }} />;
   }
