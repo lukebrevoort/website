@@ -36,27 +36,37 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     
     // Handle image placeholders
     if (src.startsWith('image-placeholder-')) {
-      // First check if we have the mapping
+      // Log for debugging
+      console.log('Processing placeholder:', src);
+      
+      // Extract the hash from the placeholder
+      const hash = src.replace('image-placeholder-', '');
       const currentPostId = postId || window.location.pathname.split('/').pop();
       
+      // First check image-map API to get the actual URL
       fetch(`/api/image-map?postId=${currentPostId}`)
         .then(res => res.json())
         .then(imageMap => {
-          // Check if we have a direct mapping
+          console.log('Received image map:', Object.keys(imageMap).length, 'entries');
+          
+          // If we have a mapping for this placeholder
           if (imageMap[src]) {
             const mappedUrl = imageMap[src];
+            console.log('Found mapping:', src, '->', mappedUrl.substring(0, 30) + '...');
             
             // If it's already a blob URL, use it directly
-            if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com') || mappedUrl.startsWith('/')) {
+            if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com')) {
+              console.log('Using blob URL directly:', mappedUrl.substring(0, 30) + '...');
               setImageSrc(mappedUrl);
               setIsLoading(false);
             } else {
               // Otherwise proxy it through our api
-              const urlHash = btoa(mappedUrl).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-              fetch(`/api/image-proxy?url=${encodeURIComponent(mappedUrl)}&hash=${urlHash}`)
+              console.log('Proxying through API:', mappedUrl.substring(0, 30) + '...');
+              fetch(`/api/image-proxy?url=${encodeURIComponent(mappedUrl)}&hash=${hash}`)
                 .then(response => response.json())
                 .then(data => {
                   if (data.imagePath) {
+                    console.log('Received blob URL:', data.imagePath.substring(0, 30) + '...');
                     setImageSrc(data.imagePath);
                   } else {
                     throw new Error('No image path returned');
@@ -70,14 +80,16 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
                 });
             }
           } else {
-            // If no mapping found, try direct hash lookup
-            const hash = src.replace('image-placeholder-', '');
+            // No mapping found, try direct hash lookup
+            console.log('No mapping found, trying direct hash lookup:', hash);
             fetch(`/api/image-proxy-check?hash=${hash}`)
               .then(response => response.json())
               .then(data => {
                 if (data.imagePath) {
+                  console.log('Found image via hash check:', data.imagePath.substring(0, 30) + '...');
                   setImageSrc(data.imagePath);
                 } else {
+                  console.log('No image found via hash, using placeholder');
                   setImageSrc(placeholderImage);
                 }
                 setIsLoading(false);
@@ -99,11 +111,14 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     
     // Final safeguard - If we somehow get an AWS URL directly, proxy it
     if (src.includes('amazonaws.com') || src.includes('prod-files-secure.s3')) {
+      console.log('Detected direct AWS URL, proxying:', src.substring(0, 30) + '...');
       const urlHash = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      
       fetch(`/api/image-proxy?url=${encodeURIComponent(src)}&hash=${urlHash}`)
         .then(response => response.json())
         .then(data => {
           if (data.imagePath) {
+            console.log('Received blob URL for AWS image:', data.imagePath.substring(0, 30) + '...');
             setImageSrc(data.imagePath);
           } else {
             throw new Error('No image path returned');
@@ -111,7 +126,7 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
           setIsLoading(false);
         })
         .catch(err => {
-          console.error('Error proxying S3 image:', err);
+          console.error('Error proxying AWS image:', err);
           setImageSrc(placeholderImage);
           setIsLoading(false);
         });
@@ -119,6 +134,7 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
     }
     
     // For all other cases, use the src directly
+    console.log('Using src directly:', src.substring(0, 30) + '...');
     setImageSrc(src);
     setIsLoading(false);
   }, [src, postId]);
@@ -143,7 +159,7 @@ export default function SecureImage({ src, alt, width = 800, height = 600, class
       width={width}
       height={height}
       className={className || "rounded-md my-4 max-w-full h-auto"}
-      unoptimized={imageSrc.includes('amazonaws.com') || imageSrc.includes('blob.vercel')}
+      unoptimized={imageSrc.includes('amazonaws.com')}
     />
   );
 }
