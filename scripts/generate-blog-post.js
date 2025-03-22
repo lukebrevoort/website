@@ -44,25 +44,36 @@ async function runTypescriptGenerator() {
     
     console.log('Blog post generation complete');
     
-    // Add safer JSON parsing
-    try {
-      // Trim the output to remove any unexpected characters at the beginning
-      const trimmedOutput = output.trim();
-      // Find the first { to start valid JSON
-      const jsonStart = trimmedOutput.indexOf('{');
-      const jsonContent = jsonStart >= 0 ? trimmedOutput.substring(jsonStart) : trimmedOutput;
-      
-      return JSON.parse(jsonContent);
-    } catch (parseError) {
-      console.error('Error parsing output:', parseError);
-      console.error('Raw output:', output);
-      return { success: false, error: 'Failed to parse generator output' };
-    }
-  } catch (error) {
-    console.error('Error generating blog post:', error);
-    return { success: false, error: error.message };
+// Add safer JSON parsing
+try {
+  // Trim the output to remove any unexpected characters
+  const trimmedOutput = output.trim();
+  
+  // Extract just the JSON part using regex to find the complete JSON object
+  const jsonRegex = /\{[\s\S]*\}/;
+  const jsonMatch = trimmedOutput.match(jsonRegex);
+  
+  if (!jsonMatch) {
+    console.error('Could not find valid JSON in output');
+    console.error('Raw output:', trimmedOutput);
+    return { success: false, error: 'No JSON found in generator output' };
   }
+  
+  // Parse the extracted JSON
+  const result = JSON.parse(jsonMatch[0]);
+  
+  // Log for debugging
+  console.log('Successfully parsed result:', result.success ? 'SUCCESS' : 'FAILED');
+  
+  return result;
+} catch (parseError) {
+  console.error('Error parsing output:', parseError);
+  console.error('Raw output:', output);
+  return { success: false, error: 'Failed to parse generator output' };
 }
+}
+}
+
 
 // Main execution - handle errors at the top level
 (async function main() {
