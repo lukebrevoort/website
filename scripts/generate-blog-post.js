@@ -1,20 +1,3 @@
-const { Client } = require('@notionhq/client');
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-
-const pageId = process.argv[2];
-
-if (!pageId) {
-  console.error('Error: No page ID provided');
-  process.exit(1);
-}
-
-// Show environment variables for debugging (masking sensitive values)
-console.log('Environment variables check:');
-console.log('- NOTION_TOKEN: ' + (process.env.NOTION_TOKEN ? 'Set (value hidden)' : 'Not set ❌'));
-console.log('- NOTION_DATABASE_ID: ' + (process.env.NOTION_DATABASE_ID ? 'Set (value hidden)' : 'Not set ❌'));
-
 async function runTypescriptGenerator() {
   try {
     // Run the TypeScript generator with the specific post ID
@@ -31,7 +14,7 @@ async function runTypescriptGenerator() {
     
     // Execute the TypeScript generator with the specific post ID
     // Important: Pass the environment variables to the child process
-    const command = `ts-node -e "import { generateBlogPosts } from './src/lib/blog-generator'; generateBlogPosts('${pageId}').then(result => console.log(JSON.stringify(result)))"`;
+    const command = `ts-node -e "import { generateBlogPosts } from './src/lib/blog-generator'; generateBlogPosts('${pageId}').then(result => console.log(JSON.stringify(result, null, 2))).catch(err => console.log(JSON.stringify({success: false, error: err.message})))"`;
     
     const output = execSync(command, { 
       env: { 
@@ -42,14 +25,35 @@ async function runTypescriptGenerator() {
       encoding: 'utf-8' 
     });
     
-    console.log('Blog post generated successfully!');
-    console.log(output);
+    console.log('Blog post generation complete');
     
-    return JSON.parse(output);
+    // Add safer JSON parsing
+    try {
+      // Trim the output to remove any unexpected characters at the beginning
+      const trimmedOutput = output.trim();
+      // Find the first { to start valid JSON
+      const jsonStart = trimmedOutput.indexOf('{');
+      const jsonContent = jsonStart >= 0 ? trimmedOutput.substring(jsonStart) : trimmedOutput;
+      
+      return JSON.parse(jsonContent);
+    } catch (parseError) {
+      console.error('Error parsing output:', parseError);
+      console.error('Raw output:', output);
+      return { success: false, error: 'Failed to parse generator output' };
+    }
   } catch (error) {
     console.error('Error generating blog post:', error);
-    process.exit(1);
+    return { success: false, error: error.message };
   }
 }
 
-runTypescriptGenerator();
+// Main execution - handle errors at the top level
+try {
+  const result = runTypescriptGenerator();
+  if (!result.success) {
+    process.exit(1);
+  }
+} catch (error) {
+  console.error('Fatal error:', error);
+  process.exit(1);
+}
