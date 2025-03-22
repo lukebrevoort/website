@@ -96,7 +96,7 @@ First, where the images were stored. My original idea was to simply have some fo
     
     // If we found the image in blob storage, return its URL
     if (blobs.length > 0) {
-      console.log(\`Found existing image in Blob storage: ${blobs[0].url}\`);
+console.log(\\`Found existing image in Blob storage: \${blobs[0].url}\\`);
       return NextResponse.json({ imagePath: 'blobs[0].url' });
     }
 \`\`\`
