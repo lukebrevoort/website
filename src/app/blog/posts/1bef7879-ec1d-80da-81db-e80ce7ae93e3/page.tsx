@@ -87,19 +87,15 @@ I knew this part of the project was going to be a pain, but simply the amount of
 
 First, where the images were stored. My original idea was to simply have some folder called image-cache to store all the images I use. But unfortunately, this would greatly expand my repo as I plan to add a lot of images to this blog. So instead, I had to work to move my entire storage system over to **blob storage**, a form of storage in beta at Vercel. 
 
-\`\`\`javascript
-    
-    // Define blob name/path (will be used in URL)
-    const blobName = \\`blog-images/\\${'somehash'}.jpg\\`;
-    
-    // Check if the blob already exists - list blob with a prefix
-    const { blobs } = await list({ prefix: blobName });
-    
-    // If we found the image in blob storage, return its URL
-    if (blobs.length > 0) {
-      return NextResponse.json({ imagePath: blobs[0].url });
-    }
-\`\`\`
+> // Define blob name/path (will be used in URL)
+> const blobName = \`blog-images/${"somehash"}.jpg\`;
+> 
+> // Check if the blob already exists - list blob with a prefix
+> const { blobs } = await list({ prefix: blobName });
+> // If we found the image in blob storage, return its URL
+> if (blobs.length > 0) {
+>   return NextResponse.json({ imagePath: "blobs[0].url" });
+> }
 
 
 Next was trying to get past why my Web hook wouldn’t correctly send requests to my pre-production server. This issue, embarrassingly enough, took me over 2 hours of fiddling and trying new things to stumble upon in some hidden forums that Vercel pre-production automations need a protection-bypass key to even send anything. 
@@ -222,7 +218,7 @@ Email: luke@brevoort.com
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink>My First Post</BreadcrumbLink>
+                    <BreadcrumbLink>My First Po</BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -236,7 +232,7 @@ Email: luke@brevoort.com
             className="container mx-auto py-10 px-4 max-w-3xl"
           >
             <header className="mb-10">
-              <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>My First Post</h1>
+              <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>My First Po</h1>
               <time className="text-gray-500">3/21/2025</time>
               
               {/* Add debugging button that's only visible during development */}
