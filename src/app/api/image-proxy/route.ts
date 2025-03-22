@@ -49,9 +49,7 @@ export async function GET(request: NextRequest) {
       const response = await fetch(imageUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; BlogImageFetcher/1.0)',
-          'Accept': 'image/*',
-          // Bypass CORS issues
-          'Origin': request.headers.get('origin') || 'https://yourwebsite.com'
+          'Accept': 'image/*'
         }
       });
       
@@ -65,9 +63,9 @@ export async function GET(request: NextRequest) {
       
       console.log(`Successfully fetched image, size: ${imageBuffer.byteLength} bytes, type: ${contentType}`);
       
-      // Upload to Vercel Blob
+      // Upload to Vercel Blob - FIXED: use imageBuffer directly
       console.log(`Uploading to Vercel Blob as: ${blobName}`);
-      const blob = await put(blobName, new Uint8Array(imageBuffer), {
+      const blob = await put(blobName, imageBuffer, {
         contentType: contentType,
         access: 'public',
       });
