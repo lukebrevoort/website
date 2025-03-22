@@ -1,0 +1,303 @@
+const { Client } = require('@notionhq/client');
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+const { NotionToMarkdown } = require('notion-to-md');
+
+// Get the page ID from command line arguments
+const pageId = process.argv[2];
+
+if (!pageId) {
+  console.error('Error: No page ID provided');
+  process.exit(1);
+}
+
+// Define directories
+const BLOG_DIR = path.join(process.cwd(), 'src/app/blog');
+const POSTS_DIR = path.join(BLOG_DIR, 'posts');
+const DATA_DIR = path.join(process.cwd(), 'src/data');
+
+// Ensure directories exist
+function ensureDirectories() {
+  if (!fs.existsSync(POSTS_DIR)) {
+    fs.mkdirSync(POSTS_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+}
+
+// Create image mapping function (from blog-generator.ts)
+function createImageMapping(postId, markdown) {
+  // Extract image URLs from markdown
+  const imageMap = {};
+  const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
+  let match;
+  
+  while ((match = regex.exec(markdown)) !== null) {
+    const url = match[0];
+    const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+    const placeholder = `image-placeholder-${urlHash}`;
+    imageMap[placeholder] = url;
+  }
+  
+  // Save the mapping
+  const privateDir = path.join(process.cwd(), '.private');
+  if (!fs.existsSync(privateDir)) {
+    fs.mkdirSync(privateDir, { recursive: true });
+  }
+  
+  fs.writeFileSync(
+    path.join(privateDir, `${postId}.json`),
+    JSON.stringify(imageMap, null, 2)
+  );
+  
+  console.log(`Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
+  
+  return imageMap;
+}
+
+// Page content generator function (from blog-generator.ts)
+function generatePostPageContent(post, markdown) {
+  // Get properties
+  const properties = post.properties;
+  const title = properties.Title?.title[0]?.plain_text || 'Untitled';
+  const date = properties.Date?.date?.start 
+    ? new Date(properties.Date.date.start).toLocaleDateString()
+    : '';
+    
+  // Create image mapping
+  const imageMap = createImageMapping(post.id, markdown);
+  
+  // Process the markdown to replace AWS URLs with placeholders
+  let processedMarkdown = markdown;
+  Object.entries(imageMap).forEach(([placeholder, url]) => {
+    processedMarkdown = processedMarkdown.replace(
+      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+      placeholder
+    );
+  });
+
+  // Return the full React component code (as it is in blog-generator.ts)
+  return `"use client"
+
+import { lukesFont, crimsonText } from '@/app/fonts';
+import { AppSidebar } from "@/components/app-sidebar";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import { motion } from "framer-motion";
+import { MotionConfig } from "framer-motion";
+import dynamic from 'next/dynamic';
+import SecureImage from "@/components/secure-image";
+import { useState, useEffect } from "react";
+
+const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
+
+export default function BlogPost() {
+  // Store processed markdown in state
+  const [content, setContent] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+
+  // Process image URLs at runtime
+  useEffect(() => {
+    // Load image map (placeholders -> URLs) from external API or server-side logic
+    fetch('/api/image-map?postId=${post.id}')
+      .then(res => res.json())
+      .then(imageMap => {
+        let processedContent = content;
+        // Replace placeholders with actual URLs
+        Object.entries(imageMap).forEach(([placeholder, url]) => {
+          processedContent = processedContent.replace(
+            new RegExp(placeholder, 'g'),
+            String(url)
+          );
+        });
+        setContent(processedContent);
+      })
+      .catch(err => console.error('Error fetching image map:', err));
+  }, []);
+
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <AppSidebar />
+      <MotionConfig reducedMotion="user">
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink>${title}</BreadcrumbLink>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+          </header>
+
+          <motion.article 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="container mx-auto py-10 px-4 max-w-3xl"
+          >
+            <header className="mb-10">
+              <h1 className={\`\${lukesFont.className} text-4xl font-bold mb-3\`}>${title}</h1>
+              ${date ? `<time className="text-gray-500">${date}</time>` : ''}
+            </header>
+            
+            <div className={\`prose dark:prose-invert max-w-none \${crimsonText.className}\`}>
+              <ReactMarkdown components={{
+                img: ({ node, ...props }) => (
+                  <SecureImage 
+                    src={props.src || ''} 
+                    alt={props.alt || ''} 
+                    className="my-4 rounded-md" 
+                  />
+                ),
+              }}>{content}</ReactMarkdown>
+            </div>
+          </motion.article>
+        </SidebarInset>
+      </MotionConfig>
+    </SidebarProvider>
+  );
+}`;
+}
+
+// Functions to fetch data from Notion using notion-to-md
+async function getBlogPosts() {
+  const notion = new Client({ auth: process.env.NOTION_API_KEY });
+  const databaseId = process.env.NOTION_BLOG_DATABASE_ID;
+  
+  if (!databaseId) {
+    throw new Error('NOTION_BLOG_DATABASE_ID is required');
+  }
+
+  // Query the database for published posts
+  const response = await notion.databases.query({
+    database_id: databaseId,
+    filter: {
+      property: 'Published',
+      checkbox: {
+        equals: true
+      }
+    },
+    sorts: [
+      {
+        property: 'Date',
+        direction: 'descending'
+      }
+    ]
+  });
+
+  return response.results;
+}
+
+async function getBlogPost(pageId) {
+  const notion = new Client({ auth: process.env.NOTION_API_KEY });
+  
+  // Get the page
+  const page = await notion.pages.retrieve({ page_id: pageId });
+  
+  // Initialize notion-to-md
+  const n2m = new NotionToMarkdown({ notionClient: notion });
+  
+  // Configure for better output
+  n2m.setCustomTransformer('image', async (block) => {
+    const { image } = block;
+    const imageUrl = image.file?.url || image.external?.url;
+    if (imageUrl) {
+      return `![Image](${imageUrl})`;
+    }
+    return '';
+  });
+  
+  // Get blocks and convert to markdown
+  const mdBlocks = await n2m.pageToMarkdown(pageId);
+  const markdown = n2m.toMarkdownString(mdBlocks).parent;
+  
+  console.log(`Generated markdown with length: ${markdown.length}`);
+  
+  return { page, markdown };
+}
+
+// Main function
+async function generateBlogPost() {
+  try {
+    console.log(`Generating blog post for page ID: ${pageId}`);
+    
+    // Ensure directories exist
+    ensureDirectories();
+    
+    // Get all blog posts to update the metadata file
+    console.log('Fetching all blog posts for metadata...');
+    const allPosts = await getBlogPosts();
+    
+    // Update the blog-posts.json file
+    const postsData = allPosts.map(post => ({
+      id: post.id,
+      slug: post.id,
+      title: post.properties.Title?.title[0]?.plain_text || 'Untitled',
+      description: post.properties.Description?.rich_text[0]?.plain_text || '',
+      date: post.properties.Date?.date?.start || null,
+    }));
+    
+    fs.writeFileSync(
+      path.join(DATA_DIR, 'blog-posts.json'),
+      JSON.stringify(postsData, null, 2)
+    );
+    
+    console.log(`Updated blog-posts.json with ${postsData.length} posts`);
+    
+    // Get the specific post we want to generate
+    console.log(`Fetching content for page ${pageId}...`);
+    const { page, markdown } = await getBlogPost(pageId);
+    
+    // Generate the page.tsx file
+    const postDir = path.join(POSTS_DIR, pageId);
+    if (!fs.existsSync(postDir)) {
+      fs.mkdirSync(postDir, { recursive: true });
+    }
+    
+    console.log(`Generating React component for post...`);
+    const pageContent = generatePostPageContent(page, markdown);
+    fs.writeFileSync(path.join(postDir, 'page.tsx'), pageContent);
+    
+    console.log(`Generated blog post: ${
+      page.properties.Title?.title[0]?.plain_text || pageId
+    }`);
+    
+    // Commit and push changes
+    console.log('Checking for changes to commit...');
+    const hasChanges = execSync('git status --porcelain').toString().trim().length > 0;
+    
+    if (hasChanges) {
+      console.log('Committing changes...');
+      execSync('git add .');
+      execSync(`git commit -m "Update blog post from Notion: ${pageId}"`);
+      console.log('Pushing to GitHub...');
+      execSync('git push');
+      console.log('Changes pushed to GitHub');
+    } else {
+      console.log('No changes to commit');
+    }
+    
+    console.log('Blog post generated successfully!');
+  } catch (error) {
+    console.error('Error generating blog post:', error);
+    process.exit(1);
+  }
+}
+
+// Run the main function
+generateBlogPost();

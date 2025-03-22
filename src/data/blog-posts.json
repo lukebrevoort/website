@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1bbf7879-ec1d-80d8-9198-c968115d62cb",
+    "slug": "1bbf7879-ec1d-80d8-9198-c968115d62cb",
+    "title": "A Third Blog",
+    "description": "Anything thing ",
+    "date": "2025-03-19"
+  },
+  {
+    "id": "1bbf7879-ec1d-8021-b18b-d73ba0f9e319",
+    "slug": "1bbf7879-ec1d-8021-b18b-d73ba0f9e319",
+    "title": "Another Blog!",
+    "description": "This is just something I made because I was bored!",
+    "date": "2025-03-18"
+  },
+  {
+    "id": "1bbf7879-ec1d-806a-9e84-cc8bfb5c1805",
+    "slug": "1bbf7879-ec1d-806a-9e84-cc8bfb5c1805",
+    "title": "My First Blog Post!",
+    "description": "This is my first blog post!",
+    "date": "2025-03-18"
+  }
+]

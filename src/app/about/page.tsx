@@ -76,7 +76,7 @@ export default function Page() {
                 <div>
                   <h3 className="text-2xl font-bold">Stevens Institute of Technology</h3>
                   <p className="text-muted-foreground text-lg">Bachelor of Science in Computer Science</p>
-                  <Badge variant="outline">Expected May 2028</Badge>
+                  <Badge variant="outline">Expected May 2027</Badge>
                   <p className="mt-4">Relevant Coursework:</p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Badge>Data Structures</Badge>
@@ -188,7 +188,7 @@ export default function Page() {
 
 
             <Card>
-            <CardContent className="p-6 mb-16">
+            <CardContent className="p-6">
               <h2 className={`${lukesFont.className} text-3xl mb-6`}>Experience:</h2>
               <div className={`space-y-8 ${crimsonText.className}`}>
               {[

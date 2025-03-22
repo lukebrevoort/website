@@ -1,12 +1,12 @@
 "use client"
 
-import {
-  Folder,
-  Forward,
-  MoreHorizontal,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react"
+import dynamic from "next/dynamic"
+import { ComponentType } from "react"
+
+const Folder = dynamic(() => import("lucide-react").then(mod => mod.Folder), { ssr: false })
+const Forward = dynamic(() => import("lucide-react").then(mod => mod.Forward), { ssr: false })
+const MoreHorizontal = dynamic(() => import("lucide-react").then(mod => mod.MoreHorizontal), { ssr: false })
+const Trash2 = dynamic(() => import("lucide-react").then(mod => mod.Trash2), { ssr: false })
 
 import {
   DropdownMenu,
@@ -31,7 +31,7 @@ export function NavProjects({
   projects: {
     name: string
     url: string
-    icon: LucideIcon
+    icon: ComponentType<any>
   }[]
 }) {
   const { isMobile } = useSidebar()

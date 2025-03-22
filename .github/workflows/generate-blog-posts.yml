@@ -18,6 +18,14 @@ jobs:
           
       - name: Install dependencies
         run: npm ci
+
+      - name: Debug directory structure
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Repository contents:"
+          ls -la
+          echo "Scripts directory:"
+          ls -la scripts || echo "Scripts directory not found"
         
       - name: Generate blog post
         run: node scripts/generate-blog-post.js ${{ github.event.client_payload.pageId }}
