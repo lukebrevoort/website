@@ -8,6 +8,8 @@ const { DefaultExporter } = require('notion-to-md/plugins/exporter');
 // Get the page ID from command line arguments
 const pageId = process.argv[2];
 
+const notion = new Client({ auth: process.env.NOTION_API_KEY });
+
 if (!pageId) {
   console.error('Error: No page ID provided');
   process.exit(1);
