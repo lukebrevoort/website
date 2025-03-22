@@ -130,6 +130,26 @@ function generatePostPageContent(post, markdown) {
     processedMarkdown = processedMarkdown.replace(urlRegex, placeholder);
   });
   
+  // NEW - ADDITIONAL DIRECT CREDENTIAL REPLACEMENT
+  // This addresses credentials that might appear outside of full URLs
+  const credentialReplacements = {
+    // Find and replace any standalone credential patterns
+    'Credential=[A-Z0-9/]+': 'Credential=REPLACED_CREDENTIAL',
+    'X-Amz-Credential=[A-Z0-9/]+': 'X-Amz-Credential=REPLACED_CREDENTIAL',
+    'AWSAccessKeyId=[A-Z0-9]+': 'AWSAccessKeyId=REPLACED_KEY',
+    'Security-Token=[A-Za-z0-9%]+': 'Security-Token=REPLACED_TOKEN',
+    // AWS Access Key ID pattern (20 character alphanumeric string starting with specific prefixes)
+    '(AKIA|ASIA|AROA)[A-Z0-9]{16}': 'REPLACED_ACCESS_KEY_ID',
+    // AWS Secret Access Key pattern (40 character base64 string)
+    '[A-Za-z0-9+/]{40}': 'REPLACED_SECRET_KEY'
+  };
+  
+  // Apply each credential replacement pattern
+  Object.entries(credentialReplacements).forEach(([pattern, replacement]) => {
+    const regex = new RegExp(pattern, 'g');
+    processedMarkdown = processedMarkdown.replace(regex, replacement);
+  });
+  
   // Add more comprehensive security check for any remaining AWS URLs or credentials
   const credentialPatterns = [
     /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^\s"'`<>)]+/gi,  // General AWS URLs
@@ -137,8 +157,12 @@ function generatePostPageContent(post, markdown) {
     /X-Amz-Credential=[A-Z0-9/]+/gi,                                           // X-Amz-Credential parameter
     /AWSAccessKeyId=[A-Z0-9]+/gi,                                             // Access Key ID
     /[A-Z0-9]{20}/g,                                                          // Possible raw Access Key (20 char alphanumeric)
-    /Security-Token=[A-Za-z0-9%]+/gi                                          // Security Token
+    /Security-Token=[A-Za-z0-9%]+/gi,                                         // Security Token
+    /(AKIA|ASIA|AROA)[A-Z0-9]{16}/g,                                          // AWS Access Key ID specific format
+    /[A-Za-z0-9+/]{40}/g                                                      // Possible AWS Secret Key
   ];
+  
+  // Rest of function remains the same...
   
   let hasCredentials = false;
   const foundPatterns = [];
