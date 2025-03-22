@@ -356,6 +356,23 @@ function generatePostPageContent(post: any, markdown: string) {
   const date = properties.Date?.date?.start 
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
+
+  let processedMarkdown = markdown;
+
+  processedMarkdown = processedMarkdown.replace(
+    /```(javascript|typescript|js|ts)([\s\S]*?)```/g,
+    (match, language, code) => {
+      // Escape template literals in code blocks
+      const escapedCode = code
+        .replace(/`/g, '\\`')
+        .replace(/\${/g, '\\${')
+        // Fix specific bugs in code examples
+        .replace(/'blobs\[0\]\.url'/g, 'blobs[0].url')
+        .replace(/\$\{'somehash'\}/g, '\\${\'somehash\'}');
+      
+      return '```' + language + escapedCode + '```';
+    }
+  );
     
   // We're now working with pre-sanitized markdown that already has placeholders
 
@@ -376,8 +393,8 @@ const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
   // Store processed markdown in state
-  const [content, setContent] = useState(\`${markdown.replace(/`/g, '\\`')}\`);
-  const [imageMap, setImageMap] = useState({});
+  const [content, setContent] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+  const [imageMap, setImageMap] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   // Process image URLs at runtime
@@ -510,25 +527,29 @@ export default function BlogPost() {
               <div className={\`prose dark:prose-invert max-w-none \${crimsonText.className}\`}>
                 <ReactMarkdown components={{
                   img: ({ node, ...props }) => {
-                    console.log('Rendering image with src:', props.src);
+                    // Fix TypeScript errors by ensuring src is not undefined
+                    const imageSrc = props.src || '';
+                    console.log('Rendering image with src:', imageSrc);
                     
                     // Check if this is a placeholder that needs to be handled specially
-                    const isPlaceholder = props.src && props.src.startsWith('image-placeholder-');
+                    const isPlaceholder = imageSrc.startsWith('image-placeholder-');
                     
                     if (isPlaceholder) {
-                      console.log('Detected image placeholder:', props.src);
+                      console.log('Detected image placeholder:', imageSrc);
                       
                       // If we have a mapping for this placeholder in our imageMap
-                      if (imageMap[props.src]) {
-                        console.log('Found mapping for placeholder:', imageMap[props.src].substring(0, 30) + '...');
+                      if (imageMap[imageSrc]) {
+                        const mappedUrl = imageMap[imageSrc];
+                        console.log('Found mapping for placeholder:', 
+                          mappedUrl ? mappedUrl.substring(0, 30) + '...' : 'undefined');
                       } else {
-                        console.log('No mapping found for placeholder:', props.src);
+                        console.log('No mapping found for placeholder:', imageSrc);
                       }
                     }
                     
                     return (
                       <SecureImage 
-                        src={props.src || ''} 
+                        src={imageSrc} 
                         alt={props.alt || ''} 
                         className="my-4 rounded-md" 
                         postId="${post.id}"
