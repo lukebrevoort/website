@@ -377,19 +377,84 @@ const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 export default function BlogPost() {
   // Store processed markdown in state
   const [content, setContent] = useState(\`${markdown.replace(/`/g, '\\`')}\`);
+  const [imageMap, setImageMap] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   // Process image URLs at runtime
   useEffect(() => {
+    console.log('BlogPost mounted, fetching image map...');
+    
+    // First check if we still have REDACTED URLs that need to be fixed
+    const hasRedactedImages = content.includes('REDACTED.amazonaws.com');
+    
+    if (hasRedactedImages) {
+      console.log('Found REDACTED URLs in content, will attempt to replace them');
+    }
+    
     // Load image map (placeholders -> URLs) from external API
     fetch(\`/api/image-map?postId=${post.id}\`)
-      .then(res => res.json())
-      .then(imageMap => {
-        console.log('Loaded image map with', Object.keys(imageMap).length, 'images');
-        // No direct replacements in the client - let SecureImage handle placeholders
-        setContent(content);
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(\`Failed to fetch image map: \${res.status} \${res.statusText}\`);
+        }
+        return res.json();
       })
-      .catch(err => console.error('Error fetching image map:', err));
+      .then(fetchedMap => {
+        console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
+        setImageMap(fetchedMap);
+        
+        // If we have REDACTED URLs and we got an image map
+        if (hasRedactedImages && Object.keys(fetchedMap).length > 0) {
+          console.log('Replacing REDACTED URLs with image placeholders');
+          
+          // Create a new version of the content with REDACTED URLs replaced
+          let updatedContent = content;
+          
+          // Replace all REDACTED URLs with the first available placeholder
+          // In a more sophisticated version, we'd match images to placeholders intelligently
+          const allPlaceholders = Object.keys(fetchedMap);
+          
+          if (allPlaceholders.length > 0) {
+            // Replace each instance of a REDACTED URL with a sequential placeholder
+            let placeholderIndex = 0;
+            
+            updatedContent = updatedContent.replace(
+              /!\\[([^\\]]*)\\]\\(https:\\/\\/REDACTED\\.amazonaws\\.com\\/REDACTED\\)/g,
+              (match, altText) => {
+                const placeholder = allPlaceholders[placeholderIndex % allPlaceholders.length];
+                placeholderIndex++;
+                console.log(\`Replaced REDACTED URL with placeholder: \${placeholder.substring(0, 30)}...\`);
+                return \`![\${altText}](\${placeholder})\`;
+              }
+            );
+            
+            console.log('Updated content with placeholders');
+            setContent(updatedContent);
+          }
+        }
+        
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching image map:', err);
+        setIsLoading(false);
+      });
   }, []);
+
+  // Debugging button to help diagnose image issues
+  const debugImage = () => {
+    console.log('Current content contains image placeholders:', 
+                content.includes('image-placeholder-'));
+    console.log('Current image map:', imageMap);
+    
+    // Force image map reload
+    fetch(\`/api/image-map?postId=${post.id}&force=true\`)
+      .then(res => res.json())
+      .then(fetchedMap => {
+        console.log('Reloaded image map:', fetchedMap);
+        setImageMap(fetchedMap);
+      });
+  };
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -427,20 +492,66 @@ export default function BlogPost() {
             <header className="mb-10">
               <h1 className={\`\${lukesFont.className} text-4xl font-bold mb-3\`}>${title}</h1>
               ${date ? `<time className="text-gray-500">${date}</time>` : ''}
+              
+              {/* Add debugging button that's only visible during development */}
+              {process.env.NODE_ENV === 'development' && (
+                <button 
+                  onClick={debugImage}
+                  className="mt-2 px-3 py-1 text-xs bg-gray-200 dark:bg-gray-800 rounded"
+                >
+                  Debug Images
+                </button>
+              )}
             </header>
             
-            <div className={\`prose dark:prose-invert max-w-none \${crimsonText.className}\`}>
-              <ReactMarkdown components={{
-                img: ({ node, ...props }) => (
-                  <SecureImage 
-                    src={props.src || ''} 
-                    alt={props.alt || ''} 
-                    className="my-4 rounded-md" 
-                    postId="${post.id}"
-                  />
-                ),
-              }}>{content}</ReactMarkdown>
-            </div>
+            {isLoading ? (
+              <div className="animate-pulse">Loading content...</div>
+            ) : (
+              <div className={\`prose dark:prose-invert max-w-none \${crimsonText.className}\`}>
+                <ReactMarkdown components={{
+                  img: ({ node, ...props }) => {
+                    console.log('Rendering image with src:', props.src);
+                    
+                    // Check if this is a placeholder that needs to be handled specially
+                    const isPlaceholder = props.src && props.src.startsWith('image-placeholder-');
+                    
+                    if (isPlaceholder) {
+                      console.log('Detected image placeholder:', props.src);
+                      
+                      // If we have a mapping for this placeholder in our imageMap
+                      if (imageMap[props.src]) {
+                        console.log('Found mapping for placeholder:', imageMap[props.src].substring(0, 30) + '...');
+                      } else {
+                        console.log('No mapping found for placeholder:', props.src);
+                      }
+                    }
+                    
+                    return (
+                      <SecureImage 
+                        src={props.src || ''} 
+                        alt={props.alt || ''} 
+                        className="my-4 rounded-md" 
+                        postId="${post.id}"
+                        imageMap={imageMap}
+                      />
+                    );
+                  },
+                  // Also fix code formatting issues in the rendered markdown
+                  code: ({ node, inline, className, children, ...props }) => {
+                    // For code blocks in the blog content
+                    return inline ? (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    ) : (
+                      <pre className={className} {...props}>
+                        <code>{children}</code>
+                      </pre>
+                    );
+                  },
+                }}>{content}</ReactMarkdown>
+              </div>
+            )}
           </motion.article>
         </SidebarInset>
       </MotionConfig>
