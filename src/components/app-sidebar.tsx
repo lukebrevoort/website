@@ -104,18 +104,10 @@ const data = {
       title: "Blog",
       url: "/blog/posts",
       icon: NotebookPen,
-      items: [ // Placeholders, will eventually be fetched from most recent posts
+      items: [
         {
-          title: "Tech",
-          url: "/blog#tech",
-        },
-        {
-          title: "Personal",
-          url: "/blog#personal",
-        },
-        {
-          title: "Projects",
-          url: "/blog#projects",
+          title: "Latest",
+          url: "/blog/posts",
         },
       ],
     },
