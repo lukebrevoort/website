@@ -2,7 +2,8 @@ const { Client } = require('@notionhq/client');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { NotionToMarkdown } = require('notion-to-md');
+import { NotionConverter } from 'notion-to-md';
+import { DefaultExporter } from 'notion-to-md/plugins/exporter';
 
 // Get the page ID from command line arguments
 const pageId = process.argv[2];
@@ -203,32 +204,31 @@ async function getBlogPosts() {
   return response.results;
 }
 
-async function getBlogPost(pageId) {
-  const notion = new Client({ auth: process.env.NOTION_API_KEY });
-  
-  // Get the page
+export async function getBlogPost(pageId) {
+  // First, retrieve the page data
   const page = await notion.pages.retrieve({ page_id: pageId });
   
-  // Initialize notion-to-md
-  const n2m = new NotionToMarkdown({ notionClient: notion });
-  
-  // Configure for better output
-  n2m.setCustomTransformer('image', async (block) => {
-    const { image } = block;
-    const imageUrl = image.file?.url || image.external?.url;
-    if (imageUrl) {
-      return `![Image](${imageUrl})`;
-    }
-    return '';
+  const buffer = {};
+
+  const exporter = new DefaultExporter({
+      outputType: 'buffer',
+      buffer: buffer
   });
   
-  // Get blocks and convert to markdown
-  const mdBlocks = await n2m.pageToMarkdown(pageId);
-  const markdown = n2m.toMarkdownString(mdBlocks).parent;
+  // Initialize the converter with the string exporter
+  const n2m = new NotionConverter(notion)
+    .withExporter(exporter);
+    
+  // Convert the page to markdown
+  await n2m.convert(pageId);
   
-  console.log(`Generated markdown with length: ${markdown.length}`);
+  // Get the markdown content
+  const markdown = buffer[pageId] || '';
   
-  return { page, markdown };
+  return {
+    page,
+    markdown,
+  };
 }
 
 // Main function
