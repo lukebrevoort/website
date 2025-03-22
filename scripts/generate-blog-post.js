@@ -204,7 +204,7 @@ async function getBlogPosts() {
   return response.results;
 }
 
-export async function getBlogPost(pageId) {
+async function getBlogPost(pageId) {
   // First, retrieve the page data
   const page = await notion.pages.retrieve({ page_id: pageId });
   
