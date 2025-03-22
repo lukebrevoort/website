@@ -30,39 +30,49 @@ function ensureDirectories() {
 function createImageMapping(postId, markdown) {
   const imageMap = {};
   
-  // This improved regex captures all AWS URLs, including those in code blocks
-  // Use a two-part approach
+  // Enhanced regex to catch more AWS URL patterns
+  const awsUrlPatterns = [
+    // Standard AWS S3 URLs
+    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`'<>]+)/g,
+    
+    // URLs with credentials in them
+    /(https:\/\/[^\s"`'<>)]+(?:Credential=|X-Amz-Credential=|AWSAccessKeyId=|Security-Token=)[^\s"`'<>)]+)/g,
+    
+    // Any URLs with amazonaws.com domain
+    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g
+  ];
   
-  // First, regular image URLs
-  const standardRegex = /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`']+)/g;
-  let match;
+  // Process all patterns and add to imageMap
+  awsUrlPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(markdown)) !== null) {
+      const url = match[0];
+      const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+      const placeholder = `image-placeholder-${urlHash}`;
+      imageMap[placeholder] = url;
+    }
+  });
   
-  while ((match = standardRegex.exec(markdown)) !== null) {
-    const url = match[0];
-    const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-    const placeholder = `image-placeholder-${urlHash}`;
-    imageMap[placeholder] = url;
-  }
-  
-  // Second, find URLs inside code blocks (more challenging)
+  // Handle code blocks with specialized approach
   const codeBlockRegex = /```[^\n]*\n([\s\S]*?)```/g;
   let codeMatch;
   
   while ((codeMatch = codeBlockRegex.exec(markdown)) !== null) {
     const codeBlock = codeMatch[1];
-    // Find URLs inside code blocks
-    const urlRegex = /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^"\s`]+)/g;
-    let urlMatch;
     
-    while ((urlMatch = urlRegex.exec(codeBlock)) !== null) {
-      const url = urlMatch[0];
-      const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
-      const placeholder = `code-image-placeholder-${urlHash}`;
-      imageMap[placeholder] = url;
-    }
+    // Apply same patterns inside code blocks
+    awsUrlPatterns.forEach(pattern => {
+      let urlMatch;
+      while ((urlMatch = pattern.exec(codeBlock)) !== null) {
+        const url = urlMatch[0];
+        const urlHash = Buffer.from(url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+        const placeholder = `code-image-placeholder-${urlHash}`;
+        imageMap[placeholder] = url;
+      }
+    });
   }
   
-  // Save the mapping as before
+  // Save mapping to file
   const privateDir = path.join(process.cwd(), '.private');
   if (!fs.existsSync(privateDir)) {
     fs.mkdirSync(privateDir, { recursive: true });
@@ -89,30 +99,71 @@ function generatePostPageContent(post, markdown) {
       })
     : '';
   
-  // Create image mapping
+  // FIRST - Check for any AWS credentials before we do anything else
+  // This helps catch if there's something in the raw markdown we're missing
+  const preCheckRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com).+?(?:Credential=|Security-Token=|X-Amz-Credential=|AWSAccessKeyId=|[A-Z0-9]{20})/gi;
+  const preCheckMatches = markdown.match(preCheckRegex);
+  
+  if (preCheckMatches) {
+    console.error('⚠️ AWS credentials detected in raw markdown - Logging patterns to help debugging:');
+    const uniquePatterns = [...new Set(preCheckMatches.map(url => {
+      // Extract just the beginning of the URL pattern to help identify it
+      return url.substring(0, 50) + '...';
+    }))];
+    uniquePatterns.forEach(pattern => console.error(`- Pattern found: ${pattern}`));
+  }
+  
+  // Create image mapping with enhanced pattern detection
   const imageMap = createImageMapping(post.id, markdown);
   
-  // Process the markdown to replace all AWS URLs with placeholders
+  // Process the markdown to replace ALL AWS URLs with placeholders
+  // Not just image URLs, but ANY AWS URL
   let processedMarkdown = markdown;
+  
+  // Replace all occurrences
   Object.entries(imageMap).forEach(([placeholder, url]) => {
-    processedMarkdown = processedMarkdown.replace(
-      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-      placeholder
-    );
+    // Escape special regex characters in the URL
+    const escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Create a global regex to replace all instances
+    const urlRegex = new RegExp(escapedUrl, 'g');
+    processedMarkdown = processedMarkdown.replace(urlRegex, placeholder);
   });
   
-  // Double-check for any remaining AWS URLs in entire content, including code blocks
-  const finalCheckRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com).+?(?:Credential=([A-Z0-9]+)|Security-Token=[A-Za-z0-9%]+)/g;
-  const remainingMatches = processedMarkdown.match(finalCheckRegex);
+  // Add more comprehensive security check for any remaining AWS URLs or credentials
+  const credentialPatterns = [
+    /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^\s"'`<>)]+/gi,  // General AWS URLs
+    /Credential=[A-Z0-9/]+/gi,                                                // Credential parameter
+    /X-Amz-Credential=[A-Z0-9/]+/gi,                                           // X-Amz-Credential parameter
+    /AWSAccessKeyId=[A-Z0-9]+/gi,                                             // Access Key ID
+    /[A-Z0-9]{20}/g,                                                          // Possible raw Access Key (20 char alphanumeric)
+    /Security-Token=[A-Za-z0-9%]+/gi                                          // Security Token
+  ];
   
-  if (remainingMatches) {
+  let hasCredentials = false;
+  const foundPatterns = [];
+  
+  // Check each pattern
+  credentialPatterns.forEach(pattern => {
+    const matches = processedMarkdown.match(pattern);
+    if (matches) {
+      hasCredentials = true;
+      foundPatterns.push(...matches);
+    }
+  });
+  
+  if (hasCredentials) {
     console.error('CRITICAL ERROR: AWS credentials still detected in processed markdown');
     console.error('Aborting to prevent credential leakage!');
-    remainingMatches.forEach(url => {
-      // Show partial URL to identify location, but mask credentials
-      const maskedUrl = url.replace(/(Credential=|Security-Token=)[^&]+/g, '$1***REDACTED***');
-      console.error(`- ${maskedUrl.substring(0, 100)}...`);
+    
+    // Log the unique patterns that were found (but mask actual credentials)
+    [...new Set(foundPatterns)].forEach(pattern => {
+      const maskedPattern = pattern
+        .replace(/(Credential=|Security-Token=|X-Amz-Credential=|AWSAccessKeyId=)[^&\s]+/gi, '$1***REDACTED***')
+        .replace(/([A-Z0-9]{10})[A-Z0-9]{10}/g, '$1**********');
+      console.error(`- ${maskedPattern.substring(0, 100)}...`);
     });
+    
     process.exit(1); // Stop execution to prevent leaking credentials
   }
 
