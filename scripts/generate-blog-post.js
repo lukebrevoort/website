@@ -2,8 +2,8 @@ const { Client } = require('@notionhq/client');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-import { NotionConverter } from 'notion-to-md';
-import { DefaultExporter } from 'notion-to-md/plugins/exporter';
+const { NotionConverter } = require('notion-to-md');
+const { DefaultExporter } = require('notion-to-md/plugins/exporter');
 
 // Get the page ID from command line arguments
 const pageId = process.argv[2];
