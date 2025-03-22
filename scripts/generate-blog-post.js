@@ -1,3 +1,20 @@
+const { Client } = require('@notionhq/client');
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const pageId = process.argv[2];
+
+if (!pageId) {
+  console.error('Error: No page ID provided');
+  process.exit(1);
+}
+
+// Show environment variables for debugging (masking sensitive values)
+console.log('Environment variables check:');
+console.log('- NOTION_TOKEN: ' + (process.env.NOTION_TOKEN ? 'Set (value hidden)' : 'Not set ❌'));
+console.log('- NOTION_DATABASE_ID: ' + (process.env.NOTION_DATABASE_ID ? 'Set (value hidden)' : 'Not set ❌'));
+
 async function runTypescriptGenerator() {
   try {
     // Run the TypeScript generator with the specific post ID
@@ -57,3 +74,5 @@ try {
   console.error('Fatal error:', error);
   process.exit(1);
 }
+
+runTypescriptGenerator();
