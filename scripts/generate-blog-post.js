@@ -65,14 +65,18 @@ async function runTypescriptGenerator() {
 }
 
 // Main execution - handle errors at the top level
-try {
-  const result = runTypescriptGenerator();
-  if (!result.success) {
+(async function main() {
+  try {
+    const result = await runTypescriptGenerator();
+    if (!result.success) {
+      console.error('Blog generation failed:', result.error);
+      process.exit(1);
+    } else {
+      console.log('Blog generation succeeded!');
+      process.exit(0);
+    }
+  } catch (error) {
+    console.error('Fatal error:', error);
     process.exit(1);
   }
-} catch (error) {
-  console.error('Fatal error:', error);
-  process.exit(1);
-}
-
-runTypescriptGenerator();
+})();
