@@ -88,6 +88,7 @@ I knew this part of the project was going to be a pain, but simply the amount of
 First, where the images were stored. My original idea was to simply have some folder called image-cache to store all the images I use. But unfortunately, this would greatly expand my repo as I plan to add a lot of images to this blog. So instead, I had to work to move my entire storage system over to **blob storage**, a form of storage in beta at Vercel. 
 
 \`\`\`javascript
+    
     // Define blob name/path (will be used in URL)
     const blobName = \`blog-images/${'somehash'}.jpg\`;
     
@@ -96,7 +97,6 @@ First, where the images were stored. My original idea was to simply have some fo
     
     // If we found the image in blob storage, return its URL
     if (blobs.length > 0) {
-console.log(\\`Found existing image in Blob storage: \${blobs[0].url}\\`);
       return NextResponse.json({ imagePath: 'blobs[0].url' });
     }
 \`\`\`
