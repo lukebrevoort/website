@@ -28,9 +28,10 @@ function ensureDirectories() {
 }
 
 function createImageMapping(postId, markdown) {
-  // Extract image URLs from markdown
+  // Extract image URLs from markdown - use a more robust regex
   const imageMap = {};
-  const regex = /(https:\/\/prod-files-secure\.s3[^)"\s]+)/g;
+  // This improved regex captures all AWS URLs, including those in different contexts
+  const regex = /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`']+)/g;
   let match;
   
   while ((match = regex.exec(markdown)) !== null) {
@@ -67,14 +68,29 @@ function generatePostPageContent(post, markdown) {
   // Create image mapping
   const imageMap = createImageMapping(post.id, markdown);
   
-  // Process the markdown to replace AWS URLs with placeholders
+  // Process the markdown to replace AWS URLs with placeholders - use a more thorough approach
   let processedMarkdown = markdown;
-  Object.entries(imageMap).forEach(([placeholder, url]) => {
+  
+  // Sort URLs by length (longest first) to prevent partial replacements
+  const sortedEntries = Object.entries(imageMap).sort((a, b) => b[1].length - a[1].length);
+  
+  // Replace each URL with its placeholder
+  sortedEntries.forEach(([placeholder, url]) => {
+    // Escape special regex characters in the URL
+    const escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     processedMarkdown = processedMarkdown.replace(
-      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+      new RegExp(escapedUrl, 'g'),
       placeholder
     );
   });
+  
+  // Double-check for any remaining AWS URLs and warn if found
+  const checkRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)\s"`']+/g;
+  const remainingMatches = processedMarkdown.match(checkRegex);
+  if (remainingMatches) {
+    console.warn('WARNING: Some AWS URLs were not replaced with placeholders:');
+    remainingMatches.forEach(url => console.warn(`- ${url.substring(0, 50)}...`));
+  }
 
   return `"use client"
 
@@ -97,7 +113,7 @@ export default function BlogPost() {
 
   // Process image URLs at runtime
   useEffect(() => {
-    // Load image map (placeholders -> URLs) from external API or server-side logic
+    // Load image map (placeholders -> URLs) from external API
     fetch('/api/image-map?postId=${post.id}')
       .then(res => res.json())
       .then(imageMap => {
