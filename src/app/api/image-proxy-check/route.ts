@@ -3,34 +3,39 @@ import { list } from '@vercel/blob';
 
 export async function GET(request: NextRequest) {
   try {
-    const imageHash = request.nextUrl.searchParams.get('hash');
+    const hash = request.nextUrl.searchParams.get('hash');
     
-    if (!imageHash) {
+    if (!hash) {
       return NextResponse.json({ error: 'Missing hash parameter' }, { status: 400 });
     }
     
-    // Define blob name/path pattern
-    const blobPrefix = `blog-images/${imageHash}`;
+    console.log(`Checking for image with hash: ${hash}`);
     
-    // Check if the blob already exists
-    const { blobs } = await list({ prefix: blobPrefix });
+    // Look for the image in blob storage
+    const blobName = `blog-images/${hash}.jpg`;
     
-    // If we found the image in blob storage, return its URL
-    if (blobs.length > 0) {
-      console.log(`Found existing image in Blob storage: ${blobs[0].url}`);
-      return NextResponse.json({ imagePath: blobs[0].url });
+    try {
+      const { blobs } = await list({ prefix: blobName });
+      
+      if (blobs.length > 0) {
+        console.log(`Found image in Blob storage: ${blobs[0].url}`);
+        return NextResponse.json({ imagePath: blobs[0].url });
+      }
+      
+      console.log(`No image found for hash: ${hash}`);
+      return NextResponse.json({ imagePath: '/placeholders/default.jpg' });
+    } catch (error) {
+      console.error('Error checking blob storage:', error);
+      return NextResponse.json({ 
+        error: 'Error checking blob storage',
+        imagePath: '/placeholders/default.jpg' 
+      });
     }
-    
-    // No blob found
-    return NextResponse.json({ 
-      error: 'No image found with this hash',
-      imagePath: '/placeholders/default.jpg'
-    });
   } catch (error) {
-    console.error('Error checking for image:', error);
+    console.error('Error in image-proxy-check:', error);
     return NextResponse.json({ 
       error: 'Server error',
       imagePath: '/placeholders/default.jpg' 
-    }, { status: 200 });
+    });
   }
 }

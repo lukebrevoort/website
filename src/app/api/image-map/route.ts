@@ -11,14 +11,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing postId parameter' }, { status: 400 });
     }
     
+    console.log(`Fetching image map for post ${postId}`);
+    
     // First try to get mappings from .private directory (local development)
     const privateDir = path.join(process.cwd(), '.private');
     const mapFile = path.join(privateDir, `${postId}.json`);
     
     // Check if we have a local mapping file
     if (fs.existsSync(mapFile)) {
-      console.log(`Found local mapping for post ${postId}`);
+      console.log(`Found local mapping file: ${mapFile}`);
       const mapping = JSON.parse(fs.readFileSync(mapFile, 'utf-8'));
+      console.log(`Loaded ${Object.keys(mapping).length} mappings`);
       return NextResponse.json(mapping);
     }
     
@@ -27,11 +30,11 @@ export async function GET(request: NextRequest) {
     
     try {
       // List all blobs with this post ID in their name
-      const { blobs } = await list({ prefix: `blog-images/` });
+      const { blobs } = await list();
+      
+      console.log(`Found ${blobs.length} total blobs in storage`);
       
       if (blobs.length > 0) {
-        console.log(`Found ${blobs.length} images in Blob storage`);
-        
         // Create a mapping from the blobs
         const reconstructedMap: Record<string, string> = {};
         
@@ -44,6 +47,7 @@ export async function GET(request: NextRequest) {
             const placeholder = `image-placeholder-${hash}`;
             // Use the blob URL
             reconstructedMap[placeholder] = blob.url;
+            console.log(`Mapped ${placeholder} -> ${blob.url.substring(0, 30)}...`);
           }
         }
         
@@ -63,30 +67,15 @@ export async function GET(request: NextRequest) {
           return NextResponse.json(reconstructedMap);
         }
       }
+      
+      console.log('No relevant blobs found, returning empty mapping');
+      return NextResponse.json({});
     } catch (blobError) {
       console.error('Error accessing Blob storage:', blobError);
       // Continue to fallback logic
     }
     
-    // Fallback for specific test post
-    if (postId === '1bbf7879-ec1d-806a-9e84-cc8bfb5c1805') {
-      console.log('Using fallback mapping for test post');
-      const dummyMapping = {
-        "image-placeholder-aHR0cHM6Ly9wcm9kLWZpbGVzLXNlY3Vy": "/placeholders/default.jpg"
-      };
-      
-      // Save for local development
-      if (process.env.NODE_ENV === 'development') {
-        if (!fs.existsSync(privateDir)) {
-          fs.mkdirSync(privateDir, { recursive: true });
-        }
-        fs.writeFileSync(mapFile, JSON.stringify(dummyMapping));
-      }
-      
-      return NextResponse.json(dummyMapping);
-    }
-    
-    // No mappings found anywhere
+    // Fallback - empty mapping
     console.log(`No mappings found for post ${postId}`);
     return NextResponse.json({});
   } catch (error) {
