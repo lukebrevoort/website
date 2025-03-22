@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as crypto from 'crypto';
+// Remove static import and use dynamic import later
 
 // For debugging
 const DEBUG_MODE = process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV === 'preview';
@@ -89,55 +90,54 @@ export async function POST(request: Request) {
     console.log(`🚀 Triggering GitHub workflow for ${githubRepoOwner}/${githubRepoName}...`);
     
     try {
-      const githubResponse = await fetch(
-        `https://api.github.com/repos/${githubRepoOwner}/${githubRepoName}/dispatches`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.GITHUB_PAT}`, // Make sure it's 'Bearer' not 'token'
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            event_type: 'notion_update',
-            client_payload: { 
-              pageId,
-              timestamp: new Date().toISOString()
-            }
-          })
+      // Dynamically import Octokit
+      const { Octokit } = await import('@octokit/rest');
+      // Initialize Octokit with your PAT
+      const octokit = new Octokit({
+        auth: process.env.GITHUB_PAT
+      });
+      
+      // Log token info for debugging
+      console.log(`Token info: exists=${!!process.env.GITHUB_PAT}, length=${process.env.GITHUB_PAT?.length || 0}`);
+      
+      // Create repository dispatch event
+      const response = await octokit.repos.createDispatchEvent({
+        owner: githubRepoOwner,
+        repo: githubRepoName,
+        event_type: 'notion_update',
+        client_payload: { 
+          pageId,
+          timestamp: new Date().toISOString()
         }
-      );
+      });
       
-      if (!githubResponse.ok) {
-        const errorText = await githubResponse.text();
-        console.error(`📛 GitHub API error: ${githubResponse.status}`);
-        console.error(`Response body: ${errorText}`);
-        console.error(`Request details: 
-          - Repository: ${githubRepoOwner}/${githubRepoName}
-          - Event type: notion_update
-          - Authorization header: Bearer ${process.env.GITHUB_PAT ? process.env.GITHUB_PAT.substring(0, 4) + '...' : 'undefined'}
-          - Token length: ${process.env.GITHUB_PAT?.length || 0}
-        `);
-        
-        return NextResponse.json({ 
-          success: false, 
-          message: `Failed to trigger GitHub workflow: ${githubResponse.status}`,
-          error: errorText
-        }, { status: 500 });
-      }
-      
-      console.log('✅ GitHub workflow triggered successfully');
+      console.log('✅ GitHub workflow triggered successfully:', response.status);
       return NextResponse.json({ 
         success: true, 
         message: 'Notion webhook processed and GitHub workflow triggered',
-        pageId
+        pageId,
+        githubStatus: response.status
       });
     } catch (githubError) {
       console.error('📛 Error triggering GitHub workflow:', githubError);
+      
+      // Get detailed error information
+      const errorMessage = githubError instanceof Error ? githubError.message : String(githubError);
+      const errorStatus = (githubError as any).status || 500;
+      
+      console.error(`Error details:
+        - Status: ${errorStatus}
+        - Message: ${errorMessage}
+        - Repository: ${githubRepoOwner}/${githubRepoName}
+        - Token exists: ${!!process.env.GITHUB_PAT}
+        - Token length: ${process.env.GITHUB_PAT?.length || 0}
+      `);
+      
       return NextResponse.json({ 
         success: false, 
         message: 'Error triggering GitHub workflow',
-        error: githubError instanceof Error ? githubError.message : String(githubError)
+        error: errorMessage,
+        status: errorStatus
       }, { status: 500 });
     }
   } catch (error) {
