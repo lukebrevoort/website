@@ -78,7 +78,28 @@ function createImageMapping(postId, markdown) {
 }
 
 function generatePostPageContent(post, markdown) {
-  // ...existing code...
+  // Extract properties from the post
+  const properties = post.properties;
+  const title = properties.Title?.title[0]?.plain_text || 'Untitled';
+  const date = properties.Date?.date?.start 
+    ? new Date(properties.Date.date.start).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
+    : '';
+  
+  // Create image mapping
+  const imageMap = createImageMapping(post.id, markdown);
+  
+  // Process the markdown to replace all AWS URLs with placeholders
+  let processedMarkdown = markdown;
+  Object.entries(imageMap).forEach(([placeholder, url]) => {
+    processedMarkdown = processedMarkdown.replace(
+      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+      placeholder
+    );
+  });
   
   // Double-check for any remaining AWS URLs in entire content, including code blocks
   const finalCheckRegex = /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com).+?(?:Credential=([A-Z0-9]+)|Security-Token=[A-Za-z0-9%]+)/g;
