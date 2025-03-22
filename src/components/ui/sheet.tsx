@@ -3,7 +3,9 @@
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
+import dynamic from "next/dynamic"
+
+const X = dynamic(() => import("lucide-react").then((mod) => mod.X))
 
 import { cn } from "@/lib/utils"
 

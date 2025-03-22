@@ -1,6 +1,9 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { ChevronRight, MoreHorizontal } from "lucide-react"
+import dynamic from "next/dynamic"
+
+const ChevronRight = dynamic(() => import("lucide-react").then((mod) => mod.ChevronRight))
+const MoreHorizontal = dynamic(() => import("lucide-react").then((mod) => mod.MoreHorizontal))
 
 import { cn } from "@/lib/utils"
 

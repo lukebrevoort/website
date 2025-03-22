@@ -2,7 +2,12 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Home } from "lucide-react"
+import dynamic from "next/dynamic"
+
+const Home = dynamic(() => import("lucide-react").then(mod => mod.Home), {
+  ssr: false
+})
+
 import {
   SidebarMenu,
   SidebarMenuItem,

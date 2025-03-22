@@ -1,7 +1,13 @@
 "use client"
 
+import dynamic from 'next/dynamic'
+
+const Gift = dynamic(() => import('lucide-react').then(mod => mod.Gift))
+const Cake = dynamic(() => import('lucide-react').then(mod => mod.Cake))
+const Heart = dynamic(() => import('lucide-react').then(mod => mod.Heart))
+const PartyPopper = dynamic(() => import('lucide-react').then(mod => mod.PartyPopper))
+
 import React, { useState, useEffect, JSX } from 'react'
-import { Gift, Cake, Heart, PartyPopper } from 'lucide-react'
 import { lukesFont } from "../../fonts"
 import { motion } from 'framer-motion'
 import Confetti from 'react-confetti'
