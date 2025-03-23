@@ -621,6 +621,7 @@ export default function BlogPost() {
     }
   }, [imageMap]);
     
+  useEffect(() => {
     // Load image map (placeholders -> URLs) from external API
     fetch(\`/api/image-map?postId=\${postId}\`)
       .then(res => {
@@ -644,7 +645,7 @@ export default function BlogPost() {
         console.error('Error fetching image map:', err);
         setIsLoading(false);
       });
-  }, []);
+  }, [postId]);
 
   return (
     <SidebarProvider defaultOpen={false}>
