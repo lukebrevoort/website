@@ -14,6 +14,7 @@ if (!pageId) {
 console.log('Environment variables check:');
 console.log('- NOTION_TOKEN: ' + (process.env.NOTION_TOKEN ? 'Set (value hidden)' : 'Not set ❌'));
 console.log('- NOTION_DATABASE_ID: ' + (process.env.NOTION_DATABASE_ID ? 'Set (value hidden)' : 'Not set ❌'));
+console.log('- BLOB_READ_WRITE_TOKEN: ' + (process.env.BLOB_READ_WRITE_TOKEN ? 'Set (value hidden)' : 'Not set ❌'));
 
 async function runTypescriptGenerator() {
   try {
@@ -37,7 +38,8 @@ async function runTypescriptGenerator() {
       env: { 
         ...process.env,
         NOTION_TOKEN: process.env.NOTION_TOKEN,
-        NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID
+        NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
+        BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN
       },
       encoding: 'utf-8' 
     });

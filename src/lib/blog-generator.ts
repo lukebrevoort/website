@@ -455,6 +455,7 @@ async function createImageMapping(postId: string, markdown: string) {
       })());
     }
   });
+
   
   // After all preloading is finished, ensure we're saving the final map with blob URLs
   if (preloadPromises.length > 0) {
@@ -475,6 +476,8 @@ async function createImageMapping(postId: string, markdown: string) {
   if (!fs.existsSync(privateDir)) {
     fs.mkdirSync(privateDir, { recursive: true });
   }
+
+  await new Promise(resolve => setTimeout(resolve, 500));
   
   // Make sure we're writing the most up-to-date map with blob URLs
   fs.writeFileSync(
@@ -611,7 +614,12 @@ export default function BlogPost() {
 
   // Process image URLs at runtime
   useEffect(() => {
-    console.log('BlogPost mounted, fetching image map...');
+    console.log('BlogPost effect running - imageMap changed');
+    console.log('Available image mappings:', Object.keys(imageMap).length);
+    if (Object.keys(imageMap).length > 0) {
+      console.log('Sample mapping:', Object.entries(imageMap)[0]);
+    }
+  }, [imageMap]);
     
     // Load image map (placeholders -> URLs) from external API
     fetch(\`/api/image-map?postId=\${postId}\`)
