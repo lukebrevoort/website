@@ -474,13 +474,75 @@ export default function BlogPost() {
   const [content, setContent] = useState(\`${processedMarkdown}\`);
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const postId = "${postId}";
+
+  // Function to preload images to blob storage
+  const preloadImages = async (imageMap: Record<string, string>) => {
+    console.log('Preloading images to blob storage...');
+    
+    // Gather all image placeholders that need to be preloaded
+    const placeholders = Object.keys(imageMap).filter(key => 
+      key.startsWith('image-placeholder-') && 
+      !imageMap[key].includes('vercel-blob.com') && 
+      !imageMap[key].includes('blob.vercel-storage.com')
+    );
+    
+    if (placeholders.length === 0) {
+      console.log('No images need preloading - all are already in blob storage');
+      return;
+    }
+    
+    console.log(\`Found \${placeholders.length} images that need to be preloaded to blob storage\`);
+    
+    // Process each placeholder in sequence to avoid overloading
+    for (const placeholder of placeholders) {
+      try {
+        // Extract the original URL
+        const originalUrl = imageMap[placeholder];
+        // Extract hash from placeholder
+        const hash = placeholder.replace('image-placeholder-', '');
+        
+        console.log(\`Preloading image: \${placeholder} -> \${originalUrl.substring(0, 30)}...\`);
+        
+        // Call the image proxy to ensure it's stored in blob storage
+        const response = await fetch(
+          \`/api/image-proxy?url=\${encodeURIComponent(originalUrl)}&hash=\${hash}\`
+        );
+        
+        if (!response.ok) {
+          throw new Error(\`Failed to preload image: \${response.status} \${response.statusText}\`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.imagePath && (data.imagePath.includes('vercel-blob.com') || data.imagePath.includes('blob.vercel-storage.com'))) {
+          console.log(\`Successfully preloaded: \${data.imagePath.substring(0, 30)}...\`);
+          // Update the imageMap with the blob URL for future use
+          imageMap[placeholder] = data.imagePath;
+        } else {
+          console.warn(\`Failed to preload image \${placeholder}: No valid blob URL returned\`);
+        }
+        
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+      } catch (error) {
+        console.error(\`Error preloading image \${placeholder}:\`, error);
+      }
+    }
+    
+    console.log('Preloading complete!');
+    
+    // Update the state with the new map containing blob URLs
+    setImageMap({...imageMap});
+  };
 
   // Process image URLs at runtime
   useEffect(() => {
     console.log('BlogPost mounted, fetching image map...');
     
     // Load image map (placeholders -> URLs) from external API
-    fetch(\`/api/image-map?postId=${postId}\`)
+    fetch(\`/api/image-map?postId=\${postId}\`)
       .then(res => {
         if (!res.ok) {
           throw new Error(\`Failed to fetch image map: \${res.status} \${res.statusText}\`);
@@ -491,6 +553,12 @@ export default function BlogPost() {
         console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
         setImageMap(fetchedMap);
         setIsLoading(false);
+        
+        // Start preloading images to blob storage after a short delay
+        // This ensures the component renders first, then we handle the preloading
+        setTimeout(() => {
+          preloadImages(fetchedMap);
+        }, 1000);
       })
       .catch(err => {
         console.error('Error fetching image map:', err);
@@ -550,7 +618,7 @@ export default function BlogPost() {
                         src={imageSrc} 
                         alt={props.alt || ''} 
                         className="my-4 rounded-md" 
-                        postId="${postId}"
+                        postId={\`\${postId}\`}
                         imageMap={imageMap}
                       />
                     );
