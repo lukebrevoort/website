@@ -42,7 +42,7 @@ After having a conversation with Jordan Scales (A super cool previous Stevens St
 
 What if I leveraged the best of both worlds and connected Notions build in page writing directly into my website! This solution would give me all of the upside of building out some software and ease or writing, while avoiding the blog not really being on my website!
 
-![Image](https://REDACTED.amazonaws.com/REDACTED)
+![Image](image-placeholder-OoO3kbHABmSzt1rP8cq7Tn3vFhMRfYA6)
 
 
 The workflow essentially leverages the **Notion Webhooks** to communicate with my website whenever I decide to post a new blog in my database. Then my personal website will extract the key content and convert it into **Markdown** which is then converted into **React (**JSX**). **
@@ -61,7 +61,7 @@ The first major hurdle I had to overcome was trying to process Images.
 
 Markdown couldn’t handle images on its own so, I had to take it into my own hands. My first idea was just to scan the markdown and detect images my Notions **[Image] **tag in front. While this worked I unexpectedly got an email informing me I had leaked an **AWS Temp Key.**
 
-![Image](https://REDACTED.amazonaws.com/REDACTED)
+![Image](image-placeholder-yVHwAAEdhsh7tNgm7mkaWfOZtJaCyG3a)
 
 
 The slight oversight in this strategy was that by just using markdown and parsing, I was exposing the 1 Hour AWS Temp Key notion gives to download the image. This was problematic as I had to find some workaround to download the image and never show the Temp Key. 
@@ -126,13 +126,6 @@ Email: luke@brevoort.com
   useEffect(() => {
     console.log('BlogPost mounted, fetching image map...');
     
-    // First check if we still have REDACTED URLs that need to be fixed
-    const hasRedactedImages = content.includes('REDACTED.amazonaws.com');
-    
-    if (hasRedactedImages) {
-      console.log('Found REDACTED URLs in content, will attempt to replace them');
-    }
-    
     // Load image map (placeholders -> URLs) from external API
     fetch(`/api/image-map?postId=1bef7879-ec1d-80da-81db-e80ce7ae93e3`)
       .then(res => {
@@ -144,36 +137,6 @@ Email: luke@brevoort.com
       .then(fetchedMap => {
         console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
         setImageMap(fetchedMap);
-        
-        // If we have REDACTED URLs and we got an image map
-        if (hasRedactedImages && Object.keys(fetchedMap).length > 0) {
-          console.log('Replacing REDACTED URLs with image placeholders');
-          
-          // Create a new version of the content with REDACTED URLs replaced
-          let updatedContent = content;
-          
-          // Replace all REDACTED URLs with available placeholders
-          const allPlaceholders = Object.keys(fetchedMap);
-          
-          if (allPlaceholders.length > 0) {
-            // Replace each instance of a REDACTED URL with a sequential placeholder
-            let placeholderIndex = 0;
-            
-            updatedContent = updatedContent.replace(
-              /!\[([^\]]*)\]\(https:\/\/REDACTED\.amazonaws\.com\/REDACTED\)/g,
-              (match, altText) => {
-                const placeholder = allPlaceholders[placeholderIndex % allPlaceholders.length];
-                placeholderIndex++;
-                console.log(`Replaced REDACTED URL with placeholder: ${placeholder.substring(0, 30)}...`);
-                return `![${altText}](${placeholder})`;
-              }
-            );
-            
-            console.log('Updated content with placeholders');
-            setContent(updatedContent);
-          }
-        }
-        
         setIsLoading(false);
       })
       .catch(err => {
@@ -181,21 +144,6 @@ Email: luke@brevoort.com
         setIsLoading(false);
       });
   }, []);
-
-  // Debugging button to help diagnose image issues
-  const debugImage = () => {
-    console.log('Current content contains image placeholders:', 
-                content.includes('image-placeholder-'));
-    console.log('Current image map:', imageMap);
-    
-    // Force image map reload
-    fetch(`/api/image-map?postId=1bef7879-ec1d-80da-81db-e80ce7ae93e3&force=true`)
-      .then(res => res.json())
-      .then(fetchedMap => {
-        console.log('Reloaded image map:', fetchedMap);
-        setImageMap(fetchedMap);
-      });
-  };
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -233,16 +181,6 @@ Email: luke@brevoort.com
             <header className="mb-10">
               <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>{"My First Po"}</h1>
               <time className="text-gray-500">3/21/2025</time>
-              
-              {/* Add debugging button that's only visible during development */}
-              {process.env.NODE_ENV === 'development' && (
-                <button 
-                  onClick={debugImage}
-                  className="mt-2 px-3 py-1 text-xs bg-gray-200 dark:bg-gray-800 rounded"
-                >
-                  Debug Images
-                </button>
-              )}
             </header>
             
             {isLoading ? (
@@ -253,23 +191,6 @@ Email: luke@brevoort.com
                   img: ({ node, ...props }) => {
                     // Fix TypeScript errors by ensuring src is not undefined
                     const imageSrc = props.src || '';
-                    console.log('Rendering image with src:', imageSrc);
-                    
-                    // Check if this is a placeholder that needs to be handled specially
-                    const isPlaceholder = imageSrc.startsWith('image-placeholder-');
-                    
-                    if (isPlaceholder) {
-                      console.log('Detected image placeholder:', imageSrc);
-                      
-                      // If we have a mapping for this placeholder in our imageMap
-                      if (imageMap[imageSrc]) {
-                        const mappedUrl = imageMap[imageSrc];
-                        console.log('Found mapping for placeholder:', 
-                          mappedUrl ? mappedUrl.substring(0, 30) + '...' : 'undefined');
-                      } else {
-                        console.log('No mapping found for placeholder:', imageSrc);
-                      }
-                    }
                     
                     return (
                       <SecureImage 
@@ -280,8 +201,8 @@ Email: luke@brevoort.com
                         imageMap={imageMap}
                       />
                     );
-                    },
-                  }}>{content}</ReactMarkdown>
+                  }
+                }}>{content}</ReactMarkdown>
               </div>
             )}
           </motion.article>
