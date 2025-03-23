@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
     
-    const blobName = `blog-images/${imageHash}.jpg`;
+    const blobName = `blob-images/${imageHash}.jpg`;
     console.log('Processing image request:', {
       url: imageUrl.substring(0, 30) + '...',
       hash: imageHash,
