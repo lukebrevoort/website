@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { getBlogPosts, getBlogPost } from './notion';
+import { put, list } from '@vercel/blob'; // Add Vercel Blob import
+// Dynamic import for node-fetch since it's an ESM module
 
 // Directories
 const BLOG_DIR = path.join(process.cwd(), 'src/app/blog');
@@ -57,8 +59,8 @@ export async function generateBlogPosts(specificPostId?: string) {
       const postId = post.id;
       const { markdown } = await getBlogPost(postId);
       
-      // Create and store image mapping
-      masterImageMap[postId] = createImageMapping(postId, markdown);
+      // Create and store image mapping - now async
+      masterImageMap[postId] = await createImageMapping(postId, markdown);
     }
 
     // Second pass: Generate the page files using the pre-created mappings
@@ -358,7 +360,49 @@ function createConsistentHash(url: string): string {
     .substring(0, 32);
 }
 
-function createImageMapping(postId: string, markdown: string) {
+async function preloadImageToBlobStorage(url: string, hash: string): Promise<string | null> {
+  try {
+    console.log(`📸 Preloading image to blob storage: ${url.substring(0, 30)}...`);
+    
+    // Define blob name/path
+    const blobName = `blog-images/${hash}.jpg`;
+    
+    // Check if the blob already exists before fetching
+    const { blobs } = await list({ prefix: blobName });
+    if (blobs.length > 0) {
+      console.log(`✅ Image already exists in blob storage: ${blobs[0].url}`);
+      return blobs[0].url;
+    }
+    
+    // Dynamically import fetch
+    const { default: fetch } = await import('node-fetch');
+    
+    // Fetch the image from the original URL
+    const imageResponse = await fetch(url);
+    
+    if (!imageResponse.ok) {
+      throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+    }
+    
+    // Get the image buffer
+    const imageBuffer = await imageResponse.buffer();
+    
+    // Store the image in Vercel Blob Storage
+    const { url: blobUrl } = await put(blobName, imageBuffer, {
+      access: 'public',
+      contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
+    });
+    
+    console.log(`✅ Successfully uploaded to blob storage: ${blobUrl}`);
+    return blobUrl;
+  } catch (error) {
+    console.error('❌ Error preloading image to blob storage:', error);
+    return null;
+  }
+}
+
+// MODIFIED: Create image mapping and preload to blob storage
+async function createImageMapping(postId: string, markdown: string) {
   // Extract image URLs from markdown
   const imageMap: Record<string, string> = {};
   
@@ -379,6 +423,9 @@ function createImageMapping(postId: string, markdown: string) {
   // Use Set to avoid processing the same URL multiple times
   const processedUrls = new Set<string>();
   
+  // Array to store preloading promises
+  const preloadPromises: Promise<void>[] = [];
+  
   awsUrlPatterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(markdown)) !== null) {
@@ -396,10 +443,29 @@ function createImageMapping(postId: string, markdown: string) {
       imageMap[placeholder] = url;
       
       console.log(`Mapped ${url.substring(0, 30)}... to ${placeholder}`);
+      
+      // Add preloading promise to the array
+      preloadPromises.push((async () => {
+        const blobUrl = await preloadImageToBlobStorage(url, urlHash);
+        if (blobUrl) {
+          // Update the map with the blob URL
+          imageMap[placeholder] = blobUrl;
+          console.log(`Updated mapping for ${placeholder} to blob URL: ${blobUrl}`);
+        }
+      })());
     }
   });
   
-  // Save the mapping
+  // Wait for all preloading operations to complete
+  if (preloadPromises.length > 0) {
+    console.log(`🔄 Preloading ${preloadPromises.length} images to blob storage...`);
+    await Promise.all(preloadPromises);
+    console.log('✅ Image preloading complete!');
+  } else {
+    console.log('ℹ️ No images to preload');
+  }
+  
+  // Save the mapping with updated blob URLs
   const privateDir = path.join(process.cwd(), '.private');
   if (!fs.existsSync(privateDir)) {
     fs.mkdirSync(privateDir, { recursive: true });
@@ -410,7 +476,7 @@ function createImageMapping(postId: string, markdown: string) {
     JSON.stringify(imageMap, null, 2)
   );
   
-  console.log(`Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
+  console.log(`✅ Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
   
   return imageMap;
 }
