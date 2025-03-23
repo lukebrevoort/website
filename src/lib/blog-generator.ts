@@ -289,7 +289,16 @@ function performFinalCredentialSweep(content: string): string {
   return cleanContent;
 }
 
-// ENHANCED: Improved image mapping detection
+function createConsistentHash(url: string): string {
+  const crypto = require('crypto');
+  return crypto
+    .createHash('sha256')
+    .update(url)
+    .digest('base64')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .substring(0, 32);
+}
+
 function createImageMapping(postId: string, markdown: string) {
   // Extract image URLs from markdown
   const imageMap: Record<string, string> = {};
@@ -322,13 +331,12 @@ function createImageMapping(postId: string, markdown: string) {
       
       processedUrls.add(url);
       
-      // Create a more robust hash for the URL
-      const urlHash = Buffer.from(url).toString('base64')
-        .replace(/[^a-zA-Z0-9]/g, '')
-        .substring(0, 32);
-      
+      // Create a deterministic hash for the URL
+      const urlHash = createConsistentHash(url);
       const placeholder = `image-placeholder-${urlHash}`;
       imageMap[placeholder] = url;
+      
+      console.log(`Mapped ${url.substring(0, 30)}... to ${placeholder}`);
     }
   });
   
@@ -569,6 +577,7 @@ export default function BlogPost() {
                         <code>{children}</code>
                       </pre>
                     );
+                  },
                   },
                 }}>{content}</ReactMarkdown>
               </div>

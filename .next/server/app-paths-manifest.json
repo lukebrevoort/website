@@ -1,3 +1,18 @@
 {
-  "/api/notion-webhook/route": "app/api/notion-webhook/route.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/github-test/route": "app/api/github-test/route.js",
+  "/api/image-map/route": "app/api/image-map/route.js",
+  "/api/image-proxy-check/route": "app/api/image-proxy-check/route.js",
+  "/api/image-proxy/route": "app/api/image-proxy/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/notion-webhook/route": "app/api/notion-webhook/route.js",
+  "/about/page": "app/about/page.js",
+  "/birthday/dad/page": "app/birthday/dad/page.js",
+  "/blog/posts/page": "app/blog/posts/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/documentation/page": "app/documentation/page.js",
+  "/models/page": "app/models/page.js",
+  "/page": "app/page.js",
+  "/projects/[slug]/page": "app/projects/[slug]/page.js",
+  "/projects/page": "app/projects/page.js"
 }

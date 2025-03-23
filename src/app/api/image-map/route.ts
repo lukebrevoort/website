@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import { list } from '@vercel/blob';
+import path from 'path';
+import fs from 'fs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,33 +13,32 @@ export async function GET(request: NextRequest) {
     
     console.log(`Fetching image map for post ${postId}`);
     
-    // First try to get mappings from .private directory (local development)
+    // Check local file system first (for development and cached maps)
     const privateDir = path.join(process.cwd(), '.private');
     const mapFile = path.join(privateDir, `${postId}.json`);
     
-    // Check if we have a local mapping file
     if (fs.existsSync(mapFile)) {
       console.log(`Found local mapping file: ${mapFile}`);
-      const mapping = JSON.parse(fs.readFileSync(mapFile, 'utf-8'));
-      console.log(`Loaded ${Object.keys(mapping).length} mappings`);
-      return NextResponse.json(mapping);
+      const map = JSON.parse(fs.readFileSync(mapFile, 'utf-8'));
+      console.log(`Loaded ${Object.keys(map).length} mappings`);
+      return NextResponse.json(map);
     }
     
-    // If no local mapping, try to reconstruct from Vercel Blob storage
     console.log(`No local mapping found, checking Blob storage for post ${postId}`);
     
+    // Check blob storage
     try {
-      // List all blobs with this post ID in their name
-      const { blobs } = await list();
+      // List all blobs with prefix 'blog-images/' to be more efficient
+      const { blobs } = await list({ prefix: 'blog-images/' });
       
-      console.log(`Found ${blobs.length} total blobs in storage`);
+      console.log(`Found ${blobs.length} relevant blobs in storage`);
       
       if (blobs.length > 0) {
         // Create a mapping from the blobs
         const reconstructedMap: Record<string, string> = {};
         
         for (const blob of blobs) {
-          // Extract the hash from the blob name
+          // Extract the hash from the blob pathname
           const hashMatch = (blob.pathname || blob.url || '').match(/blog-images\/(.+)\.(jpg|jpeg|png|gif)$/);
           if (hashMatch && hashMatch[1]) {
             const hash = hashMatch[1];
@@ -79,7 +78,7 @@ export async function GET(request: NextRequest) {
     console.log(`No mappings found for post ${postId}`);
     return NextResponse.json({});
   } catch (error) {
-    console.error('Error in image-map endpoint:', error);
+    console.error('Error in image-map API:', error);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
