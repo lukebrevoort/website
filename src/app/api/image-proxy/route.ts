@@ -22,23 +22,20 @@ export async function GET(request: Request): Promise<NextResponse<ImageResponse 
       }, { status: 400 });
     }
 
-    const blobName = `image-cache/${imageHash}.jpg`;
-
     console.log("Processing image request:", {
       url: imageUrl.substring(0, 30) + "...",
-      hash: imageHash,
-      blobName: blobName
+      hash: imageHash
     });
 
     // Check if the blob already exists
     try {
-      console.log(`Checking if blob already exists: ${blobName}`);
-      // Use a more general prefix (the directory)
-      const { blobs } = await list({ prefix: 'image-cache/' });
+      console.log(`Checking if blob already exists with hash: ${imageHash}`);
+      // List all blobs (no prefix to ensure we find it anywhere)
+      const { blobs } = await list();
       
-      // Find the exact blob we're looking for
+      // Find the blob by looking for the hash in the URL
       const existingBlob = blobs.find(blob => 
-        blob.pathname === blobName || blob.url.includes(imageHash)
+        blob.url && blob.url.includes(imageHash)
       );
       
       if (existingBlob) {
@@ -62,8 +59,8 @@ export async function GET(request: Request): Promise<NextResponse<ImageResponse 
     // Get image as buffer
     const imageBuffer = await imageResponse.arrayBuffer();
     
-    // Store in Vercel Blob Storage
-    const { url: blobUrl } = await put(blobName, imageBuffer, {
+    // Store in Vercel Blob Storage - use hash directly without path prefix
+    const { url: blobUrl } = await put(`${imageHash}.jpg`, imageBuffer, {
       access: 'public',
       contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
     });
@@ -71,7 +68,7 @@ export async function GET(request: Request): Promise<NextResponse<ImageResponse 
     console.log(`Blob storage debug info:
       - Original URL: ${imageUrl.substring(0, 30)}...
       - Hash: ${imageHash}
-      - Blob Name: ${blobName}
+      - Blob Name: ${imageHash}.jpg (without path prefix)
       - Stored URL: ${blobUrl}
     `);
     
