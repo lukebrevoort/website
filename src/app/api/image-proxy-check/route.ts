@@ -1,41 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { list } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 
 export async function GET(request: NextRequest) {
   try {
-    const hash = request.nextUrl.searchParams.get('hash');
+    const imageUrl = request.nextUrl.searchParams.get('url');
+    const imageHash = request.nextUrl.searchParams.get('hash');
     
-    if (!hash) {
-      return NextResponse.json({ error: 'Missing hash parameter' }, { status: 400 });
+    if (!imageUrl || !imageHash) {
+      console.error('Missing required parameters:', { imageUrl, imageHash });
+      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
     
-    console.log(`Checking for image with hash: ${hash}`);
+    const blobName = `blog-images/${imageHash}.jpg`;
+    console.log('Processing image request:', {
+      url: imageUrl.substring(0, 30) + '...',
+      hash: imageHash,
+      blobName
+    });
     
-    // Look for the image in blob storage
-    const blobName = `blog-images/${hash}.jpg`;
-    
+    // Check if the blob already exists
     try {
+      console.log(`Checking if blob already exists: ${blobName}`);
       const { blobs } = await list({ prefix: blobName });
       
+      // If we found the image in blob storage, return its URL
       if (blobs.length > 0) {
-        console.log(`Found image in Blob storage: ${blobs[0].url}`);
+        console.log(`Found existing image in Blob storage: ${blobs[0].url}`);
         return NextResponse.json({ imagePath: blobs[0].url });
       }
-      
-      console.log(`No image found for hash: ${hash}`);
-      return NextResponse.json({ imagePath: '/placeholders/default.jpg' });
     } catch (error) {
-      console.error('Error checking blob storage:', error);
-      return NextResponse.json({ 
-        error: 'Error checking blob storage',
-        imagePath: '/placeholders/default.jpg' 
+      console.error('Error checking for existing blob:', error);
+    }
+    
+    console.log(`Fetching new image from: ${imageUrl.substring(0, 30)}...`);
+    
+    // Strip credential parameters from the URL if they exist
+    const cleanUrl = imageUrl.replace(/([?&](?:Credential|X-Amz-Credential|AWSAccessKeyId|Security-Token|X-Amz-Security-Token|X-Amz-Date|X-Amz-Signature)=[^&]+)/g, '');
+    
+    try {
+      // Fetch the image with appropriate headers for AWS authentication
+      const imageResponse = await fetch(cleanUrl, {
+        headers: {
+          'Accept': 'image/*',
+        },
       });
+      
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to fetch image: ${imageResponse.status} ${imageResponse.statusText}`);
+      }
+      
+      // Get image blob
+      const imageBlob = await imageResponse.blob();
+      
+      // Upload to Vercel Blob storage
+      const { url } = await put(blobName, imageBlob, {
+        access: 'public',
+        contentType: imageBlob.type || 'image/jpeg',
+      });
+      
+      console.log(`Uploaded image to Blob storage: ${url}`);
+      
+      return NextResponse.json({ imagePath: url });
+    } catch (error) {
+      console.error('Error processing image:', error);
+      return NextResponse.json(
+        { error: 'Failed to process image', imagePath: '/placeholders/default.jpg' },
+        { status: 500 }
+      );
     }
   } catch (error) {
-    console.error('Error in image-proxy-check:', error);
-    return NextResponse.json({ 
-      error: 'Server error',
-      imagePath: '/placeholders/default.jpg' 
-    });
+    console.error('Error in image-proxy:', error);
+    return NextResponse.json(
+      { error: 'Server error', imagePath: '/placeholders/default.jpg' },
+      { status: 500 }
+    );
   }
 }
