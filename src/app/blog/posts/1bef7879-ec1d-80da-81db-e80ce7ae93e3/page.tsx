@@ -192,7 +192,8 @@ Email: luke@brevoort.com
       console.log('Sample mapping:', Object.entries(imageMap)[0]);
     }
   }, [imageMap]);
-    
+  
+  useEffect(() => {
     // Load image map (placeholders -> URLs) from external API
     fetch(`/api/image-map?postId=${postId}`)
       .then(res => {
@@ -216,7 +217,7 @@ Email: luke@brevoort.com
         console.error('Error fetching image map:', err);
         setIsLoading(false);
       });
-  }, []);
+  }, [postId]);
 
   return (
     <SidebarProvider defaultOpen={false}>
