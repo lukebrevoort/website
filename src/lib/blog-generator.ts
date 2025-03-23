@@ -358,31 +358,42 @@ function createImageMapping(postId: string, markdown: string) {
 
 // UPDATED: Uses sanitized markdown with placeholders
 function generatePostPageContent(post: any, markdown: string) {
-  // Get properties
-  const properties = post.properties;
-  const title = properties.Title?.title[0]?.plain_text || 'Untitled';
+  // Get properties safely with fallbacks
+  const properties = post.properties || {};
+  const title = properties.Title?.title?.[0]?.plain_text || 'Untitled';
   const date = properties.Date?.date?.start 
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
 
   let processedMarkdown = markdown;
 
+  // Carefully handle code blocks to prevent template literal issues
   processedMarkdown = processedMarkdown.replace(
     /```(javascript|typescript|js|ts)([\s\S]*?)```/g,
     (match, language, code) => {
-      // Escape template literals in code blocks
-      const escapedCode = code
+      // Escape backticks, template literals and other problematic characters
+      const escapedCode: string = code
         .replace(/`/g, '\\`')
         .replace(/\${/g, '\\${')
-        // Fix specific bugs in code examples
-        .replace(/'blobs\[0\]\.url'/g, 'blobs[0].url')
-        .replace(/\$\{'somehash'\}/g, '\\${\'somehash\'}');
+        // Fix specific bugs in code examples that might exist in the content
+        .replace(/['"]blobs\[0\]\.url['"]/g, 'blobs[0].url')
+        .replace(/\$\{(['"])([^}]*)\1\}/g, (m: string, q: string, content: string) => `\\\${${q}${content}${q}}`);
       
       return '```' + language + escapedCode + '```';
     }
   );
-    
-  // We're now working with pre-sanitized markdown that already has placeholders
+
+  // Extra step to escape any remaining backticks in the markdown
+  processedMarkdown = processedMarkdown.replace(/`/g, '\\`');
+  
+  // More comprehensive escaping for dollar signs followed by curly braces
+  processedMarkdown = processedMarkdown.replace(/\${/g, '\\${');
+
+  // Ensure the post ID is sanitized and available
+  const postId = post.id || '';
+  if (!postId) {
+    console.warn('Post ID is missing, using empty string as fallback');
+  }
 
   return `"use client"
 
@@ -401,7 +412,7 @@ const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
 export default function BlogPost() {
   // Store processed markdown in state
-  const [content, setContent] = useState(\`${processedMarkdown.replace(/`/g, '\\`')}\`);
+  const [content, setContent] = useState(\`${processedMarkdown}\`);
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -417,7 +428,7 @@ export default function BlogPost() {
     }
     
     // Load image map (placeholders -> URLs) from external API
-    fetch(\`/api/image-map?postId=${post.id}\`)
+    fetch(\`/api/image-map?postId=${postId}\`)
       .then(res => {
         if (!res.ok) {
           throw new Error(\`Failed to fetch image map: \${res.status} \${res.statusText}\`);
@@ -435,8 +446,7 @@ export default function BlogPost() {
           // Create a new version of the content with REDACTED URLs replaced
           let updatedContent = content;
           
-          // Replace all REDACTED URLs with the first available placeholder
-          // In a more sophisticated version, we'd match images to placeholders intelligently
+          // Replace all REDACTED URLs with available placeholders
           const allPlaceholders = Object.keys(fetchedMap);
           
           if (allPlaceholders.length > 0) {
@@ -473,7 +483,7 @@ export default function BlogPost() {
     console.log('Current image map:', imageMap);
     
     // Force image map reload
-    fetch(\`/api/image-map?postId=${post.id}&force=true\`)
+    fetch(\`/api/image-map?postId=${postId}&force=true\`)
       .then(res => res.json())
       .then(fetchedMap => {
         console.log('Reloaded image map:', fetchedMap);
@@ -501,7 +511,7 @@ export default function BlogPost() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink>${title}</BreadcrumbLink>
+                    <BreadcrumbLink>{${JSON.stringify(title)}}</BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -515,7 +525,7 @@ export default function BlogPost() {
             className="container mx-auto py-10 px-4 max-w-3xl"
           >
             <header className="mb-10">
-              <h1 className={\`\${lukesFont.className} text-4xl font-bold mb-3\`}>${title}</h1>
+              <h1 className={\`\${lukesFont.className} text-4xl font-bold mb-3\`}>{${JSON.stringify(title)}}</h1>
               ${date ? `<time className="text-gray-500">${date}</time>` : ''}
               
               {/* Add debugging button that's only visible during development */}
@@ -560,7 +570,7 @@ export default function BlogPost() {
                         src={imageSrc} 
                         alt={props.alt || ''} 
                         className="my-4 rounded-md" 
-                        postId="${post.id}"
+                        postId="${postId}"
                         imageMap={imageMap}
                       />
                     );
@@ -577,7 +587,6 @@ export default function BlogPost() {
                         <code>{children}</code>
                       </pre>
                     );
-                  },
                   },
                 }}>{content}</ReactMarkdown>
               </div>
