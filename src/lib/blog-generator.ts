@@ -223,43 +223,102 @@ export async function commitAndPushChanges() {
   }
 }
 
-// ENHANCED: Sanitizes markdown by applying credential removal patterns
 function sanitizeMarkdown(markdown: string, imageMap: Record<string, string>): string {
   let processedMarkdown = markdown;
   
-  // First replace all AWS URLs with placeholders
+  // Create a reverse mapping for easy lookup (placeholder → URL)
+  const reverseMap: Record<string, string> = {};
   Object.entries(imageMap).forEach(([placeholder, url]) => {
-    processedMarkdown = processedMarkdown.replace(
-      new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-      placeholder
-    );
+    reverseMap[url] = placeholder;
   });
   
-  // Then apply additional credential scrubbing
+  // First extract and replace any remaining AWS URLs that weren't mapped
+  const unmappedAwsUrls = extractAwsUrls(processedMarkdown);
+  
+  for (const url of unmappedAwsUrls) {
+    // Skip if we already have a mapping for this URL
+    if (reverseMap[url]) continue;
+    
+    // Create a new placeholder for this URL
+    const urlHash = createConsistentHash(url);
+    const placeholder = `image-placeholder-${urlHash}`;
+    
+    // Add to our maps
+    imageMap[placeholder] = url;
+    reverseMap[url] = placeholder;
+    
+    console.log(`Added additional mapping for ${url.substring(0, 30)}... to ${placeholder}`);
+  }
+  
+  // Replace all AWS URLs with their placeholders
+  unmappedAwsUrls.forEach(url => {
+    const placeholder = reverseMap[url];
+    if (placeholder) {
+      const escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      processedMarkdown = processedMarkdown.replace(
+        new RegExp(escapedUrl, 'g'),
+        placeholder
+      );
+    }
+  });
+  
+  // Now replace URL patterns in Markdown image syntax
+  processedMarkdown = processedMarkdown.replace(
+    /!\[([^\]]*)\]\((https?:\/\/[^"\s)]+)\)/g,
+    (match, altText, url) => {
+      if (url.includes('amazonaws.com') || url.includes('prod-files-secure.s3')) {
+        const placeholder = reverseMap[url];
+        if (placeholder) {
+          return `![${altText}](${placeholder})`;
+        }
+      }
+      return match;
+    }
+  );
+  
+  // Safety - apply sanitization to credentials without REDACTEDing the entire URL
   const credentialPatterns = [
-    // Query parameter credentials
-    { pattern: /Credential=[A-Za-z0-9/+=]+/gi, replacement: 'Credential=REDACTED' },
-    { pattern: /X-Amz-Credential=[A-Za-z0-9/+=]+/gi, replacement: 'X-Amz-Credential=REDACTED' },
-    { pattern: /AWSAccessKeyId=[A-Za-z0-9/+=]+/gi, replacement: 'AWSAccessKeyId=REDACTED' },
-    { pattern: /Security-Token=[A-Za-z0-9%+=]+/gi, replacement: 'Security-Token=REDACTED' },
-    { pattern: /X-Amz-Security-Token=[A-Za-z0-9%+=]+/gi, replacement: 'X-Amz-Security-Token=REDACTED' },
-    { pattern: /X-Amz-Date=[0-9TZ]+/gi, replacement: 'X-Amz-Date=REDACTED' },
-    { pattern: /X-Amz-Signature=[0-9a-f]+/gi, replacement: 'X-Amz-Signature=REDACTED' },
-    
-    // Access and secret keys
-    { pattern: /(AKIA|ASIA|AROA)[A-Z0-9]{16,17}/g, replacement: 'REDACTED_AWS_KEY' },
-    { pattern: /[A-Za-z0-9+/]{35,40}(?:[=]{0,2})/g, replacement: 'REDACTED_SECRET_KEY' },
-    
-    // Any remaining AWS URLs
-    { pattern: /https:\/\/[^\s"'<>)]*amazonaws\.com[^\s"'<>)]*/gi, replacement: 'https://REDACTED.amazonaws.com/REDACTED' },
+    // Query parameter credentials - just remove the credentials, not the whole URL
+    { pattern: /(https:\/\/[^\s"'<>)]*amazonaws\.com[^\s"'<>)]*)([?&](?:Credential|X-Amz-Credential|AWSAccessKeyId|Security-Token|X-Amz-Security-Token|X-Amz-Date|X-Amz-Signature)=[^&"'\s<>)]+)/gi, 
+      replacement: '$1' }, // Keep the URL but remove the credential part
   ];
   
-  // Apply each pattern
+  // Apply credential-only patterns
   credentialPatterns.forEach(({ pattern, replacement }) => {
     processedMarkdown = processedMarkdown.replace(pattern, replacement);
   });
   
   return processedMarkdown;
+}
+
+// Helper function to extract AWS URLs from markdown
+function extractAwsUrls(markdown: string): string[] {
+  const urls = new Set<string>();
+  
+  const awsUrlPatterns = [
+    // Standard S3 URLs
+    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
+    // Any amazonaws.com URL
+    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g,
+    // Image URLs in markdown syntax
+    /!\[.*?\]\((https?:\/\/[^"\s)]+amazonaws\.com[^"\s)]+)\)/g,
+    // HTML image tags
+    /<img[^>]*src=["'](https?:\/\/[^"'\s>]+amazonaws\.com[^"'\s>]+)["'][^>]*>/g,
+  ];
+  
+  awsUrlPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(markdown)) !== null) {
+      let url = match[1] || match[0];
+      
+      // Only add if it's an AWS URL
+      if (url.includes('amazonaws.com') || url.includes('prod-files-secure.s3')) {
+        urls.add(url);
+      }
+    }
+  });
+  
+  return Array.from(urls);
 }
 
 // ENHANCED: Performs a final credential sweep on content before saving
@@ -326,7 +385,7 @@ function createImageMapping(postId: string, markdown: string) {
       let url = match[1] || match[0];
       
       // Skip if not an AWS URL or already processed
-      if (!url.includes('amazonaws.com') && !url.includes('Credential=')) continue;
+      if (!url.includes('amazonaws.com') && !url.includes('prod-files-secure.s3')) continue;
       if (processedUrls.has(url)) continue;
       
       processedUrls.add(url);
@@ -420,13 +479,6 @@ export default function BlogPost() {
   useEffect(() => {
     console.log('BlogPost mounted, fetching image map...');
     
-    // First check if we still have REDACTED URLs that need to be fixed
-    const hasRedactedImages = content.includes('REDACTED.amazonaws.com');
-    
-    if (hasRedactedImages) {
-      console.log('Found REDACTED URLs in content, will attempt to replace them');
-    }
-    
     // Load image map (placeholders -> URLs) from external API
     fetch(\`/api/image-map?postId=${postId}\`)
       .then(res => {
@@ -438,36 +490,6 @@ export default function BlogPost() {
       .then(fetchedMap => {
         console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
         setImageMap(fetchedMap);
-        
-        // If we have REDACTED URLs and we got an image map
-        if (hasRedactedImages && Object.keys(fetchedMap).length > 0) {
-          console.log('Replacing REDACTED URLs with image placeholders');
-          
-          // Create a new version of the content with REDACTED URLs replaced
-          let updatedContent = content;
-          
-          // Replace all REDACTED URLs with available placeholders
-          const allPlaceholders = Object.keys(fetchedMap);
-          
-          if (allPlaceholders.length > 0) {
-            // Replace each instance of a REDACTED URL with a sequential placeholder
-            let placeholderIndex = 0;
-            
-            updatedContent = updatedContent.replace(
-              /!\\[([^\\]]*)\\]\\(https:\\/\\/REDACTED\\.amazonaws\\.com\\/REDACTED\\)/g,
-              (match, altText) => {
-                const placeholder = allPlaceholders[placeholderIndex % allPlaceholders.length];
-                placeholderIndex++;
-                console.log(\`Replaced REDACTED URL with placeholder: \${placeholder.substring(0, 30)}...\`);
-                return \`![\${altText}](\${placeholder})\`;
-              }
-            );
-            
-            console.log('Updated content with placeholders');
-            setContent(updatedContent);
-          }
-        }
-        
         setIsLoading(false);
       })
       .catch(err => {
@@ -475,21 +497,6 @@ export default function BlogPost() {
         setIsLoading(false);
       });
   }, []);
-
-  // Debugging button to help diagnose image issues
-  const debugImage = () => {
-    console.log('Current content contains image placeholders:', 
-                content.includes('image-placeholder-'));
-    console.log('Current image map:', imageMap);
-    
-    // Force image map reload
-    fetch(\`/api/image-map?postId=${postId}&force=true\`)
-      .then(res => res.json())
-      .then(fetchedMap => {
-        console.log('Reloaded image map:', fetchedMap);
-        setImageMap(fetchedMap);
-      });
-  };
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -527,16 +534,6 @@ export default function BlogPost() {
             <header className="mb-10">
               <h1 className={\`\${lukesFont.className} text-4xl font-bold mb-3\`}>{${JSON.stringify(title)}}</h1>
               ${date ? `<time className="text-gray-500">${date}</time>` : ''}
-              
-              {/* Add debugging button that's only visible during development */}
-              {process.env.NODE_ENV === 'development' && (
-                <button 
-                  onClick={debugImage}
-                  className="mt-2 px-3 py-1 text-xs bg-gray-200 dark:bg-gray-800 rounded"
-                >
-                  Debug Images
-                </button>
-              )}
             </header>
             
             {isLoading ? (
@@ -547,23 +544,6 @@ export default function BlogPost() {
                   img: ({ node, ...props }) => {
                     // Fix TypeScript errors by ensuring src is not undefined
                     const imageSrc = props.src || '';
-                    console.log('Rendering image with src:', imageSrc);
-                    
-                    // Check if this is a placeholder that needs to be handled specially
-                    const isPlaceholder = imageSrc.startsWith('image-placeholder-');
-                    
-                    if (isPlaceholder) {
-                      console.log('Detected image placeholder:', imageSrc);
-                      
-                      // If we have a mapping for this placeholder in our imageMap
-                      if (imageMap[imageSrc]) {
-                        const mappedUrl = imageMap[imageSrc];
-                        console.log('Found mapping for placeholder:', 
-                          mappedUrl ? mappedUrl.substring(0, 30) + '...' : 'undefined');
-                      } else {
-                        console.log('No mapping found for placeholder:', imageSrc);
-                      }
-                    }
                     
                     return (
                       <SecureImage 
@@ -574,20 +554,7 @@ export default function BlogPost() {
                         imageMap={imageMap}
                       />
                     );
-                  },
-                  // Also fix code formatting issues in the rendered markdown
-                  code: ({ node, inline, className, children, ...props }) => {
-                    // For code blocks in the blog content
-                    return inline ? (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    ) : (
-                      <pre className={className} {...props}>
-                        <code>{children}</code>
-                      </pre>
-                    );
-                  },
+                  }
                 }}>{content}</ReactMarkdown>
               </div>
             )}

@@ -280,21 +280,8 @@ Email: luke@brevoort.com
                         imageMap={imageMap}
                       />
                     );
-                  },
-                  // Also fix code formatting issues in the rendered markdown
-                  code: ({ node, inline, className, children, ...props }) => {
-                    // For code blocks in the blog content
-                    return inline ? (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    ) : (
-                      <pre className={className} {...props}>
-                        <code>{children}</code>
-                      </pre>
-                    );
-                  },
-                }}>{content}</ReactMarkdown>
+                    },
+                  }}>{content}</ReactMarkdown>
               </div>
             )}
           </motion.article>
