@@ -42,7 +42,7 @@ After having a conversation with Jordan Scales (A super cool previous Stevens St
 
 What if I leveraged the best of both worlds and connected Notions build in page writing directly into my website! This solution would give me all of the upside of building out some software and ease or writing, while avoiding the blog not really being on my website!
 
-![Image](image-placeholder-CiHQnLSfyoJlysOFeJnyZ5vkzkBsiEGl)
+![Image](image-placeholder-0zo7EufQ5ANX7ohKboSu9tTUXBPXRqei)
 
 
 The workflow essentially leverages the **Notion Webhooks** to communicate with my website whenever I decide to post a new blog in my database. Then my personal website will extract the key content and convert it into **Markdown** which is then converted into **React (**JSX**). **
@@ -61,7 +61,7 @@ The first major hurdle I had to overcome was trying to process Images.
 
 Markdown couldn’t handle images on its own so, I had to take it into my own hands. My first idea was just to scan the markdown and detect images my Notions **[Image] **tag in front. While this worked I unexpectedly got an email informing me I had leaked an **AWS Temp Key.**
 
-![Image](image-placeholder-AYJNKucemrd6rNch6e3Jn1E3ANf8EhJn)
+![Image](image-placeholder-Kt4kyWzPvlxsTVuS9Z2DzDagLpQGmwQo)
 
 
 The slight oversight in this strategy was that by just using markdown and parsing, I was exposing the 1 Hour AWS Temp Key notion gives to download the image. This was problematic as I had to find some workaround to download the image and never show the Temp Key. 
@@ -186,7 +186,12 @@ Email: luke@brevoort.com
 
   // Process image URLs at runtime
   useEffect(() => {
-    console.log('BlogPost mounted, fetching image map...');
+    console.log('BlogPost effect running - imageMap changed');
+    console.log('Available image mappings:', Object.keys(imageMap).length);
+    if (Object.keys(imageMap).length > 0) {
+      console.log('Sample mapping:', Object.entries(imageMap)[0]);
+    }
+  }, [imageMap]);
     
     // Load image map (placeholders -> URLs) from external API
     fetch(`/api/image-map?postId=${postId}`)
