@@ -191,12 +191,9 @@ Email: luke@brevoort.com
       "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
       "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
     };
-    console.log('BlogPost effect running - imageMap changed');
-    console.log('Available image mappings:', Object.keys(imageMap).length);
-    if (Object.keys(imageMap).length > 0) {
-      console.log('Sample mapping:', Object.entries(imageMap)[0]);
-    }
-  }, [imageMap]);
+    console.log('Adding hardcoded mappings for testing');
+    setImageMap(prev => ({...prev, ...hardcodedMappings}));
+  }, []);
     
   useEffect(() => {
     // Load image map (placeholders -> URLs) from external API
