@@ -365,7 +365,7 @@ async function preloadImageToBlobStorage(url: string, hash: string): Promise<str
     console.log(`📸 Preloading image to blob storage: ${url.substring(0, 30)}...`);
     
     // Define blob name/path
-    const blobName = `blog-images/${hash}.jpg`;
+    const blobName = `image-cache/${hash}.jpg`;
     
     // Check if the blob already exists before fetching
     const { blobs } = await list({ prefix: blobName });
