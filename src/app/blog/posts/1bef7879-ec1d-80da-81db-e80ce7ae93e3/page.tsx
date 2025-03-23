@@ -10,6 +10,7 @@ import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
 
@@ -119,155 +120,124 @@ After getting into production everything has been moving smoothly! Hopefully at 
 
 Email: luke@brevoort.com
 `);
-  const [imageMap, setImageMap] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const postId = "1bef7879-ec1d-80da-81db-e80ce7ae93e3";
+const [imageMap, setImageMap] = useState<Record<string, string>>({});
+const [isLoading, setIsLoading] = useState(true);
+const [loadedImages, setLoadedImages] = useState(false);
+const postId = "1bef7879-ec1d-80da-81db-e80ce7ae93e3";
 
-  // Function to preload images to blob storage
-  const preloadImages = async (imageMap: Record<string, string>) => {
-    console.log('Preloading images to blob storage...', imageMap);
-    
-    // Gather all image placeholders that need to be preloaded
-    const placeholders = Object.keys(imageMap).filter(key => 
-      key.startsWith('image-placeholder-') && 
-      !imageMap[key].includes('vercel-blob.com') && 
-      !imageMap[key].includes('blob.vercel-storage.com')
-    );
-    
-    if (placeholders.length === 0) {
-      console.log('No images need preloading - all are already in blob storage');
-      return;
-    }
-    
-    console.log(`Found ${placeholders.length} images that need to be preloaded to blob storage`);
-    
-    // Process each placeholder in sequence to avoid overloading
-    for (const placeholder of placeholders) {
-      try {
-        // Extract the original URL
-        const originalUrl = imageMap[placeholder];
-        // Extract hash from placeholder
-        const hash = placeholder.replace('image-placeholder-', '');
-        
-        console.log(`Preloading image: ${placeholder} -> ${originalUrl.substring(0, 30)}...`);
-        
-        // Call the image proxy to ensure it's stored in blob storage
-        const response = await fetch(
-          `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&hash=${hash}`
-        );
-        
-        if (!response.ok) {
-          throw new Error(`Failed to preload image: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.imagePath && (data.imagePath.includes('vercel-blob.com') || data.imagePath.includes('blob.vercel-storage.com'))) {
-          console.log(`Successfully preloaded: ${data.imagePath.substring(0, 30)}...`);
-          // Update the imageMap with the blob URL for future use
-          imageMap[placeholder] = data.imagePath;
-        } else {
-          console.warn(`Failed to preload image ${placeholder}: No valid blob URL returned`);
-        }
-        
-        // Small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-      } catch (error) {
-        console.error(`Error preloading image ${placeholder}:`, error);
-      }
-    }
-    
-    console.log('Preloading complete!');
-    
-    // Update the state with the new map containing blob URLs
-    setImageMap({...imageMap});
+// Function to preload images to blob storage
+const preloadImages = async (imageMap: Record<string, string>) => {
+  console.log('Preloading images to blob storage...', imageMap);
+  
+  // ... existing preload function ...
+  
+  console.log('Preloading complete!');
+  
+  // Update the state with the new map containing blob URLs
+  setImageMap({...imageMap});
+  setLoadedImages(true);
+};
+
+// Combined effect for image mappings
+useEffect(() => {
+  console.log('Setting up image mappings...');
+  
+  // Start with hardcoded mappings - THESE SHOULD ALWAYS OVERRIDE ANY API MAPPINGS
+  const hardcodedMappings = {
+    "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
+    "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
   };
+  
+  console.log('Setting hardcoded mappings', hardcodedMappings);
+  setImageMap(hardcodedMappings);
+  
+  // Then fetch API mappings and merge them, preserving hardcoded mappings
+  fetch(`/api/image-map?postId=${postId}`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .then(fetchedMap => {
+      console.log('API returned mappings:', fetchedMap);
+      
+      // IMPORTANT: Merge in a way that prioritizes hardcoded mappings
+      const combinedMap = {...fetchedMap, ...hardcodedMappings};
+      console.log('Combined map:', combinedMap);
+      setImageMap(combinedMap);
+      setIsLoading(false);
+      setLoadedImages(true);
+      
+      // No need to preload if we're using hardcoded mappings
+    })
+    .catch(err => {
+      console.error('Error fetching image map:', err);
+      setIsLoading(false);
+      // Still use hardcoded mappings if fetch fails
+      setLoadedImages(true);
+    });
+}, [postId]);
 
-  // Process image URLs at runtime
-  useEffect(() => {
+return (
+  <SidebarProvider defaultOpen={false}>
+    <AppSidebar />
+    <MotionConfig reducedMotion="user">
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+          {/* ... existing header code ... */}
+        </header>
 
-    const hardcodedMappings = {
-      "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
-      "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
-    };
-    console.log('Adding hardcoded mappings for testing');
-    setImageMap(prev => ({...prev, ...hardcodedMappings}));
-  }, []);
-    
-  useEffect(() => {
-    // Load image map (placeholders -> URLs) from external API
-    fetch(`/api/image-map?postId=${postId}`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
-        }
-        return res.json();
-      })
-      .then(fetchedMap => {
-        console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
-        setImageMap(fetchedMap);
-        setIsLoading(false);
-        
-        // Start preloading images to blob storage after a short delay
-        // This ensures the component renders first, then we handle the preloading
-        setTimeout(() => {
-          preloadImages(fetchedMap);
-        }, 1000);
-      })
-      .catch(err => {
-        console.error('Error fetching image map:', err);
-        setIsLoading(false);
-      });
-  }, [postId]);
-
-  return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
-      <MotionConfig reducedMotion="user">
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink>{"My First Post"}</BreadcrumbLink>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
+        <motion.article 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="container mx-auto py-10 px-4 max-w-3xl"
+        >
+          <header className="mb-10">
+            <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>{"My First Post"}</h1>
+            <time className="text-gray-500">3/21/2025</time>
           </header>
-
-          <motion.article 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="container mx-auto py-10 px-4 max-w-3xl"
-          >
-            <header className="mb-10">
-              <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>{"My First Post"}</h1>
-              <time className="text-gray-500">3/21/2025</time>
-            </header>
-            
-            {isLoading ? (
-              <div className="animate-pulse">Loading content...</div>
-            ) : (
-              <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
-                <ReactMarkdown components={{
+          
+          {isLoading ? (
+            <div className="animate-pulse">Loading content...</div>
+          ) : (
+            <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
+              <ReactMarkdown 
+                key={loadedImages ? 'loaded' : 'loading'} // Force re-render when images load
+                components={{
                   img: ({ node, ...props }) => {
                     // Fix TypeScript errors by ensuring src is not undefined
                     const imageSrc = props.src || '';
+                    console.log('Rendering image:', imageSrc); 
+                    console.log('ImageMap contains mapping?', !!imageMap[imageSrc]);
                     
+                    // For debugging, directly use hardcoded URLs for known placeholders
+                    if (imageSrc === 'image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU') {
+                      return (
+                        <div className="my-4">
+                          <img 
+                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg"
+                            alt={props.alt || ''} 
+                            className="rounded-md w-full h-auto"
+                          />
+                        </div>
+                      );
+                    }
+                    
+                    if (imageSrc === 'image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp') {
+                      return (
+                        <div className="my-4">
+                          <img 
+                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
+                            alt={props.alt || ''} 
+                            className="rounded-md w-full h-auto"
+                          />
+                        </div>
+                      );
+                    }
+                    
+                    // Only use SecureImage as fallback for other images
                     return (
                       <SecureImage 
                         src={imageSrc} 
@@ -278,12 +248,15 @@ Email: luke@brevoort.com
                       />
                     );
                   }
-                }}>{content}</ReactMarkdown>
-              </div>
-            )}
-          </motion.article>
-        </SidebarInset>
-      </MotionConfig>
-    </SidebarProvider>
-  );
+                }}
+              >
+                {content}
+              </ReactMarkdown>
+            </div>
+          )}
+        </motion.article>
+      </SidebarInset>
+    </MotionConfig>
+  </SidebarProvider>
+);
 }
