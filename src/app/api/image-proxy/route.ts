@@ -22,7 +22,7 @@ export async function GET(request: Request): Promise<NextResponse<ImageResponse 
       }, { status: 400 });
     }
 
-    const blobName = `blog-images/${imageHash}.jpg`;
+    const blobName = `image-cache/${imageHash}.jpg`;
 
     console.log("Processing image request:", {
       url: imageUrl.substring(0, 30) + "...",
@@ -33,12 +33,17 @@ export async function GET(request: Request): Promise<NextResponse<ImageResponse 
     // Check if the blob already exists
     try {
       console.log(`Checking if blob already exists: ${blobName}`);
-      const { blobs } = await list({ prefix: blobName });
+      // Use a more general prefix (the directory)
+      const { blobs } = await list({ prefix: 'image-cache/' });
       
-      if (blobs.length > 0) {
-        console.log(`Found existing image in Blob storage: ${blobs[0].url}`);
-        // FIX: Return the actual URL, not a string literal
-        return NextResponse.json({ imagePath: blobs[0].url });
+      // Find the exact blob we're looking for
+      const existingBlob = blobs.find(blob => 
+        blob.pathname === blobName || blob.url.includes(imageHash)
+      );
+      
+      if (existingBlob) {
+        console.log(`Found existing image in Blob storage: ${existingBlob.url}`);
+        return NextResponse.json({ imagePath: existingBlob.url });
       }
     } catch (error: unknown) {
       console.error("Error checking for existing blob:", error);
@@ -62,6 +67,13 @@ export async function GET(request: Request): Promise<NextResponse<ImageResponse 
       access: 'public',
       contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
     });
+
+    console.log(`Blob storage debug info:
+      - Original URL: ${imageUrl.substring(0, 30)}...
+      - Hash: ${imageHash}
+      - Blob Name: ${blobName}
+      - Stored URL: ${blobUrl}
+    `);
     
     console.log(`Successfully uploaded to blob storage: ${blobUrl}`);
     return NextResponse.json({ imagePath: blobUrl });
