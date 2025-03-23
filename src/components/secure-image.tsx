@@ -59,11 +59,12 @@ export default function SecureImage({
         // Handle image placeholders
         if (src.startsWith('image-placeholder-')) {
           console.log('Processing placeholder:', src);
+          console.log('Available mappings:', Object.keys(imageMap));
           
           // Priority 1: Check existing imageMap prop
           if (imageMap && imageMap[src]) {
             const mappedUrl = imageMap[src];
-            console.log('Found mapping in props:', src, '->', mappedUrl.substring(0, 30) + '...');
+            console.log('Found mapping in props:', src, '->', mappedUrl);
             
             // If it's already a blob URL, use it directly
             if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com')) {

@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     
     // Check blob storage
     try {
-      // List all blobs with prefix 'blog-images/' to be more efficient
-      const { blobs } = await list({ prefix: 'blog-images/' });
+      // List all blobs with prefix 'image-cache/' which is where your images are now
+      const { blobs } = await list({ prefix: 'image-cache/' });
       
       console.log(`Found ${blobs.length} relevant blobs in storage`);
       
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
         const reconstructedMap: Record<string, string> = {};
         
         for (const blob of blobs) {
-          // Extract the hash from the blob pathname
-          const hashMatch = (blob.pathname || blob.url || '').match(/blog-images\/(.+)\.(jpg|jpeg|png|gif)$/);
+          // Extract the hash from the blob pathname - image-cache/[HASH].jpg
+          const hashMatch = (blob.pathname || blob.url || '').match(/image-cache\/(.+)\.(jpg|jpeg|png|gif)$/);
           if (hashMatch && hashMatch[1]) {
             const hash = hashMatch[1];
             // Reconstruct the placeholder

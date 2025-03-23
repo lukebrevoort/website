@@ -456,13 +456,18 @@ async function createImageMapping(postId: string, markdown: string) {
     }
   });
   
-  // Wait for all preloading operations to complete
+  // After all preloading is finished, ensure we're saving the final map with blob URLs
   if (preloadPromises.length > 0) {
     console.log(`🔄 Preloading ${preloadPromises.length} images to blob storage...`);
     await Promise.all(preloadPromises);
+    
+    // Explicitly log the final state of the imageMap
+    console.log('Final image map after preloading:');
+    Object.entries(imageMap).forEach(([key, value]) => {
+      console.log(`  ${key} -> ${value.substring(0, 30)}...`);
+    });
+    
     console.log('✅ Image preloading complete!');
-  } else {
-    console.log('ℹ️ No images to preload');
   }
   
   // Save the mapping with updated blob URLs
@@ -471,6 +476,7 @@ async function createImageMapping(postId: string, markdown: string) {
     fs.mkdirSync(privateDir, { recursive: true });
   }
   
+  // Make sure we're writing the most up-to-date map with blob URLs
   fs.writeFileSync(
     path.join(privateDir, `${postId}.json`),
     JSON.stringify(imageMap, null, 2)
@@ -544,7 +550,7 @@ export default function BlogPost() {
 
   // Function to preload images to blob storage
   const preloadImages = async (imageMap: Record<string, string>) => {
-    console.log('Preloading images to blob storage...');
+    console.log('Preloading images to blob storage...', imageMap);
     
     // Gather all image placeholders that need to be preloaded
     const placeholders = Object.keys(imageMap).filter(key => 
