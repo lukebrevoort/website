@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, list } from '@vercel/blob';
+import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,16 +12,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
     
-    // Define blob name/path (will be used in URL)
     const blobName = `blog-images/${imageHash}.jpg`;
-    
-    console.log(`Processing image request:`, {
+    console.log('Processing image request:', {
       url: imageUrl.substring(0, 30) + '...',
       hash: imageHash,
       blobName
     });
     
-    // First check if this blob already exists
+    // Check if the blob already exists
     try {
       console.log(`Checking if blob already exists: ${blobName}`);
       const { blobs } = await list({ prefix: blobName });
@@ -30,63 +29,48 @@ export async function GET(request: NextRequest) {
         console.log(`Found existing image in Blob storage: ${blobs[0].url}`);
         return NextResponse.json({ imagePath: blobs[0].url });
       }
-    } catch (listError) {
-      console.error('Error checking for existing blob:', listError);
-      // Continue to try fetching the image
+    } catch (error) {
+      console.error('Error checking for existing blob:', error);
     }
     
     console.log(`Fetching new image from: ${imageUrl.substring(0, 30)}...`);
     
     try {
-      // Sanitize the URL again just to be safe
-      const sanitizedUrl = imageUrl
-        .replace(/Credential=[^&]+/g, 'Credential=REDACTED')
-        .replace(/X-Amz-Credential=[^&]+/g, 'X-Amz-Credential=REDACTED')
-        .replace(/X-Amz-Security-Token=[^&]+/g, 'X-Amz-Security-Token=REDACTED')
-        .replace(/X-Amz-Signature=[^&]+/g, 'X-Amz-Signature=REDACTED');
-      
-      // Fetch the image with proper headers
-      const response = await fetch(imageUrl, {
+      // Fetch the image with appropriate headers for AWS authentication
+      const imageResponse = await fetch(imageUrl, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; BlogImageFetcher/1.0)',
-          'Accept': 'image/*'
-        }
+          'Accept': 'image/*',
+        },
       });
       
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to fetch image: ${imageResponse.status} ${imageResponse.statusText}`);
       }
       
-      // Get the image data
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-      const imageBuffer = await response.arrayBuffer();
+      // Get image blob
+      const imageBlob = await imageResponse.blob();
       
-      console.log(`Successfully fetched image, size: ${imageBuffer.byteLength} bytes, type: ${contentType}`);
-      
-      // Upload to Vercel Blob - FIXED: use imageBuffer directly
-      console.log(`Uploading to Vercel Blob as: ${blobName}`);
-      const blob = await put(blobName, imageBuffer, {
-        contentType: contentType,
+      // Upload to Vercel Blob storage
+      const { url } = await put(blobName, imageBlob, {
         access: 'public',
+        contentType: imageBlob.type || 'image/jpeg',
       });
       
-      console.log(`Successfully uploaded to Blob storage: ${blob.url}`);
+      console.log(`Uploaded image to Blob storage: ${url}`);
       
-      return NextResponse.json({ imagePath: blob.url });
-    } catch (fetchError) {
-      console.error('Error fetching/uploading image:', fetchError);
-      
-      // Return path to placeholder as fallback
-      return NextResponse.json({ 
-        imagePath: '/placeholders/default.jpg',
-        error: 'Failed to fetch original image, using placeholder'
-      });
+      return NextResponse.json({ imagePath: url });
+    } catch (error) {
+      console.error('Error processing image:', error);
+      return NextResponse.json(
+        { error: 'Failed to process image', imagePath: '/placeholders/default.jpg' },
+        { status: 500 }
+      );
     }
   } catch (error) {
-    console.error('Error in image proxy:', error);
-    return NextResponse.json({ 
-      error: 'Server error',
-      imagePath: '/placeholders/default.jpg' 
-    }, { status: 200 });
+    console.error('Error in image-proxy:', error);
+    return NextResponse.json(
+      { error: 'Server error', imagePath: '/placeholders/default.jpg' },
+      { status: 500 }
+    );
   }
 }
