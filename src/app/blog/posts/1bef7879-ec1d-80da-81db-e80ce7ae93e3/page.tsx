@@ -42,7 +42,7 @@ After having a conversation with Jordan Scales (A super cool previous Stevens St
 
 What if I leveraged the best of both worlds and connected Notions build in page writing directly into my website! This solution would give me all of the upside of building out some software and ease or writing, while avoiding the blog not really being on my website!
 
-![Image](image-placeholder-OoO3kbHABmSzt1rP8cq7Tn3vFhMRfYA6)
+![Image](image-placeholder-fg4Iryy0k8VUUm0ivfxehcGTDNCOD6CD)
 
 
 The workflow essentially leverages the **Notion Webhooks** to communicate with my website whenever I decide to post a new blog in my database. Then my personal website will extract the key content and convert it into **Markdown** which is then converted into **React (**JSX**). **
@@ -61,7 +61,7 @@ The first major hurdle I had to overcome was trying to process Images.
 
 Markdown couldn’t handle images on its own so, I had to take it into my own hands. My first idea was just to scan the markdown and detect images my Notions **[Image] **tag in front. While this worked I unexpectedly got an email informing me I had leaked an **AWS Temp Key.**
 
-![Image](image-placeholder-yVHwAAEdhsh7tNgm7mkaWfOZtJaCyG3a)
+![Image](image-placeholder-dofWKBBHjmkGikbVpQK0agwbrJtG4yvq)
 
 
 The slight oversight in this strategy was that by just using markdown and parsing, I was exposing the 1 Hour AWS Temp Key notion gives to download the image. This was problematic as I had to find some workaround to download the image and never show the Temp Key. 
@@ -121,13 +121,75 @@ Email: luke@brevoort.com
 `);
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const postId = "1bef7879-ec1d-80da-81db-e80ce7ae93e3";
+
+  // Function to preload images to blob storage
+  const preloadImages = async (imageMap: Record<string, string>) => {
+    console.log('Preloading images to blob storage...');
+    
+    // Gather all image placeholders that need to be preloaded
+    const placeholders = Object.keys(imageMap).filter(key => 
+      key.startsWith('image-placeholder-') && 
+      !imageMap[key].includes('vercel-blob.com') && 
+      !imageMap[key].includes('blob.vercel-storage.com')
+    );
+    
+    if (placeholders.length === 0) {
+      console.log('No images need preloading - all are already in blob storage');
+      return;
+    }
+    
+    console.log(`Found ${placeholders.length} images that need to be preloaded to blob storage`);
+    
+    // Process each placeholder in sequence to avoid overloading
+    for (const placeholder of placeholders) {
+      try {
+        // Extract the original URL
+        const originalUrl = imageMap[placeholder];
+        // Extract hash from placeholder
+        const hash = placeholder.replace('image-placeholder-', '');
+        
+        console.log(`Preloading image: ${placeholder} -> ${originalUrl.substring(0, 30)}...`);
+        
+        // Call the image proxy to ensure it's stored in blob storage
+        const response = await fetch(
+          `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&hash=${hash}`
+        );
+        
+        if (!response.ok) {
+          throw new Error(`Failed to preload image: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.imagePath && (data.imagePath.includes('vercel-blob.com') || data.imagePath.includes('blob.vercel-storage.com'))) {
+          console.log(`Successfully preloaded: ${data.imagePath.substring(0, 30)}...`);
+          // Update the imageMap with the blob URL for future use
+          imageMap[placeholder] = data.imagePath;
+        } else {
+          console.warn(`Failed to preload image ${placeholder}: No valid blob URL returned`);
+        }
+        
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+      } catch (error) {
+        console.error(`Error preloading image ${placeholder}:`, error);
+      }
+    }
+    
+    console.log('Preloading complete!');
+    
+    // Update the state with the new map containing blob URLs
+    setImageMap({...imageMap});
+  };
 
   // Process image URLs at runtime
   useEffect(() => {
     console.log('BlogPost mounted, fetching image map...');
     
     // Load image map (placeholders -> URLs) from external API
-    fetch(`/api/image-map?postId=1bef7879-ec1d-80da-81db-e80ce7ae93e3`)
+    fetch(`/api/image-map?postId=${postId}`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
@@ -138,6 +200,12 @@ Email: luke@brevoort.com
         console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
         setImageMap(fetchedMap);
         setIsLoading(false);
+        
+        // Start preloading images to blob storage after a short delay
+        // This ensures the component renders first, then we handle the preloading
+        setTimeout(() => {
+          preloadImages(fetchedMap);
+        }, 1000);
       })
       .catch(err => {
         console.error('Error fetching image map:', err);
@@ -165,7 +233,7 @@ Email: luke@brevoort.com
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink>{"My First Po"}</BreadcrumbLink>
+                    <BreadcrumbLink>{"My First Post"}</BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -179,7 +247,7 @@ Email: luke@brevoort.com
             className="container mx-auto py-10 px-4 max-w-3xl"
           >
             <header className="mb-10">
-              <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>{"My First Po"}</h1>
+              <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>{"My First Post"}</h1>
               <time className="text-gray-500">3/21/2025</time>
             </header>
             
@@ -197,7 +265,7 @@ Email: luke@brevoort.com
                         src={imageSrc} 
                         alt={props.alt || ''} 
                         className="my-4 rounded-md" 
-                        postId="1bef7879-ec1d-80da-81db-e80ce7ae93e3"
+                        postId={`${postId}`}
                         imageMap={imageMap}
                       />
                     );
