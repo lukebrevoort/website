@@ -78,72 +78,97 @@ export default function SecureImage({
               // Extract the hash from the placeholder
               const hash = src.replace('image-placeholder-', '');
               
-              // Priority 2: Try direct hash lookup
-              try {
-                console.log('Trying direct hash lookup:', hash);
-                const response = await fetch(`/api/image-proxy-check?hash=${hash}`, { signal });
-                const data = await response.json();
-                
-                if (data.imagePath && !data.error) {
-                  console.log('Found image via hash check:', data.imagePath.substring(0, 30) + '...');
-                  setImageSrc(data.imagePath);
-                  setIsLoading(false);
-                  return;
-                }
-              } catch (err) {
-                if (signal.aborted) return;
-                console.error('Hash check error:', err);
-                // Continue to next resolution method
+              console.log('Proxying image via API...');
+              const response = await fetch(
+                `/api/image-proxy?url=${encodeURIComponent(mappedUrl)}&hash=${hash}`,
+                { signal }
+              );
+              
+              if (!response.ok) {
+                throw new Error(`Image proxy failed: ${response.status}`);
               }
               
-              // Priority 3: Try API image map
-              try {
-                const currentPostId = postId || window.location.pathname.split('/').pop();
-                
-                if (!currentPostId) {
-                  console.error('Could not determine post ID');
-                  throw new Error('Missing post ID');
-                }
-                
-                console.log(`Fetching image map for post ${currentPostId}`);
-                
-                const mapResponse = await fetch(`/api/image-map?postId=${currentPostId}`, { signal });
-                const imageMap = await mapResponse.json();
-                
-                console.log('Received image map:', Object.keys(imageMap).length, 'entries');
-                
-                if (imageMap[src]) {
-                  const mappedUrl = imageMap[src];
-                  console.log('Found mapping:', src, '->', mappedUrl.substring(0, 30) + '...');
-                  
-                  if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com')) {
-                    console.log('Using blob URL directly:', mappedUrl.substring(0, 30) + '...');
-                    setImageSrc(mappedUrl);
-                    setIsLoading(false);
-                    return;
-                  }
-                  
-                  // Try to proxy the image
-                  const proxyResponse = await fetch(
-                    `/api/image-proxy?url=${encodeURIComponent(mappedUrl)}&hash=${hash}`,
-                    { signal }
-                  );
-                  const proxyData = await proxyResponse.json();
-                  
-                  if (proxyData.imagePath) {
-                    console.log('Received blob URL:', proxyData.imagePath.substring(0, 30) + '...');
-                    setImageSrc(proxyData.imagePath);
-                    setIsLoading(false);
-                    return;
-                  }
-                }
-              } catch (err) {
-                if (signal.aborted) return;
-                console.error('Error with image map resolution:', err);
+              const data = await response.json();
+              
+              if (data.imagePath) {
+                console.log('Received blob URL:', data.imagePath.substring(0, 30) + '...');
+                setImageSrc(data.imagePath);
+                setIsLoading(false);
+                return;
               }
             } catch (proxyErr) {
               if (signal.aborted) return;
               console.error('Error with proxy resolution:', proxyErr);
+              
+              // Continue to next resolution method
+            }
+            
+            // Priority 2: Try direct hash lookup
+            try {
+              const hash = src.replace('image-placeholder-', '');
+              console.log('Trying direct hash lookup:', hash);
+              const response = await fetch(`/api/image-proxy-check?hash=${hash}`, { signal });
+              const data = await response.json();
+              
+              if (data.imagePath && !data.error) {
+                console.log('Found image via hash check:', data.imagePath.substring(0, 30) + '...');
+                setImageSrc(data.imagePath);
+                setIsLoading(false);
+                return;
+              }
+            } catch (err) {
+              if (signal.aborted) return;
+              console.error('Hash check error:', err);
+              // Continue to next resolution method
+            }
+            
+            // Priority 3: Try API image map
+            try {
+              const currentPostId = postId || window.location.pathname.split('/').pop();
+              
+              if (!currentPostId) {
+                console.error('Could not determine post ID');
+                throw new Error('Missing post ID');
+              }
+              
+              console.log(`Fetching image map for post ${currentPostId}`);
+              
+              const mapResponse = await fetch(`/api/image-map?postId=${currentPostId}`, { signal });
+              const fetchedImageMap = await mapResponse.json();
+              
+              console.log('Received image map:', Object.keys(fetchedImageMap).length, 'entries');
+              
+              if (fetchedImageMap[src]) {
+                const mappedUrl = fetchedImageMap[src];
+                console.log('Found mapping:', src, '->', mappedUrl.substring(0, 30) + '...');
+                
+                if (mappedUrl.includes('vercel-blob.com') || mappedUrl.includes('blob.vercel-storage.com')) {
+                  console.log('Using blob URL directly:', mappedUrl.substring(0, 30) + '...');
+                  setImageSrc(mappedUrl);
+                  setIsLoading(false);
+                  return;
+                }
+                
+                // Extract hash from placeholder
+                const hash = src.replace('image-placeholder-', '');
+                
+                // Try to proxy the image
+                const proxyResponse = await fetch(
+                  `/api/image-proxy?url=${encodeURIComponent(mappedUrl)}&hash=${hash}`,
+                  { signal }
+                );
+                const proxyData = await proxyResponse.json();
+                
+                if (proxyData.imagePath) {
+                  console.log('Received blob URL:', proxyData.imagePath.substring(0, 30) + '...');
+                  setImageSrc(proxyData.imagePath);
+                  setIsLoading(false);
+                  return;
+                }
+              }
+            } catch (err) {
+              if (signal.aborted) return;
+              console.error('Error with image map resolution:', err);
             }
           }
           
