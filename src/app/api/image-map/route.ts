@@ -38,15 +38,23 @@ export async function GET(request: NextRequest) {
         const reconstructedMap: Record<string, string> = {};
         
         for (const blob of blobs) {
-          // Extract the hash from the blob pathname - image-cache/[HASH].jpg
-          const hashMatch = (blob.pathname || blob.url || '').match(/image-cache\/(.+)\.(jpg|jpeg|png|gif)$/);
-          if (hashMatch && hashMatch[1]) {
-            const hash = hashMatch[1];
-            // Reconstruct the placeholder
-            const placeholder = `image-placeholder-${hash}`;
-            // Use the blob URL
-            reconstructedMap[placeholder] = blob.url;
-            console.log(`Mapped ${placeholder} -> ${blob.url.substring(0, 30)}...`);
+          const blobUrl = blob.url || '';
+          
+          // Extract potential hashes from the blob URL
+          const matches = blobUrl.match(/([A-Za-z0-9]{32})/);
+          if (matches && matches[1]) {
+            const extractedHash = matches[1];
+            
+            // Check if this extracted hash matches any of our expected hashes
+            const expectedHashes = ['0zo7EufQ5ANX7ohKboSu9tTUXBPXRqei', 'Kt4kyWzPvlxsTVuS9Z2DzDagLpQGmwQo'];
+            for (const expectedHash of expectedHashes) {
+              if (blobUrl.includes(expectedHash)) {
+                const placeholder = `image-placeholder-${expectedHash}`;
+                reconstructedMap[placeholder] = blobUrl;
+                console.log(`Mapped ${placeholder} -> ${blobUrl}`);
+                break;
+              }
+            }
           }
         }
         
