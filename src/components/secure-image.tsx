@@ -15,12 +15,98 @@ export default function SecureImage({ src, alt, className, postId, imageMap }: S
   const [error, setError] = useState<boolean>(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
 
+  // Smart image resolver - centralized logic for finding the right image
+  const smartResolveImage = (
+    source: string,
+    map: Record<string, string>
+  ): string | null => {
+    console.log(`Smart resolving image: ${source}`);
+    
+    // Direct lookup - fastest path
+    if (map[source]) {
+      console.log(`✓ Direct mapping found: ${map[source]}`);
+      return map[source];
+    }
+    
+    // Extract key data from source
+    const isPlaceholder = source.startsWith('image-placeholder-');
+    const rawFilename = isPlaceholder 
+      ? source.replace('image-placeholder-', '') 
+      : source;
+    const baseFilename = rawFilename.split('.')[0].toLowerCase();
+    
+    // Strategy 1: Case-insensitive exact match
+    const caseInsensitiveMatch = Object.entries(map).find(([key]) => 
+      key.toLowerCase() === source.toLowerCase()
+    );
+    if (caseInsensitiveMatch) {
+      console.log(`✓ Case-insensitive match found: ${caseInsensitiveMatch[1]}`);
+      return caseInsensitiveMatch[1];
+    }
+    
+    // Strategy 2: Look for URL containing the filename
+    const filenameInUrlMatch = Object.values(map).find(url => 
+      url.toLowerCase().includes(baseFilename)
+    );
+    if (filenameInUrlMatch) {
+      console.log(`✓ Filename found in URL: ${filenameInUrlMatch}`);
+      return filenameInUrlMatch;
+    }
+    
+    // Strategy 3: Fuzzy matching on keys
+    let bestMatchScore = 0;
+    let bestMatchUrl = null;
+    
+    Object.entries(map).forEach(([key, url]) => {
+      const keyBase = key.startsWith('image-placeholder-') 
+        ? key.replace('image-placeholder-', '').split('.')[0].toLowerCase()
+        : key.split('.')[0].toLowerCase();
+      
+      // Calculate similarity score (higher is better)
+      let score = 0;
+      
+      // Direct inclusion of base names
+      if (keyBase.includes(baseFilename) || baseFilename.includes(keyBase)) {
+        score += 30;
+      }
+      
+      // URL contains filename
+      if (url.toLowerCase().includes(baseFilename)) {
+        score += 20;
+      }
+      
+      // Check for common words between filenames
+      const baseWords = baseFilename.split(/[-_\s]+/);
+      const keyWords = keyBase.split(/[-_\s]+/);
+      const commonWords = baseWords.filter(word => 
+        word.length > 2 && keyWords.some(keyWord => keyWord.includes(word) || word.includes(keyWord))
+      );
+      
+      if (commonWords.length > 0) {
+        score += commonWords.length * 15;
+      }
+      
+      // Keep track of best match
+      if (score > bestMatchScore) {
+        bestMatchScore = score;
+        bestMatchUrl = url;
+      }
+    });
+    
+    if (bestMatchUrl && bestMatchScore > 25) {
+      console.log(`✓ Fuzzy match found (score ${bestMatchScore}): ${bestMatchUrl}`);
+      return bestMatchUrl;
+    }
+    
+    console.log(`✗ No match found for ${source}`);
+    return null;
+  };
+
   useEffect(() => {
     async function resolveImage() {
       try {
         setLoading(true);
         console.log(`Resolving image: ${src}`);
-        console.log(`Available mappings:`, imageMap);
         
         // If src is already a fully qualified URL (not a placeholder), use it directly
         if (src.startsWith('http') && !src.includes('image-placeholder')) {
@@ -30,103 +116,22 @@ export default function SecureImage({ src, alt, className, postId, imageMap }: S
           return;
         }
         
-        // Check if we have a direct mapping in imageMap
-        if (imageMap[src]) {
-          console.log(`Found direct mapping for ${src} -> ${imageMap[src]}`);
-          setImageSrc(imageMap[src]);
+        // Use the smart resolver to find the best match
+        const resolvedUrl = smartResolveImage(src, imageMap);
+        
+        if (resolvedUrl) {
+          setImageSrc(resolvedUrl);
           setLoading(false);
           return;
         }
         
-        // Handle placeholders with or without the prefix
-        const isPlaceholder = src.startsWith('image-placeholder-') || src.includes('.jpg') || src.includes('.jpeg') || src.includes('.png');
-        
-        if (isPlaceholder) {
-          // Extract filename, handling both with and without the prefix
-          const filename = src.startsWith('image-placeholder-') 
-            ? src.replace('image-placeholder-', '') 
-            : src;
-          
-          console.log(`Processing as placeholder with filename: ${filename}`);
+        // If smart resolver failed, try the image-proxy API as last resort
+        if (src.startsWith('image-placeholder-')) {
+          const filename = src.replace('image-placeholder-', '');
+          console.log(`Trying API for ${filename}`);
           
           try {
-            // Extract base filename without extension
-            const filenameBase = filename.split('.')[0];
-            console.log(`Base filename: ${filenameBase}`);
-            
-            // 1. First strategy: Check for a direct URL that contains this filename
-            const directBlobMatch = Object.values(imageMap).find(url => 
-              url.includes(filename) || 
-              url.includes(filenameBase)
-            );
-            
-            if (directBlobMatch) {
-              console.log(`Found direct blob URL match: ${directBlobMatch}`);
-              setImageSrc(directBlobMatch);
-              setLoading(false);
-              return;
-            }
-            
-            // 2. Second strategy: Super flexible fuzzy matching
-            const fuzzyMatch = Object.entries(imageMap).find(([key, value]) => {
-              // If exact match of the key
-              if (key === src) return true;
-              
-              // Get the filename part from the key
-              const keyFilename = key.startsWith('image-placeholder-')
-                ? key.replace('image-placeholder-', '')
-                : key;
-              
-              // Get base name without extension
-              const keyBase = keyFilename.split('.')[0];
-              
-              // Check all possible matches:
-              return (
-                // Exact match with filename
-                keyFilename === filename || 
-                // Base filename matches (ignoring extension)
-                keyBase === filenameBase || 
-                // Key contains our filename or vice versa
-                keyFilename.includes(filename) || 
-                filename.includes(keyFilename) ||
-                // Base filename is contained in key or vice versa
-                (filenameBase && keyFilename.includes(filenameBase)) ||
-                (keyBase && filename.includes(keyBase)) ||
-                // URL contains our filename or base
-                value.includes(filename) ||
-                (filenameBase && value.includes(filenameBase)) ||
-                // Special case for .jpg.jpg issue - look for double extensions
-                value.includes(`${filename}.jpg`) ||
-                value.includes(`${filenameBase}.jpg.jpg`)
-              );
-            });
-            
-            if (fuzzyMatch) {
-              console.log(`Found fuzzy match: ${fuzzyMatch[0]} -> ${fuzzyMatch[1]}`);
-              setImageSrc(fuzzyMatch[1]);
-              setLoading(false);
-              return;
-            }
-            
-            // 3. If we have a blob that contains double extensions, try that
-            const doubleExtensionMatch = Object.values(imageMap).find(url => {
-              const urlParts = url.split('/');
-              const blobFilename = urlParts[urlParts.length - 1].split('?')[0];
-              return blobFilename.includes(`${filenameBase}.jpg.jpg`) || 
-                     blobFilename.includes(`${filenameBase}.jpeg.jpg`) || 
-                     blobFilename.includes(`${filenameBase}.png.jpg`);
-            });
-            
-            if (doubleExtensionMatch) {
-              console.log(`Found double extension match: ${doubleExtensionMatch}`);
-              setImageSrc(doubleExtensionMatch);
-              setLoading(false);
-              return;
-            }
-            
-            // 4. Last resort - try the API
-            console.log(`Trying API as last resort for ${filename}`);
-            const response = await fetch(`/api/image-proxy?filename=${filename}&postId=${postId}`);
+            const response = await fetch(`/api/image-proxy?filename=${encodeURIComponent(filename)}&postId=${postId}`);
             if (!response.ok) throw new Error(`API returned ${response.status}`);
             
             const data = await response.json();
@@ -135,26 +140,22 @@ export default function SecureImage({ src, alt, className, postId, imageMap }: S
               setImageSrc(data.imagePath);
               setLoading(false);
               return;
-            } else {
-              throw new Error('No image path returned from API');
             }
-          } catch (error) {
-            console.error('Error loading image:', error);
-            setDebugInfo(`Failed to load: ${src}, Error: ${error instanceof Error ? error.message : String(error)}`);
-            setError(true);
+            
+            throw new Error('No image path returned from API');
+          } catch (proxyError) {
+            console.error('Image proxy failed:', proxyError);
+            throw proxyError;
           }
-        } else {
-          // Not a placeholder or URL - could be a local path
-          console.log(`Using as local path: ${src}`);
-          setImageSrc(src);
-          setLoading(false);
-          return;
         }
         
+        // No match found anywhere - report error
+        setError(true);
+        setDebugInfo(`Could not resolve image: ${src}`);
         setLoading(false);
       } catch (err) {
         console.error('Error resolving image:', err);
-        setDebugInfo(`General error: ${err instanceof Error ? err.message : String(err)}`);
+        setDebugInfo(`Error: ${err instanceof Error ? err.message : String(err)}`);
         setError(true);
         setLoading(false);
       }
@@ -173,6 +174,12 @@ export default function SecureImage({ src, alt, className, postId, imageMap }: S
         <span className="text-gray-500">Failed to load image</span>
         {debugInfo && process.env.NODE_ENV === 'development' && (
           <span className="text-xs text-red-500 mt-1 max-w-full px-2 text-center">{debugInfo}</span>
+        )}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="text-xs mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded max-w-full overflow-auto">
+            <p>Source: {src}</p>
+            <p>Available mappings: {Object.keys(imageMap).join(', ')}</p>
+          </div>
         )}
       </div>
     );
