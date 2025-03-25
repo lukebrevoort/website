@@ -3,6 +3,13 @@ const nextConfig = {
     output: 'standalone',
     distDir: '.next',
     images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'zah3ozwhv9cp0qic.public.blob.vercel-storage.com',
+          port: '',
+        },
+      ],
       domains: [
         'fonts.googleapis.com',                          // Google Fonts domain
         'prod-files-secure.s3.us-west-2.amazonaws.com',  // AWS S3 domain
