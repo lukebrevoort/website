@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { getBlogPosts, getBlogPost } from './notion';
-import { put, list } from '@vercel/blob'; 
+import { put, list } from '@vercel/blob';
+import crypto from 'crypto';
 
 // Directories
 const BLOG_DIR = path.join(process.cwd(), 'src/app/blog');
@@ -40,213 +41,195 @@ function sanitizeFilename(filename: string): string {
     .substring(0, 64); // Limit length
 }
 
-// MODIFIED: Create image mapping and preload to blob storage
-async function createImageMapping(postId: string, markdown: string) {
-  // Extract image URLs from markdown
-  const imageMap: Record<string, string> = {};
-  
-  // More comprehensive regex patterns to catch all AWS URL variations
-  const awsUrlPatterns = [
-    // Standard S3 URLs
-    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
-    // URLs with credential parameters
-    /(https:\/\/[^\s"`'<>)]+(?:Credential=|X-Amz-Credential=|AWSAccessKeyId=|Security-Token=)[^\s"`'<>)]+)/g,
-    // Any amazonaws.com URL
-    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g,
-    // Image URLs in markdown syntax
-    /!\[.*?\]\((https?:\/\/[^"\s)]+)\)/g,
-    // HTML image tags
-    /<img[^>]*src=["'](https?:\/\/[^"'\s>]+)["'][^>]*>/g,
-  ];
-  
-  // Use Set to avoid processing the same URL multiple times
-  const processedUrls = new Set<string>();
-  
-  // Array to store preloading promises
-  const preloadPromises: Promise<void>[] = [];
-  
-  // Create mappings for existing blog posts (backwards compatibility)
-  const hardcodedMappings: Record<string, Record<string, string>> = {
-    "1bef7879-ec1d-80da-81db-e80ce7ae93e3": {
-      "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
-      "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
-    }
-  };
-  
-  // Apply hardcoded mappings if available
-  if (hardcodedMappings[postId]) {
-    console.log(`Using hardcoded mappings for post ${postId}`);
-    Object.assign(imageMap, hardcodedMappings[postId]);
+// Ensure needed directories exist
+function ensureDirectories() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
   }
-  
-  awsUrlPatterns.forEach(pattern => {
-    let match;
-    while ((match = pattern.exec(markdown)) !== null) {
-      let url = match[1] || match[0];
-      
-      // Skip if not an AWS URL or already processed
-      if (!url.includes('amazonaws.com') && !url.includes('prod-files-secure.s3')) continue;
-      if (processedUrls.has(url)) continue;
-      
-      processedUrls.add(url);
-      
-      // Extract the original filename from the URL
-      const originalFilename = extractFilename(url);
-      const safeFilename = sanitizeFilename(originalFilename);
-      
-      // Create placeholder using the sanitized original filename
-      const placeholder = `image-placeholder-${safeFilename}`;
-      
-      // Skip if we already have a hardcoded mapping for this post and URL
-      if (hardcodedMappings[postId]?.[placeholder]) {
-        console.log(`Using existing hardcoded mapping for ${placeholder}`);
-        continue;
-      }
-      
-      imageMap[placeholder] = url;
-      
-      console.log(`Mapped ${url.substring(0, 30)}... to ${placeholder} (filename: ${safeFilename})`);
-      
-      // Add preloading promise to the array
-      preloadPromises.push((async () => {
-        const blobUrl = await preloadImageToBlobStorage(url, safeFilename);
-        if (blobUrl) {
-          // Update the map with the blob URL
-          imageMap[placeholder] = blobUrl;
-          console.log(`Updated mapping for ${placeholder} to blob URL: ${blobUrl}`);
-        }
-      })());
-    }
-  });
-
-  // After all preloading is finished, ensure we're saving the final map with blob URLs
-  if (preloadPromises.length > 0) {
-    console.log(`🔄 Preloading ${preloadPromises.length} images to blob storage...`);
-    await Promise.all(preloadPromises);
-    
-    // Explicitly log the final state of the imageMap
-    console.log('Final image map after preloading:');
-    Object.entries(imageMap).forEach(([key, value]) => {
-      console.log(`  ${key} -> ${value.substring(0, 30)}...`);
-    });
-    
-    console.log('✅ Image preloading complete!');
+  if (!fs.existsSync(POSTS_DIR)) {
+    fs.mkdirSync(POSTS_DIR, { recursive: true });
   }
-  
-  // Save the mapping with updated blob URLs
-  const privateDir = path.join(process.cwd(), '.private');
-  if (!fs.existsSync(privateDir)) {
-    fs.mkdirSync(privateDir, { recursive: true });
-  }
-
-  // Small delay to ensure all async operations complete
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Make sure we're writing the most up-to-date map with blob URLs
-  fs.writeFileSync(
-    path.join(privateDir, `${postId}.json`),
-    JSON.stringify(imageMap, null, 2)
-  );
-  
-  console.log(`✅ Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
-  
-  return imageMap;
 }
 
-// Update the preload function to use filename
-async function preloadImageToBlobStorage(url: string, filename: string): Promise<string | null> {
+export async function generateBlogPosts(specificPostId?: string) {
   try {
-    console.log(`📸 Preloading image to blob storage: ${url.substring(0, 30)}... (filename: ${filename})`);
+    ensureDirectories();
+    console.log('🔄 Fetching blog posts from Notion...');
+    const posts = await getBlogPosts();
     
-    // Define blob name using the filename directly (not hash)
-    const blobName = `${filename}.jpg`;
-    
-    // Check if the blob already exists before fetching
-    const { blobs } = await list();
-    const existingBlob = blobs.find(blob => 
-      blob.url?.includes(filename)
-    );
-    
-    if (existingBlob) {
-      console.log(`✅ Image already exists in blob storage: ${existingBlob.url}`);
-      return existingBlob.url;
-    }
-    
-    // Dynamically import fetch
-    const { default: fetch } = await import('node-fetch');
-    
-    // Fetch the image from the original URL
-    const imageResponse = await fetch(url);
-    
-    if (!imageResponse.ok) {
-      throw new Error(`Failed to fetch image: ${imageResponse.status}`);
-    }
-    
-    // Get the image buffer
-    const imageBuffer = await imageResponse.buffer();
-    
-    // Store the image in Vercel Blob Storage with the filename
-    const { url: blobUrl } = await put(blobName, imageBuffer, {
-      access: 'public',
-      contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
+    // Create a data file with all posts metadata
+    const postsData = posts.map((post: any) => {
+      const properties = post.properties;
+      return {
+        id: post.id,
+        slug: post.id,
+        title: properties.Title?.title[0]?.plain_text || 'Untitled',
+        description: properties.Description?.rich_text[0]?.plain_text || '',
+        date: properties.Date?.date?.start || null,
+      };
     });
+
+    // Write posts data to a JSON file
+    fs.writeFileSync(
+      path.join(DATA_DIR, 'blog-posts.json'),
+      JSON.stringify(postsData, null, 2)
+    );
+
+    console.log(`✅ Generated blog-posts.json with ${postsData.length} posts`);
+
+    // If specificPostId is provided, only generate that post
+    const postsToGenerate = specificPostId 
+      ? posts.filter((post: any) => post.id === specificPostId)
+      : posts;
+
+    // Pre-process step: Extract all AWS URLs and create a master mapping
+    const masterImageMap: Record<string, Record<string, string>> = {};
     
-    console.log(`✅ Successfully uploaded to blob storage: ${blobUrl}`);
-    return blobUrl;
+    // First pass: Extract all image mappings before generating any files
+    for (const post of postsToGenerate) {
+      const postId = post.id;
+      const { markdown } = await getBlogPost(postId);
+      
+      // Create and store image mapping - now async
+      masterImageMap[postId] = await createImageMapping(postId, markdown);
+    }
+
+    // Second pass: Generate the page files using the pre-created mappings
+    for (const post of postsToGenerate) {
+      const postId = post.id;
+      const { markdown } = await getBlogPost(postId);
+      
+      // Create page file for this post
+      const postDir = path.join(POSTS_DIR, postId);
+      if (!fs.existsSync(postDir)) {
+        fs.mkdirSync(postDir, { recursive: true });
+      }
+
+      // Double process to ensure no credentials remain
+      let processedMarkdown = sanitizeMarkdown(markdown, masterImageMap[postId]);
+
+      // Write the page.tsx file
+      const pageContent = generatePostPageContent(post, processedMarkdown);
+      
+      // Final credential sweep before writing
+      const cleanPageContent = performFinalCredentialSweep(pageContent);
+      
+      fs.writeFileSync(path.join(postDir, 'page.tsx'), cleanPageContent);
+      
+      console.log(`✅ Generated page for: ${
+        'properties' in post && 
+        post.properties.Title?.type === 'title' && 
+        Array.isArray(post.properties.Title.title) &&
+        post.properties.Title.title[0]?.plain_text || 
+        postId
+      }`);
+    }
+
+    // Post-processing cleanup - additional safeguard
+    console.log("Performing post-processing cleanup...");
+    for (const post of postsToGenerate) {
+      const postId = post.id;
+      const postDir = path.join(POSTS_DIR, postId);
+      const pagePath = path.join(postDir, 'page.tsx');
+      
+      if (fs.existsSync(pagePath)) {
+        let content = fs.readFileSync(pagePath, 'utf8');
+        // Apply one final cleansing pass
+        content = performFinalCredentialSweep(content);
+        fs.writeFileSync(pagePath, content);
+      }
+    }
+
+    // Existing security check
+    console.log("Running final security checks...");
+    
+    // Track which files we've already processed
+    const processedFiles = new Set<string>();
+    let securityCheckFailed = false;
+    
+    // Function to scan directories recursively
+    function scanDirectory(dir: string) {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          
+          if (entry.isDirectory()) {
+            // Recursively scan subdirectories
+            scanDirectory(fullPath);
+          } else if (entry.name === 'page.tsx' && !processedFiles.has(fullPath)) {
+            // Mark this file as processed to avoid double-checking
+            processedFiles.add(fullPath);
+            
+            // Check this file for credentials
+            try {
+              const content = fs.readFileSync(fullPath, 'utf8');
+              let hasCredentials = false;
+              
+              const awsCredentialPatterns = [
+                /https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^\s"'`<>)]+/gi,
+                /Credential=[A-Z0-9/]+/gi,
+                /X-Amz-Credential=[A-Z0-9/]+/gi,
+                /AWSAccessKeyId=[A-Z0-9]+/gi,
+                /Security-Token=[A-Za-z0-9%]+/gi,
+                /(AKIA|ASIA|AROA)[A-Z0-9]{16}/g,
+                /[A-Za-z0-9+/]{40}/g
+              ];
+              
+              // Check all patterns
+              for (const pattern of awsCredentialPatterns) {
+                const matches = content.match(pattern);
+                if (matches) {
+                  hasCredentials = true;
+                  console.error(`Found potential credentials in ${fullPath}`);
+                  break; // No need to check other patterns
+                }
+              }
+              
+              // Only try to delete if we found credentials
+              if (hasCredentials) {
+                securityCheckFailed = true;
+                try {
+                  fs.unlinkSync(fullPath);
+                  console.log(`Successfully deleted ${fullPath}`);
+                } catch (err) {
+                  if (err && typeof err === 'object' && 'code' in err && err.code !== 'ENOENT') { // Ignore "file not found" errors
+                    console.error(`Warning: Failed to delete ${fullPath}:`, err);
+                  }
+                }
+              }
+            } catch (fileError) {
+              console.error(`Error processing file ${fullPath}:`, fileError);
+            }
+          }
+        }
+      } catch (dirError) {
+        console.error(`Error scanning directory ${dir}:`, dirError);
+      }
+    }
+    
+    // Start scanning at the posts directory
+    scanDirectory(POSTS_DIR);
+    
+    if (securityCheckFailed) {
+      throw new Error("Security check failed: AWS credentials found in generated files");
+    }
+
+    return {
+      success: true,
+      postsGenerated: postsToGenerate.length,
+      message: `Generated ${postsToGenerate.length} blog posts`
+    };
   } catch (error) {
-    console.error('❌ Error preloading image to blob storage:', error);
-    return null;
+    console.error('❌ Error generating blog posts:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
   }
 }
 
-function extractAwsUrls(markdown: string): string[] {
-  const urlSet = new Set<string>();
-  
-  // Use the same AWS URL patterns from createImageMapping
-  const awsUrlPatterns = [
-    // Standard S3 URLs
-    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
-    // URLs with credential parameters
-    /(https:\/\/[^\s"`'<>)]+(?:Credential=|X-Amz-Credential=|AWSAccessKeyId=|Security-Token=)[^\s"`'<>)]+)/g,
-    // Any amazonaws.com URL
-    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g,
-    // Image URLs in markdown syntax
-    /!\[.*?\]\((https?:\/\/[^"\s)]+amazonaws\.com[^"\s)]*)\)/g,
-    /!\[.*?\]\((https?:\/\/prod-files-secure\.s3[^"\s)]*)\)/g,
-    // HTML image tags
-    /<img[^>]*src=["'](https?:\/\/[^"'\s>]+amazonaws\.com[^"'\s>]*)["'][^>]*>/g,
-    /<img[^>]*src=["'](https?:\/\/prod-files-secure\.s3[^"'\s>]*)["'][^>]*>/g,
-  ];
-  
-  // Extract URLs using each pattern
-  awsUrlPatterns.forEach(pattern => {
-    let match;
-    while ((match = pattern.exec(markdown)) !== null) {
-      // Get the URL from either the full match or the capture group
-      let url = match[1] || match[0];
-      
-      // Only add AWS URLs
-      if (url.includes('amazonaws.com') || url.includes('prod-files-secure.s3')) {
-        urlSet.add(url);
-      }
-    }
-  });
-  
-  return Array.from(urlSet);
-}
-
-// Keep the existing hash function for backward compatibility
-function createConsistentHash(url: string): string {
-  const crypto = require('crypto');
-  return crypto
-    .createHash('sha256')
-    .update(url)
-    .digest('base64')
-    .replace(/[^a-zA-Z0-9]/g, '')
-    .substring(0, 32);
-}
-
-// Update sanitizeMarkdown to use the new filename approach
 function sanitizeMarkdown(markdown: string, imageMap: Record<string, string>): string {
   let processedMarkdown = markdown;
   
@@ -301,11 +284,284 @@ function sanitizeMarkdown(markdown: string, imageMap: Record<string, string>): s
     }
   );
   
+  // Safety - apply sanitization to credentials without REDACTEDing the entire URL
+  const credentialPatterns = [
+    // Query parameter credentials - just remove the credentials, not the whole URL
+    { pattern: /(https:\/\/[^\s"'<>)]*amazonaws\.com[^\s"'<>)]*)([?&](?:Credential|X-Amz-Credential|AWSAccessKeyId|Security-Token|X-Amz-Security-Token|X-Amz-Date|X-Amz-Signature)=[^&"'\s<>)]+)/gi, 
+      replacement: '$1' }, // Keep the URL but remove the credential part
+  ];
+  
+  // Apply credential-only patterns
+  credentialPatterns.forEach(({ pattern, replacement }) => {
+    processedMarkdown = processedMarkdown.replace(pattern, replacement);
+  });
+  
   return processedMarkdown;
 }
 
-// Function to create a blog post component
-export function createBlogPost(postId: string, title: string, processedMarkdown: string, date?: string) {
+// Helper function to extract AWS URLs from markdown
+function extractAwsUrls(markdown: string): string[] {
+  const urls = new Set<string>();
+  
+  const awsUrlPatterns = [
+    // Standard S3 URLs
+    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
+    // Any amazonaws.com URL
+    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g,
+    // Image URLs in markdown syntax
+    /!\[.*?\]\((https?:\/\/[^"\s)]+amazonaws\.com[^"\s)]+)\)/g,
+    // HTML image tags
+    /<img[^>]*src=["'](https?:\/\/[^"'\s>]+amazonaws\.com[^"'\s>]+)["'][^>]*>/g,
+  ];
+  
+  awsUrlPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(markdown)) !== null) {
+      let url = match[1] || match[0];
+      
+      // Only add if it's an AWS URL
+      if (url.includes('amazonaws.com') || url.includes('prod-files-secure.s3')) {
+        urls.add(url);
+      }
+    }
+  });
+  
+  return Array.from(urls);
+}
+
+// ENHANCED: Performs a final credential sweep on content before saving
+function performFinalCredentialSweep(content: string): string {
+  // One final pass of credential patterns on the entire file
+  const finalPatterns = [
+    // AWS domain names with credentials
+    { pattern: /https:\/\/[^\s"'<>)]*amazonaws\.com[^\s"'<>)]*\?[^\s"'<>)]*(?:Credential|X-Amz-Credential|AWSAccessKeyId|Security-Token)=[^\s"'<>)]*/gi, 
+      replacement: 'https://REDACTED.amazonaws.com?REDACTED' },
+    // Access key patterns
+    { pattern: /(AKIA|ASIA|AROA)[A-Z0-9]{16,17}/g, replacement: 'REDACTED_KEY' },
+    // Secret key patterns
+    { pattern: /[A-Za-z0-9+/]{35,40}(?:[=]{0,2})/g, replacement: 'REDACTED_SECRET' },
+    // Any remaining credential fragments
+    { pattern: /Credential=[^&"\s]+/gi, replacement: 'Credential=REDACTED' },
+    { pattern: /X-Amz-Credential=[^&"\s]+/gi, replacement: 'X-Amz-Credential=REDACTED' },
+    { pattern: /AWSAccessKeyId=[^&"\s]+/gi, replacement: 'AWSAccessKeyId=REDACTED' },
+    { pattern: /X-Amz-Security-Token=[^&"\s]+/gi, replacement: 'X-Amz-Security-Token=REDACTED' },
+    { pattern: /Security-Token=[^&"\s]+/gi, replacement: 'Security-Token=REDACTED' },
+  ];
+  
+  let cleanContent = content;
+  finalPatterns.forEach(({ pattern, replacement }) => {
+    cleanContent = cleanContent.replace(pattern, replacement);
+  });
+  
+  return cleanContent;
+}
+
+function createConsistentHash(url: string): string {
+  return crypto
+    .createHash('sha256')
+    .update(url)
+    .digest('base64')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .substring(0, 32);
+}
+
+// UPDATED: Preload image to blob storage using filename
+async function preloadImageToBlobStorage(url: string, filename: string): Promise<string | null> {
+  try {
+    console.log(`📸 Preloading image to blob storage: ${url.substring(0, 30)}...`);
+    
+    // Define blob name using filename
+    const blobName = `${filename}.jpg`;
+    
+    // Check if the blob already exists before fetching
+    const { blobs } = await list();
+    const existingBlob = blobs.find(blob => 
+      blob.url?.includes(filename)
+    );
+    
+    if (existingBlob) {
+      console.log(`✅ Image already exists in blob storage: ${existingBlob.url}`);
+      return existingBlob.url;
+    }
+    
+    // Dynamically import fetch
+    const { default: fetch } = await import('node-fetch');
+    
+    // Fetch the image from the original URL
+    const imageResponse = await fetch(url);
+    
+    if (!imageResponse.ok) {
+      throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+    }
+    
+    // Get the image buffer
+    const imageBuffer = await imageResponse.buffer();
+    
+    // Store the image in Vercel Blob Storage with filename
+    const { url: blobUrl } = await put(blobName, imageBuffer, {
+      access: 'public',
+      contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
+    });
+    
+    console.log(`✅ Successfully uploaded to blob storage: ${blobUrl}`);
+    return blobUrl;
+  } catch (error) {
+    console.error('❌ Error preloading image to blob storage:', error);
+    return null;
+  }
+}
+
+// MODIFIED: Create image mapping using filenames instead of hashes
+async function createImageMapping(postId: string, markdown: string) {
+  // Extract image URLs from markdown
+  const imageMap: Record<string, string> = {};
+  
+  // Create hardcoded mappings for specific posts (for backward compatibility)
+  const hardcodedMappings: Record<string, Record<string, string>> = {
+    "1bef7879-ec1d-80da-81db-e80ce7ae93e3": {
+      "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
+      "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
+    }
+  };
+  
+  // Apply hardcoded mappings if available
+  if (hardcodedMappings[postId]) {
+    console.log(`Using hardcoded mappings for post ${postId}`);
+    Object.assign(imageMap, hardcodedMappings[postId]);
+  }
+  
+  // More comprehensive regex patterns to catch all AWS URL variations
+  const awsUrlPatterns = [
+    // Standard S3 URLs
+    /(https:\/\/(?:prod-files-secure\.s3|s3\.amazonaws\.com)[^)"\s`'<>]+)/g,
+    // URLs with credential parameters
+    /(https:\/\/[^\s"`'<>)]+(?:Credential=|X-Amz-Credential=|AWSAccessKeyId=|Security-Token=)[^\s"`'<>)]+)/g,
+    // Any amazonaws.com URL
+    /(https:\/\/[^)\s"`'<>]+\.amazonaws\.com[^)\s"`'<>]*)/g,
+    // Image URLs in markdown syntax
+    /!\[.*?\]\((https?:\/\/[^"\s)]+)\)/g,
+    // HTML image tags
+    /<img[^>]*src=["'](https?:\/\/[^"'\s>]+)["'][^>]*>/g,
+  ];
+  
+  // Use Set to avoid processing the same URL multiple times
+  const processedUrls = new Set<string>();
+  
+  // Array to store preloading promises
+  const preloadPromises: Promise<void>[] = [];
+  
+  awsUrlPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(markdown)) !== null) {
+      let url = match[1] || match[0];
+      
+      // Skip if not an AWS URL or already processed
+      if (!url.includes('amazonaws.com') && !url.includes('prod-files-secure.s3')) continue;
+      if (processedUrls.has(url)) continue;
+      
+      processedUrls.add(url);
+      
+      // Extract the original filename from the URL
+      const originalFilename = extractFilename(url);
+      const safeFilename = sanitizeFilename(originalFilename);
+      
+      // Create placeholder using sanitized filename
+      const placeholder = `image-placeholder-${safeFilename}`;
+      
+      // Skip if we already have a hardcoded mapping for this post and URL
+      if (hardcodedMappings[postId]?.[placeholder]) {
+        console.log(`Using existing hardcoded mapping for ${placeholder}`);
+        continue;
+      }
+      
+      imageMap[placeholder] = url;
+      
+      console.log(`Mapped ${url.substring(0, 30)}... to ${placeholder} (filename: ${safeFilename})`);
+      
+      // Add preloading promise to the array
+      preloadPromises.push((async () => {
+        const blobUrl = await preloadImageToBlobStorage(url, safeFilename);
+        if (blobUrl) {
+          // Update the map with the blob URL
+          imageMap[placeholder] = blobUrl;
+          console.log(`Updated mapping for ${placeholder} to blob URL: ${blobUrl}`);
+        }
+      })());
+    }
+  });
+
+  // After all preloading is finished, ensure we're saving the final map with blob URLs
+  if (preloadPromises.length > 0) {
+    console.log(`🔄 Preloading ${preloadPromises.length} images to blob storage...`);
+    await Promise.all(preloadPromises);
+    
+    // Explicitly log the final state of the imageMap
+    console.log('Final image map after preloading:');
+    Object.entries(imageMap).forEach(([key, value]) => {
+      console.log(`  ${key} -> ${value.substring(0, 30)}...`);
+    });
+    
+    console.log('✅ Image preloading complete!');
+  }
+  
+  // Save the mapping with updated blob URLs
+  const privateDir = path.join(process.cwd(), '.private');
+  if (!fs.existsSync(privateDir)) {
+    fs.mkdirSync(privateDir, { recursive: true });
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Make sure we're writing the most up-to-date map with blob URLs
+  fs.writeFileSync(
+    path.join(privateDir, `${postId}.json`),
+    JSON.stringify(imageMap, null, 2)
+  );
+  
+  console.log(`✅ Created image mapping for post ${postId} with ${Object.keys(imageMap).length} images`);
+  
+  return imageMap;
+}
+
+// UPDATED: Uses sanitized markdown with placeholders
+function generatePostPageContent(post: any, markdown: string) {
+  // Get properties safely with fallbacks
+  const properties = post.properties || {};
+  const title = properties.Title?.title?.[0]?.plain_text || 'Untitled';
+  const date = properties.Date?.date?.start 
+    ? new Date(properties.Date.date.start).toLocaleDateString()
+    : '';
+
+  let processedMarkdown = markdown;
+
+  // Carefully handle code blocks to prevent template literal issues
+  processedMarkdown = processedMarkdown.replace(
+    /```(javascript|typescript|js|ts)([\s\S]*?)```/g,
+    (match, language, code) => {
+      // Escape backticks, template literals and other problematic characters
+      const escapedCode: string = code
+        .replace(/`/g, '\\`')
+        .replace(/\${/g, '\\${')
+        // Fix specific bugs in code examples that might exist in the content
+        .replace(/['"]blobs\[0\]\.url['"]/g, 'blobs[0].url')
+        .replace(/\$\{(['"])([^}]*)\1\}/g, (m: string, q: string, content: string) => `\\\${${q}${content}${q}}`);
+      
+      return '```' + language + escapedCode + '```';
+    }
+  );
+
+  // Extra step to escape any remaining backticks in the markdown
+  processedMarkdown = processedMarkdown.replace(/`/g, '\\`');
+  
+  // More comprehensive escaping for dollar signs followed by curly braces
+  processedMarkdown = processedMarkdown.replace(/\${/g, '\\${');
+
+  // Ensure the post ID is sanitized and available
+  const postId = post.id || '';
+  if (!postId) {
+    console.warn('Post ID is missing, using empty string as fallback');
+  }
+
   return `"use client"
 
 import { lukesFont, crimsonText } from '@/app/fonts';
@@ -326,6 +582,7 @@ export default function BlogPost() {
   const [content, setContent] = useState(\`${processedMarkdown}\`);
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [loadedImages, setLoadedImages] = useState(false);
   const postId = "${postId}";
 
   // Function to preload images to blob storage
@@ -351,14 +608,14 @@ export default function BlogPost() {
       try {
         // Extract the original URL
         const originalUrl = imageMap[placeholder];
-        // Extract hash from placeholder
-        const hash = placeholder.replace('image-placeholder-', '');
+        // Extract filename from placeholder (not hash anymore)
+        const filename = placeholder.replace('image-placeholder-', '');
         
         console.log(\`Preloading image: \${placeholder} -> \${originalUrl.substring(0, 30)}...\`);
         
         // Call the image proxy to ensure it's stored in blob storage
         const response = await fetch(
-          \`/api/image-proxy?url=\${encodeURIComponent(originalUrl)}&hash=\${hash}\`
+          \`/api/image-proxy?url=\${encodeURIComponent(originalUrl)}&filename=\${filename}\`
         );
         
         if (!response.ok) {
@@ -387,19 +644,23 @@ export default function BlogPost() {
     
     // Update the state with the new map containing blob URLs
     setImageMap({...imageMap});
+    setLoadedImages(true);
   };
 
-  // Process image URLs at runtime
+  // Combined effect for image mappings
   useEffect(() => {
-    console.log('BlogPost effect running - imageMap changed');
-    console.log('Available image mappings:', Object.keys(imageMap).length);
-    if (Object.keys(imageMap).length > 0) {
-      console.log('Sample mapping:', Object.entries(imageMap)[0]);
-    }
-  }, [imageMap]);
+    console.log('Setting up image mappings...');
     
-  useEffect(() => {
-    // Load image map (placeholders -> URLs) from external API
+    // Start with hardcoded mappings - THESE SHOULD ALWAYS OVERRIDE ANY API MAPPINGS
+    const hardcodedMappings = {
+      "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
+      "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
+    };
+    
+    console.log('Setting hardcoded mappings', hardcodedMappings);
+    setImageMap(hardcodedMappings);
+    
+    // Then fetch API mappings and merge them, preserving hardcoded mappings
     fetch(\`/api/image-map?postId=\${postId}\`)
       .then(res => {
         if (!res.ok) {
@@ -408,19 +669,22 @@ export default function BlogPost() {
         return res.json();
       })
       .then(fetchedMap => {
-        console.log('Loaded image map with', Object.keys(fetchedMap).length, 'images');
-        setImageMap(fetchedMap);
-        setIsLoading(false);
+        console.log('API returned mappings:', fetchedMap);
         
-        // Start preloading images to blob storage after a short delay
-        // This ensures the component renders first, then we handle the preloading
-        setTimeout(() => {
-          preloadImages(fetchedMap);
-        }, 1000);
+        // MERGE in a way that prioritizes hardcoded mappings
+        const combinedMap = {...fetchedMap, ...hardcodedMappings};
+        console.log('Combined map:', combinedMap);
+        setImageMap(combinedMap);
+        setIsLoading(false);
+        setLoadedImages(true);
+        
+        // No need to preload if we're using hardcoded mappings
       })
       .catch(err => {
         console.error('Error fetching image map:', err);
         setIsLoading(false);
+        // Still use hardcoded mappings if fetch fails
+        setLoadedImages(true);
       });
   }, [postId]);
 
@@ -466,22 +730,52 @@ export default function BlogPost() {
               <div className="animate-pulse">Loading content...</div>
             ) : (
               <div className={\`prose dark:prose-invert max-w-none \${crimsonText.className}\`}>
-                <ReactMarkdown components={{
-                  img: ({ node, ...props }) => {
-                    // Fix TypeScript errors by ensuring src is not undefined
-                    const imageSrc = props.src || '';
-                    
-                    return (
-                      <SecureImage 
-                        src={imageSrc} 
-                        alt={props.alt || ''} 
-                        className="my-4 rounded-md" 
-                        postId={\`\${postId}\`}
-                        imageMap={imageMap}
-                      />
-                    );
-                  }
-                }}>{content}</ReactMarkdown>
+                <ReactMarkdown 
+                  key={loadedImages ? 'loaded' : 'loading'} // Force re-render when images load
+                  components={{
+                    img: ({ node, ...props }) => {
+                      // Fix TypeScript errors by ensuring src is not undefined
+                      const imageSrc = props.src || '';
+                      console.log('Rendering image:', imageSrc); 
+                      console.log('ImageMap contains mapping?', !!imageMap[imageSrc]);
+                      
+                      // For debugging, directly use hardcoded URLs for known placeholders
+                      if (imageSrc === 'image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU') {
+                        return (
+                          <div className="my-4">
+                            <img 
+                              src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg"
+                              alt={props.alt || ''} 
+                              className="rounded-md w-full h-auto"
+                            />
+                          </div>
+                        );
+                      }
+                      
+                      if (imageSrc === 'image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp') {
+                        return (
+                          <div className="my-4">
+                            <img 
+                              src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
+                              alt={props.alt || ''} 
+                              className="rounded-md w-full h-auto"
+                            />
+                          </div>
+                        );
+                      }
+                      
+                      return (
+                        <SecureImage 
+                          src={imageSrc} 
+                          alt={props.alt || ''} 
+                          className="my-4 rounded-md" 
+                          postId={\`\${postId}\`}
+                          imageMap={imageMap}
+                        />
+                      );
+                    }
+                  }}
+                >{content}</ReactMarkdown>
               </div>
             )}
           </motion.article>
