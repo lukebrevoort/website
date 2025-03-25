@@ -292,32 +292,21 @@ Email: luke@brevoort.com
                       );
                     }
                     
-                    // Direct fallback for specific cases
-                    if (imageSrc === 'image-placeholder-Blog_Image.jpeg') {
-                      return (
-                        <Image 
-                          src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
-                          alt={props.alt || ''} 
-                          className="my-4 rounded-md" 
-                          width={800} 
-                          height={450} 
-                          style={{ maxWidth: '100%', height: 'auto' }}
-                        />
-                      );
-                    }
-                    
-                    if (imageSrc === 'image-placeholder-Mar_21_Screenshot_from_Blog.png') {
-                      return (
-                        <Image 
-                          src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
-                          alt={props.alt || ''} 
-                          className="my-4 rounded-md" 
-                          width={800} 
-                          height={450} 
-                          style={{ maxWidth: '100%', height: 'auto' }}
-                        />
-                      );
-                    }
+                    <div className="debug-images">
+                      <h3>Debug Images</h3>
+                      <Image 
+                        src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
+                        alt="Test Image 1" 
+                        width={400}
+                        height={225}
+                      />
+                      <Image 
+                        src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
+                        alt="Test Image 2" 
+                        width={400}
+                        height={225}
+                      />
+                    </div>
                     
                     // If all else fails, try SecureImage
                     return (
