@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { MotionConfig } from "framer-motion";
 import dynamic from 'next/dynamic';
 import SecureImage from "@/components/secure-image";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
@@ -188,35 +189,42 @@ Email: luke@brevoort.com
 
   // Combined effect for image mappings
   useEffect(() => {
-    console.log('Setting up image mappings...');
-    
-    // Then fetch API mappings and merge them, preserving hardcoded mappings
-    fetch(`/api/image-map?postId=${postId}`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
-        }
-        return res.json();
-      })
-      .then(fetchedMap => {
-        console.log('API returned mappings:', fetchedMap);
-        
-        // MERGE in a way that prioritizes hardcoded mappings
-        const combinedMap = {...fetchedMap};
-        console.log('Combined map:', combinedMap);
-        setImageMap(combinedMap);
-        setIsLoading(false);
-        setLoadedImages(true);
-        
-        // No need to preload if we're using hardcoded mappings
-      })
-      .catch(err => {
-        console.error('Error fetching image map:', err);
-        setIsLoading(false);
-        // Still use hardcoded mappings if fetch fails
-        setLoadedImages(true);
-      });
-  }, [postId]);
+  console.log('Setting up image mappings...');
+  
+  // Add direct hardcoded fallback mappings
+  const hardcodedMap = {
+    'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
+    'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
+  };
+  
+  // Then fetch API mappings and merge them, preserving hardcoded mappings
+  fetch(`/api/image-map?postId=${postId}`)
+    .then(res => {
+      console.log('Image map API response status:', res.status);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .then(fetchedMap => {
+      console.log('API returned mappings:', fetchedMap);
+      
+      // Merge with priority to fetched mappings but keep hardcoded as fallback
+      const combinedMap = {...hardcodedMap, ...fetchedMap};
+      console.log('Combined map:', combinedMap);
+      setImageMap(combinedMap);
+      setIsLoading(false);
+      setLoadedImages(true);
+    })
+    .catch(err => {
+      console.error('Error fetching image map:', err);
+      // Fall back to hardcoded mappings if fetch fails
+      console.log('Falling back to hardcoded mappings');
+      setImageMap(hardcodedMap);
+      setIsLoading(false);
+      setLoadedImages(true);
+    });
+}, [postId]);
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -261,14 +269,57 @@ Email: luke@brevoort.com
             ) : (
               <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
               <ReactMarkdown 
-                key={loadedImages ? 'loaded' : 'loading'} // Force re-render when images load
+                key={loadedImages ? 'loaded' : 'loading'}
                 components={{
                   img: ({ node, ...props }) => {
-                    // Fix TypeScript errors by ensuring src is not undefined
                     const imageSrc = props.src || '';
-                    console.log('Rendering image:', imageSrc); 
-                    console.log('ImageMap contains mapping?', !!imageMap[imageSrc]);
+                    console.log('Rendering image in markdown:', imageSrc);
+                    console.log('Available mappings:', Object.keys(imageMap));
+                    console.log('Image mapped?', !!imageMap[imageSrc]);
                     
+                    // First check if we have a mapping
+                    if (imageMap[imageSrc]) {
+                      console.log(`Using mapped image: ${imageMap[imageSrc]}`);
+                      return (
+                        <Image 
+                          src={imageMap[imageSrc]} 
+                          alt={props.alt || ''} 
+                          className="my-4 rounded-md" 
+                          width={800} 
+                          height={450} 
+                          style={{ maxWidth: '100%', height: 'auto' }}
+                        />
+                      );
+                    }
+                    
+                    // Direct fallback for specific cases
+                    if (imageSrc === 'image-placeholder-Blog_Image.jpeg') {
+                      return (
+                        <Image 
+                          src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
+                          alt={props.alt || ''} 
+                          className="my-4 rounded-md" 
+                          width={800} 
+                          height={450} 
+                          style={{ maxWidth: '100%', height: 'auto' }}
+                        />
+                      );
+                    }
+                    
+                    if (imageSrc === 'image-placeholder-Mar_21_Screenshot_from_Blog.png') {
+                      return (
+                        <Image 
+                          src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
+                          alt={props.alt || ''} 
+                          className="my-4 rounded-md" 
+                          width={800} 
+                          height={450} 
+                          style={{ maxWidth: '100%', height: 'auto' }}
+                        />
+                      );
+                    }
+                    
+                    // If all else fails, try SecureImage
                     return (
                       <SecureImage 
                         src={imageSrc} 
