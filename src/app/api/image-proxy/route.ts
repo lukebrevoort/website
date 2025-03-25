@@ -10,74 +10,75 @@ interface ErrorResponse {
   error: string;
 }
 
-export async function GET(request: Request): Promise<NextResponse<ImageResponse | ErrorResponse>> {
+// In image-proxy/route.ts
+export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const imageUrl = url.searchParams.get('url');
-    const imageHash = url.searchParams.get('hash');
+    const imageHash = url.searchParams.get('hash'); // keep for backward compatibility
 
-    if (!imageUrl || !imageHash) {
-      return NextResponse.json({ 
-        error: "Missing required parameters" 
-      }, { status: 400 });
+    if (!imageUrl) {
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
-    console.log("Processing image request:", {
-      url: imageUrl.substring(0, 30) + "...",
-      hash: imageHash
-    });
+    // Extract original filename from the URL
+    const originalFilename = extractFilename(imageUrl);
+    const safeFilename = sanitizeFilename(originalFilename || 'image.jpg');
+    
+    console.log(`Processing image: ${safeFilename} from ${imageUrl.substring(0, 30)}...`);
 
-    // Check if the blob already exists
-    try {
-      console.log(`Checking if blob already exists with hash: ${imageHash}`);
-      // List all blobs (no prefix to ensure we find it anywhere)
-      const { blobs } = await list();
-      
-      // Find the blob by looking for the hash in the URL
-      const existingBlob = blobs.find(blob => 
-        blob.url && blob.url.includes(imageHash)
-      );
-      
-      if (existingBlob) {
-        console.log(`Found existing image in Blob storage: ${existingBlob.url}`);
-        return NextResponse.json({ imagePath: existingBlob.url });
-      }
-    } catch (error: unknown) {
-      console.error("Error checking for existing blob:", error);
+    // Check if blob exists with this name
+    const { blobs } = await list();
+    const existingBlob = blobs.find(blob => 
+      blob.url?.includes(safeFilename)
+    );
+    
+    if (existingBlob) {
+      return NextResponse.json({ imagePath: existingBlob.url });
     }
 
-    // Fetch the image and store it in blob storage
-    console.log(`Fetching new image from: ${imageUrl.substring(0, 30)}...`);
-    const imageResponse = await fetch(imageUrl, {
-      headers: { Accept: "image/*" }
-    });
-
+    // Fetch and store with original filename
+    const imageResponse = await fetch(imageUrl, { headers: { Accept: "image/*" } });
     if (!imageResponse.ok) {
       throw new Error(`Failed to fetch image: ${imageResponse.status}`);
     }
 
-    // Get image as buffer
     const imageBuffer = await imageResponse.arrayBuffer();
-    
-    // Store in Vercel Blob Storage - use hash directly without path prefix
-    const { url: blobUrl } = await put(`${imageHash}.jpg`, imageBuffer, {
+    const { url: blobUrl } = await put(safeFilename, imageBuffer, {
       access: 'public',
       contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
     });
-
-    console.log(`Blob storage debug info:
-      - Original URL: ${imageUrl.substring(0, 30)}...
-      - Hash: ${imageHash}
-      - Blob Name: ${imageHash}.jpg (without path prefix)
-      - Stored URL: ${blobUrl}
-    `);
     
-    console.log(`Successfully uploaded to blob storage: ${blobUrl}`);
+    console.log(`Uploaded image with filename: ${safeFilename}`);
     return NextResponse.json({ imagePath: blobUrl });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error proxying image:", error);
     return NextResponse.json({ 
       error: error instanceof Error ? error.message : "Failed to process image"
     }, { status: 500 });
   }
+}
+
+// Helper functions
+function extractFilename(url: string): string | null {
+  try {
+    // Extract last path segment from URL
+    const urlPath = new URL(url).pathname;
+    const parts = urlPath.split('/');
+    let filename = parts[parts.length - 1];
+    
+    // Remove any query parameters
+    filename = filename.split('?')[0];
+    
+    return filename || null;
+  } catch {
+    return null;
+  }
+}
+
+function sanitizeFilename(filename: string): string {
+  // Remove special characters, spaces, etc.
+  return filename
+    .replace(/[^a-zA-Z0-9.-]/g, '_')
+    .substring(0, 100); // Limit length
 }
