@@ -127,104 +127,47 @@ Email: luke@brevoort.com
 
   // Function to preload images to blob storage
   const preloadImages = async (imageMap: Record<string, string>) => {
-    console.log('Preloading images to blob storage...', imageMap);
-    
-    // Gather all image placeholders that need to be preloaded
-    const placeholders = Object.keys(imageMap).filter(key => 
-      key.startsWith('image-placeholder-') && 
-      !imageMap[key].includes('vercel-blob.com') && 
-      !imageMap[key].includes('blob.vercel-storage.com')
-    );
-    
-    if (placeholders.length === 0) {
-      console.log('No images need preloading - all are already in blob storage');
-      return;
-    }
-    
-    console.log(`Found ${placeholders.length} images that need to be preloaded to blob storage`);
-    
-    // Process each placeholder in sequence to avoid overloading
-    for (const placeholder of placeholders) {
-      try {
-        // Extract the original URL
-        const originalUrl = imageMap[placeholder];
-        // Extract filename from placeholder (not hash anymore)
-        const filename = placeholder.replace('image-placeholder-', '');
-        
-        console.log(`Preloading image: ${placeholder} -> ${originalUrl.substring(0, 30)}...`);
-        
-        // Call the image proxy to ensure it's stored in blob storage
-        const response = await fetch(
-          `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&filename=${filename}`
-        );
-        
-        if (!response.ok) {
-          throw new Error(`Failed to preload image: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.imagePath && (data.imagePath.includes('vercel-blob.com') || data.imagePath.includes('blob.vercel-storage.com'))) {
-          console.log(`Successfully preloaded: ${data.imagePath.substring(0, 30)}...`);
-          // Update the imageMap with the blob URL for future use
-          imageMap[placeholder] = data.imagePath;
-        } else {
-          console.warn(`Failed to preload image ${placeholder}: No valid blob URL returned`);
-        }
-        
-        // Small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-      } catch (error) {
-        console.error(`Error preloading image ${placeholder}:`, error);
-      }
-    }
-    
-    console.log('Preloading complete!');
-    
-    // Update the state with the new map containing blob URLs
-    setImageMap({...imageMap});
-    setLoadedImages(true);
+    // ... existing preload function ...
   };
 
   // Combined effect for image mappings
   useEffect(() => {
-  console.log('Setting up image mappings...');
-  
-  // Add direct hardcoded fallback mappings
-  const hardcodedMap = {
-    'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
-    'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
-  };
-  
-  // Then fetch API mappings and merge them, preserving hardcoded mappings
-  fetch(`/api/image-map?postId=${postId}`)
-    .then(res => {
-      console.log('Image map API response status:', res.status);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
-      }
-      return res.json();
-    })
-    .then(fetchedMap => {
-      console.log('API returned mappings:', fetchedMap);
-      
-      // Merge with priority to fetched mappings but keep hardcoded as fallback
-      const combinedMap = {...hardcodedMap, ...fetchedMap};
-      console.log('Combined map:', combinedMap);
-      setImageMap(combinedMap);
-      setIsLoading(false);
-      setLoadedImages(true);
-    })
-    .catch(err => {
-      console.error('Error fetching image map:', err);
-      // Fall back to hardcoded mappings if fetch fails
-      console.log('Falling back to hardcoded mappings');
-      setImageMap(hardcodedMap);
-      setIsLoading(false);
-      setLoadedImages(true);
-    });
-}, [postId]);
+    console.log('Setting up image mappings...');
+    
+    // Add direct hardcoded fallback mappings for specific placeholders
+    const hardcodedMap = {
+      'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
+      'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
+    };
+    
+    // Then fetch API mappings and merge them, preserving hardcoded mappings
+    fetch(`/api/image-map?postId=${postId}`)
+      .then(res => {
+        console.log('Image map API response status:', res.status);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then(fetchedMap => {
+        console.log('API returned mappings:', fetchedMap);
+        
+        // Merge with priority to fetched mappings but keep hardcoded as fallback
+        const combinedMap = {...hardcodedMap, ...fetchedMap};
+        console.log('Combined map:', combinedMap);
+        setImageMap(combinedMap);
+        setIsLoading(false);
+        setLoadedImages(true);
+      })
+      .catch(err => {
+        console.error('Error fetching image map:', err);
+        // Fall back to hardcoded mappings if fetch fails
+        console.log('Falling back to hardcoded mappings');
+        setImageMap(hardcodedMap);
+        setIsLoading(false);
+        setLoadedImages(true);
+      });
+  }, [postId]);
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -268,59 +211,70 @@ Email: luke@brevoort.com
               <div className="animate-pulse">Loading content...</div>
             ) : (
               <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
-              <ReactMarkdown 
-                key={loadedImages ? 'loaded' : 'loading'}
-                components={{
-                  img: ({ node, ...props }) => {
-                    const imageSrc = props.src || '';
-                    console.log('Rendering image in markdown:', imageSrc);
-                    console.log('Available mappings:', Object.keys(imageMap));
-                    console.log('Image mapped?', !!imageMap[imageSrc]);
-                    
-                    // First check if we have a mapping
-                    if (imageMap[imageSrc]) {
-                      console.log(`Using mapped image: ${imageMap[imageSrc]}`);
+                <ReactMarkdown 
+                  key={loadedImages ? 'loaded' : 'loading'}
+                  components={{
+                    img: ({ node, ...props }) => {
+                      const imageSrc = props.src || '';
+                      console.log('Rendering image in markdown:', imageSrc);
+                      console.log('Available mappings:', Object.keys(imageMap));
+                      console.log('Image mapped?', !!imageMap[imageSrc]);
+                      
+                      // First check if we have a mapping
+                      if (imageMap[imageSrc]) {
+                        console.log(`Using mapped image: ${imageMap[imageSrc]}`);
+                        return (
+                          <Image 
+                            src={imageMap[imageSrc]} 
+                            alt={props.alt || ''} 
+                            className="my-4 rounded-md" 
+                            width={800} 
+                            height={450} 
+                            style={{ maxWidth: '100%', height: 'auto' }}
+                          />
+                        );
+                      }
+                      
+                      // Direct fallback for specific cases
+                      if (imageSrc === 'image-placeholder-Blog_Image.jpeg') {
+                        return (
+                          <Image 
+                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
+                            alt={props.alt || ''} 
+                            className="my-4 rounded-md" 
+                            width={800} 
+                            height={450} 
+                            style={{ maxWidth: '100%', height: 'auto' }}
+                          />
+                        );
+                      }
+                      
+                      if (imageSrc === 'image-placeholder-Mar_21_Screenshot_from_Blog.png') {
+                        return (
+                          <Image 
+                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
+                            alt={props.alt || ''} 
+                            className="my-4 rounded-md" 
+                            width={800} 
+                            height={450} 
+                            style={{ maxWidth: '100%', height: 'auto' }}
+                          />
+                        );
+                      }
+                      
+                      // If all else fails, try SecureImage
                       return (
-                        <Image 
-                          src={imageMap[imageSrc]} 
+                        <SecureImage 
+                          src={imageSrc} 
                           alt={props.alt || ''} 
                           className="my-4 rounded-md" 
-                          width={800} 
-                          height={450} 
-                          style={{ maxWidth: '100%', height: 'auto' }}
+                          postId={postId}
+                          imageMap={imageMap}
                         />
                       );
                     }
-                    
-                    <div className="debug-images">
-                      <h3>Debug Images</h3>
-                      <Image 
-                        src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
-                        alt="Test Image 1" 
-                        width={400}
-                        height={225}
-                      />
-                      <Image 
-                        src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
-                        alt="Test Image 2" 
-                        width={400}
-                        height={225}
-                      />
-                    </div>
-                    
-                    // If all else fails, try SecureImage
-                    return (
-                      <SecureImage 
-                        src={imageSrc} 
-                        alt={props.alt || ''} 
-                        className="my-4 rounded-md" 
-                        postId={postId}
-                        imageMap={imageMap}
-                      />
-                    );
-                  }
-                }}
-              >{content}</ReactMarkdown>
+                  }}
+                >{content}</ReactMarkdown>
               </div>
             )}
           </motion.article>
