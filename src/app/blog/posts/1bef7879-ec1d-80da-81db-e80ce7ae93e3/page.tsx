@@ -190,9 +190,6 @@ Email: luke@brevoort.com
   useEffect(() => {
     console.log('Setting up image mappings...');
     
-    console.log('Setting hardcoded mappings', hardcodedMappings);
-    setImageMap(hardcodedMappings);
-    
     // Then fetch API mappings and merge them, preserving hardcoded mappings
     fetch(`/api/image-map?postId=${postId}`)
       .then(res => {
@@ -205,7 +202,7 @@ Email: luke@brevoort.com
         console.log('API returned mappings:', fetchedMap);
         
         // MERGE in a way that prioritizes hardcoded mappings
-        const combinedMap = {...fetchedMap, ...hardcodedMappings};
+        const combinedMap = {...fetchedMap};
         console.log('Combined map:', combinedMap);
         setImageMap(combinedMap);
         setIsLoading(false);
