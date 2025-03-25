@@ -416,19 +416,6 @@ async function createImageMapping(postId: string, markdown: string) {
   // Extract image URLs from markdown
   const imageMap: Record<string, string> = {};
   
-  // Create hardcoded mappings for specific posts (for backward compatibility)
-  const hardcodedMappings: Record<string, Record<string, string>> = {
-    "1bef7879-ec1d-80da-81db-e80ce7ae93e3": {
-      "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/yCeuzmx3i7j5xhArsQZh907gTcT2SyJM-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
-      "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-cache/mzxxSJOVmH8nrsaqsTE36xsiXKhwLWj7-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
-    }
-  };
-  
-  // Apply hardcoded mappings if available
-  if (hardcodedMappings[postId]) {
-    console.log(`Using hardcoded mappings for post ${postId}`);
-    Object.assign(imageMap, hardcodedMappings[postId]);
-  }
   
   // More comprehensive regex patterns to catch all AWS URL variations
   const awsUrlPatterns = [
@@ -467,12 +454,6 @@ async function createImageMapping(postId: string, markdown: string) {
       
       // Create placeholder using sanitized filename
       const placeholder = `image-placeholder-${safeFilename}`;
-      
-      // Skip if we already have a hardcoded mapping for this post and URL
-      if (hardcodedMappings[postId]?.[placeholder]) {
-        console.log(`Using existing hardcoded mapping for ${placeholder}`);
-        continue;
-      }
       
       imageMap[placeholder] = url;
       
