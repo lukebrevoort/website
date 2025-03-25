@@ -60,73 +60,33 @@ export async function GET(request: NextRequest) {
           console.log(`[${index}] ${blob.url}`);
         });
         
-        // Process each placeholder and try to match against blobs
+        // NEW DIRECT SUBSTRING MATCHING ALGORITHM
         for (const placeholder of placeholders) {
+          console.log(`Finding match for placeholder: ${placeholder}`);
+          
+          // Extract the base name from the placeholder (without "image-placeholder-" prefix and without extension)
           const placeholderFilename = placeholder.replace('image-placeholder-', '');
-          const placeholderBase = placeholderFilename.split('.')[0].toLowerCase();
+          const placeholderBase = placeholderFilename.split('.')[0];
           
-          console.log(`Looking for matches for placeholder: ${placeholder} (${placeholderFilename})`);
+          // Try to find a blob URL that contains this base name as a substring
+          let matchFound = false;
           
-          // Various approaches to extract real filename from blob
           for (const blob of blobs) {
             const blobUrl = blob.url || '';
             if (!blobUrl) continue;
             
-            // Get the full filename from the URL (everything after the last slash)
-            const fullBlobFilename = blobUrl.split('/').pop()?.split('?')[0] || '';
-            
-            // 1. Try to match based on the Vercel Blob naming pattern
-            // Typical pattern: originalname-randomstring.ext
-            const patternMatch = fullBlobFilename.match(/([^-]+)(?:-[^\.]+)?\.([^\.]+)$/);
-            
-            let extractedName = '';
-            if (patternMatch) {
-              extractedName = patternMatch[1];
-              console.log(`Extracted name from pattern: ${extractedName}`);
-            }
-            
-            // 2. Also try the full name without the query string
-            const blobFilename = fullBlobFilename.split('-')[0];
-            
-            // 3. And try the whole thing before any extension
-            const blobFileBase = fullBlobFilename.split('.')[0];
-            
-            // LOGGING: Output all the compared values
-            console.log(`Comparing: 
-              - Placeholder: ${placeholderFilename} (base: ${placeholderBase})
-              - Blob full: ${fullBlobFilename}
-              - Blob part: ${blobFilename}
-              - Blob base: ${blobFileBase}
-              - Extracted: ${extractedName}
-            `);
-            
-            // Check all possible matching strategies
-            const matchStrategies = [
-              // Strategy 1: Direct match on placeholder filename
-              fullBlobFilename === placeholderFilename,
-              // Strategy 2: Direct match on placeholder base name
-              blobFilename === placeholderBase,
-              // Strategy 3: Extracted name matches placeholder base
-              extractedName.toLowerCase() === placeholderBase,
-              // Strategy 4: Contains relationship
-              fullBlobFilename.toLowerCase().includes(placeholderBase),
-              placeholderBase.includes(blobFilename.toLowerCase()),
-              // Strategy 5: Word matching - split by underscores, dashes, etc.
-              placeholderBase.split(/[_\-\s]/).some(word => 
-                word.length > 2 && fullBlobFilename.toLowerCase().includes(word.toLowerCase())
-              ),
-              // Strategy 6: Special case for date-based filenames (Mar_21)
-              placeholderBase.match(/^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i) &&
-              fullBlobFilename.toLowerCase().includes(placeholderBase.substring(0, 3).toLowerCase())
-            ];
-            
-            const matchIndex = matchStrategies.findIndex(strategy => strategy);
-            
-            if (matchIndex >= 0) {
-              console.log(`✅ Match found using strategy ${matchIndex + 1}: ${placeholder} -> ${blobUrl}`);
+            // Check if the blob URL contains the placeholder base name as a substring
+            if (blobUrl.includes(placeholderBase)) {
               reconstructedMap[placeholder] = blobUrl;
-              break; // Found a match for this placeholder, move on
+              console.log(`✅ MATCH FOUND: ${placeholder} -> ${blobUrl}`);
+              console.log(`   Matched because "${placeholderBase}" is in the URL`);
+              matchFound = true;
+              break; // Stop looking for this placeholder
             }
+          }
+          
+          if (!matchFound) {
+            console.log(`❌ No match found for ${placeholder}`);
           }
         }
         
