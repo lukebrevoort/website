@@ -370,8 +370,11 @@ async function preloadImageToBlobStorage(url: string, filename: string): Promise
   try {
     console.log(`📸 Preloading image to blob storage: ${url.substring(0, 30)}...`);
     
-    // Define blob name using filename
-    const blobName = `${filename}.jpg`;
+    // Check if filename already has an extension
+    const hasExtension = /\.(jpg|jpeg|png|gif|webp|svg|avif)$/i.test(filename);
+    
+    // Define blob name - use filename as is if it has an extension, otherwise add .jpg
+    const blobName = hasExtension ? filename : `${filename}.jpg`;
     
     // Check if the blob already exists before fetching
     const { blobs } = await list();
