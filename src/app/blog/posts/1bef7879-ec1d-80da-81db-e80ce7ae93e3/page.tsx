@@ -190,12 +190,6 @@ Email: luke@brevoort.com
   useEffect(() => {
     console.log('Setting up image mappings...');
     
-    // Start with hardcoded mappings - THESE SHOULD ALWAYS OVERRIDE ANY API MAPPINGS
-    const hardcodedMappings = {
-      "image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-REDACTED_SECRET-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg",
-      "image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp": "https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-REDACTED_SECRET-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
-    };
-    
     console.log('Setting hardcoded mappings', hardcodedMappings);
     setImageMap(hardcodedMappings);
     
@@ -277,31 +271,6 @@ Email: luke@brevoort.com
                       const imageSrc = props.src || '';
                       console.log('Rendering image:', imageSrc); 
                       console.log('ImageMap contains mapping?', !!imageMap[imageSrc]);
-                      
-                      // For debugging, directly use hardcoded URLs for known placeholders
-                      if (imageSrc === 'image-placeholder-UyKu23r7d3jw7XOtlUmFd2l5lllx31hU') {
-                        return (
-                          <div className="my-4">
-                            <img 
-                              src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-REDACTED_SECRET-P6BDZYgCJtrUNFnohWjIqFeQ4ppDvA.jpg"
-                              alt={props.alt || ''} 
-                              className="rounded-md w-full h-auto"
-                            />
-                          </div>
-                        );
-                      }
-                      
-                      if (imageSrc === 'image-placeholder-Vk2B3XvA0Qv1QUlLIg7rmGWTLkQh4eqp') {
-                        return (
-                          <div className="my-4">
-                            <img 
-                              src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/image-REDACTED_SECRET-FrswC58wIuc4pZhkuMufJB76lAT7Be.jpg"
-                              alt={props.alt || ''} 
-                              className="rounded-md w-full h-auto"
-                            />
-                          </div>
-                        );
-                      }
                       
                       return (
                         <SecureImage 
