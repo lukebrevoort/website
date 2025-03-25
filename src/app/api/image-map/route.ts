@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // This is a fallback for when automatic matching fails
     const hardcodedMappings: Record<string, string> = {
       'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
-      'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/JPEG_image-4AF6-B04C-12-0.jpeg-I92hDi0iwQCDYqt7AcaMqvxF7D0ili.jpg'
+      'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
     };
     
     // Check if we have hardcoded mappings for this post's placeholders
