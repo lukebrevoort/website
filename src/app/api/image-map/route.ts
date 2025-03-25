@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     
     // Check blob storage
     try {
-      // List all blobs with prefix 'image-cache/' which is where your images are now
-      const { blobs } = await list({ prefix: 'image-cache/' });
+      // Listing all blobs in the storage
+      const { blobs } = await list({ prefix: '/' });
       
       console.log(`Found ${blobs.length} relevant blobs in storage`);
       
