@@ -260,27 +260,27 @@ Email: luke@brevoort.com
               <div className="animate-pulse">Loading content...</div>
             ) : (
               <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
-                <ReactMarkdown 
-                  key={loadedImages ? 'loaded' : 'loading'} // Force re-render when images load
-                  components={{
-                    img: ({ node, ...props }) => {
-                      // Fix TypeScript errors by ensuring src is not undefined
-                      const imageSrc = props.src || '';
-                      console.log('Rendering image:', imageSrc); 
-                      console.log('ImageMap contains mapping?', !!imageMap[imageSrc]);
-                      
-                      return (
-                        <SecureImage 
-                          src={imageSrc} 
-                          alt={props.alt || ''} 
-                          className="my-4 rounded-md" 
-                          postId={`${postId}`}
-                          imageMap={imageMap}
-                        />
-                      );
-                    }
-                  }}
-                >{content}</ReactMarkdown>
+              <ReactMarkdown 
+                key={loadedImages ? 'loaded' : 'loading'} // Force re-render when images load
+                components={{
+                  img: ({ node, ...props }) => {
+                    // Fix TypeScript errors by ensuring src is not undefined
+                    const imageSrc = props.src || '';
+                    console.log('Rendering image:', imageSrc); 
+                    console.log('ImageMap contains mapping?', !!imageMap[imageSrc]);
+                    
+                    return (
+                      <SecureImage 
+                        src={imageSrc} 
+                        alt={props.alt || ''} 
+                        className="my-4 rounded-md" 
+                        postId={postId}
+                        imageMap={imageMap}
+                      />
+                    );
+                  }
+                }}
+              >{content}</ReactMarkdown>
               </div>
             )}
           </motion.article>
