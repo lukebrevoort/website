@@ -49,41 +49,64 @@ export async function GET(request: NextRequest) {
           const matches = content.match(placeholderRegex);
           if (matches) {
             placeholders = [...new Set(matches)]; // Remove duplicates
-            console.log(`Found ${placeholders.length} placeholders in page content`);
+            console.log(`Found ${placeholders.length} placeholders in page content:`, placeholders);
           }
         }
         
-        // For each blob, try to match to placeholders
+        // Debug: Print all blob URLs to help with debugging
+        console.log('Available blob URLs:');
+        blobs.forEach((blob, index) => {
+          console.log(`[${index}] ${blob.url}`);
+        });
+        
+        // Process each blob to extract original filename
         for (const blob of blobs) {
           const blobUrl = blob.url || '';
+          if (!blobUrl) continue;
           
+          // Get the filename part from the URL
+          const urlParts = blobUrl.split('/');
+          const blobFilename = urlParts[urlParts.length - 1].split('?')[0];
+          
+          // Extract original filename (everything before the first dash)
+          const dashIndex = blobFilename.indexOf('-');
+          let originalFilename = blobFilename;
+          
+          if (dashIndex > 0) {
+            originalFilename = blobFilename.substring(0, dashIndex);
+            console.log(`Extracted original filename from blob: ${originalFilename}`);
+          }
+          
+          // Match against placeholders
           for (const placeholder of placeholders) {
-            // Extract filename from placeholder
-            const filename = placeholder.replace('image-placeholder-', '');
-            // Check if blob URL contains this filename (with or without extension)
-            const filenameBase = filename.split('.')[0]; // Get filename without extension
+            const placeholderFilename = placeholder.replace('image-placeholder-', '');
+            const placeholderBase = placeholderFilename.split('.')[0];
             
-            if (blobUrl.includes(filename) || 
-                (filenameBase && blobUrl.includes(filenameBase))) {
+            // Check if the original filename matches the placeholder
+            if (
+              // Direct filename match
+              originalFilename === placeholderFilename ||
+              // Base name match (ignoring extension)
+              originalFilename.split('.')[0] === placeholderBase ||
+              // Original filename contains the placeholder filename or vice versa
+              originalFilename.includes(placeholderFilename) ||
+              placeholderFilename.includes(originalFilename)
+            ) {
               reconstructedMap[placeholder] = blobUrl;
-              console.log(`Mapped ${placeholder} -> ${blobUrl}`);
+              console.log(`Mapped ${placeholder} -> ${blobUrl} (matched original filename: ${originalFilename})`);
+              break; // Found a match for this blob, move to next
             }
           }
           
-          // Also look for image filenames in blob URLs directly
-          const blobFilename = blobUrl.split('/').pop()?.split('?')[0] || '';
-          if (blobFilename) {
-            // Check if this might match one of our placeholders by filename
+          // If no match found yet, try another approach with filenames
+          if (Object.keys(reconstructedMap).length === 0) {
             placeholders.forEach(placeholder => {
               const placeholderFilename = placeholder.replace('image-placeholder-', '');
-              const placeholderBase = placeholderFilename.split('.')[0];
-              const blobBase = blobFilename.split('.')[0];
               
-              // Match if the filename or base filename matches
-              if (blobFilename.includes(placeholderFilename) || 
-                  (placeholderBase && blobBase && blobBase.includes(placeholderBase))) {
+              // Just check if the full blob URL contains the placeholder filename
+              if (blobUrl.includes(placeholderFilename.split('.')[0])) {
                 reconstructedMap[placeholder] = blobUrl;
-                console.log(`Fuzzy mapped ${placeholder} -> ${blobUrl}`);
+                console.log(`Fallback mapped ${placeholder} -> ${blobUrl}`);
               }
             });
           }
@@ -103,11 +126,43 @@ export async function GET(request: NextRequest) {
           }
           
           return NextResponse.json(reconstructedMap);
+        } else {
+          // No mappings found, but we have blobs, so create a fallback mapping
+          console.log(`No direct mappings found, creating fallback mappings based on available blobs...`);
+          
+          // Simple fallback approach: For each placeholder, find any blob that might be a match
+          placeholders.forEach(placeholder => {
+            const placeholderFilename = placeholder.replace('image-placeholder-', '');
+            const placeholderBase = placeholderFilename.split('.')[0].toLowerCase();
+            
+            // Look for any reasonable match in any blob
+            for (const blob of blobs) {
+              const blobUrl = blob.url || '';
+              const blobFilename = blobUrl.split('/').pop()?.split('?')[0] || '';
+              const blobLower = blobFilename.toLowerCase();
+              
+              // Very loose matching - if any part of the filename seems to match
+              if (blobLower.includes(placeholderBase) || 
+                  placeholderBase.includes(blobLower.split('-')[0])) {
+                reconstructedMap[placeholder] = blobUrl;
+                console.log(`Fallback loose match: ${placeholder} -> ${blobUrl}`);
+                break;
+              }
+            }
+          });
+          
+          if (Object.keys(reconstructedMap).length > 0) {
+            console.log(`Created ${Object.keys(reconstructedMap).length} fallback mappings`);
+            return NextResponse.json(reconstructedMap);
+          }
+          
+          console.log('No relevant blobs found, returning empty mapping');
+          return NextResponse.json({});
         }
+      } else {
+        console.log('No blobs found in storage');
+        return NextResponse.json({});
       }
-      
-      console.log('No relevant blobs found, returning empty mapping');
-      return NextResponse.json({});
     } catch (blobError) {
       console.error('Error accessing Blob storage:', blobError);
       // Continue to fallback logic
