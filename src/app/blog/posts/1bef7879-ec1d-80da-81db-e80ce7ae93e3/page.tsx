@@ -174,8 +174,8 @@ Email: luke@brevoort.com
       <AppSidebar />
       <MotionConfig reducedMotion="user">
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
-            <div className="flex items-center gap-2 px-4">
+          <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+            <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
               <Breadcrumb>
@@ -200,17 +200,17 @@ Email: luke@brevoort.com
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="container mx-auto py-10 px-4 max-w-3xl"
+            className="container mx-auto py-6 md:py-10 px-3 md:px-4 max-w-3xl"
           >
             <header className="mb-10">
-              <h1 className={`${lukesFont.className} text-4xl font-bold mb-3`}>{"My First Post"}</h1>
+              <h1 className={`${lukesFont.className} text-3xl md:text-4xl font-bold mb-2 md:mb-3`}>{"My First Post"}</h1>
               <time className="text-gray-500">3/21/2025</time>
             </header>
             
             {isLoading ? (
               <div className="animate-pulse">Loading content...</div>
             ) : (
-              <div className={`prose dark:prose-invert max-w-none ${crimsonText.className}`}>
+              <div className={`prose dark:prose-invert max-w-none prose-sm md:prose-base lg:prose-lg ${crimsonText.className}`}>
                 <ReactMarkdown 
                   key={loadedImages ? 'loaded' : 'loading'}
                   components={{
@@ -226,6 +226,34 @@ Email: luke@brevoort.com
                         return (
                           <Image 
                             src={imageMap[imageSrc]} 
+                            alt={props.alt || ''} 
+                            className="my-4 rounded-md w-full" 
+                            width={800} 
+                            height={450} 
+                            sizes="(max-width: 768px) 100vw, 800px"
+                            style={{ maxWidth: '100%', height: 'auto' }}
+                          />
+                        );
+                      }
+                      
+                      // Direct fallback for specific cases
+                      if (imageSrc === 'image-placeholder-Blog_Image.jpeg') {
+                        return (
+                          <Image 
+                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
+                            alt={props.alt || ''} 
+                            className="my-4 rounded-md" 
+                            width={800} 
+                            height={450} 
+                            style={{ maxWidth: '100%', height: 'auto' }}
+                          />
+                        );
+                      }
+                      
+                      if (imageSrc === 'image-placeholder-Mar_21_Screenshot_from_Blog.png') {
+                        return (
+                          <Image 
+                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
                             alt={props.alt || ''} 
                             className="my-4 rounded-md" 
                             width={800} 
