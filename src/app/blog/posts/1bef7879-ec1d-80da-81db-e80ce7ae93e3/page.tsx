@@ -28,7 +28,7 @@ So lets talk about what this even is and how it came to be!
 # The Idea
 
 
-After having a conversation with Jordan Scales (A super cool previous Stevens Student I connected with), his biggest takeaway and advice for me was to just start writing. Wether it was projects or just something I thought was remotely interesting or cool! Since that conversation I’ve been thinking of how I would approach putting up a blog. Two main ideas came to mind 
+After having a conversation with Jordan Scales (A super cool previous Stevens Student I connected with), his biggest takeaway and advice for me was to just start writing. Whether it was projects or just something I thought was remotely interesting or cool! Since that conversation I’ve been thinking of how I would approach putting up a blog. Two main ideas came to mind 
 
 1. Using some external tool, such as Notion, and directing my website to the front Blog page
     1. Pros: Notion has build in tools that make putting together a page unbelievably smooth
