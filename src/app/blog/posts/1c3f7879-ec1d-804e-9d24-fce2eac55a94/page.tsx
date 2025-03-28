@@ -62,29 +62,45 @@ I think there is a fine line in AI usage, especially as a Freshman in CS. Do you
 ### Assistance 🫨:
 
 
-Pros:
+### Pros:
 
-- Build and deploy tools much faster 
-- Learn with industry tools and gain valuable skills in prompting and usage
-- Great for getting started quickly!
-Cons:
 
-- Might get stuck in the Vibe Coding Cycle
-- End up skipping over valuable skills since Ai handles it for you
-- Lack of robust code that could lead to data leaks
+Build and deploy tools much faster 
+
+Learn with industry tools and gain valuable skills in prompting and usage
+
+Great for getting started quickly!
+
+### Cons:
+
+
+Might get stuck in the Vibe Coding Cycle
+
+End up skipping over valuable skills since Ai handles it for you
+
+Lack of robust code that could lead to data leaks
+
 ### No AI 🙈:
 
 
-Pros:
+### Pros:
 
-- Get to take away as much as possible
-- Learn the entire process step by step 
-- Great for learning new Languages and Frameworks
-Cons:
 
-- Much slower to build and deploy projects
-- Takes much more work up-front to watch tutorials and get things going 
-- No longer working with the most productive systems 
+Get to take away as much as possible
+
+Learn the entire process step by step 
+
+Great for learning new Languages and Frameworks
+
+### Cons:
+
+
+Much slower to build and deploy projects
+
+Takes much more work up-front to watch tutorials and get things going 
+
+No longer working with the most productive systems 
+
 In my personal opinion, I think the best way to go about projects is a mixture of both. If you are brand new to a framework or language, you should try your best to go through the process of learning it step by step, **using as little AI as possible**. This will give you a good enough understanding so that when you use AI and encounter issues, you can sit down and **diagnose the problem**.
 
 This has tremendously helped me avoid the Vibe Code pitfalls in my recent projects and given me the upside of utilizing tools when I fully understand the project.
