@@ -584,9 +584,14 @@ export default function BlogPost() {
       'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
       'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
     };
+
+    // Extract placeholders from content
+    const placeholderRegex = /image-placeholder-[^)"\s]+/g;
+    const placeholders = content.match(placeholderRegex) || [];
+    console.log('Extracted placeholders:', placeholders);
     
     // Then fetch API mappings and merge them, preserving hardcoded mappings
-    fetch(\`/api/image-map?postId=\${postId}\`)
+    fetch(\`/api/image-map?postId=\${postId}&placeholders=\${placeholders.join(',')}\`)
       .then(res => {
         console.log('Image map API response status:', res.status);
         if (!res.ok) {
@@ -612,7 +617,7 @@ export default function BlogPost() {
         setIsLoading(false);
         setLoadedImages(true);
       });
-  }, [postId]);
+  }, [postId, content]);
 
   return (
     <SidebarProvider defaultOpen={false}>
