@@ -162,8 +162,8 @@ luke@brevoort.com
       'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
     };
 
-      // Extract placeholders from content
-    const placeholderRegex = /image-placeholder-[^)"\s]+/g;
+    // Extract placeholders from content
+    const placeholderRegex = /image-placeholder-[^)"s]+/g;
     const placeholders = content.match(placeholderRegex) || [];
     console.log('Extracted placeholders:', placeholders);
     
