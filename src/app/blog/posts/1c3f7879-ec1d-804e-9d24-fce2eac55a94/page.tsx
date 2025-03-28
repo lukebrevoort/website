@@ -64,6 +64,9 @@ I think there is a fine line in AI usage, especially as a Freshman in CS. Do you
 
 Pros:
 
+- Build and deploy tools much faster 
+- Learn with industry tools and gain valuable skills in prompting and usage
+- Great for getting started quickly!
 Cons:
 
 ### No AI 🙈:
