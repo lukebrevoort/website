@@ -278,44 +278,6 @@ luke@brevoort.com
                     </div>
                   );
                 },
-                code: ({ node, inline, className, children, ...props }) => {
-                  const match = /language-(\w+)/.exec(className || '');
-                  
-                  // For inline code (not code blocks)
-                  if (inline || !match) {
-                    return (
-                      <code 
-                        className="px-1.5 py-0.5 mx-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono"
-                        {...props}
-                      >
-                        {children}
-                      </code>
-                    );
-                  }
-                  
-                  // For code blocks - simplified without specific syntax highlighting
-                  return (
-                    <div className="my-4 sm:my-6 overflow-hidden rounded-lg shadow-lg">
-                      <div className="flex items-center justify-between px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-mono bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                        <span>{match[1].toUpperCase()}</span>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(String(children));
-                          }}
-                          className="hover:text-primary transition-colors"
-                          aria-label="Copy code"
-                        >
-                          Copy
-                        </button>
-                      </div>
-                      <pre className="p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-                        <code className="font-mono">
-                          {String(children).replace(/\n$/, '')}
-                        </code>
-                      </pre>
-                    </div>
-                  );
-                }
               }}
             >{content}</ReactMarkdown>
           </div>
