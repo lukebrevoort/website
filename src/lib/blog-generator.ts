@@ -607,7 +607,7 @@ function generatePostPageContent(post: any, markdown: string) {
         
         // Use browser's Image constructor to preload
         if (typeof window !== 'undefined') {
-        const img = new Image();
+        const img = new window.Image();
         img.onload = () => resolve();
         img.onerror = () => {
           console.warn(\`Failed to preload image: \${url}\`);
@@ -806,13 +806,9 @@ function generatePostPageContent(post: any, markdown: string) {
                 <SecureImage 
                   src={imageSrc} 
                   alt={props.alt || ''} 
-                  className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
+                  className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow max-h-[80vh] object-contain" 
                   postId={postId}
                   imageMap={imageMap}
-                  style={{
-                  maxHeight: '80vh',
-                  objectFit: 'contain'
-                  }}
                 />
                 {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
                 </div>
