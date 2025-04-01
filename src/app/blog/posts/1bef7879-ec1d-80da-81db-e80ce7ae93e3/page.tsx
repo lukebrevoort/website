@@ -14,7 +14,8 @@
   
   const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
   const SyntaxHighlighter = dynamic(() => import('react-syntax-highlighter'), { ssr: false });
-  const { vscDarkPlus, vs } = dynamic(() => import('react-syntax-highlighter/dist/cjs/styles/prism'), { ssr: false });
+  // Import styles directly instead of using dynamic import
+  import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/cjs/styles/prism';
   
   export default function BlogPost() {
     // Store processed markdown in state
@@ -165,7 +166,7 @@ Email: luke@brevoort.com
           
           // Use browser's Image constructor to preload
           if (typeof window !== 'undefined') {
-            const img = new Image();
+            const img = new window.Image();
             img.onload = () => resolve();
             img.onerror = () => {
               console.warn(`Failed to preload image: ${url}`);
@@ -367,7 +368,8 @@ Email: luke@brevoort.com
                           </div>
                         );
                       },
-                      code: ({ node, inline, className, children, ...props }) => {
+                      code: ({ node, className, children, ...props }: any) => {
+                        const inline = props.inline;
                         const match = /language-(w+)/.exec(className || '');
                         
                         // For inline code (not code blocks)
@@ -401,15 +403,15 @@ Email: luke@brevoort.com
                             </div>
                             <SyntaxHighlighter
                               language={match[1]}
-                              style={isDarkMode ? vscDarkPlus : vs}
+                              style={isDarkMode ? vscDarkPlus as any : vs as any}
                               customStyle={{ margin: 0, padding: '1rem', fontSize: '0.95rem' }}
                               showLineNumbers
                               wrapLines
                               wrapLongLines
+                              // @ts-ignore - type definitions mismatch but these styles work properly
                               {...props}
                             >
-                              {String(children).replace(/
-$/, '')}
+                              {String(children).replace(/$/, '')}
                             </SyntaxHighlighter>
                           </div>
                         );

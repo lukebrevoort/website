@@ -853,7 +853,7 @@ function generatePostPageContent(post: any, markdown: string) {
                               wrapLongLines
                               {...props}
                             >
-                              {String(children).replace(/\n$/, '')}
+                            {String(children).replace(/\n$/, '')}
                             </SyntaxHighlighter>
                           </div>
                         );
