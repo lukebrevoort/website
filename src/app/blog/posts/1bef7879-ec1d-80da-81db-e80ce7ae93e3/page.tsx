@@ -303,7 +303,6 @@ Email: luke@brevoort.com
                       }}
                       priority={true}
                     />
-                    {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
                   </div>
                 );
               }
@@ -319,7 +318,6 @@ Email: luke@brevoort.com
                   postId={postId}
                   imageMap={imageMap}
                 />
-                {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
               </div>
               );
               }
