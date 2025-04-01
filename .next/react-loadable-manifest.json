@@ -5,6 +5,12 @@
       "static/chunks/_app-pages-browser_node_modules_react-markdown_index_js.js"
     ]
   },
+  "app/blog/posts/1c3f7879-ec1d-804e-9d24-fce2eac55a94/page.tsx -> react-markdown": {
+    "id": "app/blog/posts/1c3f7879-ec1d-804e-9d24-fce2eac55a94/page.tsx -> react-markdown",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_react-markdown_index_js.js"
+    ]
+  },
   "components/app-sidebar.tsx -> lucide-react": {
     "id": "components/app-sidebar.tsx -> lucide-react",
     "files": [

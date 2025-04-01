@@ -167,25 +167,107 @@ luke@brevoort.com
   // Detect color scheme preference
   useEffect(() => {
     if (typeof window !== 'undefined') {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setIsDarkMode(isDark);
-    
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-    
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkMode(isDark);
+      
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+      
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
     }
   }, []);
   
   // Function to preload images to blob storage
   const preloadImages = async (imageMap: Record<string, string>) => {
-    // ...existing preload images code...
+    if (!imageMap || Object.keys(imageMap).length === 0) return;
+    
+    console.log('Preloading images:', Object.keys(imageMap).length);
+    
+    // Create an array to hold all image loading promises
+    const imagePromises = Object.values(imageMap).map(url => {
+      return new Promise<void>((resolve) => {
+        if (!url || typeof url !== 'string') {
+          resolve();
+          return;
+        }
+  
+        // Skip if URL is not valid or still a placeholder
+        if (url.startsWith('image-placeholder-')) {
+          resolve();
+          return;
+        }
+        
+        // Use browser's Image constructor to preload
+        if (typeof window !== 'undefined') {
+          const img = new window.Image();
+          img.onload = () => resolve();
+          img.onerror = () => {
+            console.warn(`Failed to preload image: ${url}`);
+            resolve(); // Resolve anyway to not block other images
+          };
+          img.src = url;
+        } else {
+          // If running on server, just resolve
+          resolve();
+        }
+      });
+    });
+    
+    // Wait for all images to load or fail
+    await Promise.all(imagePromises);
+    console.log('All images preloaded');
   };
   
   // Combined effect for image mappings
   useEffect(() => {
-    // ...existing image mapping code...
+    console.log('Setting up image mappings...');
+    
+    // Add direct hardcoded fallback mappings for specific placeholders
+    const hardcodedMap = {
+      'image-placeholder-vibecodingdiagram.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/vibecodingdiagram-7sMCDEZKl3XTmr0jYhBp6zTrXZeKRn.jpeg',
+      'image-placeholder-lukeworkflowdiagram.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/lukeworkflowdiagram-7XCkIc2JwZOjK0X7PxYJSIxj6VGolP.jpeg'
+    };
+  
+    // Extract placeholders from content
+    const placeholderRegex = /image-placeholder-[^)"s]+/g;
+    const placeholders = content.match(placeholderRegex) || [];
+    console.log('Extracted placeholders:', placeholders);
+    
+    // Then fetch API mappings and merge them, preserving hardcoded mappings
+    fetch(`/api/image-map?postId=${postId}&placeholders=${placeholders.join(',')}`)
+    .then(res => {
+      console.log('Image map API response status:', res.status);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .then(async fetchedMap => {
+      console.log('API returned mappings:', fetchedMap);
+      
+      // Merge with priority to fetched mappings but keep hardcoded as fallback
+      const combinedMap = {...hardcodedMap, ...fetchedMap};
+      console.log('Combined map:', combinedMap);
+      setImageMap(combinedMap);
+      setIsLoading(false);
+      
+      // Preload images after mapping is set
+      await preloadImages(combinedMap);
+      setLoadedImages(true);
+    })
+    .catch(err => {
+      console.error('Error fetching image map:', err);
+      // Fall back to hardcoded mappings if fetch fails
+      console.log('Falling back to hardcoded mappings');
+      setImageMap(hardcodedMap);
+      setIsLoading(false);
+      
+      // Attempt to preload hardcoded images
+      preloadImages(hardcodedMap).then(() => {
+        setLoadedImages(true);
+      });
+    });
   }, [postId, content]);
   
   return (
