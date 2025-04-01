@@ -13,8 +13,10 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
+// Fix the imports - use the standard import path
 const SyntaxHighlighter = dynamic(() => import('react-syntax-highlighter'), { ssr: false });
-const { vscDarkPlus, vs } = dynamic(() => import('react-syntax-highlighter/dist/cjs/styles/prism'), { ssr: false });
+// Import styles directly
+import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 export default function BlogPost() {
   // Store processed markdown in state
@@ -163,9 +165,9 @@ Email: luke@brevoort.com
           return;
         }
         
-        // Use browser's Image constructor to preload
+        // Use browser's HTMLImageElement constructor to preload
         if (typeof window !== 'undefined') {
-          const img = new Image();
+          const img = new window.Image();
           img.onload = () => resolve();
           img.onerror = () => {
             console.warn(`Failed to preload image: ${url}`);
@@ -342,7 +344,7 @@ Email: luke@brevoort.com
                       );
                     },
                     code: ({ node, inline, className, children, ...props }) => {
-                      const match = /language-(w+)/.exec(className || '');
+                      const match = /language-(\w+)/.exec(className || '');
                       
                       // For inline code (not code blocks)
                       if (inline || !match) {
@@ -382,8 +384,8 @@ Email: luke@brevoort.com
                             wrapLongLines
                             {...props}
                           >
-                            {String(children).replace(/
-$/, '')}
+                            {/* Fix the string replacement with \n */}
+                            {String(children).replace(/\n$/, '')}
                           </SyntaxHighlighter>
                         </div>
                       );
