@@ -13,6 +13,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
+const SyntaxHighlighter = dynamic(() => import('react-syntax-highlighter'), { ssr: false });
+const { vscDarkPlus, vs } = dynamic(() => import('react-syntax-highlighter/dist/cjs/styles/prism'), { ssr: false });
 
 export default function BlogPost() {
   // Store processed markdown in state
@@ -123,11 +125,63 @@ Email: luke@brevoort.com
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [loadedImages, setLoadedImages] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const postId = "1bef7879-ec1d-80da-81db-e80ce7ae93e3";
+
+
+  // Detect color scheme preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkMode(isDark);
+      
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+      
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, []);
 
   // Function to preload images to blob storage
   const preloadImages = async (imageMap: Record<string, string>) => {
-    // ... existing preload function ...
+    if (!imageMap || Object.keys(imageMap).length === 0) return;
+    
+    console.log('Preloading images:', Object.keys(imageMap).length);
+    
+    // Create an array to hold all image loading promises
+    const imagePromises = Object.values(imageMap).map(url => {
+      return new Promise<void>((resolve) => {
+        if (!url || typeof url !== 'string') {
+          resolve();
+          return;
+        }
+
+        // Skip if URL is not valid or still a placeholder
+        if (url.startsWith('image-placeholder-')) {
+          resolve();
+          return;
+        }
+        
+        // Use browser's Image constructor to preload
+        if (typeof window !== 'undefined') {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => {
+            console.warn(`Failed to preload image: ${url}`);
+            resolve(); // Resolve anyway to not block other images
+          };
+          img.src = url;
+        } else {
+          // If running on server, just resolve
+          resolve();
+        }
+      });
+    });
+    
+    // Wait for all images to load or fail
+    await Promise.all(imagePromises);
+    console.log('All images preloaded');
   };
 
   // Combined effect for image mappings
@@ -139,9 +193,14 @@ Email: luke@brevoort.com
       'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
       'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
     };
+
+    // Extract placeholders from content
+    const placeholderRegex = /image-placeholder-[^)"s]+/g;
+    const placeholders = content.match(placeholderRegex) || [];
+    console.log('Extracted placeholders:', placeholders);
     
     // Then fetch API mappings and merge them, preserving hardcoded mappings
-    fetch(`/api/image-map?postId=${postId}`)
+    fetch(`/api/image-map?postId=${postId}&placeholders=${placeholders.join(',')}`)
       .then(res => {
         console.log('Image map API response status:', res.status);
         if (!res.ok) {
@@ -149,7 +208,7 @@ Email: luke@brevoort.com
         }
         return res.json();
       })
-      .then(fetchedMap => {
+      .then(async fetchedMap => {
         console.log('API returned mappings:', fetchedMap);
         
         // Merge with priority to fetched mappings but keep hardcoded as fallback
@@ -157,6 +216,9 @@ Email: luke@brevoort.com
         console.log('Combined map:', combinedMap);
         setImageMap(combinedMap);
         setIsLoading(false);
+        
+        // Preload images after mapping is set
+        await preloadImages(combinedMap);
         setLoadedImages(true);
       })
       .catch(err => {
@@ -165,9 +227,13 @@ Email: luke@brevoort.com
         console.log('Falling back to hardcoded mappings');
         setImageMap(hardcodedMap);
         setIsLoading(false);
-        setLoadedImages(true);
+        
+        // Attempt to preload hardcoded images
+        preloadImages(hardcodedMap).then(() => {
+          setLoadedImages(true);
+        });
       });
-  }, [postId]);
+  }, [postId, content]);
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -200,17 +266,17 @@ Email: luke@brevoort.com
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="container mx-auto py-6 md:py-10 px-3 md:px-4 max-w-3xl"
+            className="container mx-auto py-6 md:py-10 px-4 md:px-6 max-w-3xl"
           >
-            <header className="mb-10">
-              <h1 className={`${lukesFont.className} text-3xl md:text-4xl font-bold mb-2 md:mb-3`}>{"My First Post"}</h1>
-              <time className="text-gray-500">3/21/2025</time>
+            <header className="mb-8 md:mb-10">
+              <h1 className={`${lukesFont.className} text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4`}>{"My First Post"}</h1>
+              <time className="text-gray-500 text-lg">3/21/2025</time>
             </header>
             
             {isLoading ? (
               <div className="animate-pulse">Loading content...</div>
             ) : (
-              <div className={`prose dark:prose-invert max-w-none prose-sm md:prose-base lg:prose-lg ${crimsonText.className}`}>
+              <div className={`prose dark:prose-invert max-w-none prose-base md:prose-lg lg:prose-xl ${crimsonText.className} prose-headings:mb-4 prose-p:mb-4 prose-p:leading-relaxed prose-li:my-2`}>
                 <ReactMarkdown 
                   key={loadedImages ? 'loaded' : 'loading'}
                   components={{
@@ -227,10 +293,11 @@ Email: luke@brevoort.com
                           <Image 
                             src={imageMap[imageSrc]} 
                             alt={props.alt || ''} 
-                            className="my-4 rounded-md w-full" 
+                            className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
                             width={800} 
-                            height={450} 
-                            sizes="(max-width: 768px) 100vw, 800px"
+                            height={450}
+                            sizes="(max-width: 640px) 95vw, (max-width: 768px) 85vw, 800px"
+                            priority={true}
                             style={{ maxWidth: '100%', height: 'auto' }}
                           />
                         );
@@ -242,7 +309,7 @@ Email: luke@brevoort.com
                           <Image 
                             src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
                             alt={props.alt || ''} 
-                            className="my-4 rounded-md" 
+                            className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
                             width={800} 
                             height={450} 
                             style={{ maxWidth: '100%', height: 'auto' }}
@@ -255,7 +322,7 @@ Email: luke@brevoort.com
                           <Image 
                             src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
                             alt={props.alt || ''} 
-                            className="my-4 rounded-md" 
+                            className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
                             width={800} 
                             height={450} 
                             style={{ maxWidth: '100%', height: 'auto' }}
@@ -268,10 +335,57 @@ Email: luke@brevoort.com
                         <SecureImage 
                           src={imageSrc} 
                           alt={props.alt || ''} 
-                          className="my-4 rounded-md" 
+                          className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
                           postId={postId}
                           imageMap={imageMap}
                         />
+                      );
+                    },
+                    code: ({ node, inline, className, children, ...props }) => {
+                      const match = /language-(w+)/.exec(className || '');
+                      
+                      // For inline code (not code blocks)
+                      if (inline || !match) {
+                        return (
+                          <code 
+                            className="px-1.5 py-0.5 mx-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono"
+                            {...props}
+                          >
+                            {children}
+                          </code>
+                        );
+                      }
+                      
+                      // For code blocks
+                      return (
+                        <div className="my-6 overflow-hidden rounded-lg shadow-lg">
+                          <div className="flex items-center justify-between px-4 py-2 text-xs font-mono bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                            <span>{match[1].toUpperCase()}</span>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(String(children))
+                                  .then(() => alert('Code copied to clipboard'))
+                                  .catch(err => console.error('Failed to copy', err));
+                              }}
+                              className="hover:text-primary transition-colors"
+                              aria-label="Copy code"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                          <SyntaxHighlighter
+                            language={match[1]}
+                            style={isDarkMode ? vscDarkPlus : vs}
+                            customStyle={{ margin: 0, padding: '1rem', fontSize: '0.9rem' }}
+                            showLineNumbers
+                            wrapLines
+                            wrapLongLines
+                            {...props}
+                          >
+                            {String(children).replace(/
+$/, '')}
+                          </SyntaxHighlighter>
+                        </div>
                       );
                     }
                   }}
@@ -279,6 +393,26 @@ Email: luke@brevoort.com
               </div>
             )}
           </motion.article>
+
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-6 right-6 bg-primary text-primary-foreground p-2 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-opacity"
+            aria-label="Back to top"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="m18 15-6-6-6 6"/>
+            </svg>
+          </button>
         </SidebarInset>
       </MotionConfig>
     </SidebarProvider>
