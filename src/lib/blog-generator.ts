@@ -546,37 +546,34 @@ function generatePostPageContent(post: any, markdown: string) {
     console.warn('Post ID is missing, using empty string as fallback');
   }
 
-  return `"use client"
-
-import { lukesFont, crimsonText } from '@/app/fonts';
-import { AppSidebar } from "@/components/app-sidebar";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import { motion } from "framer-motion";
-import { MotionConfig } from "framer-motion";
-import dynamic from 'next/dynamic';
-import SecureImage from "@/components/secure-image";
-import Image from "next/image";
-import { useState, useEffect } from "react";
-
-const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
-const SyntaxHighlighter = dynamic(() => import('react-syntax-highlighter'), { ssr: false });
-const { vscDarkPlus, vs } = dynamic(() => import('react-syntax-highlighter/dist/cjs/styles/prism'), { ssr: false });
-
-export default function BlogPost() {
-  // Store processed markdown in state
-  const [content, setContent] = useState(\`${processedMarkdown}\`);
-  const [imageMap, setImageMap] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadedImages, setLoadedImages] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const postId = "${postId}";
-
-
-  // Detect color scheme preference
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
+    return `"use client"
+    
+    import { lukesFont, crimsonText } from '@/app/fonts';
+    import { AppSidebar } from "@/components/app-sidebar";
+    import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+    import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+    import { Separator } from "@/components/ui/separator";
+    import { motion } from "framer-motion";
+    import { MotionConfig } from "framer-motion";
+    import dynamic from 'next/dynamic';
+    import SecureImage from "@/components/secure-image";
+    import Image from "next/image";
+    import { useState, useEffect } from "react";
+    
+    const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
+    
+    export default function BlogPost() {
+    // Store processed markdown in state
+    const [content, setContent] = useState(\`${processedMarkdown}\`);
+    const [imageMap, setImageMap] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadedImages, setLoadedImages] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const postId = "${postId}";
+    
+    // Detect color scheme preference
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDarkMode(isDark);
       
@@ -585,71 +582,71 @@ export default function BlogPost() {
       
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-  }, []);
-
-  // Function to preload images to blob storage
-  const preloadImages = async (imageMap: Record<string, string>) => {
-    if (!imageMap || Object.keys(imageMap).length === 0) return;
+      }
+    }, []);
     
-    console.log('Preloading images:', Object.keys(imageMap).length);
-    
-    // Create an array to hold all image loading promises
-    const imagePromises = Object.values(imageMap).map(url => {
+    // Function to preload images to blob storage
+    const preloadImages = async (imageMap: Record<string, string>) => {
+      if (!imageMap || Object.keys(imageMap).length === 0) return;
+      
+      console.log('Preloading images:', Object.keys(imageMap).length);
+      
+      // Create an array to hold all image loading promises
+      const imagePromises = Object.values(imageMap).map(url => {
       return new Promise<void>((resolve) => {
         if (!url || typeof url !== 'string') {
-          resolve();
-          return;
+        resolve();
+        return;
         }
-
+    
         // Skip if URL is not valid or still a placeholder
         if (url.startsWith('image-placeholder-')) {
-          resolve();
-          return;
+        resolve();
+        return;
         }
         
         // Use browser's Image constructor to preload
         if (typeof window !== 'undefined') {
-          const img = new Image();
-          img.onload = () => resolve();
-          img.onerror = () => {
-            console.warn(\`Failed to preload image: \${url}\`);
-            resolve(); // Resolve anyway to not block other images
-          };
-          img.src = url;
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => {
+          console.warn(\`Failed to preload image: \${url}\`);
+          resolve(); // Resolve anyway to not block other images
+        };
+        img.src = url;
         } else {
-          // If running on server, just resolve
-          resolve();
+        // If running on server, just resolve
+        resolve();
         }
       });
-    });
+      });
+      
+      // Wait for all images to load or fail
+      await Promise.all(imagePromises);
+      console.log('All images preloaded');
+    };
     
-    // Wait for all images to load or fail
-    await Promise.all(imagePromises);
-    console.log('All images preloaded');
-  };
-
-  // Combined effect for image mappings
-  useEffect(() => {
-    console.log('Setting up image mappings...');
-    
-    // Add direct hardcoded fallback mappings for specific placeholders
-    const hardcodedMap = {
+    // Combined effect for image mappings
+    useEffect(() => {
+      console.log('Setting up image mappings...');
+      
+      // Add direct hardcoded fallback mappings for specific placeholders
+      const hardcodedMap = {
       'image-placeholder-Blog_Image.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg',
       'image-placeholder-Mar_21_Screenshot_from_Blog.png': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png'
-    };
-
-    // Extract placeholders from content
-    const placeholderRegex = /image-placeholder-[^)"\s]+/g;
-    const placeholders = content.match(placeholderRegex) || [];
-    console.log('Extracted placeholders:', placeholders);
+      };
     
-    // Then fetch API mappings and merge them, preserving hardcoded mappings
-    fetch(\`/api/image-map?postId=\${postId}&placeholders=\${placeholders.join(',')}\`)
+      // Extract placeholders from content
+      const placeholderRegex = /image-placeholder-[^)"\s]+/g;
+      const placeholders = content.match(placeholderRegex) || [];
+      console.log('Extracted placeholders:', placeholders);
+      
+      // Then fetch API mappings and merge them, preserving hardcoded mappings
+      fetch(\`/api/image-map?postId=\${postId}&placeholders=\${placeholders.join(',')}\`)
       .then(res => {
         console.log('Image map API response status:', res.status);
         if (!res.ok) {
-          throw new Error(\`Failed to fetch image map: \${res.status} \${res.statusText}\`);
+        throw new Error(\`Failed to fetch image map: \${res.status} \${res.statusText}\`);
         }
         return res.json();
       })
@@ -675,191 +672,180 @@ export default function BlogPost() {
         
         // Attempt to preload hardcoded images
         preloadImages(hardcodedMap).then(() => {
-          setLoadedImages(true);
+        setLoadedImages(true);
         });
       });
-  }, [postId, content]);
-
-  return (
-    <SidebarProvider defaultOpen={false}>
+    }, [postId, content]);
+    
+    return (
+      <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <MotionConfig reducedMotion="user">
         <SidebarInset>
-          <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
-            <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink>{${JSON.stringify(title)}}</BreadcrumbLink>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
+        <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+          <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink>{${JSON.stringify(title)}}</BreadcrumbLink>
+            </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          </div>
+        </header>
+    
+        <motion.article 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="container mx-auto py-6 md:py-10 px-4 md:px-6 max-w-3xl"
+        >
+          <header className="mb-8 md:mb-10">
+          <h1 className={\`\${lukesFont.className} text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4\`}>{${JSON.stringify(title)}}</h1>
+          ${date ? `<time className="text-gray-500 text-lg">${date}</time>` : ''}
           </header>
-
-          <motion.article 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="container mx-auto py-6 md:py-10 px-4 md:px-6 max-w-3xl"
-          >
-            <header className="mb-8 md:mb-10">
-              <h1 className={\`\${lukesFont.className} text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4\`}>{${JSON.stringify(title)}}</h1>
-              ${date ? `<time className="text-gray-500 text-lg">${date}</time>` : ''}
-            </header>
-            
-            {isLoading ? (
-              <div className="animate-pulse">Loading content...</div>
-            ) : (
-              <div className={\`prose dark:prose-invert max-w-none prose-base md:prose-lg lg:prose-xl \${crimsonText.className} prose-headings:mb-4 prose-p:mb-4 prose-p:leading-relaxed prose-li:my-2\`}>
-                <ReactMarkdown 
-                  key={loadedImages ? 'loaded' : 'loading'}
-                  components={{
-                    img: ({ node, ...props }) => {
-                      const imageSrc = props.src || '';
-                      console.log('Rendering image in markdown:', imageSrc);
-                      console.log('Available mappings:', Object.keys(imageMap));
-                      console.log('Image mapped?', !!imageMap[imageSrc]);
-                      
-                      // First check if we have a mapping
-                      if (imageMap[imageSrc]) {
-                        console.log(\`Using mapped image: \${imageMap[imageSrc]}\`);
-                        return (
-                          <Image 
-                            src={imageMap[imageSrc]} 
-                            alt={props.alt || ''} 
-                            className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
-                            width={800} 
-                            height={450}
-                            sizes="(max-width: 640px) 95vw, (max-width: 768px) 85vw, 800px"
-                            priority={true}
-                            style={{ maxWidth: '100%', height: 'auto' }}
-                          />
-                        );
-                      }
-                      
-                      // Direct fallback for specific cases
-                      if (imageSrc === 'image-placeholder-Blog_Image.jpeg') {
-                        return (
-                          <Image 
-                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
-                            alt={props.alt || ''} 
-                            className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
-                            width={800} 
-                            height={450} 
-                            style={{ maxWidth: '100%', height: 'auto' }}
-                          />
-                        );
-                      }
-                      
-                      if (imageSrc === 'image-placeholder-Mar_21_Screenshot_from_Blog.png') {
-                        return (
-                          <Image 
-                            src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
-                            alt={props.alt || ''} 
-                            className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
-                            width={800} 
-                            height={450} 
-                            style={{ maxWidth: '100%', height: 'auto' }}
-                          />
-                        );
-                      }
-                      
-                      // If all else fails, try SecureImage
-                      return (
-                        <SecureImage 
-                          src={imageSrc} 
-                          alt={props.alt || ''} 
-                          className="my-6 rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
-                          postId={postId}
-                          imageMap={imageMap}
-                        />
-                      );
-                    },
-                    code: ({ node, inline, className, children, ...props }) => {
-                      const match = /language-(\w+)/.exec(className || '');
-                      
-                      // For inline code (not code blocks)
-                      if (inline || !match) {
-                        return (
-                          <code 
-                            className="px-1.5 py-0.5 mx-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono"
-                            {...props}
-                          >
-                            {children}
-                          </code>
-                        );
-                      }
-                      
-                      // For code blocks
-                      return (
-                        <div className="my-6 overflow-hidden rounded-lg shadow-lg">
-                          <div className="flex items-center justify-between px-4 py-2 text-xs font-mono bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                            <span>{match[1].toUpperCase()}</span>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(String(children))
-                                  .then(() => alert('Code copied to clipboard'))
-                                  .catch(err => console.error('Failed to copy', err));
-                              }}
-                              className="hover:text-primary transition-colors"
-                              aria-label="Copy code"
-                            >
-                              Copy
-                            </button>
-                          </div>
-                          <SyntaxHighlighter
-                            language={match[1]}
-                            style={isDarkMode ? vscDarkPlus : vs}
-                            customStyle={{ margin: 0, padding: '1rem', fontSize: '0.9rem' }}
-                            showLineNumbers
-                            wrapLines
-                            wrapLongLines
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        </div>
-                      );
-                    }
+          
+          {isLoading ? (
+          <div className="animate-pulse">Loading content...</div>
+          ) : (
+          <div className={\`prose dark:prose-invert max-w-none prose-lg md:prose-lg lg:prose-xl \${crimsonText.className} prose-headings:mb-4 prose-p:mb-4 prose-p:leading-relaxed prose-li:my-2\`}>
+            <ReactMarkdown 
+            key={loadedImages ? 'loaded' : 'loading'}
+            components={{
+              img: ({ node, ...props }) => {
+              const imageSrc = props.src || '';
+              console.log('Rendering image in markdown:', imageSrc);
+              console.log('Available mappings:', Object.keys(imageMap));
+              console.log('Image mapped?', !!imageMap[imageSrc]);
+              
+              // First check if we have a mapping
+              if (imageMap[imageSrc]) {
+                console.log(\`Using mapped image: \${imageMap[imageSrc]}\`);
+                return (
+                <div className="my-8 md:my-10 w-full">
+                  <Image 
+                  src={imageMap[imageSrc]} 
+                  alt={props.alt || ''} 
+                  className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  priority={true}
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    maxHeight: '80vh',
+                    objectFit: 'contain'
                   }}
-                >{content}</ReactMarkdown>
-              </div>
-            )}
-          </motion.article>
-
-          <button 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-6 right-6 bg-primary text-primary-foreground p-2 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-opacity"
-            aria-label="Back to top"
+                  />
+                  {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
+                </div>
+                );
+              }
+              
+              // Direct fallback for specific cases
+              if (imageSrc === 'image-placeholder-Blog_Image.jpeg') {
+                return (
+                <div className="my-8 md:my-10 w-full">
+                  <Image 
+                  src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Blog_Image-AmTPaYs4kz4ll6pG2ApjIziS9xTZhl.jpeg"
+                  alt={props.alt || ''} 
+                  className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  priority={true}
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    maxHeight: '80vh',
+                    objectFit: 'contain'
+                  }}
+                  />
+                  {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
+                </div>
+                );
+              }
+              
+              if (imageSrc === 'image-placeholder-Mar_21_Screenshot_from_Blog.png') {
+                return (
+                <div className="my-8 md:my-10 w-full">
+                  <Image 
+                  src="https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/Mar_21_Screenshot_from_Blog-3AZcEdFuqnq5fPbhCYrRcJ6YKqRGE2.png"
+                  alt={props.alt || ''} 
+                  className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  priority={true}
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    maxHeight: '80vh',
+                    objectFit: 'contain'
+                  }}
+                  />
+                  {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
+                </div>
+                );
+              }
+              
+              // If all else fails, try SecureImage
+              return (
+                <div className="my-8 md:my-10 w-full">
+                <SecureImage 
+                  src={imageSrc} 
+                  alt={props.alt || ''} 
+                  className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow" 
+                  postId={postId}
+                  imageMap={imageMap}
+                  style={{
+                  maxHeight: '80vh',
+                  objectFit: 'contain'
+                  }}
+                />
+                {props.alt && <figcaption className="mt-2 text-center text-sm text-gray-500">{props.alt}</figcaption>}
+                </div>
+              );
+              }
+            }}
+            >{content}</ReactMarkdown>
+          </div>
+          )}
+        </motion.article>
+    
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 bg-primary text-primary-foreground p-2 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-opacity"
+          aria-label="Back to top"
+        >
+          <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="m18 15-6-6-6 6"/>
-            </svg>
-          </button>
+          <path d="m18 15-6-6-6 6"/>
+          </svg>
+        </button>
         </SidebarInset>
       </MotionConfig>
-    </SidebarProvider>
-  );
-}`;
+      </SidebarProvider>
+    );
+    }`;
 }
