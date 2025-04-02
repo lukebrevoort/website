@@ -4,13 +4,23 @@
     "slug": "1c3f7879-ec1d-804e-9d24-fce2eac55a94",
     "title": "Vibe Coding vs. AI Assistance 🤖",
     "description": "Where is the line of Vibe Coding and AI Assistance? How much of a good thing is bad? This is something new!",
-    "date": "2025-03-27"
+    "date": "2025-03-27",
+    "tags": [
+      { "name": "AI", "color": "blue" },
+      { "name": "Programming", "color": "green" },
+      { "name": "Tutorial", "color": "yellow" }
+    ]
   },
   {
     "id": "1bef7879-ec1d-80da-81db-e80ce7ae93e3",
     "slug": "1bef7879-ec1d-80da-81db-e80ce7ae93e3",
     "title": "My First Post",
-    "description": "This is my first Post on my personal blog! I’ll walk through how I set everything up and how it works!",
-    "date": "2025-03-21"
+    "description": "This is my first Post on my personal blog! I'll walk through how I set everything up and how it works!",
+    "date": "2025-03-21",
+    "tags": [
+      { "name": "Personal", "color": "blue" },
+      { "name": "Website", "color": "purple" },
+      { "name": "NextJS", "color": "black" }
+    ]
   }
 ]

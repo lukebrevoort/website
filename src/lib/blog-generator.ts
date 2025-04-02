@@ -60,12 +60,23 @@ export async function generateBlogPosts(specificPostId?: string) {
     // Create a data file with all posts metadata
     const postsData = posts.map((post: any) => {
       const properties = post.properties;
+      
+      // Extract tags from Notion
+      const tagsProperty = properties.Tags;
+      const tags = tagsProperty?.multi_select
+        ? tagsProperty.multi_select.map((tag: any) => ({
+            name: tag.name,
+            color: tag.color
+          }))
+        : [];
+      
       return {
         id: post.id,
         slug: post.id,
         title: properties.Title?.title[0]?.plain_text || 'Untitled',
         description: properties.Description?.rich_text[0]?.plain_text || '',
         date: properties.Date?.date?.start || null,
+        tags, // Add the tags to the output
       };
     });
 
@@ -516,6 +527,14 @@ function generatePostPageContent(post: any, markdown: string) {
     ? new Date(properties.Date.date.start).toLocaleDateString()
     : '';
 
+  const tagsProperty = properties.Tags;
+  const tags = tagsProperty?.multi_select
+    ? tagsProperty.multi_select.map((tag: any) => ({
+        name: tag.name,
+        color: tag.color
+      }))
+    : [];
+
   let processedMarkdown = markdown;
 
   // Carefully handle code blocks to prevent template literal issues
@@ -570,6 +589,7 @@ function generatePostPageContent(post: any, markdown: string) {
   const [loadedImages, setLoadedImages] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const postId = "${postId}";
+  const tags = ${JSON.stringify(tags)};
   
   // Detect color scheme preference
   useEffect(() => {
@@ -673,6 +693,21 @@ function generatePostPageContent(post: any, markdown: string) {
         });
       });
   }, [postId, content]);
+
+    // Include a helper function for tag colors
+  function getTagColorClass(notionColor) {
+    const colorMap = {
+      blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+      green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+      red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+      yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+      orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
+      purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+      pink: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
+      gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
+      brown: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
+      default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
+    };
   
   return (
     <SidebarProvider defaultOpen={false}>
@@ -707,10 +742,26 @@ function generatePostPageContent(post: any, markdown: string) {
         transition={{ duration: 0.5 }}
         className="container mx-auto py-4 sm:py-6 md:py-10 px-3 sm:px-4 md:px-6 max-w-3xl overflow-hidden"
       >
-        <header className="mb-6 md:mb-8">
-          <h1 className={\`\${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3\`}>{${JSON.stringify(title)}}</h1>
-          ${date ? `<time className="text-gray-500 text-base sm:text-lg">${date}</time>` : ''}
-        </header>
+  <header className="mb-6 md:mb-8">
+    <h1 className={\`\${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3\`}>{${JSON.stringify(title)}}</h1>
+    ${date ? `<time className="text-gray-500 text-base sm:text-lg">${date}</time>` : ''}
+    
+    {tags && tags.length > 0 && (
+      <div className="flex flex-wrap gap-2 mt-3">
+        {tags.map((tag, index) => (
+          <span 
+            key={index}
+            className={\`px-3 py-1 rounded-full text-sm \${getTagColorClass(tag.color)}\`}
+          >
+            {tag.name}
+          </span>
+        ))}
+      </div>
+    )}
+  </header>
+    
+    return colorMap[notionColor] || colorMap.default;
+  }
         
         {isLoading ? (
           <div className="animate-pulse">Loading content...</div>

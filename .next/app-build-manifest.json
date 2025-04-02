@@ -12,15 +12,22 @@
       "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
-    "/projects/[slug]/page": [
+    "/blog/posts/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/projects/[slug]/page.js"
+      "static/css/app/blog/posts/page.css",
+      "static/chunks/app/blog/posts/page.js"
     ],
-    "/projects/page": [
+    "/blog/posts/1bef7879-ec1d-80da-81db-e80ce7ae93e3/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/projects/page.js"
+      "static/css/app/blog/posts/1bef7879-ec1d-80da-81db-e80ce7ae93e3/page.css",
+      "static/chunks/app/blog/posts/1bef7879-ec1d-80da-81db-e80ce7ae93e3/page.js"
+    ],
+    "/api/image-map/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/image-map/route.js"
     ]
   }
 }
