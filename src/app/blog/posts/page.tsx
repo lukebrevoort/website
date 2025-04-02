@@ -15,6 +15,24 @@ interface BlogPost {
   title: string;
   date?: string;
   description?: string;
+  tags?: Array<{ name: string; color: string }>;  // Add tags to the interface
+}
+
+function getTagColorClass(notionColor: string): string {
+  const colorMap: Record<string, string> = {
+    blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+    green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+    red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+    yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+    orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
+    purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+    pink: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
+    gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
+    brown: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
+    default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
+  };
+  
+  return colorMap[notionColor] || colorMap.default;
 }
 
 export default function BlogPage() {
@@ -107,24 +125,39 @@ export default function BlogPage() {
               transition={{ delay: 0.2 }}
               className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {posts.map((post) => (
-                <motion.div
-                  key={post.id}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
+            {posts.map((post) => (
+              <motion.div
+                key={post.id}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Link 
+                  href={`/blog/posts/${post.id}`} 
+                  className="block border border-gray-300 dark:border-gray-800 rounded-lg p-6 hover:shadow-md transition-shadow"
                 >
-                  <Link 
-                    href={`/blog/posts/${post.id}`} 
-                    className="block border border-gray-300 dark:border-gray-800 rounded-lg p-6 hover:shadow-md transition-shadow"
-                  >
-                    <article>
-                      <h2 className={`${crimsonText.className} text-4xl font-semibold mb-2`}>{post.title}</h2>
-                      {post.date && <time className="text-sm text-lg text-gray-500">{new Date(post.date).toLocaleDateString()}</time>}
-                      {post.description && <p className="mt-3 text-gray-700 text-xl dark:text-gray-300">{post.description}</p>}
-                    </article>
-                  </Link>
-                </motion.div>
-              ))}
+                  <article>
+                    <h2 className={`${crimsonText.className} text-4xl font-semibold mb-2`}>{post.title}</h2>
+                    {post.date && <time className="text-sm text-lg text-gray-500">{new Date(post.date).toLocaleDateString()}</time>}
+                    
+                    {/* Display tags */}
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 my-2">
+                        {post.tags.map((tag, index) => (
+                          <span 
+                            key={index}
+                            className={`px-2 py-0.5 rounded-full text-xs ${getTagColorClass(tag.color)}`}
+                          >
+                            {tag.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {post.description && <p className="mt-3 text-gray-700 text-xl dark:text-gray-300">{post.description}</p>}
+                  </article>
+                </Link>
+              </motion.div>
+            ))}
             </motion.div>
             
               {posts.length === 0 && (

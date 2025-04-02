@@ -163,6 +163,12 @@ luke@brevoort.com
   const [loadedImages, setLoadedImages] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const postId = "1c3f7879-ec1d-804e-9d24-fce2eac55a94";
+
+  const tags = [
+    { name: "AI", color: "blue" },
+    { name: "Programming", color: "green" },
+    { name: "Learning", color: "yellow" }
+  ];
   
   // Detect color scheme preference
   useEffect(() => {
@@ -228,6 +234,7 @@ luke@brevoort.com
       'image-placeholder-vibecodingdiagram.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/vibecodingdiagram-7sMCDEZKl3XTmr0jYhBp6zTrXZeKRn.jpeg',
       'image-placeholder-lukeworkflowdiagram.jpeg': 'https://zah3ozwhv9cp0qic.public.blob.vercel-storage.com/lukeworkflowdiagram-7XCkIc2JwZOjK0X7PxYJSIxj6VGolP.jpeg'
     };
+
   
     // Extract placeholders from content
     const placeholderRegex = /image-placeholder-[^)"s]+/g;
@@ -269,6 +276,23 @@ luke@brevoort.com
       });
     });
   }, [postId, content]);
+
+  function getTagColorClass(color: string): string {
+    const colorMap: Record<string, string> = {
+      blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+      green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+      red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+      yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+      orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
+      purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+      pink: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
+      gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
+      brown: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
+      default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
+    };
+    
+    return colorMap[color] || colorMap.default;
+  }
   
   return (
     <SidebarProvider defaultOpen={false}>
@@ -296,6 +320,7 @@ luke@brevoort.com
         </Breadcrumb>
         </div>
       </header>
+
   
       <motion.article 
         initial={{ opacity: 0 }} 
@@ -306,7 +331,22 @@ luke@brevoort.com
         <header className="mb-6 md:mb-8">
           <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"Vibe Coding vs. AI Assistance 🤖"}</h1>
           <time className="text-gray-500 text-base sm:text-lg">3/27/2025</time>
+          
+          {/* Add tags display */}
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {tags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getTagColorClass(tag.color)}`}
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
+
         
         {isLoading ? (
           <div className="animate-pulse">Loading content...</div>

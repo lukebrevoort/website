@@ -140,6 +140,14 @@ Email: luke@brevoort.com
       }
     }, []);
     
+
+    const tags = [
+      { name: "Personal", color: "blue" },
+      { name: "NextJS", color: "grey" },
+      { name: "Website", color: "purple" }
+    ];
+
+
     // Function to preload images to blob storage
     const preloadImages = async (imageMap: Record<string, string>) => {
       if (!imageMap || Object.keys(imageMap).length === 0) return;
@@ -231,6 +239,23 @@ Email: luke@brevoort.com
         });
       });
     }, [postId, content]);
+
+    function getTagColorClass(color: string): string {
+      const colorMap: Record<string, string> = {
+        blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+        green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+        red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+        yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+        orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
+        purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+        pink: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
+        gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
+        brown: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
+        default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
+      };
+      
+      return colorMap[color] || colorMap.default;
+    }
     
     return (
       <SidebarProvider defaultOpen={false}>
@@ -266,8 +291,22 @@ Email: luke@brevoort.com
           className="container mx-auto py-4 sm:py-6 md:py-10 px-3 sm:px-4 md:px-6 max-w-3xl overflow-hidden"
         >
         <header className="mb-6 md:mb-8">
-          <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"My First Post"}</h1>
-          <time className="text-gray-500 text-base sm:text-lg">3/21/2025</time>
+          <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"Vibe Coding vs. AI Assistance 🤖"}</h1>
+          <time className="text-gray-500 text-base sm:text-lg">3/27/2025</time>
+          
+          {/* Add tags display */}
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {tags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getTagColorClass(tag.color)}`}
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
           
           {isLoading ? (

@@ -46,9 +46,44 @@ export async function getBlogPosts() {
   });
 
   return response.results;
+
 }
 
-// Rest of your code remains unchanged
+export function processBlogPosts(posts: any[]): any[] {
+  return posts.map(post => {
+    // Extract the title
+    const titleProperty = post.properties.Title || post.properties.Name;
+    const title = titleProperty.title.map((part: any) => part.plain_text).join('');
+    
+    // Extract the description
+    const descriptionProperty = post.properties.Description;
+    const description = descriptionProperty?.rich_text
+      ? descriptionProperty.rich_text.map((part: any) => part.plain_text).join('')
+      : '';
+    
+    // Extract the date
+    const dateProperty = post.properties.Date;
+    const date = dateProperty?.date?.start || '';
+    
+    // Extract the tags (new!)
+    const tagsProperty = post.properties.Tags;
+    const tags = tagsProperty?.multi_select
+      ? tagsProperty.multi_select.map((tag: any) => ({
+          name: tag.name,
+          color: tag.color
+        }))
+      : [];
+    
+    return {
+      id: post.id,
+      slug: post.id,
+      title,
+      description,
+      date,
+      tags // Add the tags to your output
+    };
+  });
+}
 
 export async function getBlogPost(pageId: string) {
   // First, retrieve the page data
