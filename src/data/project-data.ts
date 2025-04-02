@@ -97,10 +97,11 @@ export const projects: ProjectData[] = [
   },
   {
     title: "Personal Website",
-    description: "A personal website built using React to showcase my portfolio and skills.",
+    description: "A personal website built with React and NextJS featuring an integrated blog system with automated Notion-to-website publishing workflow.",
     skills: [
       { name: "Language", details: "JavaScript, HTML, CSS" },
-      { name: "Framework", details: "React" },
+      { name: "Framework", details: "React, NextJS" },
+      { name: "Integration", details: "Notion API, GitHub Actions" },
       { name: "Model", details: "WebLLM & Llama 3.2" },
       { name: "Date", details: "2024" }
     ],
@@ -130,6 +131,12 @@ export const projects: ProjectData[] = [
         color: "red"
       },
       {
+        title: "Blog Integration:",
+        content: "Implemented an automated blog publishing system that connects Notion to my website. When I publish a post in Notion, a webhook triggers a process that converts the Notion content to Markdown, generates a static React component, and deploys the new content via GitHub Actions and Vercel—all without manual intervention.",
+        image: "/images/notion-blog.png",
+        color: "blue"
+      },
+      {
         title: "Portfolio:",
         content: "The website includes a portfolio section that showcases my projects. Each project includes a description, technologies used, and a link to the live demo or source code. This section is designed to highlight my skills and experience in web development and other aspects of computer science.",
         image: "/images/portfolio.png"
@@ -145,6 +152,11 @@ export const projects: ProjectData[] = [
     flexbar: {
       boxes: [
         {
+          title: "Automated Content Pipeline",
+          content: "Developed a seamless content publishing workflow that connects Notion as a CMS to my website. The system uses Notion webhooks to detect new posts, converts them to Markdown, generates React components, and triggers GitHub Actions for deployment—creating a fully automated publishing process.",
+          color: "purple"
+        },
+        {
           title: "WebLLM Implementation",
           content: "Implemented WebLLM which enables running large language models (LLMs) directly in web browsers using WebGPU for hardware-accelerated computations. It performs text generation locally on the user's device, ensuring privacy and offline access without server dependencies. Optimized for browser constraints, it provides seamless and accessible AI interactions.",
           color: "red"
@@ -153,11 +165,6 @@ export const projects: ProjectData[] = [
           title: "Training Llama 3.2 Personal Model",
           content: "Trained a custom Llama 3.2 Instruct 3B model which is specialized on a Leetcode dataset I found on HuggingFace. This prototype model is a proof of concept that shows my skills in understanding, training, implementing, and deploying personalized fine-tuned Llama models. Looking forward to implementing a multi-modal model soon.",
           color: "green"
-        },
-        {
-          title: "AI Chatbot",
-          content: "Implemented a chatbot that uses the Llama 3.2 3B model to generate responses to user input. The chatbot can answer questions, provide information, and engage in conversation with users. It is designed to be user-friendly and accessible, with a clean and modern interface. This chatbot is a proof of concept that shows my skills in machine learning and natural language processing.",
-          color: "blue"
         }
       ]
     },
