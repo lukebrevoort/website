@@ -1,26 +1,65 @@
 [
   {
+    "id": "1c9f7879-ec1d-8043-b34d-eec51bec071d",
+    "slug": "1c9f7879-ec1d-8043-b34d-eec51bec071d",
+    "title": "What Am I Building? 🧱👷‍♂️",
+    "description": "This blog post covers what I am currently working on and ideas I have for the future :)",
+    "date": "2025-04-02",
+    "tags": [
+      {
+        "name": "AI",
+        "color": "pink"
+      },
+      {
+        "name": "Flowstate",
+        "color": "green"
+      },
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      }
+    ]
+  },
+  {
     "id": "1c3f7879-ec1d-804e-9d24-fce2eac55a94",
     "slug": "1c3f7879-ec1d-804e-9d24-fce2eac55a94",
     "title": "Vibe Coding vs. AI Assistance 🤖",
     "description": "Where is the line of Vibe Coding and AI Assistance? How much of a good thing is bad? This is something new!",
     "date": "2025-03-27",
     "tags": [
-      { "name": "AI", "color": "blue" },
-      { "name": "Programming", "color": "green" },
-      { "name": "Tutorial", "color": "yellow" }
+      {
+        "name": "General",
+        "color": "brown"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      },
+      {
+        "name": "AI",
+        "color": "pink"
+      }
     ]
   },
   {
     "id": "1bef7879-ec1d-80da-81db-e80ce7ae93e3",
     "slug": "1bef7879-ec1d-80da-81db-e80ce7ae93e3",
     "title": "My First Post",
-    "description": "This is my first Post on my personal blog! I'll walk through how I set everything up and how it works!",
+    "description": "This is my first Post on my personal blog! I’ll walk through how I set everything up and how it works!",
     "date": "2025-03-21",
     "tags": [
-      { "name": "Personal", "color": "blue" },
-      { "name": "Website", "color": "purple" },
-      { "name": "NextJS", "color": "black" }
+      {
+        "name": "General",
+        "color": "brown"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      }
     ]
   }
 ]
