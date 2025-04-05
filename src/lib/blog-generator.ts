@@ -709,7 +709,7 @@ function generatePostPageContent(post: any, markdown: string) {
         default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
       };
     
-      return colorMap[notionColor] || colorMap.default;
+      return colorMap[notionColor as keyof typeof colorMap] || colorMap.default;
     }
   
     return (
