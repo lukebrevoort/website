@@ -234,9 +234,9 @@ luke@brevoort.com
       });
   }, [postId, content]);
 
-    // Include a helper function for tag colors
-  function getTagColorClass(notionColor) {
-    const colorMap = {
+  // Include a helper function for tag colors
+  function getTagColorClass(notionColor: string): string {
+    const colorMap: Record<string, string> = {
       blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
       green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
       red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
@@ -248,6 +248,9 @@ luke@brevoort.com
       brown: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
       default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
     };
+    
+    return colorMap[notionColor] || colorMap.default;
+  }
   
   return (
     <SidebarProvider defaultOpen={false}>
@@ -299,9 +302,6 @@ luke@brevoort.com
       </div>
     )}
   </header>
-    
-    return colorMap[notionColor] || colorMap.default;
-  }
         
         {isLoading ? (
           <div className="animate-pulse">Loading content...</div>
