@@ -82,9 +82,6 @@ Now my most ambitious project and the one I am most excited to share is an idea 
 
 I came up with this idea after reading the “*Building Effective Agents*” paper published by **Anthropic.** This paper describes the O*rchestrator Agent Workflow* on which this agent system is built on top of! If you are curious about the article itself, I highly suggest giving it a read here:[ Link](https://www.anthropic.com/engineering/building-effective-agents). Let's walk through what each agent does and how they can be leveraged to improve student productivity!
 
-![Image](image-placeholder-flowstate.jpeg)
-
-
 ### Supervisor Agent 🤖
 
 
