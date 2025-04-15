@@ -19,7 +19,7 @@
     const [content, setContent] = useState(`# FlowState Part Two! 🌊
 
 
-Hello everyone reading! I hope you are all doing well. I just wanted to give a little update on my big personal project I mentioned in the last post **FlowState! I** have made some significant progress from designing the frontend in Figma, using [Builder.io](http://builder.io/) to move it over to a **NextJS** frontend for me to tweak, and then finally getting my **PostgreSQL Database** and **API** routes set up for local development! Here is how I did it:
+Hello everyone, reading! I hope you are all doing well. I just wanted to give a little update on the big personal project I mentioned in the last post, FlowState! I have made some significant progress from designing the frontend in Figma, using[ Builder.io](http://builder.io/) to move it over to a NextJS frontend for me to tweak, and then finally getting my PostgreSQL Database and API routes set up for local development! Here is how I did it:
 
 ![Image](image-placeholder-FlowState_Design_Logo.png)
 
@@ -27,14 +27,14 @@ Hello everyone reading! I hope you are all doing well. I just wanted to give a l
 ## Frontend Design 🎨
 
 
-First and foremost, Hannah and I decided to redo the Logo! We went for something that would be a little sharper and would work well the frontend color scheme I wanted!
+First and foremost, Hannah (The creator of the logo) and I decided to redo the Logo! We went for something that would be a little sharper and would work well with the frontend color scheme I wanted!
 
-While I might not be the best artists, I try my best to make the frontend as **stylish** as possible. My design tool of choice for this was **Figma**, a fantastic and easy to use website design tool I’ve fiddled with in the past. Its very clean and made for developers in mind. After quickly skimming a 30 minute tutorial I felt ready for the artistic challenge 🖼️👨‍🎨
+While I might not be the best artist, I try my best to make the frontend as **stylish** as possible. My design tool of choice for this was **Figma**, a fantastic and easy-to-use website design tool I’ve fiddled with in the past. It's very clean and made for developers in mind. After quickly skimming a 30-minute tutorial, I felt ready for the artistic challenge 🖼️👨‍🎨
 
 ## The Vision 👁️👄👁️
 
 
-While the freakish emoji combo I found while writing this is slightly off-putting, the actual design philosophy was to focus on on a warm tone with some light greenery and colors to bring some life to the design. My though process was something welcoming with clean animations that draw the user in. I don’t know much about catchy website designs such as Hero Section and Call to Action buttons, but I plan on working more on those later. For now I just wanted something simple that could get the job done. 
+While the freakish emoji combo I found while writing this is slightly off-putting, the actual design philosophy was to focus on a warm tone with some light greenery and colors to bring some life to the design. My thought process was something welcoming with clean animations that draw the user in. I don’t know much about catchy website designs such as Hero Section and Call to Action buttons, but I plan on working more on those later. For now, I just wanted something simple that could get the job done. 
 
 ## The Layout 🤩
 
@@ -46,37 +46,37 @@ While the freakish emoji combo I found while writing this is slightly off-puttin
 
 
 - Links to both Login and Sign Up for users
-- In the future, hoping to add more information about FlowState, its uses and what it is capable of. But that is later down the line
+- In the future, I hope to add more information about FlowState, its uses, and what it is capable of. But that is later down the line
 ### Login Page and Sign Up Page 🚪
 
 
-- When the user clicks on either of these buttons on the landing page they should direct them to either Sign Up or Login
-- If the user already has an account, we will prompt them to instead Log In
+- When the user clicks on either of these buttons on the landing page, they should be directed to either Sign Up or Login
+- If the user already has an account, we will prompt them to Log In
 - These pages are super simple with simplified designs focused on concise design principles
 ### Chat Page 💬
 
 
 - The core of the design will be a simple chat box for the user to interact with FlowState
 - This will have a simple send button, and the option in the future to add attachments
-- Nothing too complicated, I really like Claude’s design so I took some inspiration off of that
+- Nothing too complicated, I really like Claude’s design, so I took some inspiration from that
 ### Mind Map Page 🧠
 
 
-- This page is meant to be an alternative to the classic sidebar you see on most AI chat bots. Instead of storing past chats linearly in a sidebar, I thought it would be a creative and interesting idea to store previous chats in a mind map system where the user can go down their trains of thought and visually see their chats with FlowState
+- This page is meant to be an alternative to the classic sidebar you see on most AI chatbots. Instead of storing past chats linearly in a sidebar, I thought it would be a creative and interesting idea to store previous chats in a mind map system where the user can go down their trains of thought and visually see their chats with FlowState
 - This would utilize some Vector Database Visualization feature I would look into, but I wanted to get a basic idea as to my vision
-- This would also have to include some sort of search function for users who might not want to closely scroll across every node just to find a super specific conversation  
+- This would also have to include some sort of search function for users who might not want to closely scroll across every node just to find a super-specific conversation
 > Personally I find that the simpler design, the more I can put into the animations and **care for everything that happens on screen**. So I am starting here before moving things forward!
 
 
 # 🚨Moving to NextJS 🚨
 
 
-I have chosen NextJS for this project mainly because of my familiarity with the Framework and its quality of life changes such as baked in Tailwind CSS and App Routing I was familiar with. The move from Figma to NextJS was much easier then i had initially thought because of the user of [Builder.io](http://builder.io/) which was a very accurate tool that got most of the details on the page that I wanted to get across. 
+I have chosen NextJS for this project mainly because of my familiarity with the Framework and its quality of life changes, such as baked-in Tailwind CSS and App Routing I was familiar with. The move from Figma to NextJS was much easier than I had initially thought because of the use of[ Builder.io](http://builder.io/), which was a very accurate tool that got most of the details on the page that I wanted to get across. 
 
 ## Framer Motion 🫨
 
 
-I wanted to really focus on the animations of this page and make things run as smooth as possible. While framer took a significant learning curve, I found its [tutorials](https://motion.dev/docs/react-animation) super helpful and easy to follow when implementing hovering animations and some spring like animations. This was really fun to play around with and probably took more time then it should lol. But I am quite happy with the result! (Example of some simple framer motion stuff below!)
+I wanted to really focus on the animations of this page and make things run as smoothly as possible. While Framer took a significant learning curve, I found its[ tutorials](https://motion.dev/docs/react-animation) super helpful and easy to follow when implementing hovering animations and some spring-like animations. This was really fun to play around with and probably took more time than it should lol. But I am quite happy with the result! (Example of some simple framer motion stuff below!)
 
 \`\`\`javascript
 <motion.a 
@@ -94,10 +94,12 @@ Log in
 # Backend and API 👈🤠👉
 
 
-This was easily the most tedious part of the project this past week for me trying to implement. I have always struggled to understand the connection between Frontend and Backend, as well as how to build the middle API layer to properly execute the functions. From a higher up level I had a basic understanding of HTTP Requests being POST’ed and GET as a way to communication between the server. But after watching a few useful videos on Full-Stack Applications and Tech Stacks (As well as lots of questions to Claude and Perplexity)! Here is my Full Tech Stack for this project:
+This was easily the most tedious part of the project this past week for me, trying to implement. I have always struggled to understand the connection between Frontend and Backend, as well as how to build the middle API layer to properly execute the functions. From a higher level, I had a basic understanding of HTTP Requests being POSTed and GET as a way to communicate between the server. But after watching a few useful videos on Full-Stack Applications and Tech Stacks (As well as lots of questions to Claude and Perplexity)! Here is my Full Tech Stack for this project:
 
 ![Image](image-placeholder-Tech_Stack_Cartoon_Apr_15_2025.png)
 
+
+(Yes this was generated with AI and yes ChatGPT tried its best lol)
 
 ## **Frontend ❤️:**
 
@@ -120,6 +122,7 @@ This was easily the most tedious part of the project this past week for me tryin
 
 
 - **LangChain**: Framework for building applications with language models
+- **LangGraph:** Framework for building a system of Agents as Nodes and connections between them as Edges
 - **Anthropic**: AI model integration (Claude)
 ## **Third-party Integrations 3️⃣:**
 
@@ -137,7 +140,7 @@ This was easily the most tedious part of the project this past week for me tryin
 ## Backend 🗼
 
 
-My backend is still a big work in progress, but just today it has started working for my development! Correctly storing and saving user information and being able to log in users who have already signed up for the app! This uses a simple PostgreSQL database I set up to store the user information such as a unique ID, name, email, hash encrypted password, and their tokens for Notion and Google Calendar! I hope to talk a lot more about this in another update for now you’ll have to wait
+My backend is still a big work in progress, but just today it has started working for my development! Correctly storing and saving user information and being able to log in users who have already signed up for the app! This uses a simple PostgreSQL database I set up to store the user information, such as a unique ID, name, email, hash-encrypted password, and their tokens for Notion and Google Calendar! I hope to talk a lot more about this in another update. For now, you’ll have to wait 😉
 
 # What’s Next? 🔮
 
@@ -145,9 +148,9 @@ My backend is still a big work in progress, but just today it has started workin
 This project has made fantastic progress, but there is still a lot to be done before I can properly begin some production testing! Here is my current To-Do List for this project and what I hope to accomplish!
 
 1. Properly display and store Chat Information from Agents to Frontend
-1. Display progress updates on Agents to Front end (Similar to Perplexity in a way as we move agent to agent)
+1. Display progress updates on Agents to Front end (Similar to Perplexity in a way, as we move agent to agent)
 1. Pull from the stored Vector Database to visually create a **Mind Map 🧠 **for the user to traverse
-> These Three Goals will be my main focus over the next week (and school too I guess 🙄). I hope to get these done to properly begin testing the agents themselves and implementing it into my workflow fully! 
+> These Three Goals will be my main focus over the next week (and school, too, I guess 🙄). I hope to get these done to properly begin testing the agents themselves and implementing them into my workflow fully!
 
 
 But if you enjoyed reading at all or have any questions, my email is always open!
