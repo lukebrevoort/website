@@ -1,5 +1,34 @@
 [
   {
+    "id": "1d6f7879-ec1d-803d-90fd-ed6aa54e755b",
+    "slug": "1d6f7879-ec1d-803d-90fd-ed6aa54e755b",
+    "title": "FlowState Progress 🌊👋",
+    "description": "Another Progress update for FlowState. Working on UI and Frontend as well starting backend local development!",
+    "date": "2025-04-15",
+    "tags": [
+      {
+        "name": "Flowstate",
+        "color": "green"
+      },
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      },
+      {
+        "name": "AI",
+        "color": "pink"
+      }
+    ]
+  },
+  {
     "id": "1c9f7879-ec1d-8043-b34d-eec51bec071d",
     "slug": "1c9f7879-ec1d-8043-b34d-eec51bec071d",
     "title": "What Am I Building? 🧱👷‍♂️",
