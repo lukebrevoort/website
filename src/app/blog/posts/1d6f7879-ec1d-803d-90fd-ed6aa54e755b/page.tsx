@@ -21,7 +21,7 @@
 
 Hello everyone reading! I hope you are all doing well. I just wanted to give a little update on my big personal project I mentioned in the last post **FlowState! I** have made some significant progress from designing the frontend in Figma, using [Builder.io](http://builder.io/) to move it over to a **NextJS** frontend for me to tweak, and then finally getting my **PostgreSQL Database** and **API** routes set up for local development! Here is how I did it:
 
-[Video](image-placeholder-Large_Logo.mp4)
+![Image](image-placeholder-FlowState_Design_Logo.png)
 
 
 ## Frontend Design 🎨
