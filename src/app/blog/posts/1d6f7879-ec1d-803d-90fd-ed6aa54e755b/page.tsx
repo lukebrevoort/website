@@ -31,9 +31,6 @@ First and foremost, Hannah and I decided to redo the Logo! We went for something
 
 While I might not be the best artists, I try my best to make the frontend as **stylish** as possible. My design tool of choice for this was **Figma**, a fantastic and easy to use website design tool I’ve fiddled with in the past. Its very clean and made for developers in mind. After quickly skimming a 30 minute tutorial I felt ready for the artistic challenge 🖼️👨‍🎨
 
-> If you would like to go to the direct [Figma page](https://www.figma.REDACTED_SECRETlowstate-design) and go through each of my designs, just click on the link!
-
-
 ## The Vision 👁️👄👁️
 
 
