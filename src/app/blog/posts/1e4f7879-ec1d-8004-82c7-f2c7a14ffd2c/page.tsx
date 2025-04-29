@@ -21,8 +21,10 @@
 
 In my personal experience, every project begins with the **Ideas Phase**. This usually stems from some Eureka connection between something you found online, and something you know. Maybe it was while doom scrolling on instagram reels or watching a random youtube video at an unbelievable hour with class at 8 in the morning (This one hits home for me 😔). Personally, I spend this phase doing a lot of drawing, I mean **A LOT **of drawing, drafting, and making connections in my iPad. The more connections I make, the more I feel like I could get this thing to work! Looks kind of like one of those conspiracy boards with tons of red strings 
 
-![Pretty accurate representation of how I feel after running through another Expo Marker and Whiteboard in The Bridge 😵](image-placeholder-conspiracyboard.jpg)
+![Image](image-placeholder-conspiracyboard.jpg)
 
+
+Pretty accurate representation of how I feel after running through another Expo Marker and Whiteboard in The Bridge 😵
 
 Inevitably, the excitement leads to using a ton of new frameworks, languages, or concepts that I mostly likely haven’t seen before. This is where **The Before Phase** steps in where you try to learn just enough about every new program you want to implement to get started! Maybe just looking over some examples or finding some *ancient video on Youtube* to asking *Perplexity* how it works!
 
@@ -92,8 +94,10 @@ While tutorials are quite scary for some developers due to horror stories of **T
 
 For me personally I went through most of the models of [Introduction to LangGraph](https://academy.langchain.com/courses/intro-to-langgraph) which made me realize I knew A LOT less then I initially thought I did. During this course, to avoid **Tutorial Hell,** I find it most useful to take notes on the subject. Nothing super elaborate, but enough to engage with the subject matter and make connections to your own project! 
 
-![A quick sample of some of the notes I took that led to my Eureka moment!](image-placeholder-samplenotes.jpeg)
+![Image](image-placeholder-samplenotes.jpeg)
 
+
+A quick sample of some of the notes I took that led to my Eureka moment!
 
 # Eureka! 💡
 
@@ -103,8 +107,10 @@ At some point during the tutorials, you’ll feel as though you finally found th
 > 📌 This is the [EXACT video](https://www.youtube.com/watch?v=B_0TNuYi56w) where I realized that after tons of trial and error of building **Supervisor Agents** and **Handoff Tools, **that there was a specific library built for this!
 
 
-![This was my new and improved Workflow after coming to this understanding!](image-placeholder-dopeflowworkthingy.jpeg)
+![Image](image-placeholder-dopeflowworkthingy.jpeg)
 
+
+This was my new and improved Workflow after coming to this understanding!
 
 Luckily due to a **Regional Ultimate Frisbee** tournament in **Batavia, NY** (Niagara Falls Land), I had 6 hours on my hand to implement this workflow and more! This didn’t come without challenges I realized as I have to change the outputs to all my tools, re-do all of my prompting for the Supervisor Agents and ReAct Agents, and build custom Hand-Off tools to reduce prompting tokens! I ended up landing on this workflow:
 
@@ -122,15 +128,14 @@ Each team for Project Management and Scheduler consist of **Three ReAct Agents:*
 # Conclusion 🥳
 
 
-Sometimes its mentally challenging to have to go back and sit through hours of tutorials and examples to get a framework under your belt, but the end result is **unbeli**e**vably rewarding**. I cannot express the joy I felt on that bus when I got my agent to create subtasks for my upcoming *Physics Exam* and schedule me time over the next week to *Study for the Exam! *I genuinely thought I was going to tear up at the sight of little FlowState growing up so fast 🥲!
-
-![Nice Niagara Falls photo reading till the end! ](image-placeholder-NiagraFalls.jpg)
-
+Sometimes its mentally challenging to have to go back and sit through hours of tutorials and examples to get a framework under your belt, but the end result is **unbeli**e**vably rewarding**. I cannot express the joy I felt on that bus when I got my agent to create subtasks for my upcoming *Physics Exam* and schedule me time over the next week to Study for the Exam!* *I genuinely thought I was going to tear up at the sight of little FlowState growing up so fast 🥲!
 
 While that is half a joke, I think the most important takeaway from me through this process is that its **always **worth going back to the source material to find ways to improve your system or your understanding of the system. But like my favorite sentient red race car would say, **Ka-Chow!**
 
-![Yes I look deranged in this photo, this is what 4 frisbee games does to a man](image-placeholder-KACHOW.jpg)
+![Image](image-placeholder-KACHOW.jpg)
 
+
+Yes I look deranged in this photo, this is what 4 frisbee games does to a man 😭
 
 But as always, if you enjoyed reading at all or have any questions, my email is open!
 
