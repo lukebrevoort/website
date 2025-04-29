@@ -19,131 +19,196 @@
     const [content, setContent] = useState(`# The Before ⏰
 
 
-  In my personal experience, every project begins with the **Ideas Phase**. This usually stems from some Eureka connection between something you found online, and something you know. Maybe it was while doom scrolling on Instagram reels or watching a random YouTube video at an unbelievable hour with class at 8 in the morning (This one hits home for me 😔). Personally, I spend this phase doing a lot of drawing, I mean **A LOT** of drawing, drafting, and making connections in my iPad. The more connections I make, the more I feel like I could get this thing to work! Looks kind of like one of those conspiracy boards with tons of red strings 
-
-  ![Image](image-placeholder-conspiracyboard.jpg)
 
 
-  Pretty accurate representation of how I feel after running through another Expo Marker and Whiteboard in The Bridge 😵
-
-  Inevitably, the excitement leads to using a ton of new frameworks, languages, or concepts that I most likely haven't seen before. This is where **The Before Phase** steps in where you try to learn just enough about every new program you want to implement to get started! Maybe just looking over some examples or finding some *ancient video on YouTube* to asking *Perplexity* how it works!
-
-  > This is my story about learning LangGraph and LangChain and how I thought I knew a lot, until I really **REALLY** didn't 🙃
+ In my personal experience, every project begins with the **Ideas Phase**. This usually stems from some Eureka connection between something you found online and something you know. Maybe it was while doom-scrolling on Instagram reels or watching a random YouTube video at an unbelievable hour with class at 8 in the morning (This one hits home for me 😔). Personally, I spend this phase doing a lot of drawing, I mean **A LOT** of drawing, drafting, and making connections on my iPad. The more connections I make, the more I feel like I could get this thing to work! Looks kind of like one of those conspiracy boards with tons of red strings
 
 
-  # Early Building 😌
+ ![Image](image-placeholder-conspiracyboard.jpg)
 
 
-  For me, this phase is where I feel like I could pick up any framework and build anything! Usually this is me putting together just small test files for little things to get a better understanding of how everything works as a whole. If you've looked at any of my projects, particularly *FlowState*, I have a lot of files dedicated to just testing my **Agents** or **Notion API** because I like learning through seeing it working. 
-
-  > ☝ This usually has me bouncing between three places to learn new tools
 
 
-  ### GitHub Examples 🤓
+ Pretty accurate representation of how I feel after running through another Expo Marker and Whiteboard in The Bridge 😵
 
 
-  - Here is where I generally see simple implementations put into effect by the creators to demonstrate certain concepts about the framework or language! 
-  - I usually try to skim these examples and get a basic understanding of how the program operates / is supposed to work.
-  ### Perplexity 🤖
+ Inevitably, the excitement leads to using many new frameworks, languages, or concepts that I haven't seen before. This is where **The Before Phase** steps in, where you try to learn just enough about every new program you want to implement to get started! Maybe just looking over some examples or finding some *ancient video on YouTube* to asking *Perplexity* how it works!
 
 
-  - If I feel like I don't understand how the examples work, and I struggle skimming through the documentation to understand how it works, I'll usually ask *Perplexity* a series of questions to try and understand the workflow. 
-  - An example question I gave *Perplexity* recently was:
-  > Is it possible for LangGraph supervisors to specifically prompt sub-agents according to the task instead of simply handing off the user request? This could be such as:
-  > User Asks 👨: Can you find exactly what assignments I have due today and add them into the description of the event? also make sure the study event doesn't conflict with anything on any of my calendars?
-  > 
-  > Supervisor passes to Project Manager 🤖: Find exactly what assignments I have due today!
-  > 
-  > Project Manager Passes Back assignments to Supervisor 🤖:
-  > 
-  > Supervisor passes to Scheduler 🤖: Add {Assignments} to description of Study Event Tonight and check if it conflicts with any events
-  > 
-  > Scheduler passes back successful initiation to Supervisor 🤖:
-  > Supervisor responds to user with success 🤖
+ > This is my story about learning LangGraph and LangChain and how I thought I knew a lot, until I really **REALLY** didn't 🙃
 
 
-  - *Perplexity* usually does a fantastic job pulling from the GitHub Examples as well as the Documentation
-  ### IDE 📝
 
 
-  - This is where I put my new tools and ideas to practice! I usually take from one of the GitHub Examples and try to expand on it! I pulled from [this example](https://github.com/langchain-REDACTED_SECRETls/multi_agent/agent_supervisor.ipynb) for a LONG time starting off with LangGraph
-  - After iterating on the example and trying to get the output I want, usually I get something pretty close and can work on specifying and optimization later! 
-  > 🔑 While the advantage to this strategy is that **you only know as much as you need**, if you run into problems down the road or want to improve/change it in any way, it would need a **Whole Rework!** This is exactly what happened with FlowState
+ # Early Building 😌
 
 
-  # Ignorance is Bliss 🌸
 
 
-  As I described in my last blog post, I thought I was pretty close to getting the backend to streaming to the frontend for user deployment, all I had to do was figure out why LangGraph wasn't outputting correctly. **As expected this turned into a much MUCH larger issue than I imagined!**
-
-  > Turns out I hadn't really been using LangGraph all that much at all, just kind of LangGraph elements mixed with LangChainAI's and tools. 
+ For me, this phase is where I feel like I could pick up any framework and build anything! Usually, this is me putting together just small test files for little things to get a better understanding of how everything works as a whole. If you've looked at any of my projects, particularly *FlowState*, I have a lot of files dedicated to just testing my **Agents** or **Notion API** because I like learning through seeing it working.
 
 
-  ![Image](image-placeholder-langchainvlanggraph.jpeg)
+ > ☝ This usually has me bouncing between three places to learn new tools
 
 
-  What I really wanted was **LangGraph** for its flexibility to choose between AI ReAct Agents (Reasoning and Acting Framework) specialized for a specific task. While this could lead to more errors than **LangChain's** simplistic sequence, it would allow FlowState to handle more complex and out of the ordinary tasks!
-
-  > 🤔 So how did I reproach learning **LangGraph** to Fully Implement it into FlowState?
 
 
-  # Tutorials ✏️
+ ### GitHub Examples 🤓
 
 
-  While tutorials are quite scary for some developers due to horror stories of **Tutorial Hell** (Where you get stuck watching tutorials without actually learning how to build anything), I think it's a great starting place to build the groundwork of how the program will work! 
-
-  For me personally I went through most of the modules of [Introduction to LangGraph](https://academy.langchain.com/courses/intro-to-langgraph) which made me realize I knew A LOT less than I initially thought I did. During this course, to avoid **Tutorial Hell,** I find it most useful to take notes on the subject. Nothing super elaborate, but enough to engage with the subject matter and make connections to your own project! 
-
-  ![Image](image-placeholder-samplenotes.jpeg)
 
 
-  A quick sample of some of the notes I took that led to my Eureka moment!
-
-  # Eureka! 💡
-
-
-  At some point during the tutorials, you'll feel as though you finally found the perfect solution you were looking for to truly apply this to your personal project. For me, that came in the form of **Sub-Graphs** where I realized in my notes I could make each of my agents their own designated Sub-Graph to better track the State and retrieve the final result message I had been searching for! 
-
-  > 📌 This is the [EXACT video](https://www.youtube.com/watch?v=B_0TNuYi56w) where I realized that after tons of trial and error of building **Supervisor Agents** and **Handoff Tools,** that there was a specific library built for this!
+ - Here is where I generally see simple implementations put into effect by the creators to demonstrate certain concepts about the framework or language!
+ - I usually try to skim these examples and get a basic understanding of how the program operates/is supposed to work.
+ ### Perplexity 🤖
 
 
-  ![Image](image-placeholder-dopeflowworkthingy.jpeg)
 
 
-  This was my new and improved Workflow after coming to this understanding!
-
-  Luckily due to a **Regional Ultimate Frisbee** tournament in **Batavia, NY** (Niagara Falls Land), I had 6 hours on my hands to implement this workflow and more! This didn't come without challenges I realized as I have to change the outputs to all my tools, re-do all of my prompting for the Supervisor Agents and ReAct Agents, and build custom Hand-Off tools to reduce prompting tokens! I ended up landing on this workflow:
-
-  ![Image](image-placeholder-langdevworkflow.png)
-
-
-  ## Teams 👏
-
-
-  Each team for Project Management and Scheduler consist of **Three ReAct Agents:**
-
-  1. **Team Supervisor**: Responsible for providing SPECIFIC prompts to the other agents and determine which of the two other agents is necessary for the task to be complete
-  2. **READ Agent**: Utilizing all of the reading tools WITHOUT editing any information in the students Calendar or Notion. This agent is responsible for simply pulling information from these sources, not changing it
-  3. **CUD Agent**: The Create, Update, and Delete Agent (CUD for short), will edit and update information in the User's Calendar and Notion. This agent is separated to even add in Breakpoints and Human-In-The-Loop response so the Agent gets **approval** from the user to change their information before executing. 
-  # Conclusion 🥳
+ - If I feel like I don't understand how the examples work, and I struggle skimming through the documentation to understand how it works, I'll usually ask *Perplexity* a series of questions to try and understand the workflow.
+ - An example question I gave *Perplexity* recently was:
+ > Is it possible for LangGraph supervisors to specifically prompt sub-agents according to the task instead of simply handing off the user request? This could be such as:
+ > User Asks 👨: Can you find exactly what assignments I have due today and add them into the description of the event? Also make sure the study event doesn't conflict with anything on any of my calendars?
+ >
+ > Supervisor passes to Project Manager 🤖: Find exactly what assignments I have due today!
+ >
+ > Project Manager Passes Back assignments to Supervisor 🤖:
+ >
+ > Supervisor passes to Scheduler 🤖: Add {Assignments} to description of Study Event Tonight and check if it conflicts with any events
+ >
+ > Scheduler passes back successful initiation to Supervisor 🤖:
+ > Supervisor responds to user with success 🤖
 
 
-  Sometimes it's mentally challenging to have to go back and sit through hours of tutorials and examples to get a framework under your belt, but the end result is **unbelievably rewarding**. I cannot express the joy I felt on that bus when I got my agent to create subtasks for my upcoming *Physics Exam* and schedule me time over the next week to **Study for the Exam!** I genuinely thought I was going to tear up at the sight of little FlowState growing up so fast 🥲!
-
-  While that is half a joke, I think the most important takeaway from me through this process is that it's **always** worth going back to the source material to find ways to improve your system or your understanding of the system. But like my favorite sentient red race car would say, **Ka-Chow!**
-
-  ![Image](image-placeholder-KACHOW.jpg)
 
 
-  Yes I look deranged in this photo, this is what 4 frisbee games does to a man 😭
-
-  But as always, if you enjoyed reading at all or have any questions, my email is open!
-
-  ## Contact:
+ - *Perplexity* usually does a fantastic job pulling from the GitHub Examples as well as the Documentation
+ ### IDE 📝
 
 
-  luke@brevoort.com
-  `);
+
+
+ - This is where I put my new tools and ideas to practice! I usually take from one of the GitHub Examples and try to expand on it! I pulled from [this example](https://github.com/langchain-REDACTED_SECRETls/multi_agent/agent_supervisor.ipynb) for a LONG time, starting with LangGraph
+ - After iterating on the example and trying to get the output I want, usually I get something pretty close and can work on specifying and optimization later!
+ > 🔑 While the advantage to this strategy is that **you only know as much as you need**, if you run into problems down the road or want to improve/change it in any way, it would need a **Whole Rework!** This is exactly what happened with FlowState
+
+
+
+
+ # Ignorance is Bliss 🌸
+
+
+
+
+ As I described in my last blog post, I thought I was pretty close to getting the backend to stream to the frontend for user deployment; all I had to do was figure out why LangGraph wasn't outputting correctly. **As expected, this turned into a much MUCH larger issue than I imagined!**
+
+
+ > Turns out I hadn't really been using LangGraph all that much at all, just kind of LangGraph elements mixed with LangChainAI's and tools.
+
+
+
+
+ ![Image](image-placeholder-langchainvlanggraph.jpeg)
+
+
+
+
+ What I really wanted was **LangGraph** for its flexibility to choose between AI ReAct Agents (Reasoning and Acting Framework), specialized for a specific task. While this could lead to more errors than **LangChain's** simplistic sequence, it would allow FlowState to handle more complex and out-of-the-ordinary tasks!
+
+
+ > 🤔 So, how did I reproach learning **LangGraph** to Fully Implement it into FlowState?
+
+
+
+
+ # Tutorials ✏️
+
+
+
+
+ While tutorials are quite scary for some developers due to horror stories of **Tutorial Hell** (Where you get stuck watching tutorials without actually learning how to build anything), I think it's a great starting place to build the groundwork of how the program will work!
+
+
+ For me personally I went through most of the modules of [Introduction to LangGraph](https://academy.langchain.com/courses/intro-to-langgraph), which made me realize I knew A LOT less than I initially thought I did. During this course, to avoid **Tutorial Hell,** I find it most useful to take notes on the subject. Nothing super elaborate, but enough to engage with the subject matter and make connections to your own project!
+
+
+ ![Image](image-placeholder-samplenotes.jpeg)
+
+
+
+
+ A quick sample of some of the notes I took that led to my Eureka moment!
+
+
+ # Eureka! 💡
+
+
+
+
+ At some point during the tutorials, you'll feel as though you've finally found the perfect solution you were looking for to truly apply this to your personal project. For me, that came in the form of **Sub-Graphs** where I realized in my notes I could make each of my agents their own designated Sub-Graph to better track the State and retrieve the final result message I had been searching for!
+
+
+ > 📌 This is the [EXACT video](https://www.youtube.com/watch?v=B_0TNuYi56w) where I realized that after tons of trial and error of building **Supervisor Agents** and **Handoff Tools,** that there was a specific library built for this!
+
+
+
+
+ ![Image](image-placeholder-dopeflowworkthingy.jpeg)
+
+
+
+
+ This was my new and improved Workflow after coming to this understanding!
+
+
+ Luckily, due to a **Regional Ultimate Frisbee** tournament in **Batavia, NY** (Niagara Falls Land), I had 6 hours on my hands to implement this workflow and more! This didn't come without challenges. I realized that I have to change the outputs to all my tools, re-do all of my prompting for the Supervisor Agents and ReAct Agents, and build custom Hand-Off tools to reduce prompting tokens! I ended up landing on this workflow:
+
+
+ ![Image](image-placeholder-langdevworkflow.png)
+
+
+
+
+ ## Teams 👏
+
+
+
+
+ Each team for Project Management and Scheduler consists of **Three ReAct Agents:**
+
+
+ 1. **Team Supervisor**: Responsible for providing SPECIFIC prompts to the other agents and determining which of the two other agents is necessary for the task to be completed
+ 2. **READ Agent**: Utilizing all of the reading tools WITHOUT editing any information in the student's Calendar or Notion. This agent is responsible for simply pulling information from these sources, not changing it
+ 3. **CUD Agent**: The Create, Update, and Delete Agent (CUD for short) will edit and update information in the User's Calendar and Notion. This agent is separated to even add in Breakpoints and Human-In-The-Loop response, so the Agent gets **approval** from the user to change their information before executing.
+ # Conclusion 🥳
+
+
+
+
+ Sometimes it's mentally challenging to have to go back and sit through hours of tutorials and examples to get a framework under your belt, but the end result is **unbelievably rewarding**. I cannot express the joy I felt on that bus when I got my agent to create subtasks for my upcoming *Physics Exam* and schedule me time over the next week to **Study for the Exam!** I genuinely thought I was going to tear up at the sight of little FlowState growing up so fast 🥲!
+
+
+ While that is half a joke, I think the most important takeaway from me through this process is that it's **always** worth going back to the source material to find ways to improve your system or your understanding of the system. But like my favorite sentient red race car would say, **Ka-Chow!**
+
+
+ ![Image](image-placeholder-KACHOW.jpg)
+
+
+
+
+ Yes, I look deranged in this photo, this is what 4 frisbee games does to a man 😭
+
+
+ But as always, if you enjoyed reading at all or have any questions, my email is open!
+
+
+ ## Contact:
+
+
+
+
+ luke@brevoort.com
+`);
     const [imageMap, setImageMap] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [loadedImages, setLoadedImages] = useState(false);
