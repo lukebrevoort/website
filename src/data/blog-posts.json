@@ -1,5 +1,30 @@
 [
   {
+    "id": "1e4f7879-ec1d-8004-82c7-f2c7a14ffd2c",
+    "slug": "1e4f7879-ec1d-8004-82c7-f2c7a14ffd2c",
+    "title": "You Know Until You Don’t 🤷‍♂️",
+    "description": "There’s always a time in projects where you have to sit back down and figure out how things actually work under the hood!",
+    "date": "2025-04-29",
+    "tags": [
+      {
+        "name": "Flowstate",
+        "color": "green"
+      },
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      },
+      {
+        "name": "AI",
+        "color": "pink"
+      }
+    ]
+  },
+  {
     "id": "1d6f7879-ec1d-803d-90fd-ed6aa54e755b",
     "slug": "1d6f7879-ec1d-803d-90fd-ed6aa54e755b",
     "title": "FlowState Progress 🌊👋",
