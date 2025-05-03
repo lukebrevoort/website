@@ -1,5 +1,5 @@
 import Sidebar from "@/app/dashboard/page";
-import { SpeedInsights } from "@vercel/speed-insights/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Home() {
   return (
