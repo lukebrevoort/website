@@ -91,14 +91,7 @@ Now it’s time for the best two words in sports:
 Here were my final stats of Game 7 for my Second Semester of College:
 
 
-| Class | Hours Studied | Expected Grade (Pre-Exam) | Expected Grade (Post-Exam) | Final Exam Grade |
-| --- | --- | --- | --- | --- |
-| CS 135 | ~20 Hours | 89% | 93% | 97% |
-| HASS 105 | ~5 Hours | 97% | N/A | 95% |
-| PEP 112 | ~12 Hours | 82% | 78% | 88.8% |
-| MA 126 | ~6 Hours | 85% | 94% | 80.8% |
-| CS 284 | ~17 Hours | 90% | 97% | 87% |
-| Time Spent on FlowState instead of Studying | ~20+ Hours | I shouldn’t have been doing this | But I got really distracted by Docker Deployments | Finally got it fixed though! |
+![Image](image-placeholder-gradestables.png)
 
 
 ## The Highs and the Lows 📈📉
