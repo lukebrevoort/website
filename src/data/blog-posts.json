@@ -1,5 +1,26 @@
 [
   {
+    "id": "1fcf7879-ec1d-80d3-bede-c51d04894e91",
+    "slug": "1fcf7879-ec1d-80d3-bede-c51d04894e91",
+    "title": "Finally Summer ☀️😎",
+    "description": "Finally finals are over and its time to relax! In this post I’ll go over how I studied for these upcoming exams and what I’m looking forward to in the summer time!",
+    "date": "2025-05-23",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "School",
+        "color": "orange"
+      },
+      {
+        "name": "Life",
+        "color": "yellow"
+      }
+    ]
+  },
+  {
     "id": "1e4f7879-ec1d-8004-82c7-f2c7a14ffd2c",
     "slug": "1e4f7879-ec1d-8004-82c7-f2c7a14ffd2c",
     "title": "You Know Until You Don’t 🤷‍♂️",
