@@ -14,91 +14,6 @@
   
   const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
   
-  // Define a component that uses remark-gfm properly
-  const MarkdownWithPlugins = ({ content, imageMap, postId, loadedImages }: { 
-    content: string; 
-    imageMap: Record<string, string>; 
-    postId: string;
-    loadedImages: boolean;
-  }) => {
-    const [RemarkGfm, setRemarkGfm] = useState<any>(null);
-    
-    useEffect(() => {
-      // Import remark-gfm dynamically and set it to state
-      import('remark-gfm').then(mod => {
-        setRemarkGfm(mod.default);
-      });
-    }, []);
-    
-    return (
-      <ReactMarkdown 
-        key={loadedImages ? 'loaded' : 'loading'}
-        remarkPlugins={RemarkGfm ? [RemarkGfm] : []}
-        components={{
-          img: ({ node, ...props }) => {
-            const imageSrc = props.src || '';
-            console.log('Rendering image in markdown:', imageSrc);
-            console.log('Available mappings:', Object.keys(imageMap));
-            console.log('Image mapped?', !!imageMap[imageSrc]);
-            
-            // First check if we have a mapping
-            if (imageMap[imageSrc]) {
-              console.log(`Using mapped image: ${imageMap[imageSrc]}`);
-              return (
-                <div className="my-6 sm:my-8 w-full">
-                  <Image 
-                    src={imageMap[imageSrc]} 
-                    alt={props.alt || ''} 
-                    className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow"
-                    width={0}
-                    height={0}
-                    sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, 800px"
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      maxHeight: '70vh',
-                      objectFit: 'contain'
-                    }}
-                    priority={true}
-                  />
-                </div>
-              );
-            }
-            
-            // If all else fails, try SecureImage
-            return (
-              <div className="my-6 sm:my-8 w-full">
-                <SecureImage 
-                  src={imageSrc} 
-                  alt={props.alt || ''} 
-                  className="rounded-lg shadow-md hover:shadow-lg transition-shadow w-full h-auto max-h-[70vh] object-contain" 
-                  postId={postId}
-                  imageMap={imageMap}
-                />
-              </div>
-            );
-          },
-          table: ({ node, ...props }) => (
-            <div className="overflow-x-auto my-6 sm:my-8">
-              <table className="w-full border-collapse" {...props} />
-            </div>
-          ),
-          thead: ({ node, ...props }) => (
-            <thead className="bg-gray-50 dark:bg-gray-800" {...props} />
-          ),
-          th: ({ node, ...props }) => (
-            <th className="p-2 text-left font-semibold border-b border-gray-200 dark:border-gray-700" {...props} />
-          ),
-          td: ({ node, ...props }) => (
-            <td className="p-2 border-b border-gray-200 dark:border-gray-700" {...props} />
-          ),
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-    );
-  };
-  
   export default function BlogPost() {
     // Store processed markdown in state
     const [content, setContent] = useState(`# Welcome Back 👋
@@ -115,10 +30,10 @@ After a long and grueling finals season full of essays, exams, and final project
 Going into final exam season, I had five major assignments/exams to address: 
 
 1. **CS 135 Final: Discrete Structures** - Wednesday, May 7th
-1. **HASS 105 Final Essay: English**- Sunday, May 11th
-1. **PEP 112 Final: Electricity and Magnetism**- Tuesday, May 13th
-1. **MA 126 Final: Multivariable Calculus**- Wednesday, May 14th
-1. **CS 284 Final: Data Structures**- Friday, May 16th
+1. **HASS 105 Final Essay: English **- Sunday, May 11th
+1. **PEP 112 Final: Electricity and Magnetism **- Tuesday, May 13th
+1. **MA 126 Final: Multivariable Calculus **- Wednesday, May 14th
+1. **CS 284 Final: Data Structures **- Friday, May 16th
 While all these numbers and letters may not mean a lot for most people, over the next three weeks, it was all I was focused on (when I wasn’t distracted of course 😅). Let’s start from the beginning about one weeks before my first final exam. 
 
 ## My Studying Ideology 💡
@@ -153,7 +68,7 @@ For me personally, I found that three factors go into a successful Championship 
 
 
 - The most overlooked and under-appreciated aspect of preparing for a Championship game is the Attitude and Confidence you have going in. If you’re nervous or anxious, that can be normal! But I try my best to lean on this quote, I tell myself before every exam:
-> “**Confidence comes from preparation” - Kobe Bryant**
+> “**Confidence comes from preparation” - Kobe Bryant **
 
 
 ![Image](image-placeholder-kobedunk.jpg)
@@ -391,13 +306,55 @@ Email: luke@brevoort.com
               {isLoading ? (
                 <div className="animate-pulse">Loading content...</div>
               ) : (
-                <div className={`prose dark:prose-invert max-w-none prose-base sm:prose-lg md:prose-lg lg:prose-xl ${crimsonText.className} prose-headings:mb-3 prose-p:mb-3 sm:prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 sm:prose-li:my-2 overflow-hidden prose-pre:overflow-x-auto prose-table:my-4 prose-thead:border-b prose-tr:border-b prose-tr:border-gray-200 dark:prose-tr:border-gray-700`}>
-                  <MarkdownWithPlugins 
-                    content={content} 
-                    imageMap={imageMap} 
-                    postId={postId}
-                    loadedImages={loadedImages}
-                  />
+                <div className={`prose dark:prose-invert max-w-none prose-base sm:prose-lg md:prose-lg lg:prose-xl ${crimsonText.className} prose-headings:mb-3 prose-p:mb-3 sm:prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 sm:prose-li:my-2 overflow-hidden prose-pre:overflow-x-auto`}>
+                  <ReactMarkdown 
+                    key={loadedImages ? 'loaded' : 'loading'}
+                    components={{
+                      img: ({ node, ...props }) => {
+                        const imageSrc = props.src || '';
+                        console.log('Rendering image in markdown:', imageSrc);
+                        console.log('Available mappings:', Object.keys(imageMap));
+                        console.log('Image mapped?', !!imageMap[imageSrc]);
+                        
+                        // First check if we have a mapping
+                        if (imageMap[imageSrc]) {
+                          console.log(`Using mapped image: ${imageMap[imageSrc]}`);
+                          return (
+                            <div className="my-6 sm:my-8 w-full">
+                              <Image 
+                                src={imageMap[imageSrc]} 
+                                alt={props.alt || ''} 
+                                className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow"
+                                width={0}
+                                height={0}
+                                sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, 800px"
+                                style={{
+                                  width: '100%',
+                                  height: 'auto',
+                                  maxHeight: '70vh',
+                                  objectFit: 'contain'
+                                }}
+                                priority={true}
+                              />
+                            </div>
+                          );
+                        }
+                        
+                        // If all else fails, try SecureImage
+                        return (
+                          <div className="my-6 sm:my-8 w-full">
+                            <SecureImage 
+                              src={imageSrc} 
+                              alt={props.alt || ''} 
+                              className="rounded-lg shadow-md hover:shadow-lg transition-shadow w-full h-auto max-h-[70vh] object-contain" 
+                              postId={postId}
+                              imageMap={imageMap}
+                            />
+                          </div>
+                        );
+                      },
+                    }}
+                  >{content}</ReactMarkdown>
                 </div>
               )}
             </motion.article>
