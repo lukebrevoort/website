@@ -30,16 +30,16 @@ After a long and grueling finals season full of essays, exams, and final project
 Going into final exam season, I had five major assignments/exams to address: 
 
 1. **CS 135 Final: Discrete Structures** - Wednesday, May 7th
-1. **HASS 105 Final Essay: English **- Sunday, May 11th
-1. **PEP 112 Final: Electricity and Magnetism **- Tuesday, May 13th
-1. **MA 126 Final: Multivariable Calculus **- Wednesday, May 14th
-1. **CS 284 Final: Data Structures **- Friday, May 16th
+1. **HASS 105 Final Essay: English**- Sunday, May 11th
+1. **PEP 112 Final: Electricity and Magnetism**- Tuesday, May 13th
+1. **MA 126 Final: Multivariable Calculus**- Wednesday, May 14th
+1. **CS 284 Final: Data Structures**- Friday, May 16th
 While all these numbers and letters may not mean a lot for most people, over the next three weeks, it was all I was focused on (when I wasn’t distracted of course 😅). Let’s start from the beginning about one weeks before my first final exam. 
 
 ## My Studying Ideology 💡
 
 
-> As an Athlete, I always liked to see exams like the** Championship Game**. You never know what can happen under pressure, but all you can focus on is your pre-game preparation and instincts to come out **victorious 🥳**.  
+> As an Athlete, I always liked to see exams like the **Championship Game**. You never know what can happen under pressure, but all you can focus on is your pre-game preparation and instincts to come out **victorious 🥳**.  
 
 
 For me personally, I found that three factors go into a successful Championship game preparation:
@@ -68,7 +68,7 @@ For me personally, I found that three factors go into a successful Championship 
 
 
 - The most overlooked and under-appreciated aspect of preparing for a Championship game is the Attitude and Confidence you have going in. If you’re nervous or anxious, that can be normal! But I try my best to lean on this quote, I tell myself before every exam:
-> “**Confidence comes from preparation” - Kobe Bryant **
+> “**Confidence comes from preparation” - Kobe Bryant**
 
 
 ![Image](image-placeholder-kobedunk.jpg)
