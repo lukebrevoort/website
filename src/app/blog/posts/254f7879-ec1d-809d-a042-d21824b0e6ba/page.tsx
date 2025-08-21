@@ -84,7 +84,7 @@ Easily the hardest and most difficult part of this project for me was figuring o
 1. Receive chat messages correctly, forward them to the **Agent network**, and then receive and display them on the frontend
 After setting up the ***full end to end service*** there was just one thing that didn’t sit right with me:
 
-> **The visual display of the information was dry, bland, and uninteresting **
+> **The visual display of the information was dry, bland, and uninteresting**
 
 
 This got me to start thinking, how can we add some more UI components that interest the user…
@@ -92,14 +92,14 @@ This got me to start thinking, how can we add some more UI components that inter
 ## Response Agent 🎤🤖
 
 
-What if instead of designating the** Orchestrator Agent** to handle choosing the right agents, forwarding information, and displaying a response, we *offload* the responsibility to a separate agent, which will be our** Response Agent.** 
+What if instead of designating the **Orchestrator Agent** to handle choosing the right agents, forwarding information, and displaying a response, we *offload* the responsibility to a separate agent, which will be our **Response Agent.**
 
 ![Image](image-placeholder-responseagentflow.jpeg)
 
 
 The agent is quite simple:
 
-> The *Orchestrator* will forward the **full convo history to the response agent** (Or a summarized version for over 6 messages to save on tokens), then the *Response Agent* will be instructed to write their message out in **Custom React JSX **that still follows our global.css guidelines.  Lastly, the *Response Agent* can also use **interactive buttons and custom UI functions** I built in the frontend, which is interpreted!
+> The *Orchestrator* will forward the **full convo history to the response agent** (Or a summarized version for over 6 messages to save on tokens), then the *Response Agent* will be instructed to write their message out in **Custom React JSX** that still follows our global.css guidelines.  Lastly, the *Response Agent* can also use **interactive buttons and custom UI functions** I built in the frontend, which is interpreted!
 
 
 This allows **MAXIMUM** flexibility and freedom for the agent to give unique responses and interactive UI components for the User to make it look more visually interesting!
@@ -107,7 +107,7 @@ This allows **MAXIMUM** flexibility and freedom for the agent to give unique res
 ## Streaming Tool Calls 🔨☎️
 
 
-While the messages were great, the hardest part about using a network of agents is **The Response Time! **Usually, the longest tool calls, like pulling all assignments in a Notion Database, can get response times of 30-45 seconds! This is way too long for the user to just be starting at a spinning wheel of death, so I needed something more interesting. This is when I saw Perplexity’s loading for searches, which is a simple and elegant solution to this problem:
+While the messages were great, the hardest part about using a network of agents is **The Response Time!**Usually, the longest tool calls, like pulling all assignments in a Notion Database, can get response times of 30-45 seconds! This is way too long for the user to just be starting at a spinning wheel of death, so I needed something more interesting. This is when I saw Perplexity’s loading for searches, which is a simple and elegant solution to this problem:
 
 ![Image](image-placeholder-perplexityloading.png)
 
