@@ -39,10 +39,11 @@ I’ve done very well in this seasonal position, even getting **Employee of the 
 
 I constructed a resume and a cover letter and applied for the **Seasonal Specialist Role**! Then, after about a month, they asked me to come in for an interview! This interview process I knew was serious when there were about 190 people interviewed and only maybe **10 positions**. So I knew my odds were slim, but I prepared using the STAR Method, which stands for
 
-- **S: Situation **
+- **S: Situation**
 - **T: Task**
 - **A: Action**
 - **R: Result**
+
 I practiced this using **Claude**, which built an Artifact that would test me on common questions and rate/critique my response to better hone in on the STAR Method! This was the best way I could have prepared, and I highly suggest trying it for yourself!
 
 ![Image](image-placeholder-claudeinterview.png)

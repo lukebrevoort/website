@@ -86,3 +86,29 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom prose styling for blog posts */
+@layer components {
+  .prose strong {
+    @apply font-extrabold text-primary;
+    font-weight: 800;
+  }
+  
+  .dark .prose strong {
+    @apply text-white;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+  
+  .prose em strong,
+  .prose strong em {
+    @apply font-extrabold text-primary;
+    font-weight: 800;
+    font-style: italic;
+  }
+  
+  .dark .prose em strong,
+  .dark .prose strong em {
+    @apply text-white;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+}
