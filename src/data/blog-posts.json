@@ -1,5 +1,30 @@
 [
   {
+    "id": "254f7879-ec1d-809d-a042-d21824b0e6ba",
+    "slug": "254f7879-ec1d-809d-a042-d21824b0e6ba",
+    "title": "Summers End ✌️",
+    "description": "With only a week left in the summer, its about time to do a small recap and project update!",
+    "date": "2025-08-21",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      },
+      {
+        "name": "Flowstate",
+        "color": "green"
+      },
+      {
+        "name": "Life",
+        "color": "yellow"
+      }
+    ]
+  },
+  {
     "id": "1fcf7879-ec1d-80d3-bede-c51d04894e91",
     "slug": "1fcf7879-ec1d-80d3-bede-c51d04894e91",
     "title": "Finally Summer ☀️😎",
