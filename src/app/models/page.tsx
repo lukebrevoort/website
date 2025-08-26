@@ -11,10 +11,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { lukesFont } from "../fonts"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
 
 const MODEL_HASH_MAP = {
   'llama': "Llama-3-8B-Instruct-q4f32_1-MLC",
@@ -265,13 +263,10 @@ export default function Page() {
   }
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+    <ModernAppSidebar currentPath="/models">
+      <div className="min-h-screen">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -407,7 +402,7 @@ export default function Page() {
             </CardContent>
           </Card>
         </motion.div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </ModernAppSidebar>
   );
 }

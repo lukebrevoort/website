@@ -1,10 +1,8 @@
 "use client"
     
   import { lukesFont, crimsonText } from '@/app/fonts';
-  import { AppSidebar } from "@/components/app-sidebar";
+  import { ModernAppSidebar } from "@/components/modern-app-sidebar";
   import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-  import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-  import { Separator } from "@/components/ui/separator";
   import { motion } from "framer-motion";
   import { MotionConfig } from "framer-motion";
   import dynamic from 'next/dynamic';
@@ -295,14 +293,11 @@ luke@brevoort.com
   }
   
   return (
-    <SidebarProvider defaultOpen={false}>
-    <AppSidebar />
+    <ModernAppSidebar currentPath="/blog/posts">
     <MotionConfig reducedMotion="user">
-      <SidebarInset className="overflow-x-hidden">
-      <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-100 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900">
+      <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
         <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
           <BreadcrumbItem className="hidden md:block">
@@ -423,8 +418,8 @@ luke@brevoort.com
           <path d="m18 15-6-6-6 6"/>
         </svg>
       </button>
-      </SidebarInset>
+      </div>
     </MotionConfig>
-    </SidebarProvider>
+    </ModernAppSidebar>
   );
   }

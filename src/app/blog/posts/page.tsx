@@ -4,9 +4,8 @@ import Link from 'next/link';
 import { lukesFont, crimsonText } from '@/app/fonts';
 import { motion } from "framer-motion"
 import { Separator } from "@/components/ui/separator"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { MotionConfig } from "framer-motion"
-import { AppSidebar } from "@/components/app-sidebar"
+import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import blogPosts from '@/data/blog-posts.json';
 // Update interface as more properties are added
@@ -44,14 +43,11 @@ export default function BlogPage() {
   });
   
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
+    <ModernAppSidebar currentPath="/blog/posts">
       <MotionConfig reducedMotion="user">
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+        <div className="min-h-screen">
+          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
             <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
@@ -166,8 +162,8 @@ export default function BlogPage() {
                 </div>
               )}
             </div>
-        </SidebarInset>
+        </div>
       </MotionConfig>
-    </SidebarProvider>
+    </ModernAppSidebar>
   );
 }

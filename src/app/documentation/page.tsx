@@ -5,21 +5,16 @@ import Image from 'next/image'
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { lukesFont } from "../fonts"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function DocumentationPage() {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
+    <ModernAppSidebar currentPath="/documentation">
+      <div className="min-h-screen">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -224,7 +219,7 @@ export default function DocumentationPage() {
             </motion.section>
           </motion.div>
         </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </ModernAppSidebar>
   )
 }

@@ -6,35 +6,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { crimsonText, lukesFont } from "../fonts"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { MotionConfig } from "framer-motion"
-import { AppSidebar } from "@/components/app-sidebar"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 
 export default function Page() {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
+    <ModernAppSidebar currentPath="/about">
       <MotionConfig reducedMotion="user">
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/about">About</BreadcrumbLink>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        
+        <div className="min-h-screen p-8">
         <div className="container mx-auto py-8 px-4" id="history">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -323,8 +302,8 @@ export default function Page() {
           </CardContent>
         </Card>
 
-      </SidebarInset>
+        </div>
       </MotionConfig>
-    </SidebarProvider>
+    </ModernAppSidebar>
   )
 }

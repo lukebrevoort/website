@@ -1,10 +1,8 @@
 "use client"
     
-    import { lukesFont, crimsonText } from '@/app/fonts';
-    import { AppSidebar } from "@/components/app-sidebar";
-    import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-    import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-    import { Separator } from "@/components/ui/separator";
+  import { lukesFont, crimsonText } from '@/app/fonts';
+  import { ModernAppSidebar } from "@/components/modern-app-sidebar";
+  import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
     import { motion } from "framer-motion";
     import { MotionConfig } from "framer-motion";
     import dynamic from 'next/dynamic';
@@ -258,31 +256,21 @@ Email: luke@brevoort.com
     }
     
     return (
-      <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
+      <ModernAppSidebar>
+        <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-100 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900">
+          <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-14 items-center">
+              <div className="mr-4 flex">
+                <nav className="flex items-center space-x-6 text-sm font-medium">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold">Blog Post</span>
+                  </div>
+                </nav>
+              </div>
+            </div>
+          </header>
+          
       <MotionConfig reducedMotion="user">
-        <SidebarInset className="overflow-x-hidden">
-        <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background">
-          <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink>{"My First Post"}</BreadcrumbLink>
-            </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          </div>
-        </header>
     
         <motion.article 
           initial={{ opacity: 0 }} 
@@ -385,8 +373,8 @@ Email: luke@brevoort.com
             <path d="m18 15-6-6-6 6"/>
           </svg>
         </button>
-        </SidebarInset>
       </MotionConfig>
-      </SidebarProvider>
+        </div>
+      </ModernAppSidebar>
     );
     }

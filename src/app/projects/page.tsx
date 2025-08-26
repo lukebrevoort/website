@@ -3,13 +3,7 @@
 import { motion } from "framer-motion"
 import { projects } from "@/data/project-data"
 import { ProjectCard } from "@/components/project-card"
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
+import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,13 +15,10 @@ import {
 
 export default function ProjectsPage() {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b sticky top-0 z-50 bg-background">
+    <ModernAppSidebar currentPath="/projects">
+      <div className="min-h-screen">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -58,7 +49,7 @@ export default function ProjectsPage() {
             </div>
           </motion.div>
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </ModernAppSidebar>
   )
 }
