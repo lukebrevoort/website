@@ -343,7 +343,7 @@
               <div className="mr-4 flex">
                 <nav className="flex items-center space-x-6 text-sm font-medium">
                   <div className="flex items-center space-x-2">
-                    <span className="font-bold">Blog Post</span>
+                    <span className="font-bold"></span>
                   </div>
                 </nav>
               </div>

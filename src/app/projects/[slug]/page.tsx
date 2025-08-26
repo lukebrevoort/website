@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { use } from "react"
-import { AppSidebar } from "@/components/app-sidebar"
+import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,17 +15,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
 
 
 export default function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params)
-  const project = projects.find((p) => p.link.split('/').pop() === resolvedParams.slug)
+  const project = projects.find((p) => p.link === `/projects/${resolvedParams.slug}`)
   
   if (!project) {
     notFound()
@@ -53,18 +47,10 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   }
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar />
-      <SidebarInset>
-        <motion.header
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 sticky top-0 z-50 bg-background"
-        >
+    <ModernAppSidebar currentPath={`/projects/${resolvedParams.slug}`}>
+      <div className="min-h-screen">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
           <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -81,7 +67,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-        </motion.header>
+        </header>
 
         <main className="flex-1 overflow-y-auto p-6">
           <motion.div
@@ -157,7 +143,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             </div>
           </motion.div>
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </ModernAppSidebar>
   )
 }

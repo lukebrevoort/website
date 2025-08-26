@@ -120,13 +120,18 @@ const data = {
     },
     {
       name: "Sentiment Analysis",
-      url: "/projects/canvas-notion",
+      url: "/projects/sentiment",
       icon: PieChart,
     },
     {
       name: "Personal Website",
       url: "/projects/website",
       icon: LaptopMinimalCheck,
+    },
+    {
+      name: "Calculator",
+      url: "/projects/calculator",
+      icon: SquareTerminal,
     },
     {
       name: "More",

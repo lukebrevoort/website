@@ -42,7 +42,7 @@ export const projects: ProjectData[] = [
       { name: "Date", details: "2024" }
     ],
     image: "/images/stockmarket.png",
-    link: "/sentiment",
+    link: "/projects/sentiment",
     color: "green",
     intros: [
       {
@@ -106,7 +106,7 @@ export const projects: ProjectData[] = [
       { name: "Date", details: "2024" }
     ],
     image: "/images/websiteimg.png",
-    link: "/website",
+    link: "/projects/website",
     color: "purple",
     intros: [
       {
@@ -181,7 +181,7 @@ export const projects: ProjectData[] = [
       { name: "System", details: "macOS" }
     ],
     image: "/images/canvasNotion.png",
-    link: "/canvas-notion",
+    link: "/projects/canvas-notion",
     color: "blue",
     intros: [
       {
@@ -238,7 +238,7 @@ export const projects: ProjectData[] = [
       { name: "Date", details: "2024" }
     ],
     image: "/images/calculator.png",
-    link: "/calculator",
+    link: "/projects/calculator",
     color: "blue",
     intros: [
       {

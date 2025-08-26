@@ -19,6 +19,7 @@ const NotebookPen = dynamic(() => import("lucide-react").then(mod => mod.Noteboo
 const BookText = dynamic(() => import("lucide-react").then(mod => mod.BookText), { ssr: false });
 const PieChart = dynamic(() => import("lucide-react").then(mod => mod.PieChart), { ssr: false });
 const LaptopMinimalCheck = dynamic(() => import("lucide-react").then(mod => mod.LaptopMinimalCheck), { ssr: false });
+const SquareTerminal = dynamic(() => import("lucide-react").then(mod => mod.SquareTerminal), { ssr: false });
 const MoreHorizontal = dynamic(() => import("lucide-react").then(mod => mod.MoreHorizontal), { ssr: false });
 
 import { Button } from './ui/button';
@@ -56,6 +57,7 @@ const navSections: NavSection[] = [
       { title: "Assignment Tracker", icon: BookText, href: "/projects/canvas-notion" },
       { title: "Sentiment Analysis", icon: PieChart, href: "/projects/sentiment" },
       { title: "Personal Website", icon: LaptopMinimalCheck, href: "/projects/website" },
+      { title: "Calculator", icon: SquareTerminal, href: "/projects/calculator" },
       { title: "More", icon: MoreHorizontal, href: "/projects" }
     ]
   }
