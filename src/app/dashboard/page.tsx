@@ -1,8 +1,8 @@
 "use client"
 
 import { lukesFont, crimsonText } from "@/app/fonts"
-import { ProjectCard } from "@/components/project-card"
-import projects from "@/data/project-data"
+import ProjectCard from "@/components/ProjectCard"
+import { projects } from "@/data/projects"
 
 import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 
@@ -145,9 +145,9 @@ export default function Page() {
             Featured Projects
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <ProjectCard key={index} project={project} />
-            )).slice(0, 3)}
+            {projects.slice(0, 3).map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
           </div>
         </motion.div>
 
