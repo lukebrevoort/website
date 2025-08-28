@@ -334,7 +334,7 @@ luke@brevoort.com
                     key={loadedImages ? 'loaded' : 'loading'}
                     components={{
                       img: ({ node, ...props }) => {
-                        const imageSrc = props.src || '';
+                        const imageSrc: string = typeof props.src === 'string' ? props.src : '';
                         console.log('Rendering image in markdown:', imageSrc);
                         console.log('Available mappings:', Object.keys(imageMap));
                         console.log('Image mapped?', !!imageMap[imageSrc]);
