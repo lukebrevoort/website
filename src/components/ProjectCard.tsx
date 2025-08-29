@@ -1,3 +1,4 @@
+"use client"
 import Link from 'next/link'
 import { ExternalLink, Github, Calendar, Tag } from 'lucide-react'
 
@@ -33,18 +34,19 @@ export default function ProjectCard({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      {/* Project Image */}
-      <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        {image ? (
-          <img src={image} alt={title} className="w-full h-full object-cover" />
-        ) : (
-          <div className="text-6xl text-gray-300">📱</div>
-        )}
-      </div>
+    <Link href={`/projects/${slug}`} className="block group">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] cursor-pointer">
+        {/* Project Image */}
+        <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+          {image ? (
+            <img src={image} alt={title} className="w-full h-full object-cover" />
+          ) : (
+            <div className="text-6xl text-gray-300">📱</div>
+          )}
+        </div>
 
-      {/* Content */}
-      <div className="p-6">
+        {/* Content */}
+        <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
@@ -87,12 +89,9 @@ export default function ProjectCard({
 
         {/* Actions */}
         <div className="flex items-center justify-between">
-          <Link
-            href={`/projects/${slug}`}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-          >
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
             View Project
-          </Link>
+          </button>
           
           <div className="flex space-x-2">
             {demoUrl && (
@@ -102,6 +101,7 @@ export default function ProjectCard({
                 rel="noopener noreferrer"
                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                 title="Live Demo"
+                onClick={(e) => e.stopPropagation()}
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -113,6 +113,7 @@ export default function ProjectCard({
                 rel="noopener noreferrer"
                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                 title="View Code"
+                onClick={(e) => e.stopPropagation()}
               >
                 <Github className="h-4 w-4" />
               </a>
@@ -121,5 +122,6 @@ export default function ProjectCard({
         </div>
       </div>
     </div>
+    </Link>
   )
 }
