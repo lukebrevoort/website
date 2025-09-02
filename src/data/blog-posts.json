@@ -1,5 +1,26 @@
 [
   {
+    "id": "25ef7879-ec1d-819d-9821-e9bcd2d4d637",
+    "slug": "25ef7879-ec1d-819d-9821-e9bcd2d4d637",
+    "title": "First Days🍎",
+    "description": "As someone who has now completed 14 First Days of School, I’ve never been quite as excited for this one!",
+    "date": "2025-08-30",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "School",
+        "color": "orange"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      }
+    ]
+  },
+  {
     "id": "254f7879-ec1d-809d-a042-d21824b0e6ba",
     "slug": "254f7879-ec1d-809d-a042-d21824b0e6ba",
     "title": "Summers End ✌️",
