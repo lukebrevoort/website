@@ -121,7 +121,7 @@ export function MobileNavbar({ currentPath = "/dashboard" }: MobileNavbarProps) 
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-      }}
+      }}    
     >
       {/* Shimmer overlay */}
       <div 

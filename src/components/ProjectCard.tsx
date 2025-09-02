@@ -13,6 +13,8 @@ interface ProjectCardProps {
   status: 'completed' | 'in-progress' | 'planned'
   date: string
   category: string
+  primaryColor?: string
+  secondaryColor?: string
 }
 
 export default function ProjectCard({
@@ -25,7 +27,9 @@ export default function ProjectCard({
   slug,
   status,
   date,
-  category
+  category,
+  primaryColor = '#3b82f6', // Default to blue if not provided
+  secondaryColor = '#3b82f6', // Default to blue if not provided
 }: ProjectCardProps) {
   const statusColors = {
     completed: 'bg-green-100 text-green-800',
@@ -33,13 +37,23 @@ export default function ProjectCard({
     planned: 'bg-gray-100 text-gray-800'
   }
 
+
+  // Function to get gradient style for project cards, same as their sidebars in project_sidebar
+  const getGradientStyle = (opacity1: number = 0.3, opacity2: number = 0.4, opacity3: number = 0.25) => ({
+    background: `linear-gradient(135deg, ${primaryColor}${Math.round(opacity1 * 255).toString(16).padStart(2, '0')}, ${secondaryColor}${Math.round(opacity2 * 255).toString(16).padStart(2, '0')}, ${primaryColor}${Math.round(opacity3 * 255).toString(16).padStart(2, '0')})`,
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+  })
+
   return (
     <Link href={`/projects/${slug}`} className="block group">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] cursor-pointer">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] cursor-pointer" 
+      style={getGradientStyle()}>
         {/* Project Image */}
-        <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="h-48 flex items-center justify-center">
           {image ? (
-            <img src={image} alt={title} className="w-full h-full object-cover" />
+            <img src={image} alt={title} className="w-32 h-32 object-cover" />
           ) : (
             <div className="text-6xl text-gray-300">📱</div>
           )}
