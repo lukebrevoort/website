@@ -11,6 +11,10 @@ export interface Project {
   date: string
   category: string
   featured: boolean
+  // Project sidebar customization
+  logo: string
+  primaryColor: string
+  secondaryColor: string
 }
 
 export const projects: Project[] = [
@@ -25,7 +29,10 @@ export const projects: Project[] = [
     category: 'Web Development',
     featured: true,
     demoUrl: 'https://yourwebsite.com',
-    githubUrl: 'https://github.com/yourusername/personal-website'
+    githubUrl: 'https://github.com/yourusername/personal-website',
+    logo: '/icons/github-mark.svg',
+    primaryColor: '#3b82f6',
+    secondaryColor: '#8b5cf6'
   },
   {
     id: '2',
@@ -37,7 +44,10 @@ export const projects: Project[] = [
     date: 'August 2025',
     category: 'Productivity',
     featured: true,
-    githubUrl: 'https://github.com/yourusername/flowstate'
+    githubUrl: 'https://github.com/yourusername/flowstate',
+    logo: '/icons/flowstate.png',
+    primaryColor: '#d06224',
+    secondaryColor: '#9eab57'
   },
   {
     id: '3',
@@ -50,7 +60,10 @@ export const projects: Project[] = [
     category: 'Education',
     featured: true,
     demoUrl: 'https://assignment-tracker-demo.com',
-    githubUrl: 'https://github.com/yourusername/assignment-tracker'
+    githubUrl: 'https://github.com/yourusername/assignment-tracker',
+    logo: '/icons/github-mark.svg',
+    primaryColor: '#dc2626',
+    secondaryColor: '#000000'
   },
   {
     id: '4',
@@ -62,7 +75,10 @@ export const projects: Project[] = [
     date: 'June 2025',
     category: 'FinTech',
     featured: true,
-    githubUrl: 'https://github.com/yourusername/hftc'
+    githubUrl: 'https://github.com/yourusername/hftc',
+    logo: '/icons/github-mark.svg',
+    primaryColor: '#9D1535',
+    secondaryColor: '#949594'
   },
   {
     id: '5',
@@ -75,7 +91,10 @@ export const projects: Project[] = [
     category: 'AI/ML',
     featured: true,
     demoUrl: 'https://job-personalizer-demo.com',
-    githubUrl: 'https://github.com/yourusername/job-personalizer'
+    githubUrl: 'https://github.com/yourusername/job-personalizer',
+    logo: '/icons/github-mark.svg',
+    primaryColor: '#7c3aed',
+    secondaryColor: '#ec4899'
   },
   {
     id: '6',
@@ -88,7 +107,10 @@ export const projects: Project[] = [
     category: 'AI/ML',
     featured: false,
     demoUrl: 'https://sentiment-analysis-demo.com',
-    githubUrl: 'https://github.com/yourusername/sentiment-analysis'
+    githubUrl: 'https://github.com/yourusername/sentiment-analysis',
+    logo: '/icons/github-mark.svg',
+    primaryColor: '#dc2626',
+    secondaryColor: '#ea580c'
   },
   {
     id: '7',
@@ -101,7 +123,10 @@ export const projects: Project[] = [
     category: 'Web Development',
     featured: false,
     demoUrl: 'https://calculator-demo.com',
-    githubUrl: 'https://github.com/yourusername/calculator'
+    githubUrl: 'https://github.com/yourusername/calculator',
+    logo: '/icons/github-mark.svg',
+    primaryColor: '#0f172a',
+    secondaryColor: '#64748b'
   }
 ]
 
