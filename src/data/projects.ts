@@ -29,8 +29,8 @@ export const projects: Project[] = [
     date: 'August 2025',
     category: 'Web Development',
     featured: true,
-    demoUrl: 'https://yourwebsite.com',
-    githubUrl: 'https://github.com/yourusername/personal-website',
+    demoUrl: 'https://luke.brevoort.com/',
+    githubUrl: 'https://github.com/lukebrevoort/website',
     logo: '/icons/github-mark.svg',
     primaryColor: '#3b82f6',
     secondaryColor: '#8b5cf6'
@@ -46,7 +46,8 @@ export const projects: Project[] = [
     image: '/icons/flowstate.png',
     category: 'Productivity',
     featured: true,
-    githubUrl: 'https://github.com/yourusername/flowstate',
+    githubUrl: 'https://github.com/lukebrevoort/flowstate',
+    demoUrl: 'https://flowstate-self.vercel.app',
     logo: '/icons/flowstate.png',
     primaryColor: '#d06224',
     secondaryColor: '#9eab57'
