@@ -24,6 +24,31 @@ import {
 import ProjectSidebar from '@/components/project-sidebar'
 import { getProjectBySlug } from '@/data/projects'
 
+// Custom component for animated sections
+function AnimatedSection({ 
+  id, 
+  children 
+}: { 
+  id: string
+  children: React.ReactNode 
+}) {
+  const ref = useRef<HTMLElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  return (
+    <motion.section
+      ref={ref}
+      id={id}
+      className="mb-24"
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
+      {children}
+    </motion.section>
+  )
+}
+
 export default function FlowStatePage() {
   const [activeItem, setActiveItem] = useState('#overview')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -55,8 +80,7 @@ export default function FlowStatePage() {
     hidden: { opacity: 0, y: 60 },
     visible: { 
       opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      y: 0
     }
   }
 
@@ -587,30 +611,5 @@ export default function FlowStatePage() {
         </main>
       </ProjectSidebar>
     </div>
-  )
-}
-
-// Custom component for animated sections
-function AnimatedSection({ 
-  id, 
-  children 
-}: { 
-  id: string
-  children: React.ReactNode 
-}) {
-  const ref = useRef<HTMLElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-
-  return (
-    <motion.section
-      ref={ref}
-      id={id}
-      className="mb-24"
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
-      {children}
-    </motion.section>
   )
 }
