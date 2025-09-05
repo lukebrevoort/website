@@ -54,7 +54,7 @@ export const projects: Project[] = [
   },  
   {
     id: '3',
-    title: 'Assignment Tracker',
+    title: 'Canvas-Notion Automation',
     description: 'Canvas-Notion integration for seamless assignment tracking and academic workflow management.',
     technologies: ['React', 'Node.js', 'Canvas API', 'Notion API', 'MongoDB'],
     slug: 'canvas-notion',
@@ -63,8 +63,7 @@ export const projects: Project[] = [
     date: 'July 2025',
     category: 'Education',
     featured: true,
-    demoUrl: 'https://assignment-tracker-demo.com',
-    githubUrl: 'https://github.com/yourusername/assignment-tracker',
+    githubUrl: 'https://github.com/lukebrevoort/CanvasToNotion',
     logo: '/images/canvas-notion.png',
     primaryColor: '#dc2626',
     secondaryColor: '#000000'

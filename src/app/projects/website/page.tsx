@@ -210,30 +210,12 @@ export default function WebsitePage() {
                     }
                   }}
                 >
-                  <div className="relative bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-8 shadow-2xl">
-                    <div className="bg-white rounded-xl p-6 shadow-lg">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex space-x-2">
-                          <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                          <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                        </div>
-                        <div className="text-sm text-gray-500">luke.brevoort.com</div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="h-4 bg-gradient-to-r from-blue-300 to-purple-300 rounded-lg w-3/4"></div>
-                        <div className="h-4 bg-gray-200 rounded-lg w-1/2"></div>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg"></div>
-                          <div className="h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg"></div>
-                          <div className="h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-lg"></div>
-                        </div>
-                        <div className="h-8 bg-gray-100 rounded-lg flex items-center px-3">
-                          <Bot className="h-4 w-4 text-gray-400 mr-2" />
-                          <div className="h-2 bg-gray-300 rounded w-2/3"></div>
-                        </div>
-                      </div>
-                    </div>
+                    <div className="relative">
+                    <img 
+                      src="/images/personalWebsiteUI.png" 
+                      alt="Personal Website UI Screenshot"
+                      className="w-full h-auto rounded-2xl shadow-2xl"
+                    />
                     <div className="absolute -top-4 -right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg">
                       <Globe className="h-6 w-6" />
                     </div>
