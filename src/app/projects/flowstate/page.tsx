@@ -168,6 +168,7 @@ export default function FlowStatePage() {
                   View Source Code
                 </motion.a>
                 
+                {/* Temporarily commented out while building demo version
                 <motion.a
                   href="https://flowstate-self.vercel.app"
                   target="_blank"
@@ -178,6 +179,7 @@ export default function FlowStatePage() {
                   <ExternalLink className="h-5 w-5 mr-2" />
                   Live Demo
                 </motion.a>
+                */}
               </motion.div>
             </motion.div>
 
@@ -584,17 +586,19 @@ export default function FlowStatePage() {
                   <p className="text-xl font-semibold mb-6">
                     Experience the future of student productivity
                   </p>
+
                   <motion.a
-                    href="https://flowstate-self.vercel.app"
+                    href="https://github.com/lukebrevoort/flowstate"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-8 py-4 bg-white text-orange-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Try FlowState Now
+                    Check it Out on GitHub
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </motion.a>
+
                 </motion.div>
               </div>
             </AnimatedSection>
