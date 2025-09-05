@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import dynamic from "next/dynamic";
+import { projects, getFeaturedProjects } from '@/data/projects';
 
 const User = dynamic(() => import("lucide-react").then(mod => mod.User), { ssr: false });
 const Folder = dynamic(() => import("lucide-react").then(mod => mod.Folder), { ssr: false });
@@ -21,6 +22,10 @@ const PieChart = dynamic(() => import("lucide-react").then(mod => mod.PieChart),
 const LaptopMinimalCheck = dynamic(() => import("lucide-react").then(mod => mod.LaptopMinimalCheck), { ssr: false });
 const SquareTerminal = dynamic(() => import("lucide-react").then(mod => mod.SquareTerminal), { ssr: false });
 const MoreHorizontal = dynamic(() => import("lucide-react").then(mod => mod.MoreHorizontal), { ssr: false });
+const Activity = dynamic(() => import("lucide-react").then(mod => mod.Activity), { ssr: false });
+const Brain = dynamic(() => import("lucide-react").then(mod => mod.Brain), { ssr: false });
+const TrendingUp = dynamic(() => import("lucide-react").then(mod => mod.TrendingUp), { ssr: false });
+const FileUser = dynamic(() => import("lucide-react").then(mod => mod.FileUser), { ssr: false });
 import { Button } from './ui/button';
 import { lukesFont } from '@/app/fonts';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -39,6 +44,50 @@ interface NavSection {
   items: NavItem[];
 }
 
+// Function to get appropriate icon for each project
+const getProjectIcon = (slug: string, title: string): React.ComponentType<{ className?: string }> => {
+  switch (slug) {
+    case 'canvas-notion':
+      return BookText;
+    case 'sentiment':
+      return Brain;
+    case 'website':
+      return LaptopMinimalCheck;
+    case 'calculator':
+      return SquareTerminal;
+    case 'flowstate':
+      return Activity;
+    case 'hftc':
+      return TrendingUp;
+    case 'job-personalizer':
+      return FileUser;
+    default:
+      return Folder;
+  }
+};
+
+// Generate project nav items from data
+const generateProjectNavItems = (): NavItem[] => {
+  const featuredProjects = getFeaturedProjects();
+  const projectItems: NavItem[] = featuredProjects.map(project => ({
+    title: project.title,
+    icon: getProjectIcon(project.slug, project.title),
+    href: `/projects/${project.slug}`,
+    badge: project.status === 'in-progress' ? 'WIP' : undefined
+  }));
+
+  // Add "More" item if there are more projects than featured ones
+  if (projects.length > featuredProjects.length) {
+    projectItems.push({
+      title: "More Projects",
+      icon: MoreHorizontal,
+      href: "/projects"
+    });
+  }
+
+  return projectItems;
+};
+
 const navSections: NavSection[] = [
   {
     title: "Information",
@@ -51,13 +100,7 @@ const navSections: NavSection[] = [
   },
   {
     title: "Projects",
-    items: [
-      { title: "Assignment Tracker", icon: BookText, href: "/projects/canvas-notion" },
-      { title: "Sentiment Analysis", icon: PieChart, href: "/projects/sentiment" },
-      { title: "Personal Website", icon: LaptopMinimalCheck, href: "/projects/website" },
-      { title: "Calculator", icon: SquareTerminal, href: "/projects/calculator" },
-      { title: "More", icon: MoreHorizontal, href: "/projects" }
-    ]
+    items: generateProjectNavItems()
   }
 ];
 

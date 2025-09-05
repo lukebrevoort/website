@@ -1,19 +1,23 @@
 "use client"
 
 import { lukesFont, crimsonText } from "@/app/fonts"
-import { ProjectCard } from "@/components/project-card"
-import projects from "@/data/project-data"
+import ProjectCard from "@/components/ProjectCard"
+import { projects } from "@/data/projects"
 
 import { ModernAppSidebar } from "@/components/modern-app-sidebar"
 
 import { motion, MotionConfig } from "framer-motion"
 
+import useEmblaCarousel from 'embla-carousel-react'
+
 import Image from 'next/image'
 
+
+
+
 export default function Page() {
+  const [emblaRef, emblaApi] = useEmblaCarousel()
 
-
-  
   return (
     <ModernAppSidebar currentPath="/dashboard">
       <MotionConfig reducedMotion="user">
@@ -141,14 +145,36 @@ export default function Page() {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1.5 }}
         >
-          <h2 className={`${crimsonText.className} text-3xl font-bold mb-8 text-center`}>
+            <h2 className={`${crimsonText.className} text-3xl font-bold mb-8 text-center`}>
             Featured Projects
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <ProjectCard key={index} project={project} />
-            )).slice(0, 3)}
-          </div>
+            </h2>
+            <div className="relative">
+            <div className="embla" ref={emblaRef}>
+              <div className="embla__container flex gap-6">
+              {projects.slice(0, 5).map((project) => (
+              <div key={project.id} className="embla__slide flex-[0_0_300px] md:flex-[0_0_400px]">
+                <ProjectCard {...project} />
+              </div>
+              ))}
+              </div>
+            </div>
+            <button 
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
+              onClick={() => emblaApi?.scrollPrev()}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button 
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
+              onClick={() => emblaApi?.scrollNext()}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            </div>
         </motion.div>
 
         </div>
