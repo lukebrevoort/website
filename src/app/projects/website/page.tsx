@@ -629,7 +629,7 @@ export default function WebsitePage() {
                     Experience the future of digital portfolios
                   </p>
                   <motion.a
-                    href="https://website-nu-tawny-11.vercel.app"
+                    href="https://luke.brevoort.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"

@@ -511,24 +511,15 @@ export default function FlowStatePage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  <div className="bg-gradient-to-br from-orange-100 to-lime-100 rounded-3xl p-8 shadow-2xl">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                        <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                        <div className="flex-1 text-center text-sm text-gray-500">FlowState Interface</div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="h-4 bg-gray-200 rounded-lg w-3/4"></div>
-                        <div className="h-4 bg-gradient-to-r from-orange-300 to-lime-300 rounded-lg w-1/2"></div>
-                        <div className="h-12 bg-gray-100 rounded-lg flex items-center px-4">
-                          <MessageSquare className="h-5 w-5 text-gray-400 mr-3" />
-                          <div className="h-2 bg-gray-300 rounded w-full"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <video 
+                    src="/images/flowstateChat.mp4" 
+                    autoPlay 
+                    loop 
+                    muted 
+                    className="w-full rounded-2xl shadow-lg"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
                 </motion.div>
               </div>
             </AnimatedSection>
