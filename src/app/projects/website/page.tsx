@@ -154,7 +154,7 @@ export default function WebsitePage() {
                 </motion.a>
                 
                 <motion.a
-                  href="https://website-nu-tawny-11.vercel.app"
+                  href="https://luke.brevoort.com/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"

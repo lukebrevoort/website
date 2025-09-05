@@ -79,10 +79,9 @@ export const projects: Project[] = [
     date: 'June 2025',
     category: 'FinTech',
     featured: true,
-    githubUrl: 'https://github.com/yourusername/hftc',
     logo: '/images/hanlon.png',
-    primaryColor: '#9D1535',
-    secondaryColor: '#949594'
+    primaryColor: '#10b981',
+    secondaryColor: '#3b82f6'
   },
   {
     id: '5',
@@ -95,46 +94,11 @@ export const projects: Project[] = [
     category: 'AI/ML',
     image: '/images/jobpersonalize.png',
     featured: true,
-    demoUrl: 'https://job-personalizer-demo.com',
-    githubUrl: 'https://github.com/yourusername/job-personalizer',
+    githubUrl: 'https://github.com/lukebrevoort/job-application-automator',
     logo: '/images/jobpersonalize.png',
     primaryColor: '#7c3aed',
     secondaryColor: '#ec4899'
   },
-  {
-    id: '6',
-    title: 'Sentiment Analysis',
-    description: 'Advanced sentiment analysis tool using machine learning to analyze text data and provide insights.',
-    technologies: ['Python', 'TensorFlow', 'Flask', 'React', 'PostgreSQL'],
-    slug: 'sentiment',
-    status: 'completed',
-    image: '/images/chart.png',
-    date: 'June 2025',
-    category: 'AI/ML',
-    featured: false,
-    demoUrl: 'https://sentiment-analysis-demo.com',
-    githubUrl: 'https://github.com/yourusername/sentiment-analysis',
-    logo: '/images/chart.png',
-    primaryColor: '#dc2626',
-    secondaryColor: '#ea580c'
-  },
-  {
-    id: '7',
-    title: 'Calculator',
-    description: 'A modern, feature-rich calculator application with advanced mathematical functions and a sleek UI.',
-    technologies: ['React', 'TypeScript', 'CSS3', 'Vercel'],
-    slug: 'calculator',
-    status: 'completed',
-    image: '/images/calc.png',
-    date: 'May 2025',
-    category: 'Web Development',
-    featured: false,
-    demoUrl: 'https://calculator-demo.com',
-    githubUrl: 'https://github.com/yourusername/calculator',
-    logo: '/images/calc.png',
-    primaryColor: '#0f172a',
-    secondaryColor: '#64748b'
-  }
 ]
 
 export const getProjectBySlug = (slug: string): Project | undefined => {
