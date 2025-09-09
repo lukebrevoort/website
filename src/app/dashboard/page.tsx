@@ -49,8 +49,8 @@ export default function Page() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.75 }}
           >
-          <h1 className={`${crimsonText.className}`}>Welcome to my Website!</h1>
-            <h3 className={`${crimsonText.className} max-w-[50%] mx-auto`}>I host my personal projects, photos, and other stuff I find cool on here!</h3>
+          <h1 className={`${crimsonText.className} text-xl md:text-3xl`}>Welcome to my Website!</h1>
+          <h3 className={`${crimsonText.className} max-w-[90%] md:max-w-[50%] mx-auto text-base md:text-xl`}>I host my personal projects, photos, and other stuff I find cool on here!</h3>
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}
