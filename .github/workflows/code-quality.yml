@@ -1,0 +1,204 @@
+name: Code Quality & Security
+
+on:
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          echo "Running npm security audit..."
+          npm audit --audit-level=moderate || {
+            echo "❌ Security vulnerabilities found!"
+            echo "Run 'npm audit fix' to address fixable issues"
+            echo "Review the audit report above for manual fixes needed"
+            exit 1
+          }
+
+      - name: Check for known vulnerabilities
+        run: |
+          echo "Checking for high/critical vulnerabilities..."
+          AUDIT_OUTPUT=$(npm audit --json 2>/dev/null || true)
+          if echo "$AUDIT_OUTPUT" | jq -e '.metadata.vulnerabilities.high > 0 or .metadata.vulnerabilities.critical > 0' > /dev/null 2>&1; then
+            echo "❌ High or critical vulnerabilities detected"
+            echo "$AUDIT_OUTPUT" | jq '.metadata.vulnerabilities'
+            exit 1
+          else
+            echo "✅ No high or critical vulnerabilities found"
+          fi
+
+  code-analysis:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Analyze bundle size
+        run: |
+          echo "Analyzing bundle size..."
+          npm run build 2>/dev/null || true
+          
+          if [ -d ".next" ]; then
+            echo "📊 Bundle Analysis:"
+            echo "Build directory size: $(du -sh .next/ | cut -f1)"
+            
+            # Look for large files that might indicate bundle bloat
+            find .next -name "*.js" -size +1M -exec ls -lh {} \; | head -5 || echo "No large JS files found"
+          else
+            echo "Build directory not found - analysis skipped"
+          fi
+        env:
+          NEXT_FONT_GOOGLE_MOCKED_RESPONSES: ${{ toJson('{}') }}
+
+      - name: Check for sensitive data
+        run: |
+          echo "Scanning for potential sensitive data leaks..."
+          
+          # Check for potential API keys or secrets in code
+          SENSITIVE_PATTERNS=(
+            "api[_-]?key"
+            "secret[_-]?key" 
+            "private[_-]?key"
+            "access[_-]?token"
+            "auth[_-]?token"
+            "password"
+            "passwd"
+          )
+          
+          FOUND_ISSUES=false
+          for pattern in "${SENSITIVE_PATTERNS[@]}"; do
+            if grep -r -i --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" "$pattern" src/ | grep -v "process.env" | grep -v "// @ts-ignore" | head -5; then
+              FOUND_ISSUES=true
+              echo "⚠️  Found potential sensitive data pattern: $pattern"
+            fi
+          done
+          
+          if [ "$FOUND_ISSUES" = true ]; then
+            echo "❌ Potential sensitive data found in source code"
+            echo "Please review the matches above and ensure no secrets are hardcoded"
+            exit 1
+          else
+            echo "✅ No obvious sensitive data patterns found"
+          fi
+
+      - name: TypeScript strict checks
+        run: |
+          echo "Running strict TypeScript checks..."
+          npx tsc --strict --noEmit 2>&1 | head -20 || {
+            echo "⚠️  Strict TypeScript checks found issues"
+            echo "Consider enabling stricter TypeScript options for better code quality"
+          }
+
+  performance-checks:
+    name: Performance Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for performance anti-patterns
+        run: |
+          echo "Checking for performance anti-patterns..."
+          
+          # Check for synchronous operations that could block
+          if grep -r "sync(" src/ --include="*.ts" --include="*.tsx"; then
+            echo "⚠️  Found synchronous operations - consider async alternatives"
+          fi
+          
+          # Check for potential memory leaks
+          if grep -r "setInterval\|setTimeout" src/ --include="*.ts" --include="*.tsx" | grep -v "clearInterval\|clearTimeout"; then
+            echo "⚠️  Found timers without cleanup - potential memory leak"
+          fi
+          
+          # Check for large imports
+          if grep -r "import.*\*.*from" src/ --include="*.ts" --include="*.tsx" | head -5; then
+            echo "⚠️  Found wildcard imports - consider specific imports for better tree shaking"
+          fi
+          
+          echo "✅ Performance checks completed"
+
+  summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-review, security-audit, code-analysis, performance-checks]
+    if: always()
+    steps:
+      - name: Quality Check Summary
+        run: |
+          echo "## Code Quality & Security Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Review | ${{ needs.dependency-review.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Audit | ${{ needs.security-audit.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Analysis | ${{ needs.code-analysis.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance Checks | ${{ needs.performance-checks.result }} |" >> $GITHUB_STEP_SUMMARY
+          
+          # Determine overall status
+          CRITICAL_FAILURES=0
+          if [[ "${{ needs.security-audit.result }}" == "failure" ]]; then
+            CRITICAL_FAILURES=$((CRITICAL_FAILURES + 1))
+          fi
+          if [[ "${{ needs.dependency-review.result }}" == "failure" ]]; then
+            CRITICAL_FAILURES=$((CRITICAL_FAILURES + 1))
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ $CRITICAL_FAILURES -gt 0 ]]; then
+            echo "❌ **Critical quality/security issues found - address before merging**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ **Quality and security checks passed**" >> $GITHUB_STEP_SUMMARY
+          fi

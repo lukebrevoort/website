@@ -1,0 +1,50 @@
+name: Quick Lint Check
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quick-lint:
+    name: Quick Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint with error reporting
+        run: |
+          echo "Running ESLint..."
+          npm run lint || {
+            echo "❌ ESLint found issues. Please fix linting errors before merging."
+            echo "Run 'npm run lint' locally to see all issues."
+            exit 1
+          }
+
+      - name: Run TypeScript type check
+        run: |
+          echo "Running TypeScript type check..."
+          npx tsc --noEmit || {
+            echo "❌ TypeScript type check failed. Please fix type errors before merging."
+            echo "Run 'npx tsc --noEmit' locally to see all type errors."
+            exit 1
+          }
+
+      - name: Success notification
+        run: |
+          echo "✅ Quick lint check passed!"
+          echo "All linting and type checking completed successfully."

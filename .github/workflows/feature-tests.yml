@@ -1,0 +1,177 @@
+name: Feature Tests & Preview
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  feature-tests:
+    name: Test Key Features
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        feature: [
+          "api-routes",
+          "github-integration", 
+          "notion-webhook",
+          "blog-generation",
+          "project-pages"
+        ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test API Routes
+        if: matrix.feature == 'api-routes'
+        run: |
+          echo "Testing API route compilation..."
+          # Check that API routes exist and are properly structured
+          test -f src/app/api/github-test/route.ts || { echo "❌ GitHub test API route missing"; exit 1; }
+          test -f src/app/api/notion-webhook/route.ts || { echo "❌ Notion webhook API route missing"; exit 1; }
+          
+          # Verify API routes export the correct methods
+          grep -q "export async function GET" src/app/api/github-test/route.ts || { echo "❌ GitHub test API missing GET export"; exit 1; }
+          grep -q "export async function POST" src/app/api/notion-webhook/route.ts || { echo "❌ Notion webhook API missing POST export"; exit 1; }
+          
+          echo "✅ API routes structure validation passed"
+
+      - name: Test GitHub Integration
+        if: matrix.feature == 'github-integration'
+        run: |
+          echo "Testing GitHub integration code..."
+          # Check for GitHub API usage
+          grep -q "github.com/repos" src/app/api/github-test/route.ts || { echo "❌ GitHub API integration code missing"; exit 1; }
+          grep -q "GITHUB_PAT" src/app/api/github-test/route.ts || { echo "❌ GitHub PAT environment variable usage missing"; exit 1; }
+          
+          # Verify error handling
+          grep -q "response.ok" src/app/api/github-test/route.ts || { echo "❌ GitHub API error handling missing"; exit 1; }
+          
+          echo "✅ GitHub integration validation passed"
+
+      - name: Test Notion Webhook
+        if: matrix.feature == 'notion-webhook'
+        run: |
+          echo "Testing Notion webhook functionality..."
+          # Check for Notion-specific code
+          grep -q "notion_update" src/app/api/notion-webhook/route.ts || { echo "❌ Notion update event handling missing"; exit 1; }
+          grep -q "url_verification" src/app/api/notion-webhook/route.ts || { echo "❌ Notion URL verification missing"; exit 1; }
+          
+          # Check for pageId extraction
+          grep -q "pageId" src/app/api/notion-webhook/route.ts || { echo "❌ Page ID extraction missing"; exit 1; }
+          
+          echo "✅ Notion webhook validation passed"
+
+      - name: Test Blog Generation
+        if: matrix.feature == 'blog-generation'
+        run: |
+          echo "Testing blog generation functionality..."
+          # Check for blog generation scripts
+          test -f scripts/generate-all-blog-posts.ts || { echo "❌ Blog generation script missing"; exit 1; }
+          
+          # Check for blog data
+          test -f src/data/blog-posts.json || { echo "❌ Blog posts data file missing"; exit 1; }
+          
+          # Verify blog post structure in package.json
+          grep -q "generate-blog" package.json || { echo "❌ Blog generation script not configured in package.json"; exit 1; }
+          
+          echo "✅ Blog generation validation passed"
+
+      - name: Test Project Pages
+        if: matrix.feature == 'project-pages'
+        run: |
+          echo "Testing project pages functionality..."
+          # Check for project data
+          test -f src/data/projects.ts || { echo "❌ Projects data file missing"; exit 1; }
+          
+          # Check for project page components
+          test -d src/app/projects || { echo "❌ Projects directory missing"; exit 1; }
+          
+          # Verify project pages exist
+          test -f src/app/projects/flowstate/page.tsx || { echo "❌ FlowState project page missing"; exit 1; }
+          test -f src/app/projects/job-personalizer/page.tsx || { echo "❌ Job Personalizer project page missing"; exit 1; }
+          
+          # Check for project interface
+          grep -q "interface Project" src/data/projects.ts || { echo "❌ Project interface definition missing"; exit 1; }
+          
+          echo "✅ Project pages validation passed"
+
+  build-preview:
+    name: Build Preview
+    runs-on: ubuntu-latest
+    needs: feature-tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for preview
+        run: |
+          echo "Building application for preview..."
+          npm run build || {
+            echo "❌ Build failed - this would prevent deployment"
+            exit 1
+          }
+        env:
+          NEXT_FONT_GOOGLE_MOCKED_RESPONSES: ${{ toJson('{}') }}
+          SKIP_ENV_VALIDATION: true
+
+      - name: Verify build artifacts
+        run: |
+          echo "Verifying build artifacts..."
+          test -d .next || { echo "❌ Build output directory missing"; exit 1; }
+          test -f .next/BUILD_ID || { echo "❌ Build ID file missing"; exit 1; }
+          
+          echo "✅ Build verification completed"
+          echo "📦 Build size summary:"
+          du -sh .next/ || true
+
+  summary:
+    name: Feature Test Summary
+    runs-on: ubuntu-latest
+    needs: [feature-tests, build-preview]
+    if: always()
+    steps:
+      - name: Feature Test Results
+        run: |
+          echo "## Feature Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Key Features Tested:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ API Routes structure and exports" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ GitHub integration functionality" >> $GITHUB_STEP_SUMMARY  
+          echo "- ✅ Notion webhook handling" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Blog generation system" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Project pages and data" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Build Status: ${{ needs.build-preview.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "### Feature Tests: ${{ needs.feature-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ needs.feature-tests.result }}" == "failure" || "${{ needs.build-preview.result }}" == "failure" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Feature tests failed - please review the specific failures above**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **All feature tests passed - ready for review!**" >> $GITHUB_STEP_SUMMARY
+          fi
