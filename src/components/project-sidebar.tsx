@@ -43,7 +43,7 @@ export default function ProjectSidebar({
       
       return () => clearTimeout(timer)
     } else {
-      // Hide active state immediately when collapsing
+      // Hide active state immediately when collapsing (instant)
       setShowActiveState(false)
     }
   }, [isCollapsed])
@@ -92,7 +92,7 @@ export default function ProjectSidebar({
           <div className={`p-6 border-b border-white/10 relative transform transition-all duration-300 delay-100 ${sidebarOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <h2 className="text-lg font-semibold text-white">{projectName}</h2>
+                <h2 className="text-lg font-bold text-white">{projectName}</h2>
               </div>
               
               {/* Close Button */}
@@ -112,7 +112,7 @@ export default function ProjectSidebar({
           <div className={`px-6 py-4 border-b border-white/10 transform transition-all duration-300 delay-150 ${sidebarOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
             <Link 
               href="/projects" 
-              className="flex items-center text-sm text-white hover:text-white transition-colors duration-300 group"
+              className="flex items-center text-sm font-bold text-white hover:text-white transition-colors duration-300 group"
             >
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-transparent group-hover:bg-gradient-to-r group-hover:from-white/10 group-hover:to-white/5 transition-all duration-300" />
@@ -141,7 +141,7 @@ export default function ProjectSidebar({
                       setSidebarOpen(false);
                       document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className={`relative block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 ${
+                    className={`relative block px-4 py-3 rounded-lg text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 ${
                       isActive
                         ? 'text-white bg-gradient-to-r from-black/20 to-gray-800/30 backdrop-blur-sm shadow-lg shadow-black/20'
                         : 'text-white/80 hover:text-white'
@@ -183,7 +183,7 @@ export default function ProjectSidebar({
                   <span className="text-xl font-bold text-white">{projectName}</span>
                   <Image src={projectLogo} alt={projectName} width={40} height={32} />
                 </div>
-                <p className="text-sm text-white font-semibold mt-1">Project Navigation</p>
+                <p className="text-sm text-white font-bold mt-1">Project Navigation</p>
               </div>
             )}
             {isCollapsed && (
@@ -200,12 +200,12 @@ export default function ProjectSidebar({
             {!isCollapsed && (
               <Link 
                 href="/projects" 
-                className="flex items-center text-sm text-white hover:text-white transition-colors duration-300 group opacity-0 animate-fadeIn"
+                className="flex items-center text-sm font-bold text-white hover:text-white transition-colors duration-300 group opacity-0 animate-fadeIn"
                 style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
               >
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-transparent group-hover:bg-gradient-to-r group-hover:from-white/10 group-hover:to-white/5 transition-all duration-300" />
-                  <ChevronLeft className="relative font-semibold h-4 w-4 mr-2" />
+                  <ChevronLeft className="relative font-bold h-4 w-4 mr-2" />
                 </div>
                 Back to Projects
               </Link>
@@ -240,10 +240,10 @@ export default function ProjectSidebar({
                         onItemClick(item.href);
                         document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className={`relative flex items-center rounded-lg text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 ${
+                      className={`relative flex items-center rounded-lg text-sm font-bold hover:-translate-y-0.5 ${
                         isActive && !isCollapsed && showActiveState
-                          ? 'text-white bg-gradient-to-r from-black/30 to-gray-800/40 backdrop-blur-sm shadow-lg shadow-black/20'
-                          : 'text-white/80 hover:text-white'
+                          ? `text-white bg-gradient-to-r from-black/30 to-gray-800/40 backdrop-blur-sm shadow-lg shadow-black/20 ${isCollapsed ? 'transition-none' : 'transition-all duration-300'}`
+                          : `text-white/80 hover:text-white ${isCollapsed ? 'transition-none' : 'transition-all duration-300'}`
                       } ${isCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'}`}
                       style={!isCollapsed ? { animationDelay: `${0.4 + itemIndex * 0.05}s` } : {}}
                     >
@@ -266,7 +266,7 @@ export default function ProjectSidebar({
           {/* Desktop Footer */}
           <div className="p-6 border-t border-white/10">
             {!isCollapsed && (
-              <div className="text-xs text-white/50 opacity-0 animate-fadeIn" style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}>
+              <div className="text-xs font-bold text-white/50 opacity-0 animate-fadeIn" style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}>
                 {projectName} Project
               </div>
             )}
@@ -288,7 +288,7 @@ export default function ProjectSidebar({
         >
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
+        <div className="flex-1 text-sm font-bold leading-6 text-gray-900">
           {projectName}
         </div>
       </div>
