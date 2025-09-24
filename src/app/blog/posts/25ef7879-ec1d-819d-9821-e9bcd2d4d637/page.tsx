@@ -89,7 +89,7 @@ After being tired of just using ShadCN’s normal block sidebar, I thought it wa
 ![Image](image-placeholder-Screenshot_2025-09-02_at_3.38.30_PM.png)
 
 
-![Image](image-placeholder-Screenshot_2025-09-02_at_3.39.55_PM.png)
+![Image](image-placeholder-sideglassybar.png)
 
 
 ## New Classes! 📆
@@ -272,7 +272,7 @@ Email: luke@brevoort.com
             >
               <header className="mb-6 md:mb-8">
                 <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"First Days🍎"}</h1>
-                <time className="text-gray-500 text-base sm:text-lg">8/30/2025</time>
+                <time className="text-gray-500 text-base sm:text-lg">9/6/2025</time>
                 
                 {tags && tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -296,7 +296,7 @@ Email: luke@brevoort.com
                     key={loadedImages ? 'loaded' : 'loading'}
                     components={{
                       img: ({ node, ...props }) => {
-                        const imageSrc = typeof props.src === 'string' ? props.src : '';
+                        const imageSrc: string = typeof props.src === 'string' ? props.src : '';
                         console.log('Rendering image in markdown:', imageSrc);
                         console.log('Available mappings:', Object.keys(imageMap));
                         console.log('Image mapped?', !!imageMap[imageSrc]);
