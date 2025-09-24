@@ -287,20 +287,28 @@ luke@brevoort.com
     }
   
     return (
-      <ModernAppSidebar>
-        <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-100 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900">
-          <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center">
-              <div className="mr-4 flex">
-                <nav className="flex items-center space-x-6 text-sm font-medium">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold"></span>
-                  </div>
-                </nav>
-              </div>
-            </div>
-          </header>
+      <ModernAppSidebar currentPath="/blog/posts">
         <MotionConfig reducedMotion="user">
+          <div className="min-h-screen overflow-x-hidden">
+            <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
+              <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator className="hidden md:block" />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink>{"FlowState Progress 🌊👋"}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+              </div>
+            </header>
         
             <motion.article 
               initial={{ opacity: 0 }} 
@@ -310,7 +318,7 @@ luke@brevoort.com
             >
               <header className="mb-6 md:mb-8">
                 <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"FlowState Progress 🌊👋"}</h1>
-                <time className="text-gray-500 text-base sm:text-lg">4/15/2025</time>
+                <time className="text-gray-500 text-base sm:text-lg">4/14/2025</time>
                 
                 {tags && tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -401,8 +409,8 @@ luke@brevoort.com
                 <path d="m18 15-6-6-6 6"/>
               </svg>
             </button>
-          </MotionConfig>
-        </div>
+          </div>
+        </MotionConfig>
       </ModernAppSidebar>
     );
   }

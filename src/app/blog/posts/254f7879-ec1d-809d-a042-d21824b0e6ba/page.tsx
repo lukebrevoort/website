@@ -37,11 +37,10 @@ I’ve done very well in this seasonal position, even getting **Employee of the 
 
 I constructed a resume and a cover letter and applied for the **Seasonal Specialist Role**! Then, after about a month, they asked me to come in for an interview! This interview process I knew was serious when there were about 190 people interviewed and only maybe **10 positions**. So I knew my odds were slim, but I prepared using the STAR Method, which stands for
 
-- **S: Situation**
+- **S: Situation **
 - **T: Task**
 - **A: Action**
 - **R: Result**
-
 I practiced this using **Claude**, which built an Artifact that would test me on common questions and rate/critique my response to better hone in on the STAR Method! This was the best way I could have prepared, and I highly suggest trying it for yourself!
 
 ![Image](image-placeholder-claudeinterview.png)
@@ -82,7 +81,7 @@ Easily the hardest and most difficult part of this project for me was figuring o
 1. Receive chat messages correctly, forward them to the **Agent network**, and then receive and display them on the frontend
 After setting up the ***full end to end service*** there was just one thing that didn’t sit right with me:
 
-> **The visual display of the information was dry, bland, and uninteresting**
+> **The visual display of the information was dry, bland, and uninteresting **
 
 
 This got me to start thinking, how can we add some more UI components that interest the user…
@@ -90,14 +89,14 @@ This got me to start thinking, how can we add some more UI components that inter
 ## Response Agent 🎤🤖
 
 
-What if instead of designating the **Orchestrator Agent** to handle choosing the right agents, forwarding information, and displaying a response, we *offload* the responsibility to a separate agent, which will be our **Response Agent.**
+What if instead of designating the** Orchestrator Agent** to handle choosing the right agents, forwarding information, and displaying a response, we *offload* the responsibility to a separate agent, which will be our** Response Agent.** 
 
 ![Image](image-placeholder-responseagentflow.jpeg)
 
 
 The agent is quite simple:
 
-> The *Orchestrator* will forward the **full convo history to the response agent** (Or a summarized version for over 6 messages to save on tokens), then the *Response Agent* will be instructed to write their message out in **Custom React JSX** that still follows our global.css guidelines.  Lastly, the *Response Agent* can also use **interactive buttons and custom UI functions** I built in the frontend, which is interpreted!
+> The *Orchestrator* will forward the **full convo history to the response agent** (Or a summarized version for over 6 messages to save on tokens), then the *Response Agent* will be instructed to write their message out in **Custom React JSX **that still follows our global.css guidelines.  Lastly, the *Response Agent* can also use **interactive buttons and custom UI functions** I built in the frontend, which is interpreted!
 
 
 This allows **MAXIMUM** flexibility and freedom for the agent to give unique responses and interactive UI components for the User to make it look more visually interesting!
@@ -105,7 +104,7 @@ This allows **MAXIMUM** flexibility and freedom for the agent to give unique res
 ## Streaming Tool Calls 🔨☎️
 
 
-While the messages were great, the hardest part about using a network of agents is **The Response Time!**Usually, the longest tool calls, like pulling all assignments in a Notion Database, can get response times of 30-45 seconds! This is way too long for the user to just be starting at a spinning wheel of death, so I needed something more interesting. This is when I saw Perplexity’s loading for searches, which is a simple and elegant solution to this problem:
+While the messages were great, the hardest part about using a network of agents is **The Response Time! **Usually, the longest tool calls, like pulling all assignments in a Notion Database, can get response times of 30-45 seconds! This is way too long for the user to just be starting at a spinning wheel of death, so I needed something more interesting. This is when I saw Perplexity’s loading for searches, which is a simple and elegant solution to this problem:
 
 ![Image](image-placeholder-perplexityloading.png)
 
@@ -272,20 +271,28 @@ Email: luke@brevoort.com
     }
   
     return (
-      <ModernAppSidebar>
-        <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-100 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900">
-          <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center">
-              <div className="mr-4 flex">
-                <nav className="flex items-center space-x-6 text-sm font-medium">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold"></span>
-                  </div>
-                </nav>
-              </div>
-            </div>
-          </header>
+      <ModernAppSidebar currentPath="/blog/posts">
         <MotionConfig reducedMotion="user">
+          <div className="min-h-screen overflow-x-hidden">
+            <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
+              <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator className="hidden md:block" />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink>{"Summers End ✌️"}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+              </div>
+            </header>
         
             <motion.article 
               initial={{ opacity: 0 }} 
@@ -295,7 +302,7 @@ Email: luke@brevoort.com
             >
               <header className="mb-6 md:mb-8">
                 <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"Summers End ✌️"}</h1>
-                <time className="text-gray-500 text-base sm:text-lg">8/21/2025</time>
+                <time className="text-gray-500 text-base sm:text-lg">8/20/2025</time>
                 
                 {tags && tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -386,8 +393,8 @@ Email: luke@brevoort.com
                 <path d="m18 15-6-6-6 6"/>
               </svg>
             </button>
-          </MotionConfig>
-        </div>
+          </div>
+        </MotionConfig>
       </ModernAppSidebar>
     );
   }
