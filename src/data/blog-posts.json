@@ -1,5 +1,30 @@
 [
   {
+    "id": "278f7879-ec1d-8030-aef0-c0aa9c52f5bf",
+    "slug": "278f7879-ec1d-8030-aef0-c0aa9c52f5bf",
+    "title": "Mid-Season Update 🍂",
+    "description": "Midterm season has just rolled around, so grab a cup of coffee while I talk about what’s been going on!",
+    "date": "2025-10-20",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      },
+      {
+        "name": "School",
+        "color": "orange"
+      },
+      {
+        "name": "Life",
+        "color": "yellow"
+      }
+    ]
+  },
+  {
     "id": "25ef7879-ec1d-819d-9821-e9bcd2d4d637",
     "slug": "25ef7879-ec1d-819d-9821-e9bcd2d4d637",
     "title": "First Days🍎",
