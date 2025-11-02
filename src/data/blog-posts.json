@@ -1,5 +1,22 @@
 [
   {
+    "id": "29ff7879-ec1d-8028-8994-f359f9404f19",
+    "slug": "29ff7879-ec1d-8028-8994-f359f9404f19",
+    "title": "What’s the Hype Around Neovim?",
+    "description": "After becoming increasingly frustrated with using IDE’s, I’ve seen more and more about Neovim, so I thought I’d give it an honest try and write about it! ",
+    "date": "2025-11-02",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      }
+    ]
+  },
+  {
     "id": "278f7879-ec1d-8030-aef0-c0aa9c52f5bf",
     "slug": "278f7879-ec1d-8030-aef0-c0aa9c52f5bf",
     "title": "Mid-Season Update 🍂",
