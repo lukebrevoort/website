@@ -45,7 +45,7 @@ One of the many reasons people are **intimidated to try Neovim** is because of h
 
 While lots of tech influencers will tell you that using **Neovim** will allow you to **“Escape the Matrix”**, that's not really the case. I saw Neovim as an opportunity to try another way programmers use their workflows. I saw **three primary benefits in using Neovim:**
 
-1. The benefits of knowing Vim Motions can extend to any IDE, as even VSCode has extensions that allow you to use these hype-quick motions and edit text as fast as you can think ***Kachow*** 🚗💨
+1. The benefits of knowing Vim Motions can extend to any IDE, as even VSCode has extensions that allow you to use these hyper-quick motions and edit text as fast as you can think ***Kachow*** 🚗💨
 1. Being able to customize **every aspect** of these key binds allows for the ultimate personalized experience when editing. From themes to specific motions, to workflows, it can all be made as long as I can think of it
 1. **Simplicity of Neovim** is what really drew me in. At its core, it's just a text editor that allows it to run fast, limit battery usage, and keep everything running *super smooth*.
 ## Downsides 🫢
@@ -259,7 +259,7 @@ Email: luke@brevoort.com
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <BreadcrumbLink>{"What’s the Hype Around Neovim?"}</BreadcrumbLink>
+                      <BreadcrumbLink>{"What’s the Hype Around Neovim? 🤓"}</BreadcrumbLink>
                     </BreadcrumbItem>
                   </BreadcrumbList>
                 </Breadcrumb>
@@ -273,7 +273,7 @@ Email: luke@brevoort.com
               className="container mx-auto py-4 sm:py-6 md:py-10 px-3 sm:px-4 md:px-6 max-w-3xl overflow-hidden"
             >
               <header className="mb-6 md:mb-8">
-                <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"What’s the Hype Around Neovim?"}</h1>
+                <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"What’s the Hype Around Neovim? 🤓"}</h1>
                 <time className="text-gray-500 text-base sm:text-lg">11/2/2025</time>
                 
                 {tags && tags.length > 0 && (
