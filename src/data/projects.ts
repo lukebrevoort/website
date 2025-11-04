@@ -51,7 +51,7 @@ export const projects: Project[] = [
     logo: '/icons/flowstate.png',
     primaryColor: '#d06224',
     secondaryColor: '#9eab57'
-  },  
+  },
   {
     id: '3',
     title: 'Canvas-Notion Automation',
@@ -93,7 +93,7 @@ export const projects: Project[] = [
     date: 'July 2025',
     category: 'AI/ML',
     image: '/images/jobpersonalize.png',
-    featured: true,
+    featured: false,
     githubUrl: 'https://github.com/lukebrevoort/job-application-automator',
     logo: '/images/jobpersonalize.png',
     primaryColor: '#7c3aed',
