@@ -20,7 +20,7 @@ export const lukesFont = localFont({
 })
 
 export const crimsonText = Crimson_Text({
-  weight: '600', 
+  weight: '400',
   subsets: ['latin'],
   variable: '--font-crimson',
   display: 'swap',
