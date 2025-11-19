@@ -1,6 +1,6 @@
 "use client"
     
-  import { lukesFont, crimsonText } from '@/app/fonts';
+  import { lukesFont, satoshi } from '@/app/fonts';
   import { ModernAppSidebar } from "@/components/modern-app-sidebar";
   import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
   import { motion } from "framer-motion";
@@ -328,7 +328,7 @@ luke@brevoort.com
               {isLoading ? (
                 <div className="animate-pulse">Loading content...</div>
               ) : (
-                <div className={`prose dark:prose-invert max-w-none prose-base sm:prose-lg md:prose-lg lg:prose-xl ${crimsonText.className} prose-headings:mb-3 prose-p:mb-3 sm:prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 sm:prose-li:my-2 overflow-hidden prose-pre:overflow-x-auto`}>
+                <div className={`prose dark:prose-invert max-w-none prose-base sm:prose-lg md:prose-lg lg:prose-xl ${satoshi.className} prose-headings:mb-3 prose-p:mb-3 sm:prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 sm:prose-li:my-2 overflow-hidden prose-pre:overflow-x-auto`}>
                   <ReactMarkdown 
                     key={loadedImages ? 'loaded' : 'loading'}
                     components={{
