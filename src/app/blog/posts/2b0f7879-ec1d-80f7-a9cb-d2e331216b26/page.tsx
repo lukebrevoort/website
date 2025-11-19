@@ -119,6 +119,10 @@ While it sounds weird to start considering AI to be your little engineers, it's 
 1. Agent Within Environment: **Avante (**[https://github.com/yetone/avante.nvim](https://github.com/yetone/avante.nvim)**)**
 1. CLI Agent and Sub-Agents: **Opencode (**[https://opencode.ai/](https://opencode.ai/)**)**
 1. Favorite AI Model: **Claude Sonnet 4.5** and **GPT 5 Codex**
+![Image](image-placeholder-opencodeimage.png)
+
+
+
 What I love about each of these tools is that they are customizable and allow me to build in **Guidelines and Structure** to their responses. While I am hardcoding less, I am spending more time building out the agent guidelines and developing strategies to fix bugs or issues while driving the project forward. 
 
 > Remember, **YOU** are the *brain of the project*, don’t rely on AI to come up with every solution to every bug for you. Most likely, it’ll be less efficient or wrong by offloading this work. Spend the time to understand the issue, and present your agents with ideas and a solution to execute. 
