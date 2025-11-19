@@ -1,5 +1,26 @@
 [
   {
+    "id": "2b0f7879-ec1d-80f7-a9cb-d2e331216b26",
+    "slug": "2b0f7879-ec1d-80f7-a9cb-d2e331216b26",
+    "title": "From Engineer to Architect: How ADE’s are Changing Development 🚀 ",
+    "description": "With new AI tools being developed every day to optimize the development workflow, it got me thinking: What does an engineer of the future build with to become future-proof? And what can I start doing now to become that?",
+    "date": "2025-11-19",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "AI",
+        "color": "pink"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      }
+    ]
+  },
+  {
     "id": "29ff7879-ec1d-8028-8994-f359f9404f19",
     "slug": "29ff7879-ec1d-8028-8994-f359f9404f19",
     "title": "What’s the Hype Around Neovim? 🤓",
