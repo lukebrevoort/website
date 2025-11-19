@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link';
-import { lukesFont, crimsonText } from '@/app/fonts';
+import { lukesFont, satoshi } from '@/app/fonts';
 import { motion } from "framer-motion"
 import { Separator } from "@/components/ui/separator"
 import { MotionConfig } from "framer-motion"
@@ -132,7 +132,7 @@ export default function BlogPage() {
                   className="block border border-gray-300 dark:border-gray-800 rounded-lg p-6 hover:shadow-md transition-shadow"
                 >
                   <article>
-                    <h2 className={`${crimsonText.className} text-4xl font-semibold mb-2`}>{post.title}</h2>
+                    <h2 className={`${satoshi.className} text-4xl font-semibold mb-2`}>{post.title}</h2>
                     {post.date && <time className="text-sm text-lg text-gray-500">{new Date(post.date).toLocaleDateString()}</time>}
                     
                     {/* Display tags */}
