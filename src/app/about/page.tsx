@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { crimsonText, lukesFont } from "../fonts"
-import { MotionConfig } from "framer-motion"
-import { ModernAppSidebar } from "@/components/modern-app-sidebar"
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { crimsonText, lukesFont } from "../fonts";
+import { MotionConfig } from "framer-motion";
+import { ModernAppSidebar } from "@/components/modern-app-sidebar";
 
 export default function Page() {
   return (
@@ -23,7 +23,8 @@ export default function Page() {
             >
               <div className="lg:w-1/2">
                 <h1 className={`text-4xl ${lukesFont.className} mb-6`}>
-                  I like building things in my freetime. coding, writing, and creating :)
+                  I like building things in my freetime. coding, writing, and
+                  creating :)
                 </h1>
               </div>
               <div className="lg:w-1/2">
@@ -39,23 +40,47 @@ export default function Page() {
 
             <Card className="mb-16">
               <CardContent className="p-6">
-                <h2 className={`${lukesFont.className} text-3xl mb-6`}>About:</h2>
+                <h2 className={`${lukesFont.className} text-3xl mb-6`}>
+                  About:
+                </h2>
                 <div className="space-y-4 text-lg leading-relaxed">
-                  <p>I&apos;m Luke Brevoort a freshman at Stevens Institute of Technology in Hoboken NJ who is studying Computer Science! I am passionate about AI, Fullstack Development, and Natural Language Processing.</p>
-                  <p>I work on a variety of projects of different fields to learn as much as possible. From Machine Learning, Frontend Development, to Concurrency im always trying to expand my horizons which includes joining research and trying to learn as much as possible.</p>
-                  <p>Outside of school I enjoy Frisbee, Skiing, Weightlifting, and Lacrosse, so really anything active :). I am actively involved in the Schools Student Government Association and love giving back to the Hoboken Community.</p>
+                  <p>
+                    I&apos;m Luke Brevoort a freshman at Stevens Institute of
+                    Technology in Hoboken NJ who is studying Computer Science! I
+                    am passionate about AI, Fullstack Development, and Natural
+                    Language Processing.
+                  </p>
+                  <p>
+                    I work on a variety of projects of different fields to learn
+                    as much as possible. From Machine Learning, Frontend
+                    Development, to Concurrency im always trying to expand my
+                    horizons which includes joining research and trying to learn
+                    as much as possible.
+                  </p>
+                  <p>
+                    Outside of school I enjoy Frisbee, Skiing, Weightlifting,
+                    and Lacrosse, so really anything active :). I am actively
+                    involved in the Schools Student Government Association and
+                    love giving back to the Hoboken Community.
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="mb-16">
               <CardContent className="p-6">
-                <h2 className={`${lukesFont.className} text-3xl mb-6`}>Education:</h2>
+                <h2 className={`${lukesFont.className} text-3xl mb-6`}>
+                  Education:
+                </h2>
                 <div className={`space-y-4 ${crimsonText.className}`}>
                   <div>
-                    <h3 className="text-2xl font-bold">Stevens Institute of Technology</h3>
-                    <p className="text-muted-foreground text-lg">Bachelor of Science in Computer Science</p>
-                    <Badge variant="outline">Expected May 2027</Badge>
+                    <h3 className="text-2xl font-bold">
+                      Stevens Institute of Technology
+                    </h3>
+                    <p className="text-muted-foreground text-lg">
+                      Bachelor of Science in Computer Science
+                    </p>
+                    <Badge variant="outline">Expected May 2028</Badge>
                     <p className="mt-4">Relevant Coursework:</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       <Badge>Data Structures</Badge>
@@ -75,13 +100,13 @@ export default function Page() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.85, y: 0 }}
               viewport={{
-                once: true,  // Makes the animation happen only once
+                once: true, // Makes the animation happen only once
                 amount: 0.3, // Triggers when 30% of the element is in view
-                margin: "0px 0px -100px 0px" // Offset for when animation triggers
+                margin: "0px 0px -100px 0px", // Offset for when animation triggers
               }}
               transition={{
                 duration: 0.5,
-                ease: "easeOut"
+                ease: "easeOut",
               }}
               whileHover={{ opacity: 1 }}
             >
@@ -98,10 +123,14 @@ export default function Page() {
 
             <Card className="mb-16">
               <CardContent className="p-6">
-                <h2 className={`${lukesFont.className} text-4xl mb-6`}>Skills:</h2>
+                <h2 className={`${lukesFont.className} text-4xl mb-6`}>
+                  Skills:
+                </h2>
                 <div className={`space-y-6 ${crimsonText.className}`}>
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">Programming Languages</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Programming Languages
+                    </h3>
                     <div className="flex flex-wrap gap-2">
                       <Badge>Python</Badge>
                       <Badge>TypeScript</Badge>
@@ -111,7 +140,9 @@ export default function Page() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">Web Technologies</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Web Technologies
+                    </h3>
                     <div className="flex flex-wrap gap-2">
                       <Badge>React</Badge>
                       <Badge>Next.js</Badge>
@@ -123,7 +154,9 @@ export default function Page() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">Tools & Platforms</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Tools & Platforms
+                    </h3>
                     <div className="flex flex-wrap gap-2">
                       <Badge>Git</Badge>
                       <Badge>Docker</Badge>
@@ -145,7 +178,6 @@ export default function Page() {
                     </div>
                   </div>
 
-
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Leadership</h3>
                     <div className="flex flex-wrap gap-2">
@@ -164,7 +196,6 @@ export default function Page() {
                       <Badge>Node.js</Badge>
                     </div>
                   </div>
-
                 </div>
               </CardContent>
             </Card>
@@ -174,13 +205,13 @@ export default function Page() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.85, y: 0 }}
               viewport={{
-                once: true,  // Makes the animation happen only once
+                once: true, // Makes the animation happen only once
                 amount: 0.3, // Triggers when 30% of the element is in view
-                margin: "0px 0px -100px 0px" // Offset for when animation triggers
+                margin: "0px 0px -100px 0px", // Offset for when animation triggers
               }}
               transition={{
                 duration: 0.5,
-                ease: "easeOut"
+                ease: "easeOut",
               }}
               whileHover={{ opacity: 1 }}
               id="experience"
@@ -196,38 +227,46 @@ export default function Page() {
               </div>
             </motion.div>
 
-
             <Card>
               <CardContent className="p-6">
-                <h2 className={`${lukesFont.className} text-3xl mb-6`}>Experience:</h2>
+                <h2 className={`${lukesFont.className} text-3xl mb-6`}>
+                  Experience:
+                </h2>
                 <div className={`space-y-8 ${crimsonText.className}`}>
                   {[
                     {
-
-                      title: <a href="https://sitblueprint.com/" target="_blank" rel="noopener noreferrer">Blueprint</a>,
-                      role: 'Project Team Developer',
-                      date: 'November 2025 - Present'
+                      title: (
+                        <a
+                          href="https://sitblueprint.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Blueprint
+                        </a>
+                      ),
+                      role: "Project Team Developer",
+                      date: "November 2025 - Present",
                     },
                     {
                       title: "Stevens NLP Lab",
                       role: "Research Assistant",
-                      date: "December 2024 – Present"
+                      date: "December 2024 – Present",
                     },
                     {
                       title: "EH Yang Lab",
                       role: "Undergraduate Researcher",
-                      date: "September 2024 – January 2025"
+                      date: "September 2024 – January 2025",
                     },
                     {
                       title: "Student Government Organization",
                       role: "Assistant Vice President of Finance",
-                      date: "September 2024 – Present"
+                      date: "September 2024 – Present",
                     },
                     {
                       title: "Student Government Organization and NHS",
                       role: "Student Body President and National Honors Society VP",
-                      date: "August 2023 – May 2024"
-                    }
+                      date: "August 2023 – May 2024",
+                    },
                   ].map((item, index) => (
                     <motion.div
                       key={index}
@@ -237,12 +276,14 @@ export default function Page() {
                       transition={{
                         duration: 0.5,
                         delay: index * 0.2,
-                        ease: "easeOut"
+                        ease: "easeOut",
                       }}
                     >
                       <div>
                         <h3 className="text-2xl font-bold">{item.title}</h3>
-                        <p className="text-muted-foreground text-lg">{item.role}</p>
+                        <p className="text-muted-foreground text-lg">
+                          {item.role}
+                        </p>
                         <Badge variant="outline">{item.date}</Badge>
                       </div>
                       {index < 3 && <Separator className="mt-8" />}
@@ -257,13 +298,13 @@ export default function Page() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.85, y: 0 }}
               viewport={{
-                once: true,  // Makes the animation happen only once
+                once: true, // Makes the animation happen only once
                 amount: 0.3, // Triggers when 30% of the element is in view
-                margin: "0px 0px -100px 0px" // Offset for when animation triggers
+                margin: "0px 0px -100px 0px", // Offset for when animation triggers
               }}
               transition={{
                 duration: 0.5,
-                ease: "easeOut"
+                ease: "easeOut",
               }}
               whileHover={{ opacity: 1 }}
               id="experience"
@@ -278,41 +319,40 @@ export default function Page() {
                 />
               </div>
             </motion.div>
-
-
-
           </div>
 
           <Card className="mt-16 mb-8" id="contact">
             <CardContent className="p-6">
-              <h2 className={`${lukesFont.className} text-3xl mb-6`}>Contact:</h2>
+              <h2 className={`${lukesFont.className} text-3xl mb-6`}>
+                Contact:
+              </h2>
               <div className="flex justify-center gap-6">
                 {[
                   {
                     href: "https://github.com/lukebrevoort",
                     src: "/icons/github-mark.svg",
-                    alt: "GitHub"
+                    alt: "GitHub",
                   },
                   {
                     href: "https://bsky.app/profile/luke-brev.bsky.social",
                     src: "/icons/bluesky.png",
-                    alt: "Bluesky"
+                    alt: "Bluesky",
                   },
                   {
                     href: "https://www.linkedin.com/in/luke-brevoort-6a545626a/",
                     src: "/icons/linkedin.png",
-                    alt: "LinkedIn"
+                    alt: "LinkedIn",
                   },
                   {
                     href: "mailto:luke@brevoort.com",
                     src: "/icons/gmail.svg",
-                    alt: "Email"
+                    alt: "Email",
                   },
                   {
                     href: "https://instagram.com/luke.brev",
                     src: "/icons/instagram.svg",
-                    alt: "Instagram"
-                  }
+                    alt: "Instagram",
+                  },
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -321,10 +361,14 @@ export default function Page() {
                     transition={{
                       duration: 0.5,
                       delay: index * 0.2,
-                      ease: "easeOut"
+                      ease: "easeOut",
                     }}
                   >
-                    <a href={item.href} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Image
                         src={item.src}
                         alt={item.alt}
@@ -338,9 +382,8 @@ export default function Page() {
               </div>
             </CardContent>
           </Card>
-
         </div>
       </MotionConfig>
     </ModernAppSidebar>
-  )
+  );
 }
