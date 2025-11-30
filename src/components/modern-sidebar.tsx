@@ -1,31 +1,32 @@
 "use client"
 
 import React, { useState } from 'react';
-import dynamic from "next/dynamic";
 import { projects, getFeaturedProjects } from '@/data/projects';
 
-const User = dynamic(() => import("lucide-react").then(mod => mod.User), { ssr: false });
-const Folder = dynamic(() => import("lucide-react").then(mod => mod.Folder), { ssr: false });
-const FileText = dynamic(() => import("lucide-react").then(mod => mod.FileText), { ssr: false });
-const Wrench = dynamic(() => import("lucide-react").then(mod => mod.Wrench), { ssr: false });
-const Newspaper = dynamic(() => import("lucide-react").then(mod => mod.Newspaper), { ssr: false });
-const BarChart3 = dynamic(() => import("lucide-react").then(mod => mod.BarChart3), { ssr: false });
-const MessageSquare = dynamic(() => import("lucide-react").then(mod => mod.MessageSquare), { ssr: false });
-const Globe = dynamic(() => import("lucide-react").then(mod => mod.Globe), { ssr: false });
-const ChevronRight = dynamic(() => import("lucide-react").then(mod => mod.ChevronRight), { ssr: false });
-const Menu = dynamic(() => import("lucide-react").then(mod => mod.Menu), { ssr: false });
-const Bot = dynamic(() => import("lucide-react").then(mod => mod.Bot), { ssr: false });
-const BookOpen = dynamic(() => import("lucide-react").then(mod => mod.BookOpen), { ssr: false });
-const NotebookPen = dynamic(() => import("lucide-react").then(mod => mod.NotebookPen), { ssr: false });
-const BookText = dynamic(() => import("lucide-react").then(mod => mod.BookText), { ssr: false });
-const PieChart = dynamic(() => import("lucide-react").then(mod => mod.PieChart), { ssr: false });
-const LaptopMinimalCheck = dynamic(() => import("lucide-react").then(mod => mod.LaptopMinimalCheck), { ssr: false });
-const SquareTerminal = dynamic(() => import("lucide-react").then(mod => mod.SquareTerminal), { ssr: false });
-const MoreHorizontal = dynamic(() => import("lucide-react").then(mod => mod.MoreHorizontal), { ssr: false });
-const Activity = dynamic(() => import("lucide-react").then(mod => mod.Activity), { ssr: false });
-const Brain = dynamic(() => import("lucide-react").then(mod => mod.Brain), { ssr: false });
-const TrendingUp = dynamic(() => import("lucide-react").then(mod => mod.TrendingUp), { ssr: false });
-const FileUser = dynamic(() => import("lucide-react").then(mod => mod.FileUser), { ssr: false });
+import { 
+  User, 
+  Folder, 
+  FileText, 
+  Wrench, 
+  Newspaper, 
+  BarChart3, 
+  MessageSquare, 
+  Globe, 
+  ChevronRight, 
+  Menu, 
+  Bot, 
+  BookOpen, 
+  NotebookPen, 
+  BookText, 
+  PieChart, 
+  LaptopMinimalCheck, 
+  SquareTerminal, 
+  MoreHorizontal, 
+  Activity, 
+  Brain, 
+  TrendingUp, 
+  FileUser 
+} from 'lucide-react';
 import { Button } from './ui/button';
 import { lukesFont } from '@/app/fonts';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -66,7 +67,7 @@ const getProjectIcon = (slug: string, title: string): React.ComponentType<{ clas
   }
 };
 
-// Generate project nav items from data
+// Generate project nav items from data (memoized)
 const generateProjectNavItems = (): NavItem[] => {
   const featuredProjects = getFeaturedProjects();
   const projectItems: NavItem[] = featuredProjects.map(project => ({
@@ -88,6 +89,9 @@ const generateProjectNavItems = (): NavItem[] => {
   return projectItems;
 };
 
+// Pre-generate nav sections to avoid recalculation on every render
+const projectNavItems = generateProjectNavItems();
+
 const navSections: NavSection[] = [
   {
     title: "Information",
@@ -100,7 +104,7 @@ const navSections: NavSection[] = [
   },
   {
     title: "Projects",
-    items: generateProjectNavItems()
+    items: projectNavItems
   }
 ];
 
@@ -114,7 +118,7 @@ export function ModernSidebar({ currentPath = "/dashboard" }: ModernSidebarProps
 
   return (
     <div 
-      className={`sticky top-0 h-screen backdrop-blur-xl bg-white/10 border-r border-white/20 transition-all duration-500 ease-in-out flex flex-col shadow-2xl shadow-black/5 z-40 ${
+      className={`sticky top-0 h-screen backdrop-blur-xl bg-white/10 border-r border-white/20 transition-all duration-300 ease-in-out flex flex-col shadow-2xl shadow-black/5 z-40 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}
       onMouseEnter={() => setIsCollapsed(false)}

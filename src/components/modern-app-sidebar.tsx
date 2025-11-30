@@ -30,23 +30,23 @@ export function ModernAppSidebar({ currentPath, children, backgroundGradient }: 
   const isMobile = useIsMobile();
   const bgClass = backgroundGradient || getDefaultBackground(currentPath);
 
-  if (isMobile) {
-    return (
-      <div className="min-h-screen flex flex-col">
+  return (
+    <>
+      {/* Mobile Layout - Hidden on desktop */}
+      <div className="min-h-screen flex flex-col md:hidden">
         <MobileNavbar currentPath={currentPath} />
         <div className={`flex-1 ${bgClass}`}>
           {children}
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen flex">
-      <ModernSidebar currentPath={currentPath} />
-      <div className={`flex-1 overflow-hidden ${bgClass}`}>
-        {children}
+      {/* Desktop Layout - Hidden on mobile */}
+      <div className="min-h-screen hidden md:flex">
+        <ModernSidebar currentPath={currentPath} />
+        <div className={`flex-1 overflow-hidden ${bgClass}`}>
+          {children}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
