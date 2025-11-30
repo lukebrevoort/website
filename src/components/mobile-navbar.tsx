@@ -1,31 +1,24 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
 import { projects, getFeaturedProjects } from '@/data/projects';
 
-import { 
-  User, 
-  FileText, 
-  Wrench, 
-  Newspaper, 
-  BarChart3, 
-  MessageSquare, 
-  Globe, 
-  Menu, 
-  X, 
-  ChevronDown, 
-  Bot, 
-  BookOpen, 
-  NotebookPen, 
-  BookText, 
-  PieChart, 
-  LaptopMinimalCheck, 
-  SquareTerminal, 
-  MoreHorizontal, 
-  Activity, 
-  Brain, 
-  TrendingUp, 
-  FileUser 
+import {
+  User,
+  Globe,
+  Menu,
+  X,
+  Bot,
+  BookOpen,
+  NotebookPen,
+  BookText,
+  LaptopMinimalCheck,
+  SquareTerminal,
+  MoreHorizontal,
+  Activity,
+  Brain,
+  TrendingUp,
+  FileUser
 } from 'lucide-react';
 
 import { Button } from './ui/button';
@@ -33,7 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { Sheet, SheetTrigger, SheetTitle, SheetPortal, SheetOverlay } from './ui/sheet';
 import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { cn } from "@/lib/utils";
+
 
 interface NavItem {
   title: string;
@@ -47,8 +40,7 @@ interface NavSection {
   items: NavItem[];
 }
 
-// Function to get appropriate icon for each project (same as sidebar)
-const getProjectIcon = (slug: string, title: string): React.ComponentType<{ className?: string }> => {
+const getProjectIcon = (slug: string): React.ComponentType<{ className?: string }> => {
   switch (slug) {
     case 'canvas-notion':
       return BookText;
@@ -69,17 +61,15 @@ const getProjectIcon = (slug: string, title: string): React.ComponentType<{ clas
   }
 };
 
-// Generate project nav items from data (memoized)
 const generateProjectNavItems = (): NavItem[] => {
   const featuredProjects = getFeaturedProjects();
   const projectItems: NavItem[] = featuredProjects.map(project => ({
     title: project.title,
-    icon: getProjectIcon(project.slug, project.title),
+    icon: getProjectIcon(project.slug),
     href: `/projects/${project.slug}`,
     badge: project.status === 'in-progress' ? 'WIP' : undefined
   }));
 
-  // Add "More" item if there are more projects than featured ones
   if (projects.length > featuredProjects.length) {
     projectItems.push({
       title: "More Projects",
@@ -91,7 +81,6 @@ const generateProjectNavItems = (): NavItem[] => {
   return projectItems;
 };
 
-// Pre-generate nav sections to avoid recalculation on every render
 const projectNavItems = generateProjectNavItems();
 
 const navSections: NavSection[] = [
@@ -120,167 +109,89 @@ export function MobileNavbar({ currentPath = "/dashboard" }: MobileNavbarProps) 
 
   return (
     <div 
-      className="sticky top-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20 px-4 py-3 shadow-2xl shadow-black/5"
-      style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-      }}    
+      className="sticky top-0 z-50 bg-sidebar text-sidebar-foreground border-b border-sidebar-border px-4 py-3 shadow-md"
     >
-      {/* Shimmer overlay */}
-      <div 
-        className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{
-          background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
-          animation: 'shimmer 3s infinite',
-        }}
-      />
-
       <div className="flex items-center justify-between relative">
-        {/* Logo/Brand Section for mobile */}
         <div className="flex items-center space-x-3">
           <Button 
             variant="ghost" 
             size="sm" 
-            className="relative w-10 h-10 p-0 bg-gradient-to-br from-pink-300/20 to-rose-300/20 backdrop-blur-sm text-white/80 hover:text-white hover:bg-transparent border-0"
+            className="relative w-10 h-10 p-0 bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80"
             onClick={() => window.location.href = "/dashboard"}
           >
-            <Avatar className="h-8 w-8 ring-2 ring-white/20">
+            <Avatar className="h-8 w-8 ring-2 ring-sidebar-border">
               <AvatarImage src="/images/avatar.jpg" alt="Luke Brevoort" />
-              <AvatarFallback className="bg-gradient-to-br from-pink-300/20 to-rose-300/20 text-white backdrop-blur-sm">
+              <AvatarFallback className="bg-sidebar-accent text-sidebar-foreground">
                 LB
               </AvatarFallback>
             </Avatar>
           </Button>
           <div className="flex flex-col">
-            <span className="text-white/90 text-sm font-medium">Luke Brevoort</span>
-            <span className="text-white/60 text-xs">Developer</span>
+            <span className="text-sidebar-foreground text-sm font-medium">Luke Brevoort</span>
+            <span className="text-sidebar-foreground/70 text-xs">Developer</span>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <div className="relative group">
-              {/* Glistening background for menu button */}
-              <div className="absolute inset-0 rounded-full bg-transparent group-hover:bg-gradient-to-r group-hover:from-white/10 group-hover:to-white/5 group-hover:backdrop-blur-sm transition-all duration-300" />
-              
-              {/* Hover shimmer effect */}
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none overflow-hidden">
-                <div 
-                  className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"
-                  style={{
-                    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
-                  }}
-                />
-              </div>
-
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="relative w-10 h-10 p-0 bg-gradient-to-br from-pink-600/20 to-rose-400/20 backdrop-blur-sm text-white/80 hover:text-white hover:bg-transparent border-0"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative w-10 h-10 p-0 bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
           </SheetTrigger>
           
           <SheetPortal>
             <SheetOverlay />
             <SheetPrimitive.Content
-              className={cn(
-                "fixed z-50 gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
-                "inset-y-0 right-0 h-full w-80 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
-                "p-0 border-0"
-              )}
-              style={{
-                background: 'linear-gradient(135deg, rgba(236, 179, 201, 0.08), rgba(219, 148, 195, 0.17), rgba(199, 149, 185, 0.05))',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                borderLeft: '1px solid rgba(255, 255, 255, 0.2)',
-              }}
+              className="fixed z-50 inset-y-0 right-0 w-80 bg-sidebar text-sidebar-foreground border-l border-sidebar-border p-0"
             >
-            {/* Sheet Shimmer overlay */}
-            <div 
-              className="absolute inset-0 opacity-10 pointer-events-none"
-              style={{
-                background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
-                animation: 'shimmer 4s infinite',
-              }}
-            />
-
-            {/* Header */}
-            <div className="p-6 border-b border-white/10 relative">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-10 w-10 ring-2 ring-white/20">
-                    <AvatarImage src="/images/avatar.jpg" alt="Luke Brevoort" />
-                    <AvatarFallback className="bg-gradient-to-br from-pink-300/20 to-rose-300/20 text-white backdrop-blur-sm">
-                      LB
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-white/90 font-medium">Luke Brevoort</span>
-                    <span className="text-white/60 text-xs">Developer</span>
+              <div className="p-6 border-b border-sidebar-border">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="h-10 w-10 ring-2 ring-sidebar-border">
+                      <AvatarImage src="/images/avatar.jpg" alt="Luke Brevoort" />
+                      <AvatarFallback className="bg-sidebar-accent text-sidebar-foreground">
+                        LB
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="text-sidebar-foreground font-medium">Luke Brevoort</span>
+                      <span className="text-sidebar-foreground/70 text-xs">Developer</span>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Close Button */}
-                <div className="relative group">
-                  <div className="absolute inset-0 rounded-full bg-transparent group-hover:bg-gradient-to-r group-hover:from-white/10 group-hover:to-white/5 group-hover:backdrop-blur-sm transition-all duration-300" />
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="relative w-8 h-8 p-0 bg-transparent hover:bg-transparent text-white/60 hover:text-white border-0"
+                    className="relative w-8 h-8 p-0 bg-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground"
                     onClick={() => setIsOpen(false)}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-            </div>
-            
-            {/* Navigation */}
-            <div className="py-4 relative">
-              {navSections.map((section, sectionIndex) => (
-                <div key={section.title} className="mb-6">
-                  <div className="px-6 mb-2">
-                    <h3 className="text-xs uppercase tracking-wider text-white/50 font-medium">
-                      {section.title}
-                    </h3>
-                  </div>
-                  <nav className="space-y-1 px-4">
-                    {section.items.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = activeItem === item.href;
-                      
-                      return (
-                        <div
-                          key={item.href}
-                          className="relative group"
-                        >
-                          {/* Glistening background for active/hover state */}
-                          <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-                            isActive 
-                              ? 'bg-gradient-to-r from-pink-300/20 to-rose-300/20 backdrop-blur-sm shadow-lg shadow-pink-300/10' 
-                              : 'bg-transparent group-hover:bg-gradient-to-r group-hover:from-white/10 group-hover:to-white/5 group-hover:backdrop-blur-sm'
-                          }`} />
-                          
-                          {/* Hover shimmer effect */}
-                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none overflow-hidden">
-                            <div 
-                              className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"
-                              style={{
-                                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
-                              }}
-                            />
-                          </div>
+              <div className="py-4">
+                {navSections.map((section) => (
+                  <div key={section.title} className="mb-6">
+                    <div className="px-6 mb-2">
+                      <h3 className="text-xs uppercase tracking-wider text-sidebar-foreground/50 font-medium">
+                        {section.title}
+                      </h3>
+                    </div>
+                    <nav className="space-y-1 px-4">
+                      {section.items.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = activeItem === item.href;
 
+                        return (
                           <Button
+                            key={item.href}
                             variant="ghost"
-                            className={`relative w-full justify-start h-10 px-3 transition-all duration-300 border-0 bg-transparent hover:bg-transparent text-white/80 hover:text-white ${
-                              isActive ? 'text-white' : ''
+                            className={`relative w-full justify-start h-10 px-3 text-sidebar-foreground hover:text-sidebar-accent ${
+                              isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''
                             }`}
                             onClick={() => {
                               setActiveItem(item.href);
@@ -288,33 +199,20 @@ export function MobileNavbar({ currentPath = "/dashboard" }: MobileNavbarProps) 
                               window.location.href = item.href;
                             }}
                           >
-                            <Icon className={`h-4 w-4 mr-3 transition-all duration-300 ${
-                              isActive ? 'text-pink-300 drop-shadow-[0_0_8px_rgba(236,179,201,0.5)]' : 'group-hover:text-pink-300'
-                            }`} />
+                            <Icon className="h-4 w-4 mr-3" />
                             <span className="flex-1 text-left">{item.title}</span>
                             {item.badge && (
-                              <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-5 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border-white/20 text-white/90 backdrop-blur-sm ml-2">
+                              <Badge variant="outline" className="ml-2">
                                 {item.badge}
                               </Badge>
                             )}
                           </Button>
-                        </div>
-                      );
-                    })}
-                  </nav>
-                </div>
-              ))}
-            </div>
-
-            {/* Footer */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10 relative">
-              <div className="flex items-center justify-between text-xs text-white/60">
-                <span>v2.1.0</span>
-                <Badge variant="outline" className="text-xs bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border-white/20 text-white/80 backdrop-blur-sm">
-                  Beta
-                </Badge>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                ))}
               </div>
-            </div>
             </SheetPrimitive.Content>
           </SheetPortal>
         </Sheet>

@@ -48,15 +48,19 @@ export default function Page() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
           >
-            <h1 className={`${crimsonText.className} text-xl md:text-3xl`}>
-              Welcome to my Website!
-            </h1>
-            <h3
-              className={`${crimsonText.className} max-w-[90%] md:max-w-[50%] mx-auto text-base md:text-xl`}
+            <div
+              className={`${crimsonText.className} font-bold text-4xl md:text-4xl`}
             >
-              I host my personal projects, photos, and other stuff I find cool
-              on here!
-            </h3>
+              Welcome to my Website!
+            </div>
+            <div
+              className={`${crimsonText.className} max-w-[100%] md:max-w-[60%] mx-auto text-base md:text-2xl`}
+            >
+              I am a current CS Student at Stevens Institute of Technology and
+              aspiring Software Engineer passionate about building Full-Stack
+              applications, engineering personal solutions, and exploring the
+              cutting-edge of technology :)
+            </div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
