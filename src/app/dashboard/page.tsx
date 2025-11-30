@@ -175,7 +175,7 @@ export default function Page() {
                   {projects.slice(0, 5).map((project) => (
                     <div
                       key={project.id}
-                      className="embla__slide flex-[0_0_300px] md:flex-[0_0_400px]"
+                      className="embla__slide flex-[0_0_80%] md:flex-[0_0_400px]"
                     >
                       <ProjectCard {...project} />
                     </div>
