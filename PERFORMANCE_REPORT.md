@@ -178,8 +178,7 @@ className={`... transition-all duration-500 ease-in-out ... ${
 
 After implementing all fixes:
 - **CLS Score:** Expected to drop from ~0.40-0.60 to <0.10 (Good)
-- **LCP (Largest Contentful Paint):** Should improve by 20-30%
-- **FID (First Input Delay):** Should improve slightly
+- **LCP (Largest Contentful Paint):** Should improve by 20-30% **FID (First Input Delay):** Should improve slightly
 - **Overall Vercel Score:** Expected to improve from failing to passing
 
 ---
