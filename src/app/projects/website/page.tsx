@@ -100,7 +100,7 @@ export default function WebsitePage() {
           <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
             {/* Hero Section */}
             <motion.div 
-              className="mb-16"
+              className="mb-8 sm:mb-12 md:mb-16"
               initial="hidden"
               animate="visible"
               variants={fadeInUpVariants}
@@ -117,7 +117,7 @@ export default function WebsitePage() {
                 </motion.div>
                 
                 <motion.h1 
-                  className="text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
@@ -126,7 +126,7 @@ export default function WebsitePage() {
                 </motion.h1>
                 
                 <motion.p 
-                  className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+                  className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-2"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
@@ -137,7 +137,7 @@ export default function WebsitePage() {
               </div>
 
               <motion.div 
-                className="flex flex-wrap justify-center gap-4 mb-12"
+                className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
@@ -146,7 +146,7 @@ export default function WebsitePage() {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gray-900 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   {...scaleOnHover}
                 >
                   <Github className="h-5 w-5 mr-2" />
@@ -157,7 +157,7 @@ export default function WebsitePage() {
                   href="https://luke.brevoort.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   {...scaleOnHover}
                 >
                   <ExternalLink className="h-5 w-5 mr-2" />
@@ -168,14 +168,14 @@ export default function WebsitePage() {
 
             {/* Overview Section */}
             <AnimatedSection id="overview">
-              <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center mb-8 sm:mb-12 md:mb-16">
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
                     Professional Digital Presence
                   </h2>
                   <div className="prose prose-lg text-gray-700">
@@ -226,17 +226,17 @@ export default function WebsitePage() {
 
             {/* Features Section */}
             <AnimatedSection id="features">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Advanced Features & Capabilities
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Every feature is engineered for performance, scalability, and exceptional user experience
                 </p>
               </motion.div>
 
               <motion.div 
-                className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
                 variants={staggerContainer}
                 initial="hidden"
                 whileInView="visible"
@@ -287,12 +287,12 @@ export default function WebsitePage() {
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-xl text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                        <feature.icon className="h-8 w-8" />
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r ${feature.gradient} rounded-xl text-white mb-3 sm:mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-4">{feature.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{feature.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -301,18 +301,18 @@ export default function WebsitePage() {
 
             {/* Architecture Section */}
             <AnimatedSection id="architecture">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Enterprise-Grade Architecture
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Built with scalability, maintainability, and performance as core principles
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 md:p-12">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12">
                 <motion.div 
-                  className="grid lg:grid-cols-3 gap-8"
+                  className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -343,11 +343,11 @@ export default function WebsitePage() {
                       className="text-center"
                       variants={fadeInUpVariants}
                     >
-                      <div className={`inline-flex items-center justify-center w-20 h-20 bg-${item.color}-100 text-${item.color}-600 rounded-2xl mb-6 mx-auto`}>
-                        <item.icon className="h-10 w-10" />
+                      <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-${item.color}-100 text-${item.color}-600 rounded-2xl mb-3 sm:mb-4 md:mb-6 mx-auto`}>
+                        <item.icon className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                      <p className="text-gray-600">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -356,16 +356,16 @@ export default function WebsitePage() {
 
             {/* Technology Stack Section */}
             <AnimatedSection id="technology">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Cutting-Edge Technology Stack
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Leveraging the latest technologies for optimal development experience and performance
                 </p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-12">
+              <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                 <motion.div
                   className="space-y-6"
                   initial={{ opacity: 0, x: -50 }}
@@ -373,10 +373,10 @@ export default function WebsitePage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
                     <div className="flex items-center mb-6">
-                      <Monitor className="h-8 w-8 text-blue-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Frontend Technologies</h3>
+                      <Monitor className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Frontend Technologies</h3>
                     </div>
                     <div className="space-y-4">
                       {[
@@ -388,13 +388,13 @@ export default function WebsitePage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="p-4 bg-gray-50 rounded-lg"
+                          className="p-3 sm:p-4 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <div className="font-semibold text-gray-900">{tech.name}</div>
-                              <div className="text-sm text-gray-600">{tech.desc}</div>
+                              <div className="text-sm sm:text-base font-semibold text-gray-900">{tech.name}</div>
+                              <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                             </div>
                             <CheckCircle className="h-5 w-5 text-green-500" />
                           </div>
@@ -419,10 +419,10 @@ export default function WebsitePage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
                     <div className="flex items-center mb-6">
-                      <Database className="h-8 w-8 text-purple-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Backend & Integrations</h3>
+                      <Database className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500 mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Backend & Integrations</h3>
                     </div>
                     <div className="space-y-4">
                       {[
@@ -434,13 +434,13 @@ export default function WebsitePage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="p-4 bg-gray-50 rounded-lg"
+                          className="p-3 sm:p-4 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <div className="font-semibold text-gray-900">{tech.name}</div>
-                              <div className="text-sm text-gray-600">{tech.desc}</div>
+                              <div className="text-sm sm:text-base font-semibold text-gray-900">{tech.name}</div>
+                              <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                             </div>
                             <CheckCircle className="h-5 w-5 text-green-500" />
                           </div>
@@ -462,18 +462,18 @@ export default function WebsitePage() {
 
             {/* Innovation Section */}
             <AnimatedSection id="innovation">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Innovation & Developer Experience
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Forward-thinking approach to web development with automated workflows and AI integration
                 </p>
               </motion.div>
 
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center">
                 <motion.div
-                  className="space-y-8"
+                  className="space-y-4 sm:space-y-6 md:space-y-8"
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -504,12 +504,12 @@ export default function WebsitePage() {
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.2 }}
                     >
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white">
-                        <item.icon className="h-6 w-6" />
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white">
+                        <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                        <p className="text-gray-600">{item.description}</p>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2">{item.title}</h3>
+                        <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -522,27 +522,27 @@ export default function WebsitePage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-8 shadow-2xl">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Code2 className="h-8 w-8 text-blue-500 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">Modern Tooling</div>
-                        <div className="text-xs text-gray-600">ESLint, PostCSS, TypeScript</div>
+                  <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Code2 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">Modern Tooling</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">ESLint, PostCSS, TypeScript</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Sparkles className="h-8 w-8 text-purple-500 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">AI Integration</div>
-                        <div className="text-xs text-gray-600">Client-side ML capabilities</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">AI Integration</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Client-side ML capabilities</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Layers className="h-8 w-8 text-green-500 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">Component Library</div>
-                        <div className="text-xs text-gray-600">Radix UI primitives</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Layers className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">Component Library</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Radix UI primitives</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Globe className="h-8 w-8 text-indigo-500 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">Global Deployment</div>
-                        <div className="text-xs text-gray-600">Vercel edge network</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Globe className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-500 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">Global Deployment</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Vercel edge network</div>
                       </div>
                     </div>
                   </div>
@@ -552,18 +552,18 @@ export default function WebsitePage() {
 
             {/* Impact Section */}
             <AnimatedSection id="impact">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Professional Impact & Recognition
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   A testament to software craftsmanship and forward-thinking web development
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
+              <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 text-white">
                 <motion.div 
-                  className="grid md:grid-cols-3 gap-8 text-center"
+                  className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -591,30 +591,30 @@ export default function WebsitePage() {
                       variants={fadeInUpVariants}
                       className="text-center"
                     >
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
-                        <item.icon className="h-8 w-8" />
+                      <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 rounded-2xl mb-3 sm:mb-4 md:mb-6">
+                        <item.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                      <p className="text-white/90">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-white/90">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
 
                 <motion.div
-                  className="mt-12 text-center"
+                  className="mt-8 sm:mt-10 md:mt-12 text-center"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 }}
                 >
-                  <p className="text-xl font-semibold mb-6">
+                  <p className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6">
                     Experience the future of digital portfolios
                   </p>
                   <motion.a
                     href="https://luke.brevoort.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 text-sm sm:text-base bg-white text-blue-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -646,7 +646,7 @@ function AnimatedSection({
     <motion.section
       ref={ref}
       id={id}
-      className="mb-24"
+      className="mb-12 sm:mb-16 md:mb-24"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8, ease: "easeOut" }}

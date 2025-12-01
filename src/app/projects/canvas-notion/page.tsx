@@ -101,7 +101,7 @@ export default function CanvasNotionPage() {
           <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
             {/* Hero Section */}
             <motion.div 
-              className="mb-16"
+              className="mb-8 sm:mb-12 md:mb-16"
               initial="hidden"
               animate="visible"
               variants={fadeInUpVariants}
@@ -118,7 +118,7 @@ export default function CanvasNotionPage() {
                 </motion.div>
                 
                 <motion.h1 
-                  className="text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-red-600 to-gray-900 bg-clip-text text-transparent"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-red-600 to-gray-900 bg-clip-text text-transparent"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
@@ -127,7 +127,7 @@ export default function CanvasNotionPage() {
                 </motion.h1>
                 
                 <motion.p 
-                  className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+                  className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-2"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
@@ -138,7 +138,7 @@ export default function CanvasNotionPage() {
               </div>
 
               <motion.div 
-                className="flex flex-wrap justify-center gap-4 mb-12"
+                className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
@@ -147,7 +147,7 @@ export default function CanvasNotionPage() {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-gray-900 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
                   {...scaleOnHover}
                 >
                   <Github className="h-5 w-5 mr-2" />
@@ -158,17 +158,17 @@ export default function CanvasNotionPage() {
 
             {/* Overview Section */}
             <AnimatedSection id="overview">
-              <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center mb-8 sm:mb-12 md:mb-16">
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
                     Bridging Academic Platforms
                   </h2>
-                  <div className="prose prose-lg text-gray-700">
+                  <div className="prose prose-sm sm:prose-lg text-gray-700">
                     <p className="mb-4">
                       Traditional student workflow management involves juggling multiple platforms, 
                       leading to <strong>missed deadlines and poor prioritization</strong>. This Python-based 
@@ -192,15 +192,15 @@ export default function CanvasNotionPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  <div className="relative bg-gradient-to-br from-red-100 to-gray-100 rounded-2xl p-8 shadow-2xl">
-                    <div className="flex items-center justify-center space-x-8">
+                  <div className="relative bg-gradient-to-br from-red-100 to-gray-100 rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                    <div className="flex items-center justify-center space-x-4 sm:space-x-6 md:space-x-8">
                       {/* Canvas Side */}
                       <div className="text-center">
-                        <div className="w-24 h-24 bg-red-500 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
-                          <BookOpen className="h-12 w-12" />
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-red-500 rounded-2xl flex items-center justify-center text-white mb-2 sm:mb-4 shadow-lg">
+                          <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" />
                         </div>
-                        <h3 className="font-bold text-gray-900">Canvas LMS</h3>
-                        <p className="text-sm text-gray-600">Assignments & Grades</p>
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">Canvas LMS</h3>
+                        <p className="text-xs sm:text-sm text-gray-600">Assignments & Grades</p>
                       </div>
                       
                       {/* Sync Arrow */}
@@ -212,18 +212,18 @@ export default function CanvasNotionPage() {
                         }}
                         >
                         <div className="flex flex-col items-center space-y-2">
-                          <RefreshCw className="h-8 w-8 text-red-600 animate-spin" />
-                          <RefreshCw className="h-6 w-6 text-gray-700 animate-spin" />
+                          <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 animate-spin" />
+                          <RefreshCw className="h-4 w-4 sm:h-6 sm:w-6 text-gray-700 animate-spin" />
                         </div>
                         </motion.div>
                       
                       {/* Notion Side */}
                       <div className="text-center">
-                        <div className="w-24 h-24 bg-gray-900 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
-                          <FileText className="h-12 w-12" />
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gray-900 rounded-2xl flex items-center justify-center text-white mb-2 sm:mb-4 shadow-lg">
+                          <FileText className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" />
                         </div>
-                        <h3 className="font-bold text-gray-900">Notion</h3>
-                        <p className="text-sm text-gray-600">Smart Dashboard</p>
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">Notion</h3>
+                        <p className="text-xs sm:text-sm text-gray-600">Smart Dashboard</p>
                       </div>
                     </div>
                     <div className="absolute -top-4 -right-4 bg-red-500 text-white p-3 rounded-full shadow-lg">
@@ -236,17 +236,17 @@ export default function CanvasNotionPage() {
 
             {/* Solution Section */}
             <AnimatedSection id="solution">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Intelligent Automation Solution
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Comprehensive features designed to eliminate academic workflow friction
                 </p>
               </motion.div>
 
               <motion.div 
-                className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
                 variants={staggerContainer}
                 initial="hidden"
                 whileInView="visible"
@@ -297,12 +297,12 @@ export default function CanvasNotionPage() {
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-xl text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                        <feature.icon className="h-8 w-8" />
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r ${feature.gradient} rounded-xl text-white mb-3 sm:mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-4">{feature.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{feature.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -311,18 +311,18 @@ export default function CanvasNotionPage() {
 
             {/* Architecture Section */}
             <AnimatedSection id="architecture">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Robust System Architecture
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Enterprise-grade design patterns for reliability, scalability, and maintainability
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 md:p-12">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12">
                 <motion.div 
-                  className="grid lg:grid-cols-3 gap-8"
+                  className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -353,11 +353,11 @@ export default function CanvasNotionPage() {
                       className="text-center"
                       variants={fadeInUpVariants}
                     >
-                      <div className={`inline-flex items-center justify-center w-20 h-20 bg-${item.color}-100 text-${item.color}-600 rounded-2xl mb-6 mx-auto`}>
-                        <item.icon className="h-10 w-10" />
+                      <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-${item.color}-100 text-${item.color}-600 rounded-2xl mb-3 sm:mb-4 md:mb-6 mx-auto`}>
+                        <item.icon className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                      <p className="text-gray-600">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -366,16 +366,16 @@ export default function CanvasNotionPage() {
 
             {/* Technology Stack Section */}
             <AnimatedSection id="technology">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Technology Stack & Tools
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Modern Python ecosystem with enterprise-grade API integrations
                 </p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-12">
+              <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                 <motion.div
                   className="space-y-6"
                   initial={{ opacity: 0, x: -50 }}
@@ -383,12 +383,12 @@ export default function CanvasNotionPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-center mb-6">
-                      <Monitor className="h-8 w-8 text-red-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Core Technologies</h3>
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                      <Monitor className="h-6 w-6 sm:h-8 sm:w-8 text-red-500 mr-2 sm:mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Core Technologies</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { name: "Python 3.8+", desc: "Modern async/await patterns", level: 95 },
                         { name: "Canvas LMS API", desc: "Educational data integration", level: 90 },
@@ -398,15 +398,15 @@ export default function CanvasNotionPage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="p-4 bg-gray-50 rounded-lg"
+                          className="p-3 sm:p-4 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <div className="font-semibold text-gray-900">{tech.name}</div>
-                              <div className="text-sm text-gray-600">{tech.desc}</div>
+                              <div className="font-semibold text-gray-900 text-sm sm:text-base">{tech.name}</div>
+                              <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                             </div>
-                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <motion.div 
@@ -429,12 +429,12 @@ export default function CanvasNotionPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-center mb-6">
-                      <Settings className="h-8 w-8 text-gray-700 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Automation & DevOps</h3>
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                      <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-gray-700 mr-2 sm:mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Automation & DevOps</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { name: "macOS LaunchAgent", desc: "System-level service management", level: 90 },
                         { name: "Error Handling", desc: "Comprehensive logging systems", level: 95 },
@@ -444,15 +444,15 @@ export default function CanvasNotionPage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="p-4 bg-gray-50 rounded-lg"
+                          className="p-3 sm:p-4 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <div className="font-semibold text-gray-900">{tech.name}</div>
-                              <div className="text-sm text-gray-600">{tech.desc}</div>
+                              <div className="font-semibold text-gray-900 text-sm sm:text-base">{tech.name}</div>
+                              <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                             </div>
-                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <motion.div 
@@ -472,18 +472,18 @@ export default function CanvasNotionPage() {
 
             {/* Impact Section */}
             <AnimatedSection id="impact">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Real-World Impact & Value
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Demonstrating ability to identify problems and architect comprehensive automation solutions
                 </p>
               </motion.div>
 
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center">
                 <motion.div
-                  className="space-y-8"
+                  className="space-y-4 sm:space-y-6 md:space-y-8"
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -514,12 +514,12 @@ export default function CanvasNotionPage() {
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.2 }}
                     >
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-red-500 to-gray-700 rounded-xl flex items-center justify-center text-white">
-                        <item.icon className="h-6 w-6" />
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-gray-700 rounded-xl flex items-center justify-center text-white">
+                        <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                        <p className="text-gray-600">{item.description}</p>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2">{item.title}</h3>
+                        <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -532,27 +532,27 @@ export default function CanvasNotionPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  <div className="bg-gradient-to-br from-red-100 to-gray-100 rounded-3xl p-8 shadow-2xl">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <GitBranch className="h-8 w-8 text-red-500 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">API Integration</div>
-                        <div className="text-xs text-gray-600">Canvas ↔ Notion sync</div>
+                  <div className="bg-gradient-to-br from-red-100 to-gray-100 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <GitBranch className="h-6 w-6 sm:h-8 sm:w-8 text-red-500 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">API Integration</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Canvas ↔ Notion sync</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Gauge className="h-8 w-8 text-gray-700 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">Smart Priority</div>
-                        <div className="text-xs text-gray-600">Weight-based sorting</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Gauge className="h-6 w-6 sm:h-8 sm:w-8 text-gray-700 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">Smart Priority</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Weight-based sorting</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Clock className="h-8 w-8 text-red-600 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">Real-time Sync</div>
-                        <div className="text-xs text-gray-600">Background automation</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">Real-time Sync</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Background automation</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg">
-                        <Bell className="h-8 w-8 text-gray-600 mb-3" />
-                        <div className="text-sm font-semibold text-gray-800">Error Recovery</div>
-                        <div className="text-xs text-gray-600">Intelligent retries</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+                        <Bell className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600 mb-2 sm:mb-3" />
+                        <div className="text-xs sm:text-sm font-semibold text-gray-800">Error Recovery</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600">Intelligent retries</div>
                       </div>
                     </div>
                   </div>
@@ -562,18 +562,18 @@ export default function CanvasNotionPage() {
 
             {/* Results Section */}
             <AnimatedSection id="results">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Technical Excellence & Results
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   A showcase of full-stack development skills and thoughtful automation design
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-red-600 to-gray-900 rounded-3xl p-8 md:p-12 text-white">
+              <div className="bg-gradient-to-br from-red-600 to-gray-900 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 text-white">
                 <motion.div 
-                  className="grid md:grid-cols-3 gap-8 text-center"
+                  className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -601,30 +601,30 @@ export default function CanvasNotionPage() {
                       variants={fadeInUpVariants}
                       className="text-center"
                     >
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
-                        <item.icon className="h-8 w-8" />
+                      <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 rounded-2xl mb-3 sm:mb-4 md:mb-6">
+                        <item.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                      <p className="text-white/90">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-white/90">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
 
                 <motion.div
-                  className="mt-12 text-center"
+                  className="mt-8 sm:mt-10 md:mt-12 text-center"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 }}
                 >
-                  <p className="text-xl font-semibold mb-6">
+                  <p className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6">
                     Experience intelligent academic workflow automation
                   </p>
                   <motion.a
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-8 py-4 bg-white text-red-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-white text-red-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -656,7 +656,7 @@ function AnimatedSection({
     <motion.section
       ref={ref}
       id={id}
-      className="mb-24"
+      className="mb-12 sm:mb-16 md:mb-24"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8 }}
