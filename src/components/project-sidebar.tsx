@@ -70,7 +70,7 @@ export default function ProjectSidebar({
   return (
     <>
       {/* Mobile sidebar overlay */}
-      <div className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div 
           className={`fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setSidebarOpen(false)} 
@@ -158,8 +158,8 @@ export default function ProjectSidebar({
 
       {/* Desktop sidebar */}
       <div 
-        className={`hidden lg:fixed lg:inset-y-0 lg:flex lg:flex-col shadow-2xl transition-all duration-500 ease-in-out ${
-          isCollapsed ? 'lg:w-20' : 'lg:w-64'
+        className={`hidden md:fixed md:inset-y-0 md:flex md:flex-col shadow-2xl transition-all duration-500 ease-in-out ${
+          isCollapsed ? 'md:w-20' : 'md:w-64'
         }`}
         onMouseEnter={() => setIsCollapsed(false)}
         onMouseLeave={() => setIsCollapsed(true)}
@@ -280,7 +280,7 @@ export default function ProjectSidebar({
       </div>
 
       {/* Mobile toggle button */}
-      <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm lg:hidden">
+      <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm md:hidden">
         <button
           type="button"
           className="text-gray-700"
@@ -294,7 +294,7 @@ export default function ProjectSidebar({
       </div>
 
       {/* Main content wrapper */}
-      <div className={`transition-all duration-500 ease-in-out ${isCollapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
+      <div className={`transition-all duration-500 ease-in-out ${isCollapsed ? 'md:pl-20' : 'md:pl-64'}`}>
         {children}
       </div>
     </>

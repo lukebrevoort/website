@@ -112,7 +112,7 @@ export default function FlowStatePage() {
         onItemClick={handleItemClick}
       >
         <main className="py-10">
-          <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
             {/* Hero Section */}
             <motion.div 
               className="mb-16"

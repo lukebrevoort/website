@@ -58,59 +58,59 @@ export default function ProjectCard({
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] cursor-pointer" 
         style={getGradientStyle()}>
         {/* Project Image */}
-        <div className="h-48 flex items-center justify-center">
+        <div className="h-24 sm:h-32 md:h-48 flex items-center justify-center">
           {image ? (
-            <img src={image} alt={title} className="w-32 h-32 object-cover" />
+            <img src={image} alt={title} className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 object-cover" />
           ) : (
-            <div className="text-6xl text-gray-300">📱</div>
+            <div className="text-4xl md:text-6xl text-gray-300">📱</div>
           )}
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {/* Header */}
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex items-start justify-between mb-2 md:mb-3">
             <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-              <div className="flex items-center space-x-3 text-sm text-gray-500 mb-3">
+              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-1 md:mb-2">{title}</h3>
+              <div className="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm text-gray-500 mb-2 md:mb-3">
                 <span className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   {date}
                 </span>
                 <span className="flex items-center">
-                  <Tag className="h-4 w-4 mr-1" />
+                  <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   {category}
                 </span>
               </div>
             </div>
-            <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[status]}`}>
+            <span className={`px-2 py-1 text-[10px] sm:text-xs font-medium rounded-full ${statusColors[status]}`}>
               {status.replace('-', ' ')}
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-gray-600 mb-4 line-clamp-3">{description}</p>
+          <p className="text-gray-600 mb-3 md:mb-4 line-clamp-2 md:line-clamp-3 text-xs sm:text-sm md:text-base">{description}</p>
 
           {/* Technologies */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {technologies.slice(0, 4).map((tech) => (
+          <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 md:mb-4">
+            {technologies.slice(0, 3).map((tech) => (
               <span
                 key={tech}
-                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded"
+                className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-medium rounded"
               >
                 {tech}
               </span>
             ))}
-            {technologies.length > 4 && (
-              <span className="px-2 py-1 bg-gray-50 text-gray-500 text-xs font-medium rounded">
-                +{technologies.length - 4} more
+            {technologies.length > 3 && (
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-50 text-gray-500 text-[10px] sm:text-xs font-medium rounded">
+                +{technologies.length - 3} more
               </span>
             )}
           </div>
 
           {/* Actions */}
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md transition-colors">
+            <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-md transition-colors">
               View Project
             </div>
 

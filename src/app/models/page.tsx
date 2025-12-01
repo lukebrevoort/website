@@ -340,7 +340,7 @@ export default function Page() {
             <CardContent>
               <motion.div 
                 layout
-                className="flex flex-col gap-4 h-[600px]"
+                className="flex flex-col gap-4 h-[400px] md:h-[600px]"
               >
                 <div 
                   ref={chatBoxRef}
