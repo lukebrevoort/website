@@ -46,7 +46,7 @@ function AnimatedSection({
     <motion.section
       ref={ref}
       id={id}
-      className="mb-24"
+      className="mb-12 sm:mb-16 md:mb-24"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -165,7 +165,7 @@ export default function JobPersonalizerPage() {
           <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
             {/* Hero Section */}
             <motion.div 
-              className="mb-16"
+              className="mb-8 sm:mb-12 md:mb-16"
               initial="hidden"
               animate="visible"
               variants={fadeInUpVariants}
@@ -182,7 +182,7 @@ export default function JobPersonalizerPage() {
                 </motion.div>
                 
                 <motion.h1 
-                  className="text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
@@ -191,7 +191,7 @@ export default function JobPersonalizerPage() {
                 </motion.h1>
                 
                 <motion.p 
-                  className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+                  className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-2"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
@@ -203,7 +203,7 @@ export default function JobPersonalizerPage() {
               </div>
 
               <motion.div 
-                className="flex flex-wrap justify-center gap-4 mb-12"
+                className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
@@ -212,7 +212,7 @@ export default function JobPersonalizerPage() {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-gray-900 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
                   {...scaleOnHover}
                 >
                   <Github className="h-5 w-5 mr-2" />
@@ -224,14 +224,14 @@ export default function JobPersonalizerPage() {
 
             {/* Overview Section */}
             <AnimatedSection id="overview">
-              <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center mb-8 sm:mb-12 md:mb-16">
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4 md:mb-6">
                     Intelligent Job Search Automation
                   </h2>
                   <div className="prose prose-lg text-gray-700">
@@ -271,17 +271,17 @@ export default function JobPersonalizerPage() {
 
             {/* Automation Pipeline Section */}
             <AnimatedSection id="pipeline">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   End-to-End Automation Pipeline
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Complete workflow from job discovery to application submission with AI-powered personalization
                 </p>
               </motion.div>
 
               <motion.div 
-                className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"
+                className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-12"
                 variants={staggerContainer}
                 initial="hidden"
                 whileInView="visible"
@@ -320,9 +320,9 @@ export default function JobPersonalizerPage() {
                     whileHover={{ y: -10 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <div className="relative mb-6">
-                      <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-${step.color}-500 to-${step.color === 'purple' ? 'pink' : 'purple'}-500 rounded-2xl text-white mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                        <step.icon className="h-10 w-10" />
+                    <div className="relative mb-4 sm:mb-6">
+                      <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-r from-${step.color}-500 to-${step.color === 'purple' ? 'pink' : 'purple'}-500 rounded-2xl text-white mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                        <step.icon className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                       </div>
                       {index < 3 && (
                         <div className="hidden lg:block absolute top-10 left-full w-full">
@@ -330,8 +330,8 @@ export default function JobPersonalizerPage() {
                         </div>
                       )}
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">{step.title}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{step.description}</p>
                   </motion.div>
                 ))}
               </motion.div>
@@ -339,17 +339,17 @@ export default function JobPersonalizerPage() {
 
             {/* AI Features Section */}
             <AnimatedSection id="ai-features">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Advanced AI Integration
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Cutting-edge local AI models ensuring privacy while delivering intelligent automation
                 </p>
               </motion.div>
 
               <motion.div 
-                className="grid md:grid-cols-2 gap-8"
+                className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8"
                 variants={staggerContainer}
                 initial="hidden"
                 whileInView="visible"
@@ -378,12 +378,12 @@ export default function JobPersonalizerPage() {
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-xl text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                        <feature.icon className="h-8 w-8" />
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r ${feature.gradient} rounded-xl text-white mb-3 sm:mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-                      <p className="text-gray-600 leading-relaxed mb-6">{feature.description}</p>
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-4">{feature.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-6">{feature.description}</p>
                       <div className="space-y-2">
                         {feature.features.map((item, idx) => (
                           <div key={idx} className="flex items-center text-sm text-gray-700">
@@ -400,16 +400,16 @@ export default function JobPersonalizerPage() {
 
             {/* Technology Stack Section */}
             <AnimatedSection id="technology">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Modern Technology Stack
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Built with cutting-edge Python technologies and AI frameworks for robust automation
                 </p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-12">
+              <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                 <motion.div
                   className="space-y-6"
                   initial={{ opacity: 0, x: -50 }}
@@ -417,12 +417,12 @@ export default function JobPersonalizerPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-center mb-6">
-                      <Monitor className="h-8 w-8 text-purple-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Automation Engine</h3>
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                      <Monitor className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500 mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Automation Engine</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { name: "Python 3.10+", desc: "Core automation and processing", level: 95 },
                         { name: "Selenium", desc: "Advanced web scraping capabilities", level: 92 },
@@ -431,14 +431,14 @@ export default function JobPersonalizerPage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div>
-                            <div className="font-semibold text-gray-900">{tech.name}</div>
-                            <div className="text-sm text-gray-600">{tech.desc}</div>
+                            <div className="font-semibold text-gray-900 text-sm sm:text-base">{tech.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                           </div>
-                          <CheckCircle className="h-5 w-5 text-purple-500" />
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
                         </motion.div>
                       ))}
                     </div>
@@ -452,12 +452,12 @@ export default function JobPersonalizerPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-center mb-6">
-                      <Brain className="h-8 w-8 text-pink-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">AI & Integration</h3>
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                      <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500 mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">AI & Integration</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { name: "Ollama", desc: "Local LLM deployment and management", level: 92 },
                         { name: "PyLaTeX", desc: "Dynamic document generation", level: 95 },
@@ -466,14 +466,14 @@ export default function JobPersonalizerPage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div>
-                            <div className="font-semibold text-gray-900">{tech.name}</div>
-                            <div className="text-sm text-gray-600">{tech.desc}</div>
+                            <div className="font-semibold text-gray-900 text-sm sm:text-base">{tech.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                           </div>
-                          <CheckCircle className="h-5 w-5 text-pink-500" />
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
                         </motion.div>
                       ))}
                     </div>
@@ -484,21 +484,21 @@ export default function JobPersonalizerPage() {
 
             {/* Architecture Section */}
             <AnimatedSection id="architecture">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Clean, Modular Architecture
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Designed with testable components and separation of concerns for maintainability
                 </p>
               </motion.div>
 
               
 
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 md:p-12">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12">
                 <div className="space-y-12 flex flex-col">
                 <motion.div 
-                  className="grid lg:grid-cols-3 gap-8 mb-12"
+                  className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-12"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -529,11 +529,11 @@ export default function JobPersonalizerPage() {
                       className="text-center"
                       variants={fadeInUpVariants}
                     >
-                      <div className={`inline-flex items-center justify-center w-20 h-20 bg-${item.color}-100 text-${item.color}-600 rounded-2xl mb-6 mx-auto`}>
-                        <item.icon className="h-10 w-10" />
+                      <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-${item.color}-100 text-${item.color}-600 rounded-2xl mb-3 sm:mb-4 md:mb-6 mx-auto`}>
+                        <item.icon className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                      <p className="text-gray-600">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -557,27 +557,27 @@ export default function JobPersonalizerPage() {
 
                 {/* Technical Achievements */}
                 <motion.div
-                  className="bg-white rounded-2xl p-8 shadow-lg mt-12"
+                  className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg mt-12"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Key Technical Achievements</h3>
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6 text-center">Key Technical Achievements</h3>
+                  <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
                     {[
                       { icon: Award, title: "Document Processing Excellence", desc: "Sophisticated LaTeX resume processing with intelligent skill highlighting" },
                       { icon: Layers, title: "Modular Design", desc: "Clean separation of concerns with testable, maintainable components" },
                       { icon: Sparkles, title: "Privacy-First AI", desc: "Local LLM processing ensuring data never leaves your machine" },
                       { icon: TrendingUp, title: "Real-World Impact", desc: "Addresses genuine job search pain points with practical automation" }
                     ].map((achievement, index) => (
-                      <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
-                          <achievement.icon className="h-5 w-5" />
+                      <div key={index} className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 rounded-xl">
+                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
+                          <achievement.icon className="h-4 w-4 sm:h-5 sm:w-5" />
                         </div>
                         <div>
-                          <div className="font-semibold text-gray-900 mb-1">{achievement.title}</div>
-                          <div className="text-sm text-gray-600">{achievement.desc}</div>
+                          <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{achievement.title}</div>
+                          <div className="text-xs sm:text-sm text-gray-600">{achievement.desc}</div>
                         </div>
                       </div>
                     ))}
@@ -588,18 +588,18 @@ export default function JobPersonalizerPage() {
 
             {/* Impact Section */}
             <AnimatedSection id="impact">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Real-World Impact & Innovation
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Demonstrating practical AI application and full-stack development expertise
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-white">
+              <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 text-white">
                 <motion.div 
-                  className="grid md:grid-cols-3 gap-8 text-center"
+                  className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -627,37 +627,37 @@ export default function JobPersonalizerPage() {
                       variants={fadeInUpVariants}
                       className="text-center"
                     >
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
-                        <item.icon className="h-8 w-8" />
+                      <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 rounded-2xl mb-3 sm:mb-4 md:mb-6">
+                        <item.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                      <p className="text-white/90">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-white/90">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
 
                 <motion.div
-                  className="mt-12 text-center"
+                  className="mt-8 sm:mt-10 md:mt-12 text-center"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 }}
                 >
                   <div className="mb-6">
-                    <div className="inline-flex items-center space-x-6 text-center">
+                    <div className="flex flex-col sm:flex-row sm:inline-flex items-center space-y-4 sm:space-y-0 sm:space-x-6 text-center">
                       <div>
-                        <div className="text-2xl font-bold">Active Development</div>
-                        <div className="text-sm text-white/80">Continuous Improvement</div>
+                        <div className="text-xl sm:text-2xl font-bold">Active Development</div>
+                        <div className="text-xs sm:text-sm text-white/80">Continuous Improvement</div>
                       </div>
-                      <div className="w-px h-12 bg-white/20"></div>
+                      <div className="w-16 h-px sm:w-px sm:h-12 bg-white/20 hidden sm:block"></div>
                       <div>
-                        <div className="text-2xl font-bold">Open Source</div>
-                        <div className="text-sm text-white/80">Community Driven</div>
+                        <div className="text-xl sm:text-2xl font-bold">Open Source</div>
+                        <div className="text-xs sm:text-sm text-white/80">Community Driven</div>
                       </div>
-                      <div className="w-px h-12 bg-white/20"></div>
+                      <div className="w-16 h-px sm:w-px sm:h-12 bg-white/20 hidden sm:block"></div>
                       <div>
-                        <div className="text-2xl font-bold">Fully Functional</div>
-                        <div className="text-sm text-white/80">Production Ready</div>
+                        <div className="text-xl sm:text-2xl font-bold">Fully Functional</div>
+                        <div className="text-xs sm:text-sm text-white/80">Production Ready</div>
                       </div>
                     </div>
                   </div>
@@ -665,7 +665,7 @@ export default function JobPersonalizerPage() {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-8 py-4 bg-white text-purple-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-white text-purple-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >

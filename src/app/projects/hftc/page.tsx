@@ -42,7 +42,7 @@ function AnimatedSection({
     <motion.section
       ref={ref}
       id={id}
-      className="mb-24"
+      className="mb-12 sm:mb-16 md:mb-24"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -150,7 +150,7 @@ export default function HFTCPage() {
           <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
             {/* Hero Section */}
             <motion.div 
-              className="mb-16"
+              className="mb-8 sm:mb-12 md:mb-16"
               initial="hidden"
               animate="visible"
               variants={fadeInUpVariants}
@@ -167,7 +167,7 @@ export default function HFTCPage() {
                 </motion.div>
                 
                 <motion.h1 
-                  className="text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
@@ -176,7 +176,7 @@ export default function HFTCPage() {
                 </motion.h1>
                 
                 <motion.p 
-                  className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+                  className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-2"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
@@ -188,7 +188,7 @@ export default function HFTCPage() {
               </div>
 
               <motion.div 
-                className="flex flex-wrap justify-center gap-4 mb-12"
+                className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
@@ -198,7 +198,7 @@ export default function HFTCPage() {
                   href="https://fsc.stevens.edu/2025-high-frequency-trading-competition-recap/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   {...scaleOnHover}
                 >
                   <ExternalLink className="h-5 w-5 mr-2" />
@@ -209,14 +209,14 @@ export default function HFTCPage() {
 
             {/* Overview Section */}
             <AnimatedSection id="overview">
-              <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center mb-8 sm:mb-12 md:mb-16">
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
                     Elite Algorithmic Trading Competition
                   </h2>
                   <div className="prose prose-lg text-gray-700">
@@ -256,17 +256,17 @@ export default function HFTCPage() {
 
             {/* Trading Strategies Section */}
             <AnimatedSection id="strategies">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Advanced Trading Strategies
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Dual-strategy approach combining market making and momentum arbitrage for optimal performance
                 </p>
               </motion.div>
 
               <motion.div 
-                className="grid md:grid-cols-2 gap-8 mb-12"
+                className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-10 md:mb-12"
                 variants={staggerContainer}
                 initial="hidden"
                 whileInView="visible"
@@ -295,15 +295,15 @@ export default function HFTCPage() {
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${strategy.gradient} rounded-xl text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                        <strategy.icon className="h-8 w-8" />
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r ${strategy.gradient} rounded-xl text-white mb-3 sm:mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        <strategy.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{strategy.title}</h3>
-                      <p className="text-gray-600 leading-relaxed mb-6">{strategy.description}</p>
-                      <div className="space-y-2">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-4">{strategy.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4 sm:mb-6">{strategy.description}</p>
+                      <div className="space-y-1 sm:space-y-2">
                         {strategy.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center text-sm text-gray-700">
+                          <div key={idx} className="flex items-center text-xs sm:text-sm text-gray-700">
                             <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
                             {feature}
                           </div>
@@ -316,7 +316,7 @@ export default function HFTCPage() {
 
               {/* Technical Indicators Grid */}
               <motion.div 
-                className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -330,12 +330,12 @@ export default function HFTCPage() {
                 ].map((indicator, index) => (
                   <motion.div
                     key={index}
-                    className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 shadow-md border border-gray-200 text-center"
+                    className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-3 sm:p-4 shadow-md border border-gray-200 text-center"
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <indicator.icon className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                    <div className="text-sm font-bold text-gray-900">{indicator.name}</div>
+                    <indicator.icon className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 mx-auto mb-2" />
+                    <div className="text-xs sm:text-sm font-bold text-gray-900">{indicator.name}</div>
                     <div className="text-xs text-gray-600">{indicator.desc}</div>
                   </motion.div>
                 ))}
@@ -344,29 +344,29 @@ export default function HFTCPage() {
 
             {/* Technology Stack Section */}
             <AnimatedSection id="technology">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   High-Performance Technology Stack
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Built for microsecond precision and real-time market data processing
                 </p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-12">
+              <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                 <motion.div
-                  className="space-y-6"
+                  className="space-y-4 sm:space-y-6"
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-center mb-6">
-                      <Monitor className="h-8 w-8 text-red-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Trading Engine</h3>
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                      <Monitor className="h-6 w-6 sm:h-8 sm:w-8 text-red-500 mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Trading Engine</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { name: "Python", desc: "Core algorithm development", level: 95 },
                         { name: "NumPy/Pandas", desc: "High-performance data processing", level: 92 },
@@ -375,14 +375,14 @@ export default function HFTCPage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div>
-                            <div className="font-semibold text-gray-900">{tech.name}</div>
-                            <div className="text-sm text-gray-600">{tech.desc}</div>
+                            <div className="text-sm sm:text-base font-semibold text-gray-900">{tech.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                           </div>
-                          <CheckCircle className="h-5 w-5 text-red-500" />
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
                         </motion.div>
                       ))}
                     </div>
@@ -390,18 +390,18 @@ export default function HFTCPage() {
                 </motion.div>
 
                 <motion.div
-                  className="space-y-6"
+                  className="space-y-4 sm:space-y-6"
                   initial={{ opacity: 0, x: 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-center mb-6">
-                      <Shield className="h-8 w-8 text-gray-500 mr-3" />
-                      <h3 className="text-2xl font-bold text-gray-900">Risk Management</h3>
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                      <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-gray-500 mr-3" />
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Risk Management</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { name: "Portfolio Monitoring", desc: "Real-time P&L tracking", level: 98 },
                         { name: "Trailing Stops", desc: "Dynamic stop-loss protection", level: 95 },
@@ -410,14 +410,14 @@ export default function HFTCPage() {
                       ].map((tech, index) => (
                         <motion.div 
                           key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
                           whileHover={{ x: 5 }}
                         >
                           <div>
-                            <div className="font-semibold text-gray-900">{tech.name}</div>
-                            <div className="text-sm text-gray-600">{tech.desc}</div>
+                            <div className="text-sm sm:text-base font-semibold text-gray-900">{tech.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">{tech.desc}</div>
                           </div>
-                          <CheckCircle className="h-5 w-5 text-gray-500" />
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
                         </motion.div>
                       ))}
                     </div>
@@ -428,26 +428,26 @@ export default function HFTCPage() {
 
             {/* Competition Details Section */}
             <AnimatedSection id="competition">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Stevens HFTC 2025 Competition
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   5-week intensive competition across diverse market scenarios with international participants
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 md:p-12">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12">
                 <motion.div 
-                  className="grid lg:grid-cols-2 gap-12 mb-12"
+                  className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-10 md:mb-12"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
                 >
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Competition Format</h3>
-                    <div className="space-y-4">
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Competition Format</h3>
+                    <div className="space-y-3 sm:space-y-4">
                       {[
                         { day: "Day 1-3", scenario: "Historical Data", desc: "Up/Down Days, Peak Swings, High VIX" },
                         { day: "Day 4", scenario: "Zero-Intelligence", desc: "Random trading agents simulation" },
@@ -455,15 +455,15 @@ export default function HFTCPage() {
                       ].map((phase, index) => (
                         <motion.div
                           key={index}
-                          className="flex items-start space-x-4 p-4 bg-white rounded-xl shadow-sm"
+                          className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-white rounded-xl shadow-sm"
                           variants={fadeInUpVariants}
                         >
-                          <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-red-500 to-gray-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-gray-500 rounded-lg flex items-center justify-center text-white text-sm sm:text-base font-bold">
                             {index + 1}
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900">{phase.day}: {phase.scenario}</div>
-                            <div className="text-sm text-gray-600">{phase.desc}</div>
+                            <div className="text-sm sm:text-base font-semibold text-gray-900">{phase.day}: {phase.scenario}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">{phase.desc}</div>
                           </div>
                         </motion.div>
                       ))}
@@ -471,24 +471,24 @@ export default function HFTCPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Global Competition</h3>
-                    <div className="bg-white rounded-2xl p-6 shadow-lg">
-                      <div className="grid grid-cols-2 gap-6 text-center">
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Global Competition</h3>
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg">
+                      <div className="grid grid-cols-2 gap-4 sm:gap-6 text-center">
                         <div>
-                          <div className="text-3xl font-bold text-red-600">22</div>
-                          <div className="text-sm text-gray-600">International Teams</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-red-600">22</div>
+                          <div className="text-xs sm:text-sm text-gray-600">International Teams</div>
                         </div>
                         <div>
-                          <div className="text-3xl font-bold text-gray-600">6</div>
-                          <div className="text-sm text-gray-600">Hour Sessions</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-gray-600">6</div>
+                          <div className="text-xs sm:text-sm text-gray-600">Hour Sessions</div>
                         </div>
                         <div>
-                          <div className="text-3xl font-bold text-red-700">5</div>
-                          <div className="text-sm text-gray-600">Trading Scenarios</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-red-700">5</div>
+                          <div className="text-xs sm:text-sm text-gray-600">Trading Scenarios</div>
                         </div>
                         <div>
-                          <div className="text-3xl font-bold text-gray-700">1</div>
-                          <div className="text-sm text-gray-600">SHIFT Platform</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-gray-700">1</div>
+                          <div className="text-xs sm:text-sm text-gray-600">SHIFT Platform</div>
                         </div>
                       </div>
                     </div>
@@ -499,18 +499,18 @@ export default function HFTCPage() {
 
             {/* Performance Analytics Section */}
             <AnimatedSection id="performance">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Performance Analytics & Risk Management
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Sophisticated monitoring and optimization framework for consistent performance
                 </p>
               </motion.div>
 
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center">
                 <motion.div
-                  className="space-y-8"
+                  className="space-y-4 sm:space-y-6 md:space-y-8"
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -535,18 +535,18 @@ export default function HFTCPage() {
                   ].map((item, index) => (
                     <motion.div
                       key={index}
-                      className="flex items-start space-x-4"
+                      className="flex items-start space-x-3 sm:space-x-4"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.2 }}
                     >
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-red-500 to-gray-500 rounded-xl flex items-center justify-center text-white">
-                        <item.icon className="h-6 w-6" />
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-gray-500 rounded-xl flex items-center justify-center text-white">
+                        <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                        <p className="text-gray-600">{item.description}</p>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2">{item.title}</h3>
+                        <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -559,27 +559,27 @@ export default function HFTCPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  <div className="bg-gradient-to-br from-red-100 to-gray-100 rounded-3xl p-8 shadow-2xl">
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-white rounded-xl p-4 shadow-lg text-center">
-                        <TrendingUp className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                        <div className="text-lg font-bold text-gray-900">Sharpe Ratio</div>
-                        <div className="text-2xl font-bold text-red-600">1.80</div>
+                  <div className="bg-gradient-to-br from-red-100 to-gray-100 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg text-center">
+                        <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-red-500 mx-auto mb-1 sm:mb-2" />
+                        <div className="text-sm sm:text-lg font-bold text-gray-900">Sharpe Ratio</div>
+                        <div className="text-xl sm:text-2xl font-bold text-red-600">1.80</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg text-center">
-                        <Shield className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                        <div className="text-lg font-bold text-gray-900">Max Drawdown</div>
-                        <div className="text-2xl font-bold text-gray-600">-3.2%</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg text-center">
+                        <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-gray-500 mx-auto mb-1 sm:mb-2" />
+                        <div className="text-sm sm:text-lg font-bold text-gray-900">Max Drawdown</div>
+                        <div className="text-xl sm:text-2xl font-bold text-gray-600">-3.2%</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg text-center">
-                        <DollarSign className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                        <div className="text-lg font-bold text-gray-900">Win Rate</div>
-                        <div className="text-2xl font-bold text-red-700">73%</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg text-center">
+                        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 mx-auto mb-1 sm:mb-2" />
+                        <div className="text-sm sm:text-lg font-bold text-gray-900">Win Rate</div>
+                        <div className="text-xl sm:text-2xl font-bold text-red-700">73%</div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 shadow-lg text-center">
-                        <Clock className="h-8 w-8 text-gray-600 mx-auto mb-2" />
-                        <div className="text-lg font-bold text-gray-900">Avg Trade</div>
-                        <div className="text-2xl font-bold text-gray-700">2.3s</div>
+                      <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg text-center">
+                        <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600 mx-auto mb-1 sm:mb-2" />
+                        <div className="text-sm sm:text-lg font-bold text-gray-900">Avg Trade</div>
+                        <div className="text-xl sm:text-2xl font-bold text-gray-700">2.3s</div>
                       </div>
                     </div>
                     <TradingChart />
@@ -590,18 +590,18 @@ export default function HFTCPage() {
 
             {/* Impact Section */}
             <AnimatedSection id="impact">
-              <motion.div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <motion.div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                   Competitive Impact & Technical Achievement
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base md:text-xl text-gray-600 max-w-3xl mx-auto px-2">
                   Demonstrating advanced algorithmic trading capabilities in a world-class competition
                 </p>
               </motion.div>
 
-              <div className="bg-gradient-to-br from-green-600 to-blue-600 rounded-3xl p-8 md:p-12 text-white">
+              <div className="bg-gradient-to-br from-green-600 to-blue-600 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 text-white">
                 <motion.div 
-                  className="grid md:grid-cols-3 gap-8 text-center"
+                  className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -629,30 +629,30 @@ export default function HFTCPage() {
                       variants={fadeInUpVariants}
                       className="text-center"
                     >
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
-                        <item.icon className="h-8 w-8" />
+                      <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 rounded-2xl mb-3 sm:mb-4 md:mb-6">
+                        <item.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                      <p className="text-white/90">{item.description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-white/90">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>
 
                 <motion.div
-                  className="mt-12 text-center"
+                  className="mt-8 sm:mt-10 md:mt-12 text-center"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 }}
                 >
-                  <p className="text-xl font-semibold mb-6">
+                  <p className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6">
                     Experience advanced algorithmic trading in action
                   </p>
                   <motion.a
                     href="https://fsc.stevens.edu/2025-high-frequency-trading-competition-recap/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-8 py-4 bg-white text-green-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 text-sm sm:text-base bg-white text-green-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
