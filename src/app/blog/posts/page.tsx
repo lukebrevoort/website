@@ -87,7 +87,7 @@ export default function BlogPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className={`${lukesFont.className} text-6xl font-bold text-center`}
+                  className={`${lukesFont.className} text-4xl md:text-6xl font-bold text-center`}
                 >
                   My Personal Blog 🖋️
                 </motion.h1>
@@ -132,7 +132,7 @@ export default function BlogPage() {
                   className="block border border-gray-300 dark:border-gray-800 rounded-lg p-6 hover:shadow-md transition-shadow"
                 >
                   <article>
-                    <h2 className={`${satoshi.className} text-4xl font-semibold mb-2`}>{post.title}</h2>
+                    <h2 className={`${satoshi.className} text-2xl md:text-4xl font-semibold mb-2`}>{post.title}</h2>
                     {post.date && <time className="text-sm text-lg text-gray-500">{new Date(post.date).toLocaleDateString()}</time>}
                     
                     {/* Display tags */}

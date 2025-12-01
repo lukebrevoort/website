@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <ModernAppSidebar currentPath="/about">
       <MotionConfig reducedMotion="user">
-        <div className="min-h-screen p-8">
+        <div className="min-h-screen p-4 md:p-8">
           <div className="container mx-auto py-8 px-4" id="history">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -110,7 +110,7 @@ export default function Page() {
               }}
               whileHover={{ opacity: 1 }}
             >
-              <div className="w-1/2">
+              <div className="w-full md:w-1/2">
                 <Image
                   src="/images/rainnyc.jpg"
                   alt="NYC rainy"
@@ -216,7 +216,7 @@ export default function Page() {
               whileHover={{ opacity: 1 }}
               id="experience"
             >
-              <div className="w-1/2">
+              <div className="w-full md:w-1/2">
                 <Image
                   src="/images/crocs.jpg"
                   alt="NYC rainy"
@@ -309,7 +309,7 @@ export default function Page() {
               whileHover={{ opacity: 1 }}
               id="experience"
             >
-              <div className="w-1/2">
+              <div className="w-full md:w-1/2">
                 <Image
                   src="/images/babyluke.jpeg"
                   alt="Baby Luke!"
