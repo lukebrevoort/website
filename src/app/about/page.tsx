@@ -43,7 +43,7 @@ export default function Page() {
                 <h2 className={`${lukesFont.className} text-3xl mb-6`}>
                   About:
                 </h2>
-                <div className="space-y-4 text-lg leading-relaxed">
+                <div className="space-y-4 text-md md:text-lg leading-relaxed">
                   <p>
                     I&apos;m Luke Brevoort a freshman at Stevens Institute of
                     Technology in Hoboken NJ who is studying Computer Science! I
