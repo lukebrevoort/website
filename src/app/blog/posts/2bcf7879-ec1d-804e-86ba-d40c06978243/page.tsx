@@ -17,7 +17,7 @@
     const [content, setContent] = useState(`# Welcome Back and Introducing: Ona!
 
 
-![Image](image-placeholder-image.png)
+![Image](image-placeholder-ADE_Follow_Up_Project_Image.png)
 
 
 So, shortly after my last blog post about ADE environments, I tried this really cool tool called Ona after my dad suggested I give it a try :)
@@ -29,7 +29,7 @@ Now, to really get a feel for the product and what it brings to me as a develope
 # The Idea 💡
 
 
-![Image](image-placeholder-image.png)
+![Image](image-placeholder-mgt103cyclethingy.png)
 
 
 In MGT 103 (Thinking Entrepreneurship), our group was tasked with finding a problem all of us have, and trying to think about building out products and ideas through an entrepreneurial point of view. The class, overall, has been great so far and eye-opening to say the least. The amount on emphasis on the customer and their needs was something I didn’t really expect when building a product. After doing a few customer interviews and thinking hard as a group, we landed on our Problem!
@@ -59,7 +59,7 @@ One skill essential for succeeding in these interviews is all about being able t
 
 While my group thought this problem was very applicable to us, we as a group needed to understand if other people felt the same way and if this was all a problem worth solving. **It doesn’t help to have a solution and no problem for it to solve!**
 
-![Image](image-placeholder-image.png)
+![Image](image-placeholder-microeventblueprint.png)
 
 
 Luckily, I was able to go to a really cool **Microsoft Workshop** and hear from Alumni *Gearad Boland* about his thoughts on the hiring process and advice for making it to the final offer. There was one quote from this event that really stuck out to me:
