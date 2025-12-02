@@ -1,5 +1,30 @@
 [
   {
+    "id": "2bcf7879-ec1d-804e-86ba-d40c06978243",
+    "slug": "2bcf7879-ec1d-804e-86ba-d40c06978243",
+    "title": "ADE Follow up and New Personal Project 🎉",
+    "description": "After my last blog post, I got the opportunity to try a new tool Ona and used it on my up and coming personal project I’ve been developing for my MGT 103 Entrepreneurship class! Try our tool here: ",
+    "date": "2025-12-02",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "AI",
+        "color": "pink"
+      },
+      {
+        "name": "Tech",
+        "color": "green"
+      },
+      {
+        "name": "School",
+        "color": "orange"
+      }
+    ]
+  },
+  {
     "id": "2b0f7879-ec1d-80f7-a9cb-d2e331216b26",
     "slug": "2b0f7879-ec1d-80f7-a9cb-d2e331216b26",
     "title": "From Engineer to Architect: How ADE’s are Changing Development 🚀 ",
