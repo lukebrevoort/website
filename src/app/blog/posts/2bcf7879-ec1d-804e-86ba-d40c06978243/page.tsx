@@ -14,13 +14,15 @@
   
   export default function BlogPost() {
     // Store processed markdown in state
-    const [content, setContent] = useState(`# Welcome Back and Introducing: Ona!
+    const [content, setContent] = useState(`# Building With Ona for a New Class Project 🚀
 
 
 ![Image](image-placeholder-ADE_Follow_Up_Project_Image.png)
 
 
 So, shortly after my last blog post about ADE environments, I tried this really cool tool called Ona after my dad suggested I give it a try :)
+
+(If you missed my last post, you can read it here: [https://luke.brevoort.com/blog/posts/2b0f7879-ec1d-80f7-a9cb-d2e331216b26](https://luke.brevoort.com/blog/posts/2b0f7879-ec1d-80f7-a9cb-d2e331216b26))
 
 It’s an **all-in-one Agent development software** with a large emphasis on **consistent and deployable environments** for developers and agents to work within. It is all working within the browser, and I was super excited to give it a shot and try something completely new!
 
@@ -79,14 +81,28 @@ Now that we have identified a problem, what should a solution look like? Here is
 
 The idea was to have a basic frontend with a database of problems for the user to choose from and a simple authorization screening. The real magic was how the interview was assessed!
 
-We would ask the user to record video and audio to simulate a real technical interview. Once the interview starts, the user would send transcriptions of them talking about the problems (Using Whisper) to an AI Agent Interviewer who will give directed hints based on the user's progress, as well as respond in real-time. The user would work through the problem with the Agent and be graded at the end based on how they responded, worked through the problem, and answered the problem (based on criteria I learned from the Microsoft Event).
+We would ask the user to share their video and audio to simulate a real technical interview. Once the interview starts, the user streams their audio to an Interviewer Agent. The agent helps the user work through the problem like a real interview, giving real-time hints, providing feedback, and asking follow-up questions. Once the user decides to submit their implementation and end the interview, they are graded based on their submission but also how they worked through the problem collaboratively with the Interviewer Agent.
+
+# while unemployed:
+
+
+Now that I’ve gone through the thought process, the building, and the cool tools I used to put it together, I want to introduce our groups project **while unemployed:**
+
+![Image](image-placeholder-Screenshot_2025-12-02_at_10.39.18_AM.png)
+
+
+<u>*while unemployed:*</u> is our approach to building **true problem-solving skills for technical interviews**. Built using NextJS and Typescript for the frontend, Supabase for the PostgreSQL Database and User Authentication, Python in the backend with [Socket.io](http://socket.io/) for quick communication, Whisper and ChatGPT 4o for transcription and Agent model, and LangChain for building the agent.
+
+![Image](image-placeholder-workingwhileunemployed.png)
+
+
+If you would like to try out our **Demo Version** you can sign up for it right here:
+[https://while-unemployed.vercel.app/](https://while-unemployed.vercel.app/)
 
 # Building With Ona  🤝
 
 
-Now that I’ve given some context on our project and what we hope it can do, let’s get into how I actually built the whole thing using Ona!
-
-The primary benefits that I saw in using Ona was 
+Now that I’ve given some context on our project and what we hope it can do, let’s get into how I actually built the whole thing using Ona! So what did I love about using Ona?
 
 ## Persistent Environment 🌍
 
@@ -151,30 +167,10 @@ If any of this was interesting to you, I would highly suggest trying out Ona, it
 
 [https://ona.com/](https://ona.com/?gad_campaignid=23002345166&gbraid=0AAAAAoaiUk5dw1VWs6cHATTOlQSyA004_)
 
-Also want to give a huge thank you to **Johannes Landgraf** for giving me the free credits, super excited to keep building with Ona and using it for more projects in the future! (Definitely will be bringing it up in future blog posts as well!)
-
-# while unemployed:
-
-
-Now that I’ve gone through the thought process, the building, and the cool tools I used to put it together, I want to introduce our groups project **while unemployed!** 
-
-![Image](image-placeholder-Screenshot_2025-12-02_at_10.39.18_AM.png)
-
-
-while unemployed: is our approach to building **true problem-solving skills for technical interviews**. Built using NextJS and Typescript for the frontend, Supabase for the PostgreSQL Database and User Authentication, Python in the backend with [Socket.io](http://socket.io/) for quick communication, Whisper and ChatGPT 4o for transcription and Agent model, and LangChain for building the agent.
-
-![Image](image-placeholder-workingwhileunemployed.png)
-
-
-If you would like to try out our **Demo Version** you can sign up for it right here:
-[https://while-unemployed.vercel.app/](https://while-unemployed.vercel.app/)
-
 # See you Next Time! 👋
 
 
 Our team would love some feedback on the project and what you think of the idea! So feel free to email me if you have any thoughts or suggestions! My email is always open 😉
-
-Contact:
 
 luke@brevoort.com
 `);
