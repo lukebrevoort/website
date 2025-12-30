@@ -1,20 +1,26 @@
-"use client"
-    
-  import { lukesFont, satoshi } from '@/app/fonts';
-  import { ModernAppSidebar } from "@/components/modern-app-sidebar";
-  import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-  import { motion } from "framer-motion";
-  import { MotionConfig } from "framer-motion";
-  import dynamic from 'next/dynamic';
-  import SecureImage from "@/components/secure-image";
-  import Image from "next/image";
-  import { useState, useEffect } from "react";
-  
-  const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: true });
-  
-  export default function BlogPost() {
-    // Store processed markdown in state
-    const [content, setContent] = useState(`# Winter Break! ☃️
+"use client";
+
+import { lukesFont, satoshi } from "@/app/fonts";
+import { ModernAppSidebar } from "@/components/modern-app-sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { motion } from "framer-motion";
+import { MotionConfig } from "framer-motion";
+import dynamic from "next/dynamic";
+import SecureImage from "@/components/secure-image";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: true });
+
+export default function BlogPost() {
+  // Store processed markdown in state
+  const [content, setContent] = useState(`# Winter Break! ☃️
 
 
 ![Image](image-placeholder-winterbreaksnoweymountain.jpeg)
@@ -30,11 +36,11 @@ Having to go right from **Thanksgiving Break** 🦃 back to locking in is a rou
 ### Finals Checklist (Date Sorted)
 
 
-- [ ] Entrepreneurial Thinking | Final Prototype and Video | Dec. 7th
-- [ ] Computer Algorithms | Final Exam | Dec. 10th
-- [ ] Computer Architecture and Design | Final CPU Project | Dec. 11th
-- [ ] Probability | Final Exam | Dec. 15th
-- [ ] Computers and Society | Final Essay | Dec. 19th
+- [𝑿] Entrepreneurial Thinking | Final Prototype and Video | Dec. 7th
+- [𝑿] Computer Algorithms | Final Exam | Dec. 10th
+- [𝑿] Computer Architecture and Design | Final CPU Project | Dec. 11th
+- [𝑿] Probability | Final Exam | Dec. 15th
+- [𝑿] Computers and Society | Final Essay | Dec. 19th
 ### Priorities 🧐
 
 
@@ -43,6 +49,7 @@ When I try to plan out what needs to get done and when, my first task is always 
 1. Which assignments are the most **difficult**?
 1. Which will be the most **time-consuming**?
 1. Which do I need to put the **most effort** into to get my A?
+
 These are the types of questions I ask myself before I start to work on something like this. For me, my priority list looked something more like this
 
 ### Finals Checklist (Priority Sorted)
@@ -140,10 +147,10 @@ The first phase of this step is getting our trigger from Notion and requesting t
 
 Now that if statement is essential, as some platforms (Workday) choose to render all of their HTML is extrapolated with scripts after the URL is called, giving us a SOAP Redirect. But, after investigating the network, I found Workday uses a very simple calling mechanism to extract this HTML.
 
-\`\`\`javascript
-\\`https://\\${tenant}.wd5.myworkdayjobs.com/wday/cxs/\\${tenant}/\\${siteId}/job/\\${tail}\\`
-\`\`\`
 
+\`\`\`javascript
+\\\`https://\\\${tenant}.wd5.myworkdayjobs.com/wday/cxs/\\\${tenant}/\\\${siteId}/job/\\\${tail}\\\`
+\`\`\`
 
 Once we have our HTML, we can parse it with JS and then send it to two LLMs
 
@@ -154,7 +161,8 @@ Once we have our HTML, we can parse it with JS and then send it to two LLMs
 
 After we have successfully made the resume, I am sent an email to compile the Typst resume and either **APPROVE** or **DENY** with suggestions for what to change. If I deny the resume, the JS script will extract my feedback and feed it into the Resume Optimizer, which will take in these considerations and adjust the iterated resume as many times as needed before I approve!
 
-Once the Resume is approved, we add the appended resume in blocks and chunks into Notion and update its Status for me to go ahead and submit the application! If you want to read up more on this and see an example generated resume it made for me, check it out here: [https://luke.brevoort.com/projects/job-personalizer](https://luke.brevoort.com/projects/job-personalizer)
+Once the Resume is approved, we add the appended resume in blocks and chunks into Notion and update its Status for me to go ahead and submit the application! If you want to read up more on this and see an example generated resume it made for me, check it out here: 
+[Link 🔗](https://luke.brevoort.com/projects/job-personalizer)
 
 # Until Next Time 🫡
 
@@ -165,259 +173,286 @@ Happy Holidays, and see you in the new year! Feel free to email me if you want t
 
 luke@brevoort.com
 `);
-    const [imageMap, setImageMap] = useState<Record<string, string>>({});
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadedImages, setLoadedImages] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const postId = "2d8f7879-ec1d-807f-a7ef-eda85834552b";
-    const tags = [{"name":"Personal","color":"purple"},{"name":"School","color":"orange"},{"name":"Life","color":"yellow"},{"name":"Projects","color":"red"}];
-    
-    // Detect color scheme preference
-    useEffect(() => {
-      if (typeof window !== 'undefined') {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setIsDarkMode(isDark);
-        
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-        
-        mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
-      }
-    }, []);
-    
-    // Function to preload images to blob storage
-    const preloadImages = async (imageMap: Record<string, string>) => {
-      if (!imageMap || Object.keys(imageMap).length === 0) return;
-      
-      console.log('Preloading images:', Object.keys(imageMap).length);
-      
-      // Create an array to hold all image loading promises
-      const imagePromises = Object.values(imageMap).map(url => {
-        return new Promise<void>((resolve) => {
-          if (!url || typeof url !== 'string') {
-            resolve();
-            return;
-          }
-      
-          // Skip if URL is not valid or still a placeholder
-          if (url.startsWith('image-placeholder-')) {
-            resolve();
-            return;
-          }
-          
-          // Use browser's Image constructor to preload
-          if (typeof window !== 'undefined') {
-            const img = new window.Image();
-            img.onload = () => resolve();
-            img.onerror = () => {
-              console.warn(`Failed to preload image: ${url}`);
-              resolve(); // Resolve anyway to not block other images
-            };
-            img.src = url;
-          } else {
-            // If running on server, just resolve
-            resolve();
-          }
+  const [imageMap, setImageMap] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadedImages, setLoadedImages] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const postId = "2d8f7879-ec1d-807f-a7ef-eda85834552b";
+  const tags = [
+    { name: "Personal", color: "purple" },
+    { name: "School", color: "orange" },
+    { name: "Life", color: "yellow" },
+    { name: "Projects", color: "red" },
+  ];
+
+  // Detect color scheme preference
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setIsDarkMode(isDark);
+
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
+  }, []);
+
+  // Function to preload images to blob storage
+  const preloadImages = async (imageMap: Record<string, string>) => {
+    if (!imageMap || Object.keys(imageMap).length === 0) return;
+
+    console.log("Preloading images:", Object.keys(imageMap).length);
+
+    // Create an array to hold all image loading promises
+    const imagePromises = Object.values(imageMap).map((url) => {
+      return new Promise<void>((resolve) => {
+        if (!url || typeof url !== "string") {
+          resolve();
+          return;
+        }
+
+        // Skip if URL is not valid or still a placeholder
+        if (url.startsWith("image-placeholder-")) {
+          resolve();
+          return;
+        }
+
+        // Use browser's Image constructor to preload
+        if (typeof window !== "undefined") {
+          const img = new window.Image();
+          img.onload = () => resolve();
+          img.onerror = () => {
+            console.warn(`Failed to preload image: ${url}`);
+            resolve(); // Resolve anyway to not block other images
+          };
+          img.src = url;
+        } else {
+          // If running on server, just resolve
+          resolve();
+        }
+      });
+    });
+
+    // Wait for all images to load or fail
+    await Promise.all(imagePromises);
+    console.log("All images preloaded");
+  };
+
+  // Combined effect for image mappings
+  useEffect(() => {
+    console.log("Setting up image mappings...");
+
+    // Add direct hardcoded fallback mappings for specific placeholders
+    const hardcodedMap: Record<string, string> = {};
+
+    // Extract placeholders from content
+    const placeholderRegex = /image-placeholder-[^)"\s]+/g;
+    const placeholders = content.match(placeholderRegex) || [];
+    console.log("Extracted placeholders:", placeholders);
+
+    // Then fetch API mappings and merge them, preserving hardcoded mappings
+    fetch(
+      `/api/image-map?postId=${postId}&placeholders=${placeholders.join(",")}`,
+    )
+      .then((res) => {
+        console.log("Image map API response status:", res.status);
+        if (!res.ok) {
+          throw new Error(
+            `Failed to fetch image map: ${res.status} ${res.statusText}`,
+          );
+        }
+        return res.json();
+      })
+      .then(async (fetchedMap) => {
+        console.log("API returned mappings:", fetchedMap);
+
+        // Merge with priority to fetched mappings but keep hardcoded as fallback
+        const combinedMap = { ...hardcodedMap, ...fetchedMap };
+        console.log("Combined map:", combinedMap);
+        setImageMap(combinedMap);
+        setIsLoading(false);
+
+        // Preload images after mapping is set
+        await preloadImages(combinedMap);
+        setLoadedImages(true);
+      })
+      .catch((err) => {
+        console.error("Error fetching image map:", err);
+        // Fall back to hardcoded mappings if fetch fails
+        console.log("Falling back to hardcoded mappings");
+        setImageMap(hardcodedMap);
+        setIsLoading(false);
+
+        // Attempt to preload hardcoded images
+        preloadImages(hardcodedMap).then(() => {
+          setLoadedImages(true);
         });
       });
-      
-      // Wait for all images to load or fail
-      await Promise.all(imagePromises);
-      console.log('All images preloaded');
-    };
-    
-    // Combined effect for image mappings
-    useEffect(() => {
-      console.log('Setting up image mappings...');
-      
-      // Add direct hardcoded fallback mappings for specific placeholders
-      const hardcodedMap: Record<string, string> = {};
-      
-      // Extract placeholders from content
-      const placeholderRegex = /image-placeholder-[^)"\s]+/g;
-      const placeholders = content.match(placeholderRegex) || [];
-      console.log('Extracted placeholders:', placeholders);
-      
-      // Then fetch API mappings and merge them, preserving hardcoded mappings
-      fetch(`/api/image-map?postId=${postId}&placeholders=${placeholders.join(',')}`)
-        .then(res => {
-          console.log('Image map API response status:', res.status);
-          if (!res.ok) {
-            throw new Error(`Failed to fetch image map: ${res.status} ${res.statusText}`);
-          }
-          return res.json();
-        })
-        .then(async fetchedMap => {
-          console.log('API returned mappings:', fetchedMap);
-          
-          // Merge with priority to fetched mappings but keep hardcoded as fallback
-          const combinedMap = {...hardcodedMap, ...fetchedMap};
-          console.log('Combined map:', combinedMap);
-          setImageMap(combinedMap);
-          setIsLoading(false);
-          
-          // Preload images after mapping is set
-          await preloadImages(combinedMap);
-          setLoadedImages(true);
-        })
-        .catch(err => {
-          console.error('Error fetching image map:', err);
-          // Fall back to hardcoded mappings if fetch fails
-          console.log('Falling back to hardcoded mappings');
-          setImageMap(hardcodedMap);
-          setIsLoading(false);
-          
-          // Attempt to preload hardcoded images
-          preloadImages(hardcodedMap).then(() => {
-            setLoadedImages(true);
-          });
-        });
-    }, [postId, content]);
+  }, [postId, content]);
 
-    // Include a helper function for tag colors
-    function getTagColorClass(notionColor: string) {
-      const colorMap = {
-        blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
-        green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
-        red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
-        yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
-        orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
-        purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
-        pink: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
-        gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
-        brown: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
-        default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
-      };
-    
-      return colorMap[notionColor as keyof typeof colorMap] || colorMap.default;
-    }
-  
-    return (
-      <ModernAppSidebar currentPath="/blog/posts">
-        <MotionConfig reducedMotion="user">
-          <div className="min-h-screen overflow-x-hidden">
-            <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
-              <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    <BreadcrumbItem className="hidden md:block">
-                      <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator className="hidden md:block" />
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbLink>{"Winter is Here ❄️⛄️"}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
-              </div>
+  // Include a helper function for tag colors
+  function getTagColorClass(notionColor: string) {
+    const colorMap = {
+      blue: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",
+      green:
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
+      red: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100",
+      yellow:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100",
+      orange:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100",
+      purple:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100",
+      pink: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100",
+      gray: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100",
+      brown:
+        "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100",
+      default: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100",
+    };
+
+    return colorMap[notionColor as keyof typeof colorMap] || colorMap.default;
+  }
+
+  return (
+    <ModernAppSidebar currentPath="/blog/posts">
+      <MotionConfig reducedMotion="user">
+        <div className="min-h-screen overflow-x-hidden">
+          <header className="flex h-14 md:h-16 shrink-0 items-center gap-1 md:gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
+            <div className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/blog/posts">Blog</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink>{"Winter is Here ❄️⛄️"}</BreadcrumbLink>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+          </header>
+
+          <motion.article
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="container mx-auto py-4 sm:py-6 md:py-10 px-3 sm:px-4 md:px-6 max-w-3xl overflow-hidden"
+          >
+            <header className="mb-6 md:mb-8">
+              <h1
+                className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}
+              >
+                {"Winter is Here ❄️⛄️"}
+              </h1>
+              <time className="text-gray-500 text-base sm:text-lg">
+                12/30/2025
+              </time>
+
+              {tags && tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className={`px-3 py-1 rounded-full text-sm ${getTagColorClass(tag.color)}`}
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </header>
-        
-            <motion.article 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="container mx-auto py-4 sm:py-6 md:py-10 px-3 sm:px-4 md:px-6 max-w-3xl overflow-hidden"
-            >
-              <header className="mb-6 md:mb-8">
-                <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"Winter is Here ❄️⛄️"}</h1>
-                <time className="text-gray-500 text-base sm:text-lg">12/30/2025</time>
-                
-                {tags && tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {tags.map((tag, index) => (
-                      <span 
-                        key={index}
-                        className={`px-3 py-1 rounded-full text-sm ${getTagColorClass(tag.color)}`}
-                      >
-                        {tag.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </header>
-              
-              {isLoading ? (
-                <div className="animate-pulse">Loading content...</div>
-              ) : (
-                <div className={`prose dark:prose-invert max-w-none prose-base sm:prose-lg md:prose-lg lg:prose-xl ${satoshi.className} prose-headings:mb-3 prose-p:mb-3 sm:prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 sm:prose-li:my-2 overflow-hidden prose-pre:overflow-x-auto`}>
-                  <ReactMarkdown 
-                    key={loadedImages ? 'loaded' : 'loading'}
-                    components={{
-                      img: ({ node, ...props }) => {
-                        const imageSrc: string = typeof props.src === 'string' ? props.src : '';
-                        console.log('Rendering image in markdown:', imageSrc);
-                        console.log('Available mappings:', Object.keys(imageMap));
-                        console.log('Image mapped?', !!imageMap[imageSrc]);
-                        
-                        // First check if we have a mapping
-                        if (imageMap[imageSrc]) {
-                          console.log(`Using mapped image: ${imageMap[imageSrc]}`);
-                          return (
-                            <div className="my-6 sm:my-8 w-full">
-                              <Image 
-                                src={imageMap[imageSrc]} 
-                                alt={props.alt || ''} 
-                                className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow"
-                                width={0}
-                                height={0}
-                                sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, 800px"
-                                style={{
-                                  width: '100%',
-                                  height: 'auto',
-                                  maxHeight: '70vh',
-                                  objectFit: 'contain'
-                                }}
-                                priority={true}
-                              />
-                            </div>
-                          );
-                        }
-                        
-                        // If all else fails, try SecureImage
+
+            {isLoading ? (
+              <div className="animate-pulse">Loading content...</div>
+            ) : (
+              <div
+                className={`prose dark:prose-invert max-w-none prose-base sm:prose-lg md:prose-lg lg:prose-xl ${satoshi.className} prose-headings:mb-3 prose-p:mb-3 sm:prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 sm:prose-li:my-2 overflow-hidden prose-pre:overflow-x-auto`}
+              >
+                <ReactMarkdown
+                  key={loadedImages ? "loaded" : "loading"}
+                  components={{
+                    img: ({ node, ...props }) => {
+                      const imageSrc: string =
+                        typeof props.src === "string" ? props.src : "";
+                      console.log("Rendering image in markdown:", imageSrc);
+                      console.log("Available mappings:", Object.keys(imageMap));
+                      console.log("Image mapped?", !!imageMap[imageSrc]);
+
+                      // First check if we have a mapping
+                      if (imageMap[imageSrc]) {
+                        console.log(
+                          `Using mapped image: ${imageMap[imageSrc]}`,
+                        );
                         return (
                           <div className="my-6 sm:my-8 w-full">
-                            <SecureImage 
-                              src={imageSrc} 
-                              alt={props.alt || ''} 
-                              className="rounded-lg shadow-md hover:shadow-lg transition-shadow w-full h-auto max-h-[70vh] object-contain" 
-                              postId={postId}
-                              imageMap={imageMap}
+                            <Image
+                              src={imageMap[imageSrc]}
+                              alt={props.alt || ""}
+                              className="rounded-lg w-full shadow-md hover:shadow-lg transition-shadow"
+                              width={0}
+                              height={0}
+                              sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, 800px"
+                              style={{
+                                width: "100%",
+                                height: "auto",
+                                maxHeight: "70vh",
+                                objectFit: "contain",
+                              }}
+                              priority={true}
                             />
                           </div>
                         );
-                      },
-                    }}
-                  >{content}</ReactMarkdown>
-                </div>
-              )}
-            </motion.article>
-        
-            <button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-primary text-primary-foreground p-1.5 sm:p-2 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-opacity"
-              aria-label="Back to top"
+                      }
+
+                      // If all else fails, try SecureImage
+                      return (
+                        <div className="my-6 sm:my-8 w-full">
+                          <SecureImage
+                            src={imageSrc}
+                            alt={props.alt || ""}
+                            className="rounded-lg shadow-md hover:shadow-lg transition-shadow w-full h-auto max-h-[70vh] object-contain"
+                            postId={postId}
+                            imageMap={imageMap}
+                          />
+                        </div>
+                      );
+                    },
+                  }}
+                >
+                  {content}
+                </ReactMarkdown>
+              </div>
+            )}
+          </motion.article>
+
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-primary text-primary-foreground p-1.5 sm:p-2 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-opacity"
+            aria-label="Back to top"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="m18 15-6-6-6 6"/>
-              </svg>
-            </button>
-          </div>
-        </MotionConfig>
-      </ModernAppSidebar>
-    );
-  }
+              <path d="m18 15-6-6-6 6" />
+            </svg>
+          </button>
+        </div>
+      </MotionConfig>
+    </ModernAppSidebar>
+  );
+}
