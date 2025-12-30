@@ -1,5 +1,30 @@
 [
   {
+    "id": "2d8f7879-ec1d-807f-a7ef-eda85834552b",
+    "slug": "2d8f7879-ec1d-807f-a7ef-eda85834552b",
+    "title": "Winter is Here ❄️⛄️",
+    "description": "Finally Winter is here! With the break, I wanted to review my third semester of college as well as a little update on some new personal projects!",
+    "date": "2025-12-30",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "School",
+        "color": "orange"
+      },
+      {
+        "name": "Life",
+        "color": "yellow"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      }
+    ]
+  },
+  {
     "id": "2bcf7879-ec1d-804e-86ba-d40c06978243",
     "slug": "2bcf7879-ec1d-804e-86ba-d40c06978243",
     "title": "ADE Follow up and New Personal Project 🎉",
