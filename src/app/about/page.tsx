@@ -255,11 +255,11 @@ export default function Page() {
                     {
                       title: "EH Yang Lab",
                       role: "Undergraduate Researcher",
-                      date: "September 2024 – January 2025",
+                      date: "September 2024 – August 2025",
                     },
                     {
                       title: "Student Government Organization",
-                      role: "Assistant Vice President of Finance",
+                      role: "Vice President of Finance",
                       date: "September 2024 – Present",
                     },
                     {
