@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from 'next/navigation'
-import { ExternalLink, Github, Calendar, Tag } from 'lucide-react'
+import { ArrowUpRight, ExternalLink, Github } from 'lucide-react'
 
 interface ProjectCardProps {
   title: string
@@ -15,6 +15,8 @@ interface ProjectCardProps {
   category: string
   primaryColor?: string
   secondaryColor?: string
+  logo?: string
+  variant?: 'standard' | 'featured'
 }
 
 export default function ProjectCard({
@@ -30,111 +32,122 @@ export default function ProjectCard({
   category,
   primaryColor = '#3b82f6', // Default to blue if not provided
   secondaryColor = '#3b82f6', // Default to blue if not provided
+  logo,
+  variant = 'standard',
 }: ProjectCardProps) {
   const statusColors = {
-    completed: 'bg-green-100 text-green-800',
-    'in-progress': 'bg-yellow-100 text-yellow-800',
-    planned: 'bg-gray-100 text-gray-800'
+    completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    'in-progress': 'bg-amber-50 text-amber-700 border-amber-200',
+    planned: 'bg-slate-100 text-slate-600 border-slate-200'
   }
 
-  // Function to get gradient style for project cards, same as their sidebars in project_sidebar
-  const getGradientStyle = (opacity1: number = 0.3, opacity2: number = 0.4, opacity3: number = 0.25) => ({
-    background: `linear-gradient(135deg, ${primaryColor}${Math.round(opacity1 * 255).toString(16).padStart(2, '0')}, ${secondaryColor}${Math.round(opacity2 * 255).toString(16).padStart(2, '0')}, ${primaryColor}${Math.round(opacity3 * 255).toString(16).padStart(2, '0')})`,
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-  })
+  const isFeatured = variant === 'featured'
+  const gradientOverlay = {
+    background: `linear-gradient(135deg, ${primaryColor}26, ${secondaryColor}26)`
+  }
 
   const router = useRouter();
 
   return (
     <div
-      className="block group"
+      className="group h-full"
       onClick={() => router.push(`/projects/${slug}`)}
       role="link"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/projects/${slug}`); }}
     >
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] cursor-pointer" 
-        style={getGradientStyle()}>
-        {/* Project Image */}
-        <div className="h-24 sm:h-32 md:h-48 flex items-center justify-center">
+      <div
+        className={`relative flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.55)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,23,42,0.65)] ${isFeatured ? 'md:flex-row' : ''}`}
+      >
+        <div
+          className={`relative overflow-hidden ${isFeatured ? 'md:w-[48%]' : ''}`}
+        >
+          <div className="absolute inset-0" style={gradientOverlay} />
           {image ? (
-            <img src={image} alt={title} className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 object-cover" />
+            <img
+              src={image}
+              alt={title}
+              className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${isFeatured ? 'min-h-[220px]' : 'aspect-[16/9]'}`}
+            />
           ) : (
-            <div className="text-4xl md:text-6xl text-gray-300">📱</div>
+            <div
+              className={`flex h-full min-h-[200px] w-full items-center justify-center bg-slate-900/5 ${isFeatured ? '' : 'aspect-[16/9]'}`}
+            >
+              {logo ? (
+                <img src={logo} alt={`${title} logo`} className="h-16 w-16 object-contain" />
+              ) : (
+                <span className="text-2xl font-semibold text-slate-500">{title.split(' ').map((word) => word[0]).join('')}</span>
+              )}
+            </div>
           )}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/25 via-transparent to-transparent" />
         </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-6">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-2 md:mb-3">
-            <div className="flex-1">
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-1 md:mb-2">{title}</h3>
-              <div className="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm text-gray-500 mb-2 md:mb-3">
-                <span className="flex items-center">
-                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                  {date}
-                </span>
-                <span className="flex items-center">
-                  <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                  {category}
-                </span>
-              </div>
+        <div className={`flex flex-1 flex-col gap-4 px-5 py-6 sm:px-6 sm:py-7 ${isFeatured ? 'md:px-8 md:py-10' : ''}`}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{category}</p>
+              <h3 className="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
+                {title}
+              </h3>
+              <p className="mt-1 text-sm text-slate-500">{date}</p>
             </div>
-            <span className={`px-2 py-1 text-[10px] sm:text-xs font-medium rounded-full ${statusColors[status]}`}>
+            <span
+              className={`rounded-full border px-3 py-1 text-[11px] font-semibold capitalize tracking-[0.08em] ${statusColors[status]}`}
+            >
               {status.replace('-', ' ')}
             </span>
           </div>
 
-          {/* Description */}
-          <p className="text-gray-600 mb-3 md:mb-4 line-clamp-2 md:line-clamp-3 text-xs sm:text-sm md:text-base">{description}</p>
+          <p className={`text-sm text-slate-600 ${isFeatured ? 'max-w-xl' : ''}`}>
+            {description}
+          </p>
 
-          {/* Technologies */}
-          <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 md:mb-4">
-            {technologies.slice(0, 3).map((tech) => (
-              <span
-                key={tech}
-                className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-medium rounded"
-              >
-                {tech}
-              </span>
-            ))}
-            {technologies.length > 3 && (
-              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-50 text-gray-500 text-[10px] sm:text-xs font-medium rounded">
-                +{technologies.length - 3} more
-              </span>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-md transition-colors">
-              View Project
+          <div className="mt-auto">
+            <div className="flex flex-wrap gap-2">
+              {technologies.slice(0, 4).map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-full border border-slate-200/80 bg-white/70 px-3 py-1 text-xs font-medium text-slate-600"
+                >
+                  {tech}
+                </span>
+              ))}
+              {technologies.length > 4 && (
+                <span className="rounded-full border border-slate-200/80 bg-white/70 px-3 py-1 text-xs font-medium text-slate-400">
+                  +{technologies.length - 4} more
+                </span>
+              )}
             </div>
 
-            <div className="flex space-x-2">
-              {demoUrl && (
-                <button
-                  type="button"
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="Live Demo"
-                  onClick={(e) => { e.stopPropagation(); if (demoUrl) window.open(demoUrl, '_blank', 'noopener'); }}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </button>
-              )}
-              {githubUrl && (
-                <button
-                  type="button"
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="View Code"
-                  onClick={(e) => { e.stopPropagation(); if (githubUrl) window.open(githubUrl, '_blank', 'noopener'); }}
-                >
-                  <Github className="h-4 w-4" />
-                </button>
-              )}
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center text-sm font-semibold text-slate-700">
+                View Project
+                <ArrowUpRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </div>
+
+              <div className="flex items-center gap-2">
+                {demoUrl && (
+                  <button
+                    type="button"
+                    className="rounded-full border border-transparent bg-white/70 p-2 text-slate-500 transition-colors hover:border-slate-200 hover:text-slate-700"
+                    title="Live Demo"
+                    onClick={(e) => { e.stopPropagation(); if (demoUrl) window.open(demoUrl, '_blank', 'noopener'); }}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </button>
+                )}
+                {githubUrl && (
+                  <button
+                    type="button"
+                    className="rounded-full border border-transparent bg-white/70 p-2 text-slate-500 transition-colors hover:border-slate-200 hover:text-slate-700"
+                    title="View Code"
+                    onClick={(e) => { e.stopPropagation(); if (githubUrl) window.open(githubUrl, '_blank', 'noopener'); }}
+                  >
+                    <Github className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
