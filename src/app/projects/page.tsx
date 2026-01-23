@@ -11,7 +11,6 @@ export default function ProjectsPage() {
   const categories = Array.from(new Set(projects.map((project) => project.category)))
   const projectCount = allProjects.length
   const featuredCount = featuredProjects.length
-  const [primaryFeatured, ...secondaryFeatured] = featuredProjects
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -107,28 +106,16 @@ export default function ProjectsPage() {
                 <p className="hidden text-sm text-slate-500 md:block">Most recent and most impactful work.</p>
               </div>
 
-              <motion.div className="mt-8 grid gap-8 lg:grid-cols-3" variants={containerVariants}>
-                {primaryFeatured && (
+              <motion.div className="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3" variants={containerVariants}>
+                {featuredProjects.map((project, index) => (
                   <motion.div
-                    key={primaryFeatured.id}
+                    key={project.id}
                     variants={itemVariants}
-                    transition={{ delay: 0.1 }}
-                    className="lg:col-span-2"
+                    transition={{ delay: 0.1 + index * 0.08 }}
                   >
-                    <ProjectCard {...primaryFeatured} variant="featured" />
+                    <ProjectCard {...project} />
                   </motion.div>
-                )}
-                <div className="flex flex-col gap-8">
-                  {secondaryFeatured.map((project, index) => (
-                    <motion.div
-                      key={project.id}
-                      variants={itemVariants}
-                      transition={{ delay: 0.2 + index * 0.1 }}
-                    >
-                      <ProjectCard {...project} />
-                    </motion.div>
-                  ))}
-                </div>
+                ))}
               </motion.div>
             </motion.section>
           )}

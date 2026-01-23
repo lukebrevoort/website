@@ -1,6 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import ProjectSidebar from '@/components/project-sidebar'
 import type { Project } from '@/data/projects'
 import { crimsonText, satoshi } from '@/app/fonts'
@@ -72,12 +73,18 @@ export function ProjectPageShell({
   onItemClick,
   children,
 }: ProjectPageShellProps) {
+  const shouldReduceMotion = useReducedMotion()
+
   const primaryGlow = `${project.primaryColor}26`
   const secondaryGlow = `${project.secondaryColor}26`
   const backgroundStyle = {
     backgroundColor: '#f8fafc',
     backgroundImage: `radial-gradient(circle at top, ${primaryGlow}, transparent 55%), radial-gradient(circle at 80% 15%, ${secondaryGlow}, transparent 45%), radial-gradient(circle at 20% 45%, ${primaryGlow}, transparent 50%)`,
   }
+
+  const enterAnimation = shouldReduceMotion
+    ? { opacity: 1 }
+    : { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } }
 
   return (
     <div className={`min-h-screen ${satoshi.className}`} style={backgroundStyle}>
@@ -92,9 +99,13 @@ export function ProjectPageShell({
       >
         <main className="py-12">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="space-y-16 sm:space-y-20">
+            <motion.div
+              className="space-y-16 sm:space-y-20"
+              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 14 }}
+              animate={enterAnimation}
+            >
               {children}
-            </div>
+            </motion.div>
           </div>
         </main>
       </ProjectSidebar>

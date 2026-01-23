@@ -37,7 +37,7 @@ export default function WebsitePage() {
       <ProjectHero
         eyebrow="Digital portfolio"
         title="Personal Website"
-        description="A modern portfolio that balances editorial storytelling with practical infrastructure: automated content, client-side AI, and a performance-first build pipeline."
+        description="A modern portfolio that balances editorial storytelling with practical infrastructure: automated content, client-side AI experiments, and a performance-first build pipeline."
         accentColor={project.primaryColor}
         actions={[
           project.githubUrl && { label: 'View source', href: project.githubUrl },
@@ -58,8 +58,8 @@ export default function WebsitePage() {
               a short case study. The UI emphasizes clarity, typography, and calm motion.
             </p>
             <p>
-              The supporting stack handles automated blog publishing, deployment previews, and a lightweight
-              AI layer for interactive demos.
+              The site also acts as a sandbox for experimentation: lightweight client-side AI demos,
+              automated content publishing, and rapid iteration with preview deployments.
             </p>
           </div>
           <ProjectMedia
@@ -81,6 +81,9 @@ export default function WebsitePage() {
             'Automated publishing from Notion into markdown to keep content current.',
             'A restrained component system focused on typography, spacing, and hierarchy.',
             'Performance-first rendering with Next.js App Router and server-driven metadata.',
+            'GitHub Actions-driven workflows for content updates and deployment confidence.',
+            'Client-side AI experiments via @mlc-ai/web-llm without server dependency.',
+            'Monitoring/analytics feedback loop through the Vercel platform.',
           ]}
         />
       </ProjectSection>
@@ -91,7 +94,13 @@ export default function WebsitePage() {
         title="Tools and platforms"
         subtitle="The key technologies behind the experience."
       >
-        <ProjectTagList items={project.technologies} />
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 sm:text-base">
+            Frontend (Next.js, React, TypeScript), UI (Tailwind + motion), platform (Vercel), and
+            integrations (Notion + GitHub) work together so the site stays fast and easy to update.
+          </p>
+          <ProjectTagList items={project.technologies} />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -103,9 +112,9 @@ export default function WebsitePage() {
         <ProjectStatGrid
           items={[
             { label: 'Publishing', value: 'Automated', description: 'Notion content updates flow directly to the site.' },
-            { label: 'Performance', value: 'Optimized', description: 'Server rendering and edge deployment keep it fast.' },
-            { label: 'Iteration', value: 'Rapid', description: 'Design system updates roll through every page.' },
-            { label: 'Presence', value: 'Cohesive', description: 'Projects, writing, and experiments share one voice.' },
+            { label: 'Performance', value: 'Optimized', description: 'Rendering + edge delivery keep it consistently fast.' },
+            { label: 'Iteration', value: 'Rapid', description: 'Preview deployments and a shared system speed up changes.' },
+            { label: 'Presence', value: 'Cohesive', description: 'Projects and writing follow the same editorial design language.' },
           ]}
         />
       </ProjectSection>

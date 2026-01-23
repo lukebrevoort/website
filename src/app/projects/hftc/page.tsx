@@ -38,7 +38,7 @@ export default function HFTCPage() {
       <ProjectHero
         eyebrow="Algorithmic trading"
         title="HFTC System"
-        description="A dual-strategy trading engine built for the Stevens High-Frequency Trading Competition, combining market-making discipline with momentum-based entries."
+        description="A dual-strategy trading engine built for the Stevens High-Frequency Trading Competition on the SHIFT platform, combining market-making discipline with momentum-based entries."
         accentColor={project.primaryColor}
         actions={[
           {
@@ -61,7 +61,8 @@ export default function HFTCPage() {
               order management, and risk checks run with minimal latency on the SHIFT platform.
             </p>
             <p>
-              The final system competed against 22 teams across multiple simulated market regimes.
+              It competed against 22 international teams across historical regimes (up/down days, peak swings,
+              high VIX) and agent-driven markets.
             </p>
           </div>
           {project.image && (
@@ -78,9 +79,9 @@ export default function HFTCPage() {
       >
         <ProjectBulletList
           items={[
-            'Market making with order book imbalance analysis and adaptive spreads.',
-            'Momentum arbitrage using RSI, MACD, and volatility signals to time entries.',
-            'Risk controls that throttle exposure during unstable periods.',
+            'Market making with order book imbalance analysis, dynamic spreads, and inventory caps.',
+            'Momentum entries using RSI, MACD, Bollinger Bands, and trend confirmation.',
+            'Risk layer with adaptive position sizing, cooldown periods, and protective exits during volatility.',
           ]}
         />
       </ProjectSection>
@@ -100,14 +101,23 @@ export default function HFTCPage() {
         title="High-frequency format"
         subtitle="Five scenario days covering historical, zero-intelligence, and RL agent markets."
       >
-        <ProjectStatGrid
-          items={[
-            { label: 'Teams', value: '22', description: 'International competitors' },
-            { label: 'Sessions', value: '6 hours', description: 'Live trading windows' },
-            { label: 'Scenarios', value: '5', description: 'Distinct market conditions' },
-            { label: 'Platform', value: 'SHIFT', description: 'Stevens trading environment' },
-          ]}
-        />
+        <div className="space-y-6">
+          <ProjectStatGrid
+            items={[
+              { label: 'Teams', value: '22', description: 'International competitors' },
+              { label: 'Sessions', value: '6 hours', description: 'Live trading windows' },
+              { label: 'Scenarios', value: '5', description: 'Distinct market conditions' },
+              { label: 'Platform', value: 'SHIFT', description: 'Stevens trading environment' },
+            ]}
+          />
+          <ProjectBulletList
+            items={[
+              'Days 1–3: historical regimes (trend, swings, and volatility-driven markets).',
+              'Day 4: zero-intelligence agents (randomized market participants).',
+              'Day 5: reinforcement-learning agents (adaptive bots).',
+            ]}
+          />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -121,6 +131,7 @@ export default function HFTCPage() {
             'Reliable order execution at sub-second cadence across scenarios.',
             'Adaptive inventory and drawdown controls during volatile periods.',
             'Clear separation of strategy and risk layers for iteration speed.',
+            'Session-level monitoring and post-run analysis to tune parameters between scenario days.',
           ]}
         />
       </ProjectSection>

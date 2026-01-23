@@ -38,7 +38,7 @@ export default function JobPersonalizerPage() {
       <ProjectHero
         eyebrow="Automation"
         title="Resume Personalization"
-        description="An n8n workflow that pulls new roles, customizes resumes with dual LLMs, and routes approvals through email before submission."
+        description="An n8n workflow that discovers new roles, customizes resumes with dual LLM passes, and routes approvals through email before submission."
         accentColor={project.primaryColor}
         actions={project.githubUrl ? [{ label: "View source", href: project.githubUrl }] : []}
       />
@@ -52,12 +52,16 @@ export default function JobPersonalizerPage() {
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-4 text-sm text-slate-600 sm:text-base">
             <p>
-              The system watches a curated job feed, filters new listings, and routes the best options into a
-              Notion database and Slack for quick selection.
+              This project evolved from an early LangChain + Ollama prototype into an n8n workflow so it could
+              support real integrations (Slack selection + Gmail approvals).
             </p>
             <p>
-              Once a role is selected, the workflow scrapes the posting, extracts relevant skills, and generates
-              a tailored resume with a human-in-the-loop approval step.
+              Every ~5 hours it pulls a curated internship feed, filters to recent postings (last 7 days),
+              de-dupes against Notion, and sends a Slack message so I can pick which roles are worth pursuing.
+            </p>
+            <p>
+              When a role is selected, the workflow scrapes the posting, extracts relevant skills with one LLM,
+              rewrites a Typst resume with another, and waits for a Gmail approve/deny before finalizing.
             </p>
           </div>
           <ProjectMedia
@@ -76,10 +80,13 @@ export default function JobPersonalizerPage() {
       >
         <ProjectBulletList
           items={[
-            "Scheduled pulls from internship repositories every few hours.",
-            "Slack-based selection to choose which roles move forward.",
-            "Dual-LLM pass to extract skills and tailor the Typst resume.",
-            "Gmail approval flow to keep quality high before submission.",
+            "Scheduled trigger (~5 hour cadence) pulls a job repository feed.",
+            "Filters to recent listings (last 7 days) and avoids duplicates via Notion comparison.",
+            "Slack Block Kit message with Multi-Static Select lets me pick roles quickly.",
+            'Selected roles are marked "Considering" in Notion to trigger personalization.',
+            "LLM #1 extracts and categorizes role-specific skills; LLM #2 tailors the Typst resume to match.",
+            "Gmail approve/deny provides human-in-the-loop control with iterative refinement.",
+            "Edge-case handling: dead links notify by email; Workday SOAP redirects are normalized.",
           ]}
         />
       </ProjectSection>
@@ -90,21 +97,27 @@ export default function JobPersonalizerPage() {
         title="Technology"
         subtitle="Core tooling across the workflow."
       >
-        <ProjectTagList items={project.technologies} />
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 sm:text-base">
+            n8n orchestrates the pipeline; Slack is the selection UI; Gmail is the approval loop; Notion is the
+            system of record; Ollama runs the model passes; Typst produces the final resume.
+          </p>
+          <ProjectTagList items={project.technologies} />
+        </div>
       </ProjectSection>
 
       <ProjectSection
         id="impact"
         eyebrow="Impact"
         title="Outcome"
-        subtitle="Automates the tedious parts while keeping review control." 
+        subtitle="Automates the tedious parts while keeping review control."
       >
         <ProjectStatGrid
           items={[
-            { label: "Time saved", value: "Hours", description: "Reduces manual search and resume edits." },
-            { label: "Quality", value: "Checked", description: "Human approval keeps the output reliable." },
-            { label: "Tracking", value: "Centralized", description: "All jobs live in a single Notion view." },
-            { label: "Iteration", value: "Fast", description: "Feedback loops into the next resume draft." },
+            { label: "Cadence", value: "~5 hours", description: "New roles surface quickly without manual searching." },
+            { label: "Freshness", value: "7 days", description: "Filters to recent postings before they hit Notion." },
+            { label: "Quality", value: "Checked", description: "Approve/deny loop keeps output trustworthy." },
+            { label: "Tracking", value: "Centralized", description: "Jobs and generated resumes live in Notion." },
           ]}
         />
       </ProjectSection>
@@ -118,6 +131,7 @@ export default function JobPersonalizerPage() {
         <ProjectMedia
           src="/images/NEWRESUME.png"
           alt="Generated resume sample"
+          caption="Example resume output produced after Slack selection + Gmail approval (redacted)."
         />
       </ProjectSection>
     </ProjectPageShell>

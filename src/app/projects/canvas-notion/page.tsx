@@ -38,7 +38,7 @@ export default function CanvasNotionPage() {
       <ProjectHero
         eyebrow="Workflow automation"
         title="Canvas + Notion"
-        description="A Python automation bridge that keeps academic assignments synchronized in Notion with priorities, due dates, and status tracking."
+        description="A Python automation bridge that keeps academic assignments synchronized in Notion with priorities, due dates, grades, and submission status."
         accentColor={project.primaryColor}
         actions={project.githubUrl ? [{ label: 'View source', href: project.githubUrl }] : []}
       />
@@ -52,11 +52,16 @@ export default function CanvasNotionPage() {
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-4 text-sm text-slate-600 sm:text-base">
             <p>
-              The automation pulls assignments from Canvas, normalizes due dates, and mirrors them into a Notion dashboard
-              so deadlines stay visible in one place.
+              Traditional student workflows spread across Canvas, calendars, and notes, which leads to missed deadlines
+              and poor prioritization. This automation centralizes that information in a single Notion dashboard.
             </p>
             <p>
-              Reliability comes from careful retry logic and structured data modeling that preserves course context.
+              It pulls assignments (and related metadata) from Canvas, normalizes due dates/timezones, and mirrors them
+              into structured Notion databases while preserving course context.
+            </p>
+            <p>
+              Reliability comes from auth-aware API clients, rate limiting/backoff, and idempotent upserts that prevent
+              duplicates during long-running sync jobs.
             </p>
           </div>
           {project.image && (
@@ -74,7 +79,9 @@ export default function CanvasNotionPage() {
         <ProjectBulletList
           items={[
             'Real-time sync between Canvas modules and Notion databases.',
-            'Priority scoring based on due dates, weights, and submission status.',
+            'Priority scoring based on due dates, assignment weights, and submission requirements.',
+            'Automatic grade tracking and submission-state updates (submitted/missing/late).',
+            'Intentional Notion views that keep the dashboard usable under load.',
             'Safe retries, logging, and health checks for long-running tasks.',
           ]}
         />
@@ -88,9 +95,9 @@ export default function CanvasNotionPage() {
       >
         <ProjectBulletList
           items={[
-            'Dedicated API client layer with rate limiting and error recovery.',
-            'Background scheduling via macOS LaunchAgent for reliability.',
-            'Normalized Notion schema for assignments, courses, and metadata.',
+            'Dedicated API client layer with auth handling, rate limiting, and error recovery.',
+            'Background scheduling via macOS LaunchAgent for reliable unattended execution.',
+            'Idempotent upserts and normalized Notion schema for assignments, courses, and metadata.',
           ]}
         />
       </ProjectSection>
@@ -101,7 +108,13 @@ export default function CanvasNotionPage() {
         title="Technology"
         subtitle="Core tools used in the automation pipeline."
       >
-        <ProjectTagList items={project.technologies} />
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 sm:text-base">
+            Python orchestrates a JSON transformation pipeline across the Canvas LMS API and the Notion API,
+            with careful timezone handling for consistent due dates.
+          </p>
+          <ProjectTagList items={project.technologies} />
+        </div>
       </ProjectSection>
 
       <ProjectSection

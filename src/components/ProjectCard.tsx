@@ -87,7 +87,7 @@ export default function ProjectCard({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{category}</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
+              <h3 className="mt-2 line-clamp-2 text-lg font-semibold text-slate-900 sm:text-xl">
                 {title}
               </h3>
               <p className="mt-1 text-sm text-slate-500">{date}</p>
@@ -99,7 +99,7 @@ export default function ProjectCard({
             </span>
           </div>
 
-          <p className={`text-sm text-slate-600 ${isFeatured ? 'max-w-xl' : ''}`}>
+          <p className={`line-clamp-3 text-sm text-slate-600 ${isFeatured ? 'max-w-xl sm:line-clamp-4' : ''}`}>
             {description}
           </p>
 

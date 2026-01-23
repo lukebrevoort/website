@@ -16,6 +16,23 @@
 ### NEXT STEPS
 - Review each project page for content polish and adjust copy or media as needed.
 
+## 2026-01-21 16:05
+
+### TASKS COMPLETED
+- Added page-enter animation to the shared project page shell.
+- Expanded copy on all project pages with more concrete implementation details.
+- Updated featured projects to a uniform 3-column layout.
+- Added new project pages: Zen80, while_unemployed, SGA Finance Platform.
+
+### IN PROGRESS
+- None.
+
+### BLOCKERS
+- None.
+
+### NEXT STEPS
+- Review new project pages for accuracy and adjust copy with any missing specifics.
+
 ## 2026-01-21 14:00
 
 ### TASKS COMPLETED
