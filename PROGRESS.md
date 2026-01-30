@@ -1,5 +1,52 @@
 # Progress Log
 
+## 2026-01-23 11:10
+
+### TASKS COMPLETED
+- Expanded recruiter-facing project copy with 1-2 additional outcome highlights per section across all project pages.
+
+### IN PROGRESS
+- None.
+
+### BLOCKERS
+- None.
+
+### NEXT STEPS
+- Skim each project page for accuracy and swap in any concrete metrics (users, time saved, adoption) where available.
+
+## 2026-01-23 10:42
+
+### TASKS COMPLETED
+- Removed reduced-motion branching from the project page shell to avoid SSR/client mismatches.
+- Added MotionConfig and a consistent page-enter animation for project pages.
+- Forced project page transitions to remount by keying the motion wrapper to the project slug.
+
+### IN PROGRESS
+- None.
+
+### BLOCKERS
+- None.
+
+### NEXT STEPS
+- Re-test project page hydration in the browser console after a hard refresh.
+
+## 2026-01-23 10:15
+
+### TASKS COMPLETED
+- Boosted project detail typography for paragraph copy, subtitles, captions, and stat descriptions.
+- Reworked project section layout to reduce left-side whitespace and better anchor content.
+- Matched project page enter animation timing to the rest of the site.
+- Added subtle highlight treatments to bullet lists, tags, and stat cards.
+
+### IN PROGRESS
+- None.
+
+### BLOCKERS
+- None.
+
+### NEXT STEPS
+- Review project page copy to add any missing highlights or outcomes.
+
 ## 2026-01-21 15:10
 
 ### TASKS COMPLETED

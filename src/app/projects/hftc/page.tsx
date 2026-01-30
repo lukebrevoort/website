@@ -64,6 +64,10 @@ export default function HFTCPage() {
               It competed against 22 international teams across historical regimes (up/down days, peak swings,
               high VIX) and agent-driven markets.
             </p>
+            <p>
+              The system is intentionally modular: strategies, execution, and risk controls are separated so
+              parameters can be tuned quickly between scenario days without destabilizing the core loop.
+            </p>
           </div>
           {project.image && (
             <ProjectMedia src={project.image} alt="HFTC trading system" />
@@ -82,6 +86,8 @@ export default function HFTCPage() {
             'Market making with order book imbalance analysis, dynamic spreads, and inventory caps.',
             'Momentum entries using RSI, MACD, Bollinger Bands, and trend confirmation.',
             'Risk layer with adaptive position sizing, cooldown periods, and protective exits during volatility.',
+            'Latency-aware execution logic that prioritizes clean fills over noisy signal chasing.',
+            'Scenario-driven tuning: parameters adjust based on volatility and liquidity regime changes.',
           ]}
         />
       </ProjectSection>
@@ -92,7 +98,13 @@ export default function HFTCPage() {
         title="Technology"
         subtitle="Core tools used to build the trading system."
       >
-        <ProjectTagList items={project.technologies} />
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 sm:text-base">
+            Built around fast market data ingestion, deterministic order routing, and structured session logs so
+            changes can be validated quickly between live rounds.
+          </p>
+          <ProjectTagList items={project.technologies} />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -115,6 +127,8 @@ export default function HFTCPage() {
               'Days 1–3: historical regimes (trend, swings, and volatility-driven markets).',
               'Day 4: zero-intelligence agents (randomized market participants).',
               'Day 5: reinforcement-learning agents (adaptive bots).',
+              'Fast iteration between days using post-session reports and parameter sweeps.',
+              'Consistent risk constraints across regimes to avoid overfitting to a single market day.',
             ]}
           />
         </div>
@@ -132,6 +146,8 @@ export default function HFTCPage() {
             'Adaptive inventory and drawdown controls during volatile periods.',
             'Clear separation of strategy and risk layers for iteration speed.',
             'Session-level monitoring and post-run analysis to tune parameters between scenario days.',
+            'Reusable strategy framework that made it easy to enable/disable modules under live competition constraints.',
+            'Structured logs for quick root-cause analysis when performance degraded under new regimes.',
           ]}
         />
       </ProjectSection>

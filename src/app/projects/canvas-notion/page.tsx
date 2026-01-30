@@ -63,6 +63,10 @@ export default function CanvasNotionPage() {
               Reliability comes from auth-aware API clients, rate limiting/backoff, and idempotent upserts that prevent
               duplicates during long-running sync jobs.
             </p>
+            <p>
+              The outcome is a single source of truth for schoolwork: a clean, prioritized view that stays current
+              without manual copy/paste and scales across multiple courses.
+            </p>
           </div>
           {project.image && (
             <ProjectMedia src={project.image} alt="Canvas to Notion automation" />
@@ -83,6 +87,8 @@ export default function CanvasNotionPage() {
             'Automatic grade tracking and submission-state updates (submitted/missing/late).',
             'Intentional Notion views that keep the dashboard usable under load.',
             'Safe retries, logging, and health checks for long-running tasks.',
+            'Traceable, structured fields so each task is actionable at a glance (course, due date, status, priority).',
+            'De-duplication and idempotent writes so repeated runs never inflate your task list.',
           ]}
         />
       </ProjectSection>
@@ -98,6 +104,8 @@ export default function CanvasNotionPage() {
             'Dedicated API client layer with auth handling, rate limiting, and error recovery.',
             'Background scheduling via macOS LaunchAgent for reliable unattended execution.',
             'Idempotent upserts and normalized Notion schema for assignments, courses, and metadata.',
+            'Timezone normalization and stable identifiers to prevent drift across semesters and repeated runs.',
+            'Failure-safe reruns: partial syncs can be repeated without corrupting state.',
           ]}
         />
       </ProjectSection>
@@ -129,6 +137,7 @@ export default function CanvasNotionPage() {
             { label: 'Priority', value: 'Weighted', description: 'Deadlines are ordered by impact and urgency.' },
             { label: 'Reliability', value: 'Resilient', description: 'Retry logic keeps the pipeline stable.' },
             { label: 'Clarity', value: 'Unified', description: 'Canvas data lives inside a single Notion view.' },
+            { label: 'Overhead', value: 'Lower', description: 'Less manual tracking and fewer missed deadlines.' },
           ]}
         />
       </ProjectSection>

@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, MotionConfig } from 'framer-motion'
 import ProjectSidebar from '@/components/project-sidebar'
 import type { Project } from '@/data/projects'
 import { crimsonText, satoshi } from '@/app/fonts'
@@ -73,18 +73,12 @@ export function ProjectPageShell({
   onItemClick,
   children,
 }: ProjectPageShellProps) {
-  const shouldReduceMotion = useReducedMotion()
-
   const primaryGlow = `${project.primaryColor}26`
   const secondaryGlow = `${project.secondaryColor}26`
   const backgroundStyle = {
     backgroundColor: '#f8fafc',
     backgroundImage: `radial-gradient(circle at top, ${primaryGlow}, transparent 55%), radial-gradient(circle at 80% 15%, ${secondaryGlow}, transparent 45%), radial-gradient(circle at 20% 45%, ${primaryGlow}, transparent 50%)`,
   }
-
-  const enterAnimation = shouldReduceMotion
-    ? { opacity: 1 }
-    : { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } }
 
   return (
     <div className={`min-h-screen ${satoshi.className}`} style={backgroundStyle}>
@@ -97,17 +91,21 @@ export function ProjectPageShell({
         activeItem={activeItem}
         onItemClick={onItemClick}
       >
-        <main className="py-12">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <motion.div
-              className="space-y-16 sm:space-y-20"
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 14 }}
-              animate={enterAnimation}
-            >
-              {children}
-            </motion.div>
-          </div>
-        </main>
+        <MotionConfig reducedMotion="user">
+          <main className="py-12">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <motion.div
+                key={project.slug}
+                className="space-y-16 sm:space-y-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {children}
+              </motion.div>
+            </div>
+          </main>
+        </MotionConfig>
       </ProjectSidebar>
     </div>
   )
@@ -131,7 +129,7 @@ export function ProjectHero({
       <h1 className={`${crimsonText.className} mt-4 text-4xl font-semibold text-slate-900 sm:text-5xl lg:text-6xl tracking-[-0.02em]`}>
         {title}
       </h1>
-      <p className="mt-4 max-w-3xl text-base text-slate-600 sm:text-lg">
+      <p className="mt-4 max-w-3xl text-lg leading-relaxed text-slate-700 sm:text-xl">
         {description}
       </p>
       {actions.length > 0 && (
@@ -166,8 +164,8 @@ export function ProjectHero({
 export function ProjectSection({ id, eyebrow, title, subtitle, children }: ProjectSectionProps) {
   return (
     <section id={id} className="scroll-mt-28">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
-        <div className="lg:w-1/3">
+      <div className="grid gap-6 lg:grid-cols-12 lg:gap-x-10">
+        <div className="lg:col-span-4 xl:col-span-3">
           {eyebrow && (
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
               {eyebrow}
@@ -177,12 +175,12 @@ export function ProjectSection({ id, eyebrow, title, subtitle, children }: Proje
             {title}
           </h2>
           {subtitle && (
-            <p className="mt-3 text-sm text-slate-500 sm:text-base">
+            <p className="mt-3 text-base leading-relaxed text-slate-600 sm:text-lg">
               {subtitle}
             </p>
           )}
         </div>
-        <div className="lg:flex-1">
+        <div className="lg:col-span-8 xl:col-span-9 lg:border-l lg:border-slate-200/70 lg:pl-8 text-base leading-relaxed text-slate-600 sm:text-lg">
           {children}
         </div>
       </div>
@@ -206,7 +204,7 @@ export function ProjectMedia({ src, alt, caption, type = 'image' }: ProjectMedia
         <img src={src} alt={alt} className="h-full w-full object-cover" />
       )}
       {caption && (
-        <figcaption className="border-t border-white/60 bg-white/70 px-5 py-4 text-sm text-slate-500">
+        <figcaption className="border-t border-white/60 bg-white/70 px-5 py-4 text-sm text-slate-600 sm:text-base">
           {caption}
         </figcaption>
       )}
@@ -216,10 +214,10 @@ export function ProjectMedia({ src, alt, caption, type = 'image' }: ProjectMedia
 
 export function ProjectBulletList({ items }: ProjectBulletListProps) {
   return (
-    <ul className="space-y-3 text-sm text-slate-600 sm:text-base">
+    <ul className="space-y-2 text-base leading-relaxed text-slate-600 sm:text-lg">
       {items.map((item) => (
-        <li key={item} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
+        <li key={item} className="group -mx-2 flex gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-white/50">
+          <span className="mt-[0.6em] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400 ring-4 ring-slate-900/5 transition-colors group-hover:bg-slate-500" />
           <span>{item}</span>
         </li>
       ))}
@@ -233,7 +231,7 @@ export function ProjectTagList({ items }: ProjectTagListProps) {
       {items.map((item) => (
         <span
           key={item}
-          className="rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600"
+          className="select-none rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 transition-colors hover:border-slate-300 hover:bg-white"
         >
           {item}
         </span>
@@ -248,12 +246,12 @@ export function ProjectStatGrid({ items }: ProjectStatGridProps) {
       {items.map((item) => (
         <div
           key={item.label}
-          className="rounded-2xl border border-white/70 bg-white/70 p-4 shadow-[0_18px_40px_-35px_rgba(15,23,42,0.5)]"
+          className="rounded-2xl border border-white/70 bg-white/70 p-4 shadow-[0_18px_40px_-35px_rgba(15,23,42,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/80 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.55)]"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">{item.label}</p>
           <p className="mt-3 text-2xl font-semibold text-slate-900">{item.value}</p>
           {item.description && (
-            <p className="mt-2 text-sm text-slate-500">{item.description}</p>
+            <p className="mt-2 text-sm text-slate-600 sm:text-base">{item.description}</p>
           )}
         </div>
       ))}

@@ -55,6 +55,8 @@ export default function SGAFinancePage() {
             'Generates slide decks from standardized templates so presentations stay consistent.',
             'Produces spreadsheets that align with the same request data.',
             'Designed to reduce copy/paste, formatting drift, and manual rework.',
+            'Creates cleaner review packets by keeping narrative, line items, and totals in sync.',
+            'Cuts avoidable errors by enforcing the same structure for every request.',
           ]}
         />
       </ProjectSection>
@@ -70,6 +72,8 @@ export default function SGAFinancePage() {
             'Intake budget request details through a structured interface.',
             'Map request fields into a slide template and a spreadsheet layout.',
             'Export/share generated artifacts for review and approval.',
+            'Validate required fields so finance reviews start with complete information.',
+            'Template-driven formatting keeps outputs consistent across committees and semesters.',
           ]}
         />
       </ProjectSection>
@@ -80,7 +84,13 @@ export default function SGAFinancePage() {
         title="Technology"
         subtitle="A web platform with document automation integrations."
       >
-        <ProjectTagList items={project.technologies} />
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 sm:text-base">
+            The platform turns structured request data into repeatable artifacts: slide decks for narrative review
+            and spreadsheets for totals, line items, and reconciliation.
+          </p>
+          <ProjectTagList items={project.technologies} />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -95,6 +105,7 @@ export default function SGAFinancePage() {
             { label: 'Workflow', value: 'Faster', description: 'Reduces repetitive formatting work.' },
             { label: 'Output', value: 'Consistent', description: 'Templates prevent drift across requests.' },
             { label: 'Platform', value: 'Web', description: 'Accessible for teams without local tooling.' },
+            { label: 'Rework', value: 'Reduced', description: 'Cleaner inputs and consistent exports cut revision cycles.' },
           ]}
         />
       </ProjectSection>

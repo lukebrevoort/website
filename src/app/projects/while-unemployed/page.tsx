@@ -56,6 +56,8 @@ export default function WhileUnemployedPage() {
             'Problem database + in-browser editor for real-time coding.',
             'AI interviewer asks follow-up questions based on your explanation.',
             'Session feedback covers both solution quality and communication.',
+            'Encourages tradeoff discussion (complexity, edge cases, and design choices) alongside code.',
+            'Turns practice into a repeatable loop: attempt, reflect, and track what to improve next time.',
           ]}
         />
       </ProjectSection>
@@ -72,6 +74,8 @@ export default function WhileUnemployedPage() {
             'Speech-to-text transcription for natural conversation flow.',
             'Code analysis that generates targeted feedback and hints.',
             'Performance recording and review to spot recurring issues.',
+            'Difficulty and topic coverage that helps build breadth across common interview patterns.',
+            'Rubric-style feedback that highlights what to fix (logic, edge cases, communication) in the next run.',
           ]}
         />
       </ProjectSection>
@@ -87,6 +91,8 @@ export default function WhileUnemployedPage() {
             'Socket-based real-time channel for interviewer turns, code state, and feedback.',
             'Backend agent layer orchestrates interview prompts and evaluation logic.',
             'Auth + persistence through Supabase to support saved sessions and user state.',
+            'Streaming responses that keep the experience conversational instead of turn-based.',
+            'Session capture (prompts, code, feedback) so reviews are reproducible and comparable over time.',
           ]}
         />
       </ProjectSection>
@@ -97,7 +103,13 @@ export default function WhileUnemployedPage() {
         title="Technology"
         subtitle="Frontend, backend, and AI integrations."
       >
-        <ProjectTagList items={project.technologies} />
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 sm:text-base">
+            Built as an interactive web app with real-time infrastructure, voice features, and persistence so
+            sessions feel like an actual interview and can be reviewed afterward.
+          </p>
+          <ProjectTagList items={project.technologies} />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -112,6 +124,7 @@ export default function WhileUnemployedPage() {
             { label: 'Feedback', value: 'Specific', description: 'Code-aware hints instead of generic advice.' },
             { label: 'Loop', value: 'Recorded', description: 'Sessions can be reviewed for improvement.' },
             { label: 'Delivery', value: 'Real-time', description: 'Socket-driven latency keeps it conversational.' },
+            { label: 'Signal', value: 'Actionable', description: 'Clear next-step feedback makes practice measurable.' },
           ]}
         />
       </ProjectSection>

@@ -61,6 +61,10 @@ export default function WebsitePage() {
               The site also acts as a sandbox for experimentation: lightweight client-side AI demos,
               automated content publishing, and rapid iteration with preview deployments.
             </p>
+            <p>
+              It is built to be recruiter-friendly: clear outcomes, skimmable sections, and direct links to
+              source code and live demos without extra clicks.
+            </p>
           </div>
           <ProjectMedia
             src="/images/personalWebsiteUI.png"
@@ -84,6 +88,8 @@ export default function WebsitePage() {
             'GitHub Actions-driven workflows for content updates and deployment confidence.',
             'Client-side AI experiments via @mlc-ai/web-llm without server dependency.',
             'Monitoring/analytics feedback loop through the Vercel platform.',
+            'Reusable project detail components so every case study has consistent structure and polish.',
+            'Accessibility and semantic markup choices that improve scanning and SEO friendliness.',
           ]}
         />
       </ProjectSection>
@@ -98,6 +104,10 @@ export default function WebsitePage() {
           <p className="text-sm text-slate-600 sm:text-base">
             Frontend (Next.js, React, TypeScript), UI (Tailwind + motion), platform (Vercel), and
             integrations (Notion + GitHub) work together so the site stays fast and easy to update.
+          </p>
+          <p className="text-sm text-slate-600 sm:text-base">
+            CI and automated content workflows reduce maintenance overhead so updates stay frequent without
+            introducing regressions.
           </p>
           <ProjectTagList items={project.technologies} />
         </div>
@@ -115,6 +125,7 @@ export default function WebsitePage() {
             { label: 'Performance', value: 'Optimized', description: 'Rendering + edge delivery keep it consistently fast.' },
             { label: 'Iteration', value: 'Rapid', description: 'Preview deployments and a shared system speed up changes.' },
             { label: 'Presence', value: 'Cohesive', description: 'Projects and writing follow the same editorial design language.' },
+            { label: 'Maintenance', value: 'Lower', description: 'Shared components keep changes small and consistent.' },
           ]}
         />
       </ProjectSection>
