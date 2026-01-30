@@ -1,5 +1,30 @@
 [
   {
+    "id": "2edf7879-ec1d-807f-a268-f72c24695084",
+    "slug": "2edf7879-ec1d-807f-a268-f72c24695084",
+    "title": "Agent Avalanche! 🌨️",
+    "description": "Though Winter break had very little snow in Colorado, it gave me a great opportunity to begin experimenting with the latest and greatest tools like Opencode, Codex and many more! Read more here about my journey, what I’ve built so far!",
+    "date": "2026-01-30",
+    "tags": [
+      {
+        "name": "Personal",
+        "color": "purple"
+      },
+      {
+        "name": "Projects",
+        "color": "red"
+      },
+      {
+        "name": "Life",
+        "color": "yellow"
+      },
+      {
+        "name": "AI",
+        "color": "pink"
+      }
+    ]
+  },
+  {
     "id": "2d8f7879-ec1d-807f-a7ef-eda85834552b",
     "slug": "2d8f7879-ec1d-807f-a7ef-eda85834552b",
     "title": "Winter is Here ❄️⛄️",
