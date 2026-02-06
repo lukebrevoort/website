@@ -53,17 +53,19 @@ export default function FlowStatePage() {
         title="Designed for deep work"
         subtitle="A clean interface and automated planning system that keep students on track."
       >
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="space-y-4 text-sm text-slate-600 sm:text-base">
+        <div className="space-y-8">
+          <div className="space-y-4 text-md text-slate-600 sm:text-base">
             <p>
               Students constantly context-switch between an LMS, calendars,
               chat, and ad-hoc notes. FlowState consolidates assignments,
               priorities, and schedules into a single plan.
             </p>
             <p>
-              A LangGraph-style orchestration layer coordinates specialized
-              agents for scheduling, insights, and contextual recommendations so
-              planning stays automatic.
+              Built upon a Opencode backend that leverages modern agentic tools
+              such as Skills and Commands for long-running user workflows, MCP
+              services for any provider that students use (Google Calendar,
+              Notion, LMS APIs), and Multimodal streaming for real-time
+              feedback.
             </p>
             <p>
               The outcome is a tighter loop: less time deciding what to do next,
@@ -72,9 +74,9 @@ export default function FlowStatePage() {
             </p>
           </div>
           <ProjectMedia
-            src="/images/FSAnimation.mov"
-            alt="FlowState overview animation"
-            type="video"
+            src="/images/NEWflowstate.png"
+            alt="FlowState overview"
+            caption="FlowState's clean task management interface."
           />
         </div>
       </ProjectSection>
@@ -85,17 +87,24 @@ export default function FlowStatePage() {
         title="AI-first workflow"
         subtitle="Key capabilities that make the platform feel supportive, not noisy."
       >
-        <ProjectBulletList
-          items={[
-            "Real-time assistant with streaming responses and clear progress feedback.",
-            "Unified academic hub for assignments, course context, and priorities.",
-            "Adaptive scheduling that adjusts to workload and focus patterns.",
-            "Dynamic content when helpful (small interactive UI snippets instead of walls of text).",
-            "Lightweight analytics: overload warnings and productivity patterns without nagging.",
-            "Human override controls so students can lock deadlines and reprioritize without fighting the system.",
-            "Outcome-focused planning that turns raw requirements into a short, scannable daily plan.",
-          ]}
-        />
+        <div className="space-y-8">
+          <ProjectBulletList
+            items={[
+              "Real-time assistant with streaming responses and clear progress feedback.",
+              "Unified academic hub for assignments, course context, and priorities.",
+              "Adaptive scheduling that adjusts to workload and focus patterns.",
+              "Dynamic content when helpful (small interactive UI snippets instead of walls of text).",
+              "Lightweight analytics: overload warnings and productivity patterns without nagging.",
+              "Human override controls so students can lock deadlines and reprioritize without fighting the system.",
+              "Outcome-focused planning that turns raw requirements into a short, scannable daily plan.",
+            ]}
+          />
+          <ProjectMedia
+            src="/images/NEWflowstatetasks.png"
+            alt="FlowState task management view"
+            caption="Organized task view with priorities and due dates."
+          />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -124,12 +133,7 @@ export default function FlowStatePage() {
         title="Focused interaction design"
         subtitle="Minimal surfaces with just the right amount of feedback."
       >
-        <div className="grid gap-8 lg:grid-cols-2">
-          <ProjectMedia
-            src="/images/flowstateChat.mp4"
-            alt="FlowState chat interface"
-            type="video"
-          />
+        <div className="space-y-8">
           <ProjectBulletList
             items={[
               "Calm typography and restrained color to keep long sessions comfortable.",
@@ -138,6 +142,11 @@ export default function FlowStatePage() {
               "A readable hierarchy that keeps tasks, context, and next actions easy to scan.",
               "Deliberately quiet motion and UI feedback so the product feels steady under pressure.",
             ]}
+          />
+          <ProjectMedia
+            src="/images/NEWflowstatechat.png"
+            alt="FlowState chat interface"
+            caption="AI-powered chat for scheduling and task management."
           />
         </div>
       </ProjectSection>

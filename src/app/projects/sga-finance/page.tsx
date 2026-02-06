@@ -1,30 +1,31 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 import {
   ProjectPageShell,
   ProjectHero,
   ProjectSection,
+  ProjectMedia,
   ProjectBulletList,
   ProjectTagList,
   ProjectStatGrid,
-} from '@/components/project-detail'
-import { getProjectBySlug } from '@/data/projects'
+} from "@/components/project-detail";
+import { getProjectBySlug } from "@/data/projects";
 
 export default function SGAFinancePage() {
-  const [activeItem, setActiveItem] = useState('#overview')
-  const project = getProjectBySlug('sga-finance')
+  const [activeItem, setActiveItem] = useState("#overview");
+  const project = getProjectBySlug("sga-finance");
 
   if (!project) {
-    return <div>Project not found</div>
+    return <div>Project not found</div>;
   }
 
   const navigation = [
-    { name: 'Overview', href: '#overview' },
-    { name: 'Workflow', href: '#workflow' },
-    { name: 'Stack', href: '#stack' },
-    { name: 'Impact', href: '#impact' },
-  ]
+    { name: "Overview", href: "#overview" },
+    { name: "Workflow", href: "#workflow" },
+    { name: "Stack", href: "#stack" },
+    { name: "Impact", href: "#impact" },
+  ];
 
   return (
     <ProjectPageShell
@@ -38,10 +39,23 @@ export default function SGAFinancePage() {
         title="SGA Finance Platform"
         description="A platform for Stevens Institute of Technology that automates budget request slideshows and spreadsheets, reducing repetitive manual work for SGA finance workflows."
         accentColor={project.primaryColor}
-        actions={[
-          project.demoUrl && { label: 'Live demo', href: project.demoUrl, variant: 'secondary' },
-          project.githubUrl && { label: 'View source', href: project.githubUrl },
-        ].filter(Boolean) as { label: string; href: string; variant?: 'primary' | 'secondary' }[]}
+        actions={
+          [
+            project.demoUrl && {
+              label: "Live demo",
+              href: project.demoUrl,
+              variant: "secondary",
+            },
+            project.githubUrl && {
+              label: "View source",
+              href: project.githubUrl,
+            },
+          ].filter(Boolean) as {
+            label: string;
+            href: string;
+            variant?: "primary" | "secondary";
+          }[]
+        }
       />
 
       <ProjectSection
@@ -50,15 +64,22 @@ export default function SGAFinancePage() {
         title="Automating finance artifacts"
         subtitle="Turn structured budget request inputs into consistent docs."
       >
-        <ProjectBulletList
-          items={[
-            'Generates slide decks from standardized templates so presentations stay consistent.',
-            'Produces spreadsheets that align with the same request data.',
-            'Designed to reduce copy/paste, formatting drift, and manual rework.',
-            'Creates cleaner review packets by keeping narrative, line items, and totals in sync.',
-            'Cuts avoidable errors by enforcing the same structure for every request.',
-          ]}
-        />
+        <div className="space-y-8">
+          <ProjectBulletList
+            items={[
+              "Generates slide decks from standardized templates so presentations stay consistent.",
+              "Produces spreadsheets that align with the same request data.",
+              "Designed to reduce copy/paste, formatting drift, and manual rework.",
+              "Creates cleaner review packets by keeping narrative, line items, and totals in sync.",
+              "Cuts avoidable errors by enforcing the same structure for every request.",
+            ]}
+          />
+          <ProjectMedia
+            src="/images/sgafinancewebsite.png"
+            alt="SGA Finance Platform interface"
+            caption="The SGA Finance Platform web interface for budget request management."
+          />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -69,11 +90,11 @@ export default function SGAFinancePage() {
       >
         <ProjectBulletList
           items={[
-            'Intake budget request details through a structured interface.',
-            'Map request fields into a slide template and a spreadsheet layout.',
-            'Export/share generated artifacts for review and approval.',
-            'Validate required fields so finance reviews start with complete information.',
-            'Template-driven formatting keeps outputs consistent across committees and semesters.',
+            "Intake budget request details through a structured interface.",
+            "Map request fields into a slide template and a spreadsheet layout.",
+            "Export/share generated artifacts for review and approval.",
+            "Validate required fields so finance reviews start with complete information.",
+            "Template-driven formatting keeps outputs consistent across committees and semesters.",
           ]}
         />
       </ProjectSection>
@@ -86,8 +107,9 @@ export default function SGAFinancePage() {
       >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 sm:text-base">
-            The platform turns structured request data into repeatable artifacts: slide decks for narrative review
-            and spreadsheets for totals, line items, and reconciliation.
+            The platform turns structured request data into repeatable
+            artifacts: slide decks for narrative review and spreadsheets for
+            totals, line items, and reconciliation.
           </p>
           <ProjectTagList items={project.technologies} />
         </div>
@@ -101,14 +123,35 @@ export default function SGAFinancePage() {
       >
         <ProjectStatGrid
           items={[
-            { label: 'Docs', value: 'Generated', description: 'Slides and spreadsheets stay in sync.' },
-            { label: 'Workflow', value: 'Faster', description: 'Reduces repetitive formatting work.' },
-            { label: 'Output', value: 'Consistent', description: 'Templates prevent drift across requests.' },
-            { label: 'Platform', value: 'Web', description: 'Accessible for teams without local tooling.' },
-            { label: 'Rework', value: 'Reduced', description: 'Cleaner inputs and consistent exports cut revision cycles.' },
+            {
+              label: "Docs",
+              value: "Generated",
+              description: "Slides and spreadsheets stay in sync.",
+            },
+            {
+              label: "Workflow",
+              value: "Faster",
+              description: "Reduces repetitive formatting work.",
+            },
+            {
+              label: "Output",
+              value: "Consistent",
+              description: "Templates prevent drift across requests.",
+            },
+            {
+              label: "Platform",
+              value: "Web",
+              description: "Accessible for teams without local tooling.",
+            },
+            {
+              label: "Rework",
+              value: "Reduced",
+              description:
+                "Cleaner inputs and consistent exports cut revision cycles.",
+            },
           ]}
         />
       </ProjectSection>
     </ProjectPageShell>
-  )
+  );
 }

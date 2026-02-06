@@ -52,6 +52,7 @@ type ProjectMediaProps = {
   alt: string
   caption?: string
   type?: 'image' | 'video'
+  size?: 'small' | 'medium' | 'large'
 }
 
 type ProjectBulletListProps = {
@@ -188,9 +189,15 @@ export function ProjectSection({ id, eyebrow, title, subtitle, children }: Proje
   )
 }
 
-export function ProjectMedia({ src, alt, caption, type = 'image' }: ProjectMediaProps) {
+export function ProjectMedia({ src, alt, caption, type = 'image', size = 'large' }: ProjectMediaProps) {
+  const sizeClasses = {
+    small: 'max-w-sm',
+    medium: 'max-w-2xl',
+    large: 'w-full',
+  }
+
   return (
-    <figure className="overflow-hidden rounded-3xl border border-white/70 bg-white/70 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.55)]">
+    <figure className={`overflow-hidden rounded-3xl border border-white/70 bg-white/70 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.55)] ${sizeClasses[size]}`}>
       {type === 'video' ? (
         <video
           src={src}

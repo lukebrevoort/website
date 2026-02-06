@@ -5,6 +5,7 @@ import {
   ProjectPageShell,
   ProjectHero,
   ProjectSection,
+  ProjectMedia,
   ProjectBulletList,
   ProjectTagList,
   ProjectStatGrid,
@@ -52,15 +53,22 @@ export default function Zen80Page() {
         title="Daily planning with accountability"
         subtitle="A lightweight system for choosing what matters and measuring follow-through."
       >
-        <ProjectBulletList
-          items={[
-            "Morning planning flow to pick 3-5 Signal tasks and estimate effort.",
-            "Time tracking to compare estimated vs actual minutes per task.",
-            "A single ratio (Signal %) that stays readable and actionable.",
-            "Low-friction timers and quick edits so tracking stays realistic on busy days.",
-            "A repeatable review loop that makes drift visible before it becomes a habit.",
-          ]}
-        />
+        <div className="grid gap-8 lg:grid-cols-2">
+          <ProjectBulletList
+            items={[
+              "Morning planning flow to pick 3-5 Signal tasks and estimate effort.",
+              "Time tracking to compare estimated vs actual minutes per task.",
+              "A single ratio (Signal %) that stays readable and actionable.",
+              "Low-friction timers and quick edits so tracking stays realistic on busy days.",
+              "A repeatable review loop that makes drift visible before it becomes a habit.",
+            ]}
+          />
+          <ProjectMedia
+            src="/images/Zen80Homescreen.png"
+            alt="Zen80 home screen showing daily task planning interface"
+            caption="The Zen80 daily planning view with Signal tasks and time tracking."
+          />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -86,16 +94,24 @@ export default function Zen80Page() {
         title="Calendar-aware focus blocks"
         subtitle="Designed to fit into a real schedule instead of ignoring it."
       >
-        <ProjectBulletList
-          items={[
-            "Two-way Google Calendar sync and time blocking for planned Signal work.",
-            "External calendar events can fulfill planned Signal time (lecture = study time).",
-            "End-of-day review with rollover suggestions for unfinished tasks.",
-            "Basic analytics: Signal ratio trends and time breakdowns over weeks.",
-            "Calendar-aware suggestions that help place focus blocks into the gaps that actually exist.",
-            "A quick daily summary that makes it obvious where time went (Signal vs Noise).",
-          ]}
-        />
+        <div className="grid gap-8 lg:grid-cols-2">
+          <ProjectBulletList
+            items={[
+              "Two-way Google Calendar sync and time blocking for planned Signal work.",
+              "External calendar events can fulfill planned Signal time (lecture = study time).",
+              "End-of-day review with rollover suggestions for unfinished tasks.",
+              "Basic analytics: Signal ratio trends and time breakdowns over weeks.",
+              "Calendar-aware suggestions that help place focus blocks into the gaps that actually exist.",
+              "A quick daily summary that makes it obvious where time went (Signal vs Noise).",
+            ]}
+          />
+          <ProjectMedia
+            src="/images/zen80calendar.png"
+            alt="Zen80 home screen showing daily task planning interface"
+            caption="The Zen80 daily planning view with Signal tasks and time tracking."
+            size="small"
+          />
+        </div>
       </ProjectSection>
 
       <ProjectSection
@@ -112,7 +128,7 @@ export default function Zen80Page() {
           </p>
           <p className="text-sm text-slate-600 sm:text-base">
             Authentication is scoped to calendar access, tokens are stored
-            securely, and the app remains usable offline so planning doesn't
+            securely, and the app remains usable offline so planning does not
             break when connectivity does.
           </p>
           <ProjectTagList items={project.technologies} />

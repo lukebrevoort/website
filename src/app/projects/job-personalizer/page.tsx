@@ -82,19 +82,26 @@ export default function JobPersonalizerPage() {
         title="Concise automation loop"
         subtitle="Each step is designed to minimize manual effort."
       >
-        <ProjectBulletList
-          items={[
-            "Scheduled trigger (~5 hour cadence) pulls a job repository feed.",
-            "Filters to recent listings (last 7 days) and avoids duplicates via Notion comparison.",
-            "Slack Block Kit message with Multi-Static Select lets me pick roles quickly.",
-            'Selected roles are marked "Considering" in Notion to trigger personalization.',
-            "LLM #1 extracts and categorizes role-specific skills; LLM #2 tailors the Typst resume to match.",
-            "Gmail approve/deny provides human-in-the-loop control with iterative refinement.",
-            "Edge-case handling: dead links notify by email; Workday SOAP redirects are normalized.",
-            "Standardized prompts and templates keep tone and formatting consistent across roles.",
-            "Outputs are generated as reviewable artifacts so I can compare versions before sending.",
-          ]}
-        />
+        <div className="grid gap-8 lg:grid-cols-2">
+          <ProjectBulletList
+            items={[
+              "Scheduled trigger (~5 hour cadence) pulls a job repository feed.",
+              "Filters to recent listings (last 7 days) and avoids duplicates via Notion comparison.",
+              "Slack Block Kit message with Multi-Static Select lets me pick roles quickly.",
+              'Selected roles are marked "Considering" in Notion to trigger personalization.',
+              "LLM #1 extracts and categorizes role-specific skills; LLM #2 tailors the Typst resume to match.",
+              "Gmail approve/deny provides human-in-the-loop control with iterative refinement.",
+              "Edge-case handling: dead links notify by email; Workday SOAP redirects are normalized.",
+              "Standardized prompts and templates keep tone and formatting consistent across roles.",
+              "Outputs are generated as reviewable artifacts so I can compare versions before sending.",
+            ]}
+          />
+          <ProjectMedia
+            src="/images/humanintheloopn8n.png"
+            alt="Human-in-the-loop approval workflow"
+            caption="Gmail-based approve/deny loop for quality control."
+          />
+        </div>
       </ProjectSection>
 
       <ProjectSection
