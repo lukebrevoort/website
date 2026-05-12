@@ -80,7 +80,6 @@ const generateProjectNavItems = (): NavItem[] => {
     title: project.title,
     icon: getProjectIcon(project.slug, project.title),
     href: `/projects/${project.slug}`,
-    badge: project.status === "in-progress" ? "WIP" : undefined,
   }));
 
   // Add "More" item if there are more projects than featured ones
@@ -105,7 +104,7 @@ const navSections: NavSection[] = [
       { title: "About Me", icon: User, href: "/about" },
       { title: "Models", icon: Bot, href: "/models" },
       { title: "Documentation", icon: BookOpen, href: "/documentation" },
-      { title: "Blog", icon: NotebookPen, href: "/blog/posts", badge: "New" },
+      { title: "Blog", icon: NotebookPen, href: "/blog/posts" },
     ],
   },
   {
