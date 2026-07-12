@@ -8,6 +8,7 @@ import type {
   ExcalidrawImperativeAPI,
 } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
+import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
 import "@excalidraw/excalidraw/index.css";
 import styles from "./excalidraw-canvas.module.css";
 
@@ -29,6 +30,9 @@ export type CanvasSnapshot = {
   selectedElements: readonly ExcalidrawElement[];
   exportedCanvas: Blob | null;
   captureCanvasImage: () => Promise<Blob | null>;
+  insertElements: (
+    elements: ExcalidrawElementSkeleton[],
+  ) => Promise<readonly ExcalidrawElement[]>;
 };
 
 type ExcalidrawCanvasProps = {
@@ -41,6 +45,7 @@ const emptySnapshot: CanvasSnapshot = {
   selectedElements: [],
   exportedCanvas: null,
   captureCanvasImage: async () => null,
+  insertElements: async () => [],
 };
 
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
@@ -91,6 +96,41 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     }
   }, [publishSnapshot]);
 
+  const insertElements = useCallback(
+    async (elements: ExcalidrawElementSkeleton[]) => {
+      const api = apiRef.current;
+      if (!api || elements.length === 0) return [];
+
+      const { CaptureUpdateAction, convertToExcalidrawElements } = await import(
+        "@excalidraw/excalidraw"
+      );
+      const insertedElements = convertToExcalidrawElements(elements, {
+        regenerateIds: false,
+      });
+
+      api.updateScene({
+        elements: [...api.getSceneElements(), ...insertedElements],
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      });
+      api.setActiveTool({ type: "selection" });
+      api.scrollToContent(insertedElements, {
+        fitToViewport: true,
+        viewportZoomFactor: 0.72,
+        animate: true,
+        duration: 450,
+        maxZoom: 1.15,
+        canvasOffsets: { top: 62, bottom: 155 },
+      });
+      api.setToast({
+        message: "Added editable objects to your canvas",
+        duration: 2400,
+      });
+
+      return insertedElements;
+    },
+    [],
+  );
+
   const handleChange = useCallback(
     (
       elements: readonly ExcalidrawElement[],
@@ -119,9 +159,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         selectedElements,
         exportedCanvas: snapshotRef.current.exportedCanvas,
         captureCanvasImage,
+        insertElements,
       });
     },
-    [captureCanvasImage, publishSnapshot],
+    [captureCanvasImage, insertElements, publishSnapshot],
   );
 
   return (
@@ -133,6 +174,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             ...snapshotRef.current,
             api,
             captureCanvasImage,
+            insertElements,
           });
         }}
         initialData={{
