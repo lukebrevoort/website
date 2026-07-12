@@ -66,7 +66,7 @@ export const projects: Project[] = [
     id: "9",
     title: "MALCOM",
     description:
-      "A controller for a remote, Mac-based personal coding and assistant host—keeping sessions, workspaces, policy, logs, and tool integrations inspectable across multiple coding harnesses.",
+      "A controller layer for a remote, Mac-based personal coding and assistant host. MALCOM gives long-running work a stable CLI, session registry, policy boundary, and workspace layout while adapting tools such as Codex, OpenCode, Cursor, GitHub, Notion, and Linear into one inspectable system.",
     technologies: [
       "Python",
       "CLI Design",
@@ -89,7 +89,7 @@ export const projects: Project[] = [
     id: "10",
     title: "Orca Mail",
     description:
-      "A human-first email client in progress that filters for real communication, normalizes provider mail into one model, and makes the inbox calmer through attention views and a focused writing mode.",
+      "A human-first email client in progress for the conversations that matter. Orca connects to Gmail through read-only OAuth, normalizes mail into a clean local model, and uses Human Signal, attention views, contact signatures, and a distraction-free Zen writer to cut through automated noise.",
     technologies: [
       "TypeScript",
       "React",
@@ -111,7 +111,7 @@ export const projects: Project[] = [
     id: "11",
     title: "Dispatch",
     description:
-      "A local-first control plane for running multiple AI coding agents, with persistent browser terminals, worktree isolation, media sharing, and the whiteboard surface I helped shape.",
+      "A local-first control plane for running and managing multiple AI coding agents from one workspace. Dispatch keeps agents alive in tmux-backed sessions, pairs browser terminals with worktree isolation, media sharing, jobs, and MCP tools, and includes the collaborative whiteboard surface I helped shape.",
     technologies: [
       "TypeScript",
       "Bun",

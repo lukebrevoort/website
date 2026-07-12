@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   ProjectBulletList,
   ProjectHero,
+  ProjectMedia,
   ProjectPageShell,
   ProjectSection,
   ProjectTagList,
@@ -12,20 +13,36 @@ import { getProjectBySlug } from "@/data/projects";
 
 const projectHighlights: Record<string, string[]> = {
   malcom: [
-    "Coordinates remote coding and assistant sessions with a clear workspace, policy, and logging layer.",
-    "Supports multiple coding harnesses while keeping project context and handoffs organized.",
-    "Brings GitHub, Notion, and Linear integrations into one personal-assistant workflow.",
+    "Acts as the controlled execution layer for a remote Mac-based personal coding and assistant host, while Hermes remains the conversational orchestrator.",
+    "Maintains the source-of-truth session registry, workspace layout, logs, and policy controls so long-running work stays inspectable and recoverable.",
+    "Uses stable CLI commands to start and track manual, Codex, OpenCode, and Cursor harnesses without tying the controller to one provider.",
+    "Connects services such as GitHub, Notion, and Linear through adapters, keeping credentials and recurring automation deliberately constrained.",
   ],
   "orca-mail": [
-    "Connects to Gmail through OAuth and normalizes incoming mail into a clean internal model.",
-    "Explores a focused inbox experience with configurable attention views and thoughtful mail organization.",
-    "Built as an active monorepo with separate web, API, and shared packages.",
+    "Connects to Gmail through read-only OAuth and normalizes provider-specific messages into a clean internal model designed to support Gmail now and Outlook later.",
+    "Uses Human Signal to foreground messages written by people, filtering marketing automation and inbox clutter out of the core reading experience.",
+    "Makes conversations scannable with contact signatures and configurable attention views, then gives writing a dedicated full-screen Zen Mode.",
+    "Runs as an active Bun monorepo with a React/Vite web app, Hono API, shared Zod schemas, and SQLite persistence through Drizzle.",
   ],
   dispatch: [
-    "Works as a local-first control plane for running and managing multiple AI coding agents.",
-    "Brings browser-based terminals, media sharing, agent lifecycle controls, and worktree isolation into one interface.",
-    "Contributed a new whiteboard surface alongside debugging, product development, and interaction ideas.",
+    "Runs and manages multiple long-lived coding agents—Claude, Codex, Cursor, OpenCode, or a plain terminal—without losing them when a browser disconnects.",
+    "Pairs interactive xterm.js browser terminals with tmux-backed persistence, Git worktree isolation, lifecycle controls, scheduled jobs, and reusable review personas.",
+    "Surfaces the context that makes parallel work usable: live status events, media sharing, browser streaming, project-scoped MCP tools, pins, notifications, and activity analytics.",
+    "My work includes the collaborative whiteboard surface, plus debugging, product development, and interaction ideas as the system evolves.",
   ],
+};
+
+const projectMedia: Record<string, { src: string; alt: string; caption: string }> = {
+  malcom: {
+    src: "/images/malcom-architecture.svg",
+    alt: "MALCOM architecture diagram",
+    caption: "Hermes coordinates the conversation; MALCOM controls the remote execution layer, adapters, and Mac runtime.",
+  },
+  "orca-mail": {
+    src: "/images/orca-mail-login.png",
+    alt: "Orca Mail Google sign-in screen",
+    caption: "A live capture of Orca's read-only Gmail connection flow, taken from the local project.",
+  },
 };
 
 export default function ProjectPage() {
@@ -39,6 +56,7 @@ export default function ProjectPage() {
   }
 
   const highlights = projectHighlights[project.slug] ?? [project.description];
+  const media = projectMedia[project.slug];
   const navigation = [
     { name: "Overview", href: "#overview" },
     { name: "Focus", href: "#focus" },
@@ -59,7 +77,10 @@ export default function ProjectPage() {
         accentColor={project.primaryColor}
       />
       <ProjectSection id="overview" eyebrow="Overview" title="The work">
-        <ProjectBulletList items={highlights} />
+        <div className="space-y-8">
+          <ProjectBulletList items={highlights} />
+          {media && <ProjectMedia {...media} />}
+        </div>
       </ProjectSection>
       <ProjectSection id="focus" eyebrow="Now" title="Current focus">
         <p>
