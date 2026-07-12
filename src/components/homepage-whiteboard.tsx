@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { projects } from "@/data/projects";
 import { lukesFont, satoshi } from "@/app/fonts";
+import ExcalidrawCanvas from "./excalidraw-canvas";
 import styles from "./homepage-whiteboard.module.css";
 
 type AgentState = "loading" | "idle" | "thinking" | "results" | "error";
@@ -124,16 +125,7 @@ export default function HomepageWhiteboard() {
       </header>
 
       <section className={styles.canvas} aria-label="Luke's project exploration canvas">
-        <div className={styles.paperTexture} aria-hidden="true" />
-        <svg className={styles.sketches} viewBox="0 0 1200 760" aria-hidden="true">
-          <path d="M55 212 C 165 151, 238 177, 312 126" />
-          <path d="M296 119 l19 2 -8 17" />
-          <path d="M919 121 c87 21 143 71 169 137" />
-          <path d="M1074 249 l15 10 2 -18" />
-          <path d="M101 617 c94 45 177 54 257 27" />
-          <circle cx="110" cy="603" r="7" />
-          <path d="M824 642 c104 -5 176 -41 236 -105" />
-        </svg>
+        <ExcalidrawCanvas />
 
         {agentState === "loading" && (
           <div className={styles.loading} role="status">
@@ -252,7 +244,7 @@ export default function HomepageWhiteboard() {
 
         <aside className={styles.cornerNote} aria-hidden="true">
           <span>this space is yours</span>
-          <span>move the notes around ↗</span>
+          <span>draw, type, and move things around ↗</span>
         </aside>
       </section>
 

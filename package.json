@@ -11,6 +11,7 @@
     "fix-blog": "tsx scripts/fix-current-blog.ts"
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.1",
     "@mlc-ai/web-llm": "^0.2.78",
     "@octokit/rest": "^21.1.1",
     "@radix-ui/react-avatar": "^1.1.2",
