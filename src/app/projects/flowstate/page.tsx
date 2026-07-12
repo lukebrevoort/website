@@ -36,9 +36,9 @@ export default function FlowStatePage() {
       onItemClick={setActiveItem}
     >
       <ProjectHero
-        eyebrow="AI productivity"
+        eyebrow="Completed MCP experiment"
         title="FlowState"
-        description="An AI-guided productivity system that turns chaotic student schedules into focused, structured work blocks with a calm interface and an agent-driven planning layer."
+        description="A completed, early MCP-driven study-workflow experiment: a local-first OpenCode wrapper that brought academic context, connected apps, specialized agents, and approval-gated actions into one place."
         accentColor={project.primaryColor}
         actions={
           project.githubUrl
@@ -50,27 +50,25 @@ export default function FlowStatePage() {
       <ProjectSection
         id="overview"
         eyebrow="Overview"
-        title="Designed for deep work"
-        subtitle="A clean interface and automated planning system that keep students on track."
+        title="A pre-context era experiment"
+        subtitle="Built before today’s AI tooling made connected context a default expectation."
       >
         <div className="space-y-8">
           <div className="space-y-4 text-md text-slate-600 sm:text-base">
             <p>
-              Students constantly context-switch between an LMS, calendars,
-              chat, and ad-hoc notes. FlowState consolidates assignments,
-              priorities, and schedules into a single plan.
+              FlowState started as an attempt to give study workflows a durable,
+              local-first context layer before modern MCP-based tooling had
+              become commonplace.
             </p>
             <p>
-              Built upon a Opencode backend that leverages modern agentic tools
-              such as Skills and Commands for long-running user workflows, MCP
-              services for any provider that students use (Google Calendar,
-              Notion, LMS APIs), and Multimodal streaming for real-time
-              feedback.
+              It wrapped OpenCode with specialized agents and app integrations,
+              connecting tools such as Notion, Gmail, Google Calendar, and LMS
+              APIs while keeping higher-risk actions behind approval.
             </p>
             <p>
-              The outcome is a tighter loop: less time deciding what to do next,
-              more time executing with clear context, and a schedule that stays
-              realistic as the week changes.
+              The project is now complete: a useful artifact from an earlier
+              moment in agent tooling, and a foundation for how I think about
+              context, autonomy, and user control today.
             </p>
           </div>
           <ProjectMedia
@@ -84,8 +82,8 @@ export default function FlowStatePage() {
       <ProjectSection
         id="approach"
         eyebrow="Approach"
-        title="AI-first workflow"
-        subtitle="Key capabilities that make the platform feel supportive, not noisy."
+        title="What it explored"
+        subtitle="A local-first coordination layer for study and daily-work tools."
       >
         <div className="space-y-8">
           <ProjectBulletList

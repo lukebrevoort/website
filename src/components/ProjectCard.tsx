@@ -16,6 +16,7 @@ interface ProjectCardProps {
   primaryColor?: string
   secondaryColor?: string
   logo?: string
+  emoji?: string
   variant?: 'standard' | 'featured'
 }
 
@@ -33,6 +34,7 @@ export default function ProjectCard({
   primaryColor = '#3b82f6', // Default to blue if not provided
   secondaryColor = '#3b82f6', // Default to blue if not provided
   logo,
+  emoji,
   variant = 'standard',
 }: ProjectCardProps) {
   const statusColors = {
@@ -73,7 +75,9 @@ export default function ProjectCard({
             <div
               className={`flex h-full min-h-[200px] w-full items-center justify-center bg-slate-900/5 ${isFeatured ? '' : 'aspect-[16/9]'}`}
             >
-              {logo ? (
+              {emoji ? (
+                <span className="text-6xl leading-none" role="img" aria-label={`${title} icon`}>{emoji}</span>
+              ) : logo ? (
                 <img src={logo} alt={`${title} logo`} className="h-16 w-16 object-contain" />
               ) : (
                 <span className="text-2xl font-semibold text-slate-500">{title.split(' ').map((word) => word[0]).join('')}</span>

@@ -37,7 +37,7 @@ export default function WebsitePage() {
       <ProjectHero
         eyebrow="Digital portfolio"
         title="Personal Website"
-        description="A modern portfolio that balances editorial storytelling with practical infrastructure: automated content, client-side AI experiments, and a performance-first build pipeline."
+        description="The living portfolio and publishing space I use to document projects, write about what I am learning, and experiment with thoughtful web interactions."
         accentColor={project.primaryColor}
         actions={[
           project.githubUrl && { label: 'View source', href: project.githubUrl },

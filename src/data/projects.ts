@@ -13,6 +13,7 @@ export interface Project {
   featured: boolean;
   // Project sidebar customization
   logo: string;
+  emoji?: string;
   primaryColor: string;
   secondaryColor: string;
 }
@@ -22,7 +23,7 @@ export const projects: Project[] = [
     id: "1",
     title: "Personal Website",
     description:
-      "A modern, responsive personal website built with Next.js and Tailwind CSS. Features a clean design, project showcase, and contact form with a focus on performance and accessibility.",
+      "The living portfolio and publishing space I use to document projects, write about what I am learning, and experiment with thoughtful web interactions.",
     technologies: [
       "TypeScript",
       "Vercel",
@@ -36,7 +37,7 @@ export const projects: Project[] = [
     status: "completed",
     date: "August 2025",
     category: "Web Development",
-    featured: true,
+    featured: false,
     demoUrl: "https://luke.brevoort.com/",
     githubUrl: "https://github.com/lukebrevoort/website",
     logo: "/images/personalWebsiteUI.png",
@@ -47,14 +48,14 @@ export const projects: Project[] = [
     id: "2",
     title: "FlowState",
     description:
-      "A productivity and focus application designed to help users achieve optimal study and work sessions through AI-driven task management and time tracking.",
-    technologies: ["Python", "TypeScript", "FastAPI", "LangGraph", "Express"],
+      "A completed, early MCP-driven study-workflow experiment: a local-first OpenCode wrapper that brought academic context, connected apps, specialized agents, and approval-gated actions into one place.",
+    technologies: ["TypeScript", "OpenCode", "MCP", "SQLite", "Notion", "Gmail", "Google Calendar"],
     slug: "flowstate",
-    status: "in-progress",
-    date: "August 2025",
+    status: "completed",
+    date: "2025 – 2026",
     image: "/icons/flowstate.png",
     category: "Productivity",
-    featured: true,
+    featured: false,
     githubUrl: "https://github.com/lukebrevoort/flowstate",
     demoUrl: "https://flowstate-self.vercel.app",
     logo: "/icons/flowstate.png",
@@ -62,10 +63,78 @@ export const projects: Project[] = [
     secondaryColor: "#9eab57",
   },
   {
+    id: "9",
+    title: "MALCOM",
+    description:
+      "A controller for a remote, Mac-based personal coding and assistant host—keeping sessions, workspaces, policy, logs, and tool integrations inspectable across multiple coding harnesses.",
+    technologies: [
+      "Python",
+      "CLI Design",
+      "Agent Orchestration",
+      "GitHub",
+      "Notion",
+      "Linear",
+    ],
+    slug: "malcom",
+    status: "in-progress",
+    date: "June 2026 – Present",
+    category: "AI/ML",
+    featured: true,
+    logo: "/icons/malcom.svg",
+    emoji: "🤖",
+    primaryColor: "#1d4ed8",
+    secondaryColor: "#0891b2",
+  },
+  {
+    id: "10",
+    title: "Orca Mail",
+    description:
+      "A human-first email client in progress that filters for real communication, normalizes provider mail into one model, and makes the inbox calmer through attention views and a focused writing mode.",
+    technologies: [
+      "TypeScript",
+      "React",
+      "Gmail API",
+      "OAuth 2.0",
+      "SQLite",
+      "Drizzle",
+    ],
+    slug: "orca-mail",
+    status: "in-progress",
+    date: "July 2026 – Present",
+    category: "Web Development",
+    featured: true,
+    logo: "/icons/orca-mail.svg",
+    primaryColor: "#0f766e",
+    secondaryColor: "#0369a1",
+  },
+  {
+    id: "11",
+    title: "Dispatch",
+    description:
+      "A local-first control plane for running multiple AI coding agents, with persistent browser terminals, worktree isolation, media sharing, and the whiteboard surface I helped shape.",
+    technologies: [
+      "TypeScript",
+      "Bun",
+      "PostgreSQL",
+      "tmux",
+      "MCP",
+      "Product Design",
+    ],
+    slug: "dispatch",
+    status: "in-progress",
+    date: "2026 – Present",
+    category: "Collaboration",
+    featured: true,
+    logo: "/icons/dispatch-logo-cropped.png",
+    githubUrl: "https://github.com/selfcontained/dispatch",
+    primaryColor: "#7c3aed",
+    secondaryColor: "#db2777",
+  },
+  {
     id: "3",
     title: "Canvas-Notion Automation",
     description:
-      "Canvas-Notion integration for seamless assignment tracking and academic workflow management.",
+      "An academic workflow bridge that pulls Canvas assignments into Notion, so deadlines, priorities, grades, and submission status can live in one organized planning system.",
     technologies: [
       "Python",
       "Canvas API",
@@ -88,7 +157,7 @@ export const projects: Project[] = [
     id: "4",
     title: "HFTC",
     description:
-      "Advanced algorithmic trading system developed for competitive trading competitions with real-time market analysis and automated strategy execution.",
+      "A competition trading system for the Stevens High-Frequency Trading Competition, combining market-making discipline with momentum-based strategies on the SHIFT platform.",
     technologies: [
       "Python",
       "Algorithm Development",
@@ -110,7 +179,7 @@ export const projects: Project[] = [
     id: "5",
     title: "n8n Job Personalizer",
     description:
-      "Automated resume personalization workflow using n8n with Slack integration for job selection, dual-LLM processing for skill extraction and resume optimization, and Gmail-based human-in-the-loop approval.",
+      "A human-in-the-loop n8n workflow that finds relevant roles, drafts tailored resumes, and requires my explicit Gmail approval before any generated material is finalized or used.",
     technologies: [
       "n8n",
       "Slack",
@@ -125,7 +194,7 @@ export const projects: Project[] = [
     date: "July 2025",
     category: "AI/ML",
     image: "/images/n8n.png",
-    featured: true,
+    featured: false,
     logo: "/images/n8n.png",
     primaryColor: "#7c3aed",
     secondaryColor: "#ec4899",
@@ -134,7 +203,7 @@ export const projects: Project[] = [
     id: "6",
     title: "Zen80",
     description:
-      "A Flutter productivity tracker built around the Signal vs Noise philosophy, with Google Calendar sync, time tracking, and daily planning workflows.",
+      "A Flutter productivity tracker built around Signal vs. Noise: choose the few tasks that matter, protect time for them on the calendar, and measure whether the day matched that intent.",
     technologies: [
       "Flutter",
       "Dart",
@@ -149,7 +218,7 @@ export const projects: Project[] = [
     category: "Productivity",
     image: "/images/zen80logo.png",
     logo: "/images/zen80logo.png",
-    featured: true,
+    featured: false,
     githubUrl: "https://github.com/lukebrevoort/Zen80",
     demoUrl: undefined,
     primaryColor: "#0f766e",
@@ -159,7 +228,7 @@ export const projects: Project[] = [
     id: "7",
     title: "while_unemployed",
     description:
-      "A realistic technical interview simulator with an AI interviewer, live code analysis, and speech features for a more authentic practice loop than standard coding sites.",
+      "A completed class MVP for technical-interview practice, pairing an AI interviewer, live code analysis, and voice interaction; the MVP and demo earned a 100% evaluation.",
     technologies: [
       "Next.js",
       "TypeScript",
@@ -170,7 +239,7 @@ export const projects: Project[] = [
       "OpenAI",
     ],
     slug: "while-unemployed",
-    status: "in-progress",
+    status: "completed",
     date: "2025",
     category: "AI/ML",
     featured: false,
@@ -185,7 +254,7 @@ export const projects: Project[] = [
     id: "8",
     title: "SGA Finance Platform",
     description:
-      "A platform for Stevens Institute of Technology that automates budget request slideshows and spreadsheets for SGA finance workflows.",
+      "A document-automation platform for Stevens SGA Finance that turns CampusGroups exports into review-ready weekly spreadsheets and Senate-ready budget-request presentations.",
     technologies: [
       "Next.js",
       "TypeScript",

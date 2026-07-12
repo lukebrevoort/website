@@ -151,6 +151,8 @@ export default function Page() {
                       <Badge>HTML/CSS</Badge>
                       <Badge>REST APIs</Badge>
                       <Badge>WebLLM</Badge>
+                      <Badge>OAuth 2.0</Badge>
+                      <Badge>Agent Orchestration</Badge>
                     </div>
                   </div>
                   <div>
@@ -166,6 +168,8 @@ export default function Page() {
                       <Badge>Linux</Badge>
                       <Badge>VS Code</Badge>
                       <Badge>PostgreSQL</Badge>
+                      <Badge>SQLite</Badge>
+                      <Badge>Linear</Badge>
                     </div>
                   </div>
                   <div>
@@ -235,6 +239,13 @@ export default function Page() {
                 <div className={`space-y-8 ${crimsonText.className}`}>
                   {[
                     {
+                      title: "Mytra",
+                      role: "Software Engineering Intern · Interactivity Team",
+                      date: "Summer 2026",
+                      description:
+                        "Building AI solution software for Fortune 500 customers as part of the Interactivity Team.",
+                    },
+                    {
                       title: (
                         <a
                           href="https://sitblueprint.com/"
@@ -244,8 +255,10 @@ export default function Page() {
                           Blueprint
                         </a>
                       ),
-                      role: "Project Team Developer",
+                      role: "Project Lead",
                       date: "November 2025 - Present",
+                      description:
+                        "Leading end-to-end nonprofit engagements: shaping tickets, running standups, and incorporating stakeholder value propositions into product work.",
                     },
                     {
                       title: "Stevens NLP Lab",
@@ -285,8 +298,13 @@ export default function Page() {
                           {item.role}
                         </p>
                         <Badge variant="outline">{item.date}</Badge>
+                        {item.description && (
+                          <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+                            {item.description}
+                          </p>
+                        )}
                       </div>
-                      {index < 3 && <Separator className="mt-8" />}
+                      {index < 5 && <Separator className="mt-8" />}
                     </motion.div>
                   ))}
                 </div>

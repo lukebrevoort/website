@@ -36,9 +36,9 @@ export default function WhileUnemployedPage() {
       onItemClick={setActiveItem}
     >
       <ProjectHero
-        eyebrow="Interview practice"
+        eyebrow="Completed class MVP"
         title="while_unemployed"
-        description="A technical interview simulator that feels closer to the real thing: an AI interviewer, live code analysis, and speech features for natural back-and-forth."
+        description="A completed class MVP for technical-interview practice, pairing an AI interviewer, live code analysis, and voice interaction; the MVP and demo earned a 100% evaluation."
         accentColor={project.primaryColor}
         actions={
           [
