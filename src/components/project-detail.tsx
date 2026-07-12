@@ -86,6 +86,7 @@ export function ProjectPageShell({
       <ProjectSidebar
         projectName={project.title}
         projectLogo={project.logo}
+        projectEmoji={project.emoji}
         primaryColor={project.primaryColor}
         secondaryColor={project.secondaryColor}
         navigation={navigation}

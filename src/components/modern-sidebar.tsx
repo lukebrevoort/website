@@ -27,6 +27,8 @@ import {
   Brain,
   TrendingUp,
   FileUser,
+  Mail,
+  PanelsTopLeft,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { lukesFont } from "@/app/fonts";
@@ -66,6 +68,12 @@ const getProjectIcon = (
       return TrendingUp;
     case "job-personalizer":
       return FileUser;
+    case "malcom":
+      return Bot;
+    case "orca-mail":
+      return Mail;
+    case "dispatch":
+      return PanelsTopLeft;
     case "zen80":
       return Gauge;
     default:

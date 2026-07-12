@@ -8,6 +8,7 @@ import Image from 'next/image'
 interface ProjectSidebarProps {
   projectName: string
   projectLogo: string
+  projectEmoji?: string
   primaryColor: string
   secondaryColor: string
   navigation: Array<{
@@ -22,6 +23,7 @@ interface ProjectSidebarProps {
 export default function ProjectSidebar({
   projectName,
   projectLogo,
+  projectEmoji,
   primaryColor,
   secondaryColor,
   navigation,
@@ -181,7 +183,11 @@ export default function ProjectSidebar({
               <div className="opacity-0 animate-fadeIn" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
                 <div className="flex items-center space-x-3">
                   <span className="text-xl font-bold text-white">{projectName}</span>
-                  <Image src={projectLogo} alt={projectName} width={40} height={32} />
+                  {projectEmoji ? (
+                    <span className="text-3xl leading-none" role="img" aria-label={`${projectName} icon`}>{projectEmoji}</span>
+                  ) : (
+                    <Image src={projectLogo} alt={projectName} width={40} height={32} className="h-8 w-10 object-contain" />
+                  )}
                 </div>
                 <p className="text-sm text-white font-bold mt-1">Project Navigation</p>
               </div>
@@ -189,7 +195,11 @@ export default function ProjectSidebar({
             {isCollapsed && (
               <div className="flex justify-center">
                 <div className="w-14 h-12 rounded-lg backdrop-blur-sm flex items-center justify-center" style={getLogoBackgroundStyle()}>
-                  <Image src={projectLogo} alt={projectName} width={40} height={32} />
+                  {projectEmoji ? (
+                    <span className="text-3xl leading-none" role="img" aria-label={`${projectName} icon`}>{projectEmoji}</span>
+                  ) : (
+                    <Image src={projectLogo} alt={projectName} width={40} height={32} className="h-8 w-10 object-contain" />
+                  )}
                 </div>
               </div>
             )}

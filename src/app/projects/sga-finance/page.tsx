@@ -37,7 +37,7 @@ export default function SGAFinancePage() {
       <ProjectHero
         eyebrow="Operations automation"
         title="SGA Finance Platform"
-        description="A platform for Stevens Institute of Technology that automates budget request slideshows and spreadsheets, reducing repetitive manual work for SGA finance workflows."
+        description="A document-automation platform for Stevens SGA Finance that turns CampusGroups exports into review-ready weekly spreadsheets and Senate-ready budget-request presentations."
         accentColor={project.primaryColor}
         actions={
           [

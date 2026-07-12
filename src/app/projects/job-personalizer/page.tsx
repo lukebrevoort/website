@@ -38,7 +38,7 @@ export default function JobPersonalizerPage() {
       <ProjectHero
         eyebrow="Automation"
         title="Resume Personalization"
-        description="An n8n workflow that discovers new roles, customizes resumes with dual LLM passes, and routes approvals through email before submission."
+        description="A human-in-the-loop n8n workflow that finds relevant roles, drafts tailored resumes, and requires my explicit Gmail approval before any generated material is finalized or used."
         accentColor={project.primaryColor}
         actions={project.githubUrl ? [{ label: "View source", href: project.githubUrl }] : []}
       />
