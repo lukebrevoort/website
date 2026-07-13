@@ -12,7 +12,7 @@
 .topbar {
   position: fixed;
   z-index: 30;
-  inset: 18px 22px auto;
+  inset: 76px 22px auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,10 +20,26 @@
 }
 
 .signature {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px 7px 9px;
+  border: 1px solid rgb(32 32 29 / 13%);
+  border-radius: 999px;
   color: var(--ink);
-  font-size: 1.55rem;
+  background: rgb(248 246 240 / 84%);
+  box-shadow: 0 4px 20px rgb(60 53 41 / 8%);
+  font-size: 1.18rem;
   text-decoration: none;
   pointer-events: auto;
+  backdrop-filter: blur(12px);
+  transition: color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.signature:hover {
+  border-color: rgb(228 87 62 / 45%);
+  color: var(--red);
+  transform: translateX(-2px);
 }
 
 .presence {
@@ -553,12 +569,12 @@
 @media (max-width: 760px) {
   .shell { overflow: auto; background: var(--paper); }
   .canvas { min-height: 100svh; margin: 0; border-radius: 0; overflow-y: auto; }
-  .topbar { inset: 14px 16px auto; }
-  .signature { font-size: 1.3rem; }
+  .topbar { inset: 68px 14px auto; }
+  .signature { padding: 6px 9px 6px 7px; font-size: 1.05rem; }
   .presence { padding: 7px 9px; font-size: 8px; }
   .cornerNote { display: none; }
   .invitation {
-    top: 78px;
+    top: 122px;
     width: calc(100% - 32px);
     padding-bottom: 112px;
     transform: translateX(-50%);
@@ -595,7 +611,7 @@
   }
   .followUpTray > div { grid-column: 1 / -1; }
   .followUpTray input { padding-block: 7px; }
-  .presence, .dock, .followUpTray { backdrop-filter: none; }
+  .signature, .presence, .dock, .followUpTray { backdrop-filter: none; }
 }
 
 @media (max-height: 690px) and (min-width: 761px) {

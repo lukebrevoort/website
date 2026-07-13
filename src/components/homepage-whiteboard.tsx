@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
+  ArrowLeft,
   BookOpen,
   FolderOpen,
   PencilLine,
@@ -180,6 +181,37 @@ const wrapQuestion = (question: string, maxLineLength = 27) =>
     .map((line) => `${line}  `)
     .join("\n");
 
+const connectorOffset = (
+  box: NodeBox,
+  vectorX: number,
+  vectorY: number,
+  shape: ResponseNode["shape"],
+) => {
+  const halfWidth = box.width / 2;
+  const halfHeight = box.height / 2;
+  const safeX = Math.abs(vectorX) < 0.001 ? 0.001 : vectorX;
+  const safeY = Math.abs(vectorY) < 0.001 ? 0.001 : vectorY;
+  let scale: number;
+
+  if (shape === "ellipse") {
+    scale = 1 / Math.sqrt(
+      (safeX * safeX) / (halfWidth * halfWidth) +
+      (safeY * safeY) / (halfHeight * halfHeight),
+    );
+  } else if (shape === "diamond") {
+    scale = 1 / (
+      Math.abs(safeX) / halfWidth + Math.abs(safeY) / halfHeight
+    );
+  } else {
+    scale = Math.min(
+      halfWidth / Math.abs(safeX),
+      halfHeight / Math.abs(safeY),
+    );
+  }
+
+  return { x: vectorX * scale, y: vectorY * scale };
+};
+
 const desktopBoxes: Record<DiagramLayout, NodeBox[]> = {
   pipeline: [
     { x: 0, y: 110, width: 210, height: 118 },
@@ -261,16 +293,37 @@ const buildProjectResponse = (
       const fromY = baseY + from.y + from.height / 2;
       const toX = baseX + to.x + to.width / 2;
       const toY = baseY + to.y + to.height / 2;
+      const deltaX = toX - fromX;
+      const deltaY = toY - fromY;
+      const distance = Math.max(Math.hypot(deltaX, deltaY), 1);
+      const unitX = deltaX / distance;
+      const unitY = deltaY / distance;
+      const fromOffset = connectorOffset(
+        from,
+        deltaX,
+        deltaY,
+        response.nodes[fromIndex]?.shape,
+      );
+      const toOffset = connectorOffset(
+        to,
+        -deltaX,
+        -deltaY,
+        response.nodes[toIndex]?.shape,
+      );
+      const startX = fromX + fromOffset.x + unitX * 7;
+      const startY = fromY + fromOffset.y + unitY * 7;
+      const endX = toX + toOffset.x - unitX * 11;
+      const endY = toY + toOffset.y - unitY * 11;
 
       return [{
         id: `${prefix}-arrow-${index}`,
         type: "arrow" as const,
-        x: fromX,
-        y: fromY,
-        width: toX - fromX,
-        height: toY - fromY,
-        points: [[0, 0], [toX - fromX, toY - fromY]],
-        strokeColor: "#777168",
+        x: startX,
+        y: startY,
+        width: endX - startX,
+        height: endY - startY,
+        points: [[0, 0], [endX - startX, endY - startY]],
+        strokeColor: "#5f5a51",
         strokeStyle: response.layout === "constellation" ? "dashed" as const : "solid" as const,
         strokeWidth: 2,
         roughness: 1,
@@ -414,7 +467,8 @@ export default function HomepageWhiteboard() {
     <main className={`${styles.shell} ${satoshi.variable}`}>
       <header className={styles.topbar}>
         <Link href="/" className={`${styles.signature} ${lukesFont.className}`}>
-          luke.brev
+          <ArrowLeft size={15} strokeWidth={1.8} />
+          <span>luke.brev</span>
         </Link>
         <div className={styles.presence} aria-label="Vision agent status">
           <span className={styles.presenceDot} /> vision agent
