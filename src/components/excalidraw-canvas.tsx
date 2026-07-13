@@ -12,8 +12,41 @@ import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/tran
 import "@excalidraw/excalidraw/index.css";
 import styles from "./excalidraw-canvas.module.css";
 
+const HANDWRITING_FONT_URL = "/fonts/luke-brevoort-handwriting.otf";
+
+let handwritingFontConfigured = false;
+
+async function loadBrandedExcalidraw() {
+  if (!handwritingFontConfigured && typeof window.FontFace !== "undefined") {
+    const NativeFontFace = window.FontFace;
+
+    window.FontFace = new Proxy(NativeFontFace, {
+      construct(Target, args: ConstructorParameters<typeof FontFace>) {
+        const [family, source, descriptors] = args;
+        const brandedSource =
+          family === "Virgil"
+            ? `url(${HANDWRITING_FONT_URL}) format("opentype")`
+            : source;
+
+        return Reflect.construct(Target, [family, brandedSource, descriptors]);
+      },
+    });
+
+    const handwritingFont = new window.FontFace(
+      "Virgil",
+      `url(${HANDWRITING_FONT_URL}) format("opentype")`,
+    );
+
+    await handwritingFont.load();
+    document.fonts.add(handwritingFont);
+    handwritingFontConfigured = true;
+  }
+
+  return (await import("@excalidraw/excalidraw")).Excalidraw;
+}
+
 const Excalidraw = dynamic(
-  async () => (await import("@excalidraw/excalidraw")).Excalidraw,
+  loadBrandedExcalidraw,
   {
     ssr: false,
     loading: () => (
@@ -181,6 +214,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
           appState: {
             currentItemStrokeColor: "#20201d",
             currentItemBackgroundColor: "transparent",
+            currentItemFontFamily: 1,
             viewBackgroundColor: "#f4f0e7",
           },
         }}
