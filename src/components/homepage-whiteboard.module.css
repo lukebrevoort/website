@@ -73,7 +73,7 @@
 }
 
 .invitation {
-  width: min(650px, calc(100% - 48px));
+  width: min(940px, calc(100% - 48px));
   text-align: center;
   animation: fade-in .7s ease both;
   pointer-events: none;
@@ -97,7 +97,7 @@
 
 .invitation h1 {
   margin: 0;
-  font-size: clamp(3.4rem, 7.5vw, 7rem);
+  font-size: clamp(3.4rem, 6vw, 5.8rem);
   font-weight: 400;
   line-height: .75;
   letter-spacing: -.035em;
@@ -122,7 +122,7 @@
 
 .invitation > p {
   max-width: 470px;
-  margin: 28px auto 20px;
+  margin: 22px auto 17px;
   color: #625f57;
   font-size: .96rem;
   line-height: 1.55;
@@ -175,11 +175,11 @@
 .promptForm button:disabled { cursor: default; opacity: .3; transform: none; }
 
 .promptList {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 7px;
-  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: min(820px, 100%);
+  margin: 22px auto 0;
 }
 
 .promptList button,
@@ -193,12 +193,56 @@
 }
 
 .promptList button {
-  padding: 7px 10px;
-  border-bottom: 1px solid rgb(32 32 29 / 16%);
+  --prompt-tilt: 0deg;
+  position: relative;
+  display: grid;
+  gap: 3px;
+  min-height: 78px;
+  padding: 15px 17px 13px 42px;
+  border: 1px solid rgb(32 32 29 / 14%);
+  border-top: 3px solid rgb(228 87 62 / 62%);
+  border-radius: 2px 5px 3px 4px;
+  color: var(--ink);
+  background: rgb(255 249 217 / 91%);
+  box-shadow: 3px 5px 12px rgb(61 51 34 / 10%);
+  text-align: left;
+  transform: rotate(var(--prompt-tilt));
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
-.promptList button span { color: var(--red); }
-.promptList button:hover { color: var(--ink); border-color: var(--red); }
+.promptList button:nth-child(3n + 2) { background: rgb(235 244 231 / 92%); }
+.promptList button:nth-child(3n) { background: rgb(232 241 246 / 92%); }
+.promptList button:hover,
+.promptList button:focus-visible {
+  z-index: 2;
+  outline: none;
+  border-color: var(--red);
+  background: #fffdf4;
+  box-shadow: 6px 9px 18px rgb(61 51 34 / 15%);
+  transform: rotate(0) translateY(-3px);
+}
+
+.promptList button strong {
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.promptList button small {
+  color: #777168;
+  font-size: .61rem;
+  font-style: italic;
+}
+
+.promptNumber {
+  position: absolute;
+  top: 15px;
+  left: 14px;
+  color: var(--red);
+  font-size: .61rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
 
 .errorNote {
   width: min(520px, 100%);
@@ -513,12 +557,17 @@
   .signature { font-size: 1.3rem; }
   .presence { padding: 7px 9px; font-size: 8px; }
   .cornerNote { display: none; }
-  .invitation { top: 47%; width: calc(100% - 32px); }
-  .invitation h1 { font-size: clamp(3.2rem, 18vw, 5rem); line-height: .78; }
+  .invitation {
+    top: 78px;
+    width: calc(100% - 32px);
+    padding-bottom: 112px;
+    transform: translateX(-50%);
+  }
+  .invitation h1 { font-size: clamp(3.1rem, 16vw, 4.6rem); line-height: .78; }
   .invitation > p { max-width: 340px; margin-top: 24px; font-size: .87rem; }
   .promptForm { padding-left: 14px; }
-  .promptList { display: grid; justify-content: stretch; margin-inline: 12px; }
-  .promptList button { text-align: left; }
+  .promptList { grid-template-columns: 1fr; gap: 9px; width: auto; margin-inline: 4px; }
+  .promptList button { min-height: 70px; text-align: left; }
   .results {
     position: relative;
     inset: auto;

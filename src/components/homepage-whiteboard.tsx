@@ -18,17 +18,96 @@ import styles from "./homepage-whiteboard.module.css";
 
 type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
 
-const featured = ["malcom", "orca-mail", "dispatch"]
-  .map((slug) => projects.find((project) => project.slug === slug))
-  .filter((project): project is (typeof projects)[number] => Boolean(project));
+const starterPrompts = [
+  { prompt: "Sketch how MALCOM works", note: "controller + sessions", tilt: "-1.4deg" },
+  { prompt: "Show me the architecture of Dispatch", note: "agents + worktrees", tilt: ".8deg" },
+  { prompt: "How does Orca Mail decide what matters?", note: "signal, not noise", tilt: "-0.5deg" },
+  { prompt: "Explain FlowState visually", note: "context + action", tilt: "1.2deg" },
+  { prompt: "What connects Luke's projects?", note: "follow the thread", tilt: "-.8deg" },
+  { prompt: "Surprise me", note: "dealer's choice", tilt: ".5deg" },
+] as const;
 
-const prompts = [
-  "Show me how Luke builds with agents",
-  "I care about thoughtful product design",
-  "What is Luke working on now?",
-];
+type ResponseNode = {
+  title: string;
+  body: string;
+  color: string;
+  paper: string;
+  link: string;
+};
 
-const noteColors = ["#fff3bf", "#d3f9d8", "#d0ebff"];
+type SampleResponse = {
+  heading: string;
+  aside: string;
+  nodes: ResponseNode[];
+};
+
+const projectLink = (slug: string) => `/projects/${slug}`;
+
+const sampleResponses: Record<string, SampleResponse> = {
+  "Sketch how MALCOM works": {
+    heading: "MALCOM keeps the work legible",
+    aside: "more air-traffic control than robot brain",
+    nodes: [
+      { title: "Controller", body: "One stable CLI routes commands and keeps a registry of long-running work.", color: "#1d4ed8", paper: "#dbeafe", link: projectLink("malcom") },
+      { title: "Policy boundary", body: "Approvals and workspace rules stay visible instead of hiding inside an agent.", color: "#b45309", paper: "#fef3c7", link: projectLink("malcom") },
+      { title: "Sessions + adapters", body: "Codex, Cursor, GitHub, Notion, and Linear plug into inspectable sessions.", color: "#0f766e", paper: "#d1fae5", link: projectLink("malcom") },
+    ],
+  },
+  "Show me the architecture of Dispatch": {
+    heading: "Dispatch is a control plane for parallel work",
+    aside: "the browser is the cockpit; the work stays local",
+    nodes: [
+      { title: "Workspace", body: "A browser surface brings terminals, shared media, jobs, and agent status together.", color: "#7c3aed", paper: "#ede9fe", link: projectLink("dispatch") },
+      { title: "Agent runtime", body: "tmux-backed sessions keep coding agents alive beyond a single request.", color: "#be185d", paper: "#fce7f3", link: projectLink("dispatch") },
+      { title: "Isolated work", body: "Git worktrees and a shared data layer let agents move in parallel without collisions.", color: "#0369a1", paper: "#e0f2fe", link: projectLink("dispatch") },
+    ],
+  },
+  "How does Orca Mail decide what matters?": {
+    heading: "Orca listens for human signal",
+    aside: "an inbox should know the difference between a person and a receipt",
+    nodes: [
+      { title: "Human Signal", body: "People, relationship context, and real conversation outrank automated volume.", color: "#0f766e", paper: "#d1fae5", link: projectLink("orca-mail") },
+      { title: "Attention views", body: "Mail is normalized into calm views that surface what needs a decision or reply.", color: "#0369a1", paper: "#e0f2fe", link: projectLink("orca-mail") },
+      { title: "Zen writer", body: "Once the right thread is found, the interface gets out of the way of responding.", color: "#b45309", paper: "#fef3c7", link: projectLink("orca-mail") },
+    ],
+  },
+  "Explain FlowState visually": {
+    heading: "FlowState turns context into approved action",
+    aside: "the useful bit is the handoff, not another chat window",
+    nodes: [
+      { title: "Connected context", body: "School, mail, calendar, and notes enter one local-first workspace.", color: "#d06224", paper: "#ffedd5", link: projectLink("flowstate") },
+      { title: "Specialized agents", body: "Focused helpers interpret that context for a concrete study workflow.", color: "#9eab57", paper: "#ecfccb", link: projectLink("flowstate") },
+      { title: "Approval gate", body: "Anything consequential pauses for a human decision before it moves.", color: "#7c3aed", paper: "#ede9fe", link: projectLink("flowstate") },
+    ],
+  },
+  "What connects Luke's projects?": {
+    heading: "The same three instincts keep showing up",
+    aside: "build the missing tool, keep the seams visible",
+    nodes: [
+      { title: "Personal friction", body: "Each project begins with a real workflow that feels harder than it should.", color: "#e4573e", paper: "#fee2e2", link: "/projects" },
+      { title: "Human control", body: "Automation helps, but approvals and understandable state stay close at hand.", color: "#0f766e", paper: "#d1fae5", link: projectLink("flowstate") },
+      { title: "Inspectable systems", body: "The architecture is meant to be understood, changed, and owned by its user.", color: "#1d4ed8", paper: "#dbeafe", link: projectLink("malcom") },
+    ],
+  },
+  "Surprise me": {
+    heading: "Luke once built a market-making system for fun",
+    aside: "apparently normal hobbies were unavailable",
+    nodes: [
+      { title: "Market making", body: "Quote both sides with enough discipline to manage inventory and risk.", color: "#10b981", paper: "#d1fae5", link: projectLink("hftc") },
+      { title: "Momentum", body: "Layer directional signals on top when the simulated market starts moving.", color: "#3b82f6", paper: "#dbeafe", link: projectLink("hftc") },
+      { title: "Competition loop", body: "Test, observe, adjust—the same practical loop behind Luke's product work.", color: "#b45309", paper: "#fef3c7", link: projectLink("hftc") },
+    ],
+  },
+};
+
+const fallbackResponse: SampleResponse = {
+  heading: "Three good places to start",
+  aside: "a small map is better than a wall of links",
+  nodes: ["malcom", "orca-mail", "dispatch"].flatMap((slug) => {
+    const project = projects.find((item) => item.slug === slug);
+    return project ? [{ title: project.title, body: project.description.slice(0, 108), color: project.primaryColor, paper: "#fff3bf", link: projectLink(project.slug) }] : [];
+  }),
+};
 
 const wrapQuestion = (question: string, maxLineLength = 27) =>
   question.split(" ").reduce<string[]>((lines, word) => {
@@ -47,26 +126,27 @@ const buildProjectResponse = (
   isMobile: boolean,
 ): ExcalidrawElementSkeleton[] => {
   const prefix = `agent-${turn}-${Date.now()}`;
+  const response = sampleResponses[question] ?? fallbackResponse;
   const baseY = 140 + turn * (isMobile ? 720 : 330);
   const cardWidth = isMobile ? 300 : 270;
   const cardHeight = 175;
   const gap = isMobile ? 42 : 55;
-  const startX = isMobile ? 70 : 110;
-  const cards = featured.map((project, index) => ({
+  const startX = isMobile ? 70 : 110 + (3 - response.nodes.length) * 160;
+  const cards = response.nodes.map((node, index) => ({
     id: `${prefix}-card-${index}`,
     type: "rectangle" as const,
     x: isMobile ? startX : startX + index * (cardWidth + gap),
     y: baseY + 78 + (isMobile ? index * (cardHeight + gap) : 0),
     width: cardWidth,
     height: cardHeight,
-    strokeColor: project.primaryColor || "#20201d",
-    backgroundColor: noteColors[index],
+    strokeColor: node.color,
+    backgroundColor: node.paper,
     fillStyle: "solid" as const,
     roughness: 1,
     roundness: { type: 3 as const },
-    link: `/projects/${project.slug}`,
+    link: node.link,
     label: {
-      text: `${project.title}\n\n${project.description.slice(0, 118)}${project.description.length > 118 ? "…" : ""}`,
+      text: `${node.title}\n\n${node.body}`,
       fontSize: 17,
       fontFamily: 1 as const,
       textAlign: "left" as const,
@@ -96,7 +176,7 @@ const buildProjectResponse = (
       type: "text",
       x: startX,
       y: baseY,
-      text: `✦ “${isMobile ? wrapQuestion(question, 14) : question}”`,
+      text: `✦ ${isMobile ? wrapQuestion(response.heading, 14) : response.heading}`,
       width: isMobile ? 430 : 900,
       height: isMobile ? 84 : 42,
       fontSize: isMobile ? 22 : 28,
@@ -106,6 +186,17 @@ const buildProjectResponse = (
     },
     ...cards,
     ...arrows,
+    {
+      id: `${prefix}-aside`,
+      type: "text",
+      x: startX + (isMobile ? 10 : 120),
+      y: baseY + 278 + (isMobile ? response.nodes.length * (cardHeight + gap) - 210 : 0),
+      text: `↳ ${response.aside}`,
+      fontSize: 17,
+      fontFamily: 1,
+      strokeColor: "#777168",
+      textAlign: "left",
+    },
   ];
 };
 
@@ -189,7 +280,7 @@ export default function HomepageWhiteboard() {
         {(agentState === "idle" || agentState === "error") && turn.current === 0 && (
           <div className={styles.invitation}>
             <div className={`${styles.eyebrow} ${lukesFont.className}`}>
-              <PencilLine size={17} /> start with a thought
+              <PencilLine size={17} /> pick a thread or write your own
             </div>
             <h1 className={lukesFont.className}>
               What do you want
@@ -197,8 +288,8 @@ export default function HomepageWhiteboard() {
               <span>to explore?</span>
             </h1>
             <p>
-              Describe what caught your curiosity. I’ll arrange a path through
-              Luke’s work around it.
+              Choose a note for a quick sketch, or ask for a different path
+              through Luke’s work.
             </p>
 
             <form className={styles.promptForm} onSubmit={submit}>
@@ -209,7 +300,7 @@ export default function HomepageWhiteboard() {
                 id="vision-prompt"
                 value={prompt}
                 onChange={(event) => setPrompt(event.target.value)}
-                placeholder="e.g. tools that make AI feel more human"
+                placeholder="Ask Luke's canvas anything…"
                 autoComplete="off"
               />
               <button type="submit" disabled={!prompt.trim()} aria-label="Explore">
@@ -225,9 +316,16 @@ export default function HomepageWhiteboard() {
             )}
 
             <div className={styles.promptList} aria-label="Suggested starting points">
-              {prompts.map((item) => (
-                <button key={item} type="button" onClick={() => explore(item)}>
-                  <span>↳</span> {item}
+              {starterPrompts.map((item, index) => (
+                <button
+                  key={item.prompt}
+                  type="button"
+                  onClick={() => explore(item.prompt)}
+                  style={{ "--prompt-tilt": item.tilt } as React.CSSProperties}
+                >
+                  <span className={styles.promptNumber}>0{index + 1}</span>
+                  <strong>{item.prompt}</strong>
+                  <small>{item.note} ↗</small>
                 </button>
               ))}
             </div>
