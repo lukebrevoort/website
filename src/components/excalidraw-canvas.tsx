@@ -146,9 +146,15 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         captureUpdate: CaptureUpdateAction.IMMEDIATELY,
       });
       api.setActiveTool({ type: "selection" });
-      api.scrollToContent(insertedElements, {
+      const isMobile = window.matchMedia("(max-width: 760px)").matches;
+      const cameraElements = isMobile
+        ? insertedElements.filter((element) =>
+            /-(question|node-[0-2])$/.test(element.id),
+          )
+        : insertedElements;
+      api.scrollToContent(cameraElements, {
         fitToViewport: true,
-        viewportZoomFactor: 0.72,
+        viewportZoomFactor: isMobile ? 0.82 : 0.72,
         animate: true,
         duration: 450,
         maxZoom: 1.15,
