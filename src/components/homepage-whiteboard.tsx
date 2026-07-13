@@ -33,12 +33,30 @@ type ResponseNode = {
   color: string;
   paper: string;
   link: string;
+  shape?: "rectangle" | "ellipse" | "diamond";
 };
+
+type DiagramLayout =
+  | "pipeline"
+  | "hub"
+  | "funnel"
+  | "loop"
+  | "constellation"
+  | "timeline";
 
 type SampleResponse = {
   heading: string;
   aside: string;
+  layout: DiagramLayout;
   nodes: ResponseNode[];
+  edges: [number, number][];
+};
+
+type NodeBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 };
 
 const projectLink = (slug: string) => `/projects/${slug}`;
@@ -47,78 +65,169 @@ const sampleResponses: Record<string, SampleResponse> = {
   "Sketch how MALCOM works": {
     heading: "MALCOM keeps the work legible",
     aside: "more air-traffic control than robot brain",
+    layout: "pipeline",
     nodes: [
-      { title: "Controller", body: "One stable CLI routes commands and keeps a registry of long-running work.", color: "#1d4ed8", paper: "#dbeafe", link: projectLink("malcom") },
-      { title: "Policy boundary", body: "Approvals and workspace rules stay visible instead of hiding inside an agent.", color: "#b45309", paper: "#fef3c7", link: projectLink("malcom") },
-      { title: "Sessions + adapters", body: "Codex, Cursor, GitHub, Notion, and Linear plug into inspectable sessions.", color: "#0f766e", paper: "#d1fae5", link: projectLink("malcom") },
+      { title: "Controller", body: "One stable CLI receives every command.", color: "#1d4ed8", paper: "#dbeafe", link: projectLink("malcom") },
+      { title: "Policy gate", body: "Approve before action.", color: "#b45309", paper: "#fef3c7", link: projectLink("malcom"), shape: "diamond" },
+      { title: "Session registry", body: "Long-running work stays named and inspectable.", color: "#0f766e", paper: "#d1fae5", link: projectLink("malcom") },
+      { title: "Workspace", body: "Files + state", color: "#7c3aed", paper: "#ede9fe", link: projectLink("malcom") },
+      { title: "Coding agents", body: "Codex + Cursor", color: "#be185d", paper: "#fce7f3", link: projectLink("malcom") },
+      { title: "Tool adapters", body: "GitHub + Notion + Linear", color: "#0369a1", paper: "#e0f2fe", link: projectLink("malcom") },
     ],
+    edges: [[0, 1], [1, 2], [2, 3], [2, 4], [2, 5]],
   },
   "Show me the architecture of Dispatch": {
     heading: "Dispatch is a control plane for parallel work",
     aside: "the browser is the cockpit; the work stays local",
+    layout: "hub",
     nodes: [
-      { title: "Workspace", body: "A browser surface brings terminals, shared media, jobs, and agent status together.", color: "#7c3aed", paper: "#ede9fe", link: projectLink("dispatch") },
-      { title: "Agent runtime", body: "tmux-backed sessions keep coding agents alive beyond a single request.", color: "#be185d", paper: "#fce7f3", link: projectLink("dispatch") },
-      { title: "Isolated work", body: "Git worktrees and a shared data layer let agents move in parallel without collisions.", color: "#0369a1", paper: "#e0f2fe", link: projectLink("dispatch") },
+      { title: "Dispatch", body: "The control plane", color: "#7c3aed", paper: "#ede9fe", link: projectLink("dispatch"), shape: "ellipse" },
+      { title: "Browser workspace", body: "Terminals, status, and shared media.", color: "#be185d", paper: "#fce7f3", link: projectLink("dispatch") },
+      { title: "tmux agents", body: "Sessions survive beyond one request.", color: "#0369a1", paper: "#e0f2fe", link: projectLink("dispatch") },
+      { title: "Git worktrees", body: "Each agent gets an isolated lane.", color: "#0f766e", paper: "#d1fae5", link: projectLink("dispatch") },
+      { title: "Jobs + data", body: "Shared state makes work observable.", color: "#b45309", paper: "#fef3c7", link: projectLink("dispatch") },
     ],
+    edges: [[0, 1], [0, 2], [0, 3], [0, 4]],
   },
   "How does Orca Mail decide what matters?": {
     heading: "Orca listens for human signal",
     aside: "an inbox should know the difference between a person and a receipt",
+    layout: "funnel",
     nodes: [
-      { title: "Human Signal", body: "People, relationship context, and real conversation outrank automated volume.", color: "#0f766e", paper: "#d1fae5", link: projectLink("orca-mail") },
-      { title: "Attention views", body: "Mail is normalized into calm views that surface what needs a decision or reply.", color: "#0369a1", paper: "#e0f2fe", link: projectLink("orca-mail") },
-      { title: "Zen writer", body: "Once the right thread is found, the interface gets out of the way of responding.", color: "#b45309", paper: "#fef3c7", link: projectLink("orca-mail") },
+      { title: "A person wrote", body: "Relationship context", color: "#0f766e", paper: "#d1fae5", link: projectLink("orca-mail") },
+      { title: "Needs a reply", body: "Conversation state", color: "#0369a1", paper: "#e0f2fe", link: projectLink("orca-mail") },
+      { title: "Automated mail", body: "Receipts + campaigns", color: "#777168", paper: "#f1f0ed", link: projectLink("orca-mail") },
+      { title: "Human Signal", body: "Who? Why? Next?", color: "#e4573e", paper: "#fee2e2", link: projectLink("orca-mail"), shape: "diamond" },
+      { title: "Now", body: "A decision or reply is waiting.", color: "#be185d", paper: "#fce7f3", link: projectLink("orca-mail") },
+      { title: "Later", body: "Useful context without urgency.", color: "#7c3aed", paper: "#ede9fe", link: projectLink("orca-mail") },
+      { title: "Zen writer", body: "Focus on the human response.", color: "#b45309", paper: "#fef3c7", link: projectLink("orca-mail") },
     ],
+    edges: [[0, 3], [1, 3], [2, 3], [3, 4], [3, 5], [4, 6]],
   },
   "Explain FlowState visually": {
     heading: "FlowState turns context into approved action",
     aside: "the useful bit is the handoff, not another chat window",
+    layout: "loop",
     nodes: [
-      { title: "Connected context", body: "School, mail, calendar, and notes enter one local-first workspace.", color: "#d06224", paper: "#ffedd5", link: projectLink("flowstate") },
-      { title: "Specialized agents", body: "Focused helpers interpret that context for a concrete study workflow.", color: "#9eab57", paper: "#ecfccb", link: projectLink("flowstate") },
-      { title: "Approval gate", body: "Anything consequential pauses for a human decision before it moves.", color: "#7c3aed", paper: "#ede9fe", link: projectLink("flowstate") },
+      { title: "Connected context", body: "Mail, calendar, notes, and school work.", color: "#d06224", paper: "#ffedd5", link: projectLink("flowstate") },
+      { title: "Focused agent", body: "Interpret one concrete workflow.", color: "#9eab57", paper: "#ecfccb", link: projectLink("flowstate") },
+      { title: "Human approval", body: "Pause. Review. Approve.", color: "#7c3aed", paper: "#ede9fe", link: projectLink("flowstate"), shape: "diamond" },
+      { title: "Action + feedback", body: "Do the work, then return useful state.", color: "#0369a1", paper: "#e0f2fe", link: projectLink("flowstate") },
+      { title: "FlowState", body: "Context stays local; control stays human.", color: "#e4573e", paper: "#fee2e2", link: projectLink("flowstate"), shape: "ellipse" },
     ],
+    edges: [[0, 1], [1, 2], [2, 3], [3, 0], [4, 0], [4, 2]],
   },
   "What connects Luke's projects?": {
-    heading: "The same three instincts keep showing up",
+    heading: "The same instincts keep showing up",
     aside: "build the missing tool, keep the seams visible",
+    layout: "constellation",
     nodes: [
-      { title: "Personal friction", body: "Each project begins with a real workflow that feels harder than it should.", color: "#e4573e", paper: "#fee2e2", link: "/projects" },
-      { title: "Human control", body: "Automation helps, but approvals and understandable state stay close at hand.", color: "#0f766e", paper: "#d1fae5", link: projectLink("flowstate") },
-      { title: "Inspectable systems", body: "The architecture is meant to be understood, changed, and owned by its user.", color: "#1d4ed8", paper: "#dbeafe", link: projectLink("malcom") },
+      { title: "Personal friction", body: "A real workflow feels harder than it should.", color: "#e4573e", paper: "#fee2e2", link: "/projects", shape: "ellipse" },
+      { title: "MALCOM", body: "Inspectable orchestration", color: "#1d4ed8", paper: "#dbeafe", link: projectLink("malcom") },
+      { title: "Dispatch", body: "Parallel work with visible state", color: "#7c3aed", paper: "#ede9fe", link: projectLink("dispatch") },
+      { title: "Orca Mail", body: "Human signal over volume", color: "#0f766e", paper: "#d1fae5", link: projectLink("orca-mail") },
+      { title: "FlowState", body: "Approval-gated action", color: "#d06224", paper: "#ffedd5", link: projectLink("flowstate") },
+      { title: "Small tools", body: "Ownership beats opacity", color: "#b45309", paper: "#fef3c7", link: "/projects" },
     ],
+    edges: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]],
   },
   "Surprise me": {
     heading: "Luke once built a market-making system for fun",
     aside: "apparently normal hobbies were unavailable",
+    layout: "timeline",
     nodes: [
-      { title: "Market making", body: "Quote both sides with enough discipline to manage inventory and risk.", color: "#10b981", paper: "#d1fae5", link: projectLink("hftc") },
-      { title: "Momentum", body: "Layer directional signals on top when the simulated market starts moving.", color: "#3b82f6", paper: "#dbeafe", link: projectLink("hftc") },
-      { title: "Competition loop", body: "Test, observe, adjust—the same practical loop behind Luke's product work.", color: "#b45309", paper: "#fef3c7", link: projectLink("hftc") },
+      { title: "Quote", body: "Place both sides", color: "#10b981", paper: "#d1fae5", link: projectLink("hftc") },
+      { title: "Observe", body: "Read the market", color: "#3b82f6", paper: "#dbeafe", link: projectLink("hftc") },
+      { title: "Rebalance", body: "Manage inventory", color: "#e4573e", paper: "#fee2e2", link: projectLink("hftc") },
+      { title: "Add momentum", body: "Act when direction appears", color: "#7c3aed", paper: "#ede9fe", link: projectLink("hftc") },
+      { title: "Repeat", body: "Test → observe → adjust", color: "#b45309", paper: "#fef3c7", link: projectLink("hftc"), shape: "ellipse" },
     ],
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4]],
   },
 };
 
+const fallbackProjects = ["malcom", "orca-mail", "dispatch", "flowstate"]
+  .map((slug) => projects.find((project) => project.slug === slug))
+  .filter((project): project is (typeof projects)[number] => Boolean(project));
+
 const fallbackResponse: SampleResponse = {
-  heading: "Three good places to start",
+  heading: "Four good places to start",
   aside: "a small map is better than a wall of links",
-  nodes: ["malcom", "orca-mail", "dispatch"].flatMap((slug) => {
-    const project = projects.find((item) => item.slug === slug);
-    return project ? [{ title: project.title, body: project.description.slice(0, 108), color: project.primaryColor, paper: "#fff3bf", link: projectLink(project.slug) }] : [];
-  }),
+  layout: "hub",
+  nodes: fallbackProjects.map((project, index) => ({
+    title: project.title,
+    body: project.description.slice(0, 74),
+    color: project.primaryColor,
+    paper: ["#dbeafe", "#d1fae5", "#ede9fe", "#ffedd5"][index],
+    link: projectLink(project.slug),
+    ...(index === 0 ? { shape: "ellipse" as const } : {}),
+  })),
+  edges: [[0, 1], [0, 2], [0, 3]],
 };
 
 const wrapQuestion = (question: string, maxLineLength = 27) =>
-  question.split(" ").reduce<string[]>((lines, word) => {
-    const current = lines.at(-1);
-    if (!current || `${current} ${word}`.length > maxLineLength) {
-      lines.push(word);
-    } else {
-      lines[lines.length - 1] = `${current} ${word}`;
-    }
-    return lines;
-  }, []).map((line) => `${line}  `).join("\n");
+  question
+    .split(" ")
+    .reduce<string[]>((lines, word) => {
+      const current = lines.at(-1);
+      if (!current || `${current} ${word}`.length > maxLineLength) {
+        lines.push(word);
+      } else {
+        lines[lines.length - 1] = `${current} ${word}`;
+      }
+      return lines;
+    }, [])
+    .map((line) => `${line}  `)
+    .join("\n");
+
+const desktopBoxes: Record<DiagramLayout, NodeBox[]> = {
+  pipeline: [
+    { x: 0, y: 110, width: 210, height: 118 },
+    { x: 275, y: 102, width: 190, height: 132 },
+    { x: 530, y: 100, width: 220, height: 138 },
+    { x: 795, y: 0, width: 190, height: 96 },
+    { x: 795, y: 125, width: 190, height: 96 },
+    { x: 795, y: 250, width: 190, height: 96 },
+  ],
+  hub: [
+    { x: 390, y: 135, width: 210, height: 125 },
+    { x: 25, y: 0, width: 245, height: 110 },
+    { x: 720, y: 0, width: 245, height: 110 },
+    { x: 25, y: 285, width: 245, height: 110 },
+    { x: 720, y: 285, width: 245, height: 110 },
+  ],
+  funnel: [
+    { x: 0, y: 0, width: 190, height: 88 },
+    { x: 0, y: 120, width: 190, height: 88 },
+    { x: 0, y: 240, width: 190, height: 88 },
+    { x: 285, y: 100, width: 180, height: 145 },
+    { x: 560, y: 45, width: 190, height: 100 },
+    { x: 560, y: 205, width: 190, height: 100 },
+    { x: 825, y: 45, width: 190, height: 100 },
+  ],
+  loop: [
+    { x: 80, y: 20, width: 235, height: 108 },
+    { x: 680, y: 20, width: 235, height: 108 },
+    { x: 680, y: 285, width: 235, height: 108 },
+    { x: 80, y: 285, width: 235, height: 108 },
+    { x: 390, y: 145, width: 215, height: 125 },
+  ],
+  constellation: [
+    { x: 390, y: 145, width: 215, height: 125 },
+    { x: 25, y: 0, width: 205, height: 94 },
+    { x: 760, y: 0, width: 205, height: 94 },
+    { x: 0, y: 295, width: 205, height: 94 },
+    { x: 785, y: 295, width: 205, height: 94 },
+    { x: 395, y: 340, width: 205, height: 94 },
+  ],
+  timeline: [
+    { x: 0, y: 55, width: 170, height: 100 },
+    { x: 210, y: 190, width: 170, height: 100 },
+    { x: 420, y: 55, width: 170, height: 100 },
+    { x: 630, y: 190, width: 180, height: 100 },
+    { x: 850, y: 55, width: 170, height: 100 },
+  ],
+};
 
 const buildProjectResponse = (
   question: string,
@@ -127,74 +236,120 @@ const buildProjectResponse = (
 ): ExcalidrawElementSkeleton[] => {
   const prefix = `agent-${turn}-${Date.now()}`;
   const response = sampleResponses[question] ?? fallbackResponse;
-  const baseY = 140 + turn * (isMobile ? 720 : 330);
-  const cardWidth = isMobile ? 300 : 270;
-  const cardHeight = 175;
-  const gap = isMobile ? 42 : 55;
-  const startX = isMobile ? 70 : 110 + (3 - response.nodes.length) * 160;
-  const cards = response.nodes.map((node, index) => ({
-    id: `${prefix}-card-${index}`,
-    type: "rectangle" as const,
-    x: isMobile ? startX : startX + index * (cardWidth + gap),
-    y: baseY + 78 + (isMobile ? index * (cardHeight + gap) : 0),
-    width: cardWidth,
-    height: cardHeight,
-    strokeColor: node.color,
-    backgroundColor: node.paper,
-    fillStyle: "solid" as const,
-    roughness: 1,
-    roundness: { type: 3 as const },
-    link: node.link,
-    label: {
-      text: `${node.title}\n\n${node.body}`,
-      fontSize: 17,
-      fontFamily: 1 as const,
-      textAlign: "left" as const,
-      verticalAlign: "middle" as const,
-    },
-  }));
+  const baseX = isMobile ? 70 : 95;
+  const baseY = 140 + turn * (isMobile ? 1250 : 620);
+  const boxes = isMobile
+    ? response.nodes.map((node, index) => ({
+        x: node.shape === "diamond" ? 55 : 0,
+        y: 92 + index * 176,
+        width: node.shape === "diamond" ? 190 : 300,
+        height: node.shape === "diamond" ? 126 : 124,
+      }))
+    : desktopBoxes[response.layout].map((box) => ({
+        ...box,
+        y: box.y + 82,
+      }));
+  const visibleBoxes = boxes.slice(0, response.nodes.length);
 
-  const arrows: ExcalidrawElementSkeleton[] = cards.slice(0, -1).map((card, index) => ({
-    id: `${prefix}-arrow-${index}`,
-    type: "arrow",
-    x: isMobile ? card.x + cardWidth / 2 : card.x + cardWidth + 8,
-    y: isMobile ? card.y + cardHeight + 5 : card.y + cardHeight / 2,
-    width: isMobile ? 0 : gap - 16,
-    height: isMobile ? gap - 10 : 0,
-    points: isMobile
-      ? [[0, 0], [0, gap - 10]]
-      : [[0, 0], [gap - 16, 0]],
-    strokeColor: "#8a8175",
-    strokeWidth: 2,
-    roughness: 1,
-    endArrowhead: "arrow",
-  }));
+  const arrows: ExcalidrawElementSkeleton[] = response.edges.flatMap(
+    ([fromIndex, toIndex], index) => {
+      const from = visibleBoxes[fromIndex];
+      const to = visibleBoxes[toIndex];
+      if (!from || !to) return [];
+
+      const fromX = baseX + from.x + from.width / 2;
+      const fromY = baseY + from.y + from.height / 2;
+      const toX = baseX + to.x + to.width / 2;
+      const toY = baseY + to.y + to.height / 2;
+
+      return [{
+        id: `${prefix}-arrow-${index}`,
+        type: "arrow" as const,
+        x: fromX,
+        y: fromY,
+        width: toX - fromX,
+        height: toY - fromY,
+        points: [[0, 0], [toX - fromX, toY - fromY]],
+        strokeColor: "#777168",
+        strokeStyle: response.layout === "constellation" ? "dashed" as const : "solid" as const,
+        strokeWidth: 2,
+        roughness: 1,
+        endArrowhead: "arrow" as const,
+      }];
+    },
+  );
+
+  const nodes = response.nodes.flatMap((node, index) => {
+    const box = visibleBoxes[index];
+    if (!box) return [];
+    const x = baseX + box.x;
+    const y = baseY + box.y;
+
+    return [
+      {
+        id: `${prefix}-node-${index}`,
+        type: node.shape ?? "rectangle",
+        x,
+        y,
+        width: box.width,
+        height: box.height,
+        strokeColor: "#292721",
+        strokeWidth: 2,
+        backgroundColor: node.paper,
+        fillStyle: "solid" as const,
+        roughness: 1,
+        ...(node.shape ? {} : { roundness: { type: 3 as const } }),
+        link: node.link,
+        label: {
+          text: `${node.title}\n\n${node.body}`,
+          fontSize: isMobile ? 16 : 17,
+          fontFamily: 1 as const,
+          textAlign: node.shape === "diamond" ? "center" as const : "left" as const,
+          verticalAlign: "middle" as const,
+        },
+      },
+      {
+        id: `${prefix}-accent-${index}`,
+        type: "line" as const,
+        x: x + box.width * 0.18,
+        y: y + 13,
+        width: box.width * 0.32,
+        height: 0,
+        points: [[0, 0], [box.width * 0.32, 0]],
+        strokeColor: node.color,
+        strokeWidth: 5,
+        roughness: 1,
+      },
+    ];
+  });
+
+  const diagramBottom = Math.max(...visibleBoxes.map((box) => box.y + box.height));
 
   return [
+    ...arrows,
+    ...nodes,
     {
       id: `${prefix}-question`,
       type: "text",
-      x: startX,
+      x: baseX,
       y: baseY,
-      text: `✦ ${isMobile ? wrapQuestion(response.heading, 14) : response.heading}`,
-      width: isMobile ? 430 : 900,
-      height: isMobile ? 84 : 42,
+      text: `✦ ${isMobile ? wrapQuestion(response.heading, 18) : response.heading}`,
+      width: isMobile ? 330 : 980,
+      height: isMobile ? 72 : 42,
       fontSize: isMobile ? 22 : 28,
       fontFamily: 1,
-      strokeColor: "#e4573e",
+      strokeColor: "#c83f2f",
       textAlign: "left",
     },
-    ...cards,
-    ...arrows,
     {
       id: `${prefix}-aside`,
       type: "text",
-      x: startX + (isMobile ? 10 : 120),
-      y: baseY + 278 + (isMobile ? response.nodes.length * (cardHeight + gap) - 210 : 0),
+      x: baseX + (isMobile ? 10 : 170),
+      y: baseY + diagramBottom + 26,
       text: `↳ ${response.aside}`,
       fontSize: 17,
       fontFamily: 1,
-      strokeColor: "#777168",
+      strokeColor: "#3f3b34",
       textAlign: "left",
     },
   ];
