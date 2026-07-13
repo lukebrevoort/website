@@ -34,7 +34,6 @@ const malcomFollowUps = [
   "Add a policy check before every tool call",
   "Show me where the work actually lives",
 ] as const;
-
 type ResponseNode = {
   title: string;
   body: string;
