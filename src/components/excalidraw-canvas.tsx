@@ -66,6 +66,7 @@ export type CanvasSnapshot = {
   insertElements: (
     elements: ExcalidrawElementSkeleton[],
   ) => Promise<readonly ExcalidrawElement[]>;
+  removeElements: (elementIds: readonly string[]) => void;
 };
 
 type ExcalidrawCanvasProps = {
@@ -79,6 +80,7 @@ const emptySnapshot: CanvasSnapshot = {
   exportedCanvas: null,
   captureCanvasImage: async () => null,
   insertElements: async () => [],
+  removeElements: () => undefined,
 };
 
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
@@ -170,6 +172,19 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     [],
   );
 
+  const removeElements = useCallback((elementIds: readonly string[]) => {
+    const api = apiRef.current;
+    if (!api || elementIds.length === 0) return;
+
+    const ids = new Set(elementIds);
+    api.updateScene({
+      elements: api.getSceneElements().map((element) =>
+        ids.has(element.id) ? { ...element, isDeleted: true } : element,
+      ),
+    });
+    api.setToast({ message: "Cleared the agent's sketch", duration: 1800 });
+  }, []);
+
   const handleChange = useCallback(
     (
       elements: readonly ExcalidrawElement[],
@@ -199,9 +214,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         exportedCanvas: snapshotRef.current.exportedCanvas,
         captureCanvasImage,
         insertElements,
+        removeElements,
       });
     },
-    [captureCanvasImage, insertElements, publishSnapshot],
+    [captureCanvasImage, insertElements, publishSnapshot, removeElements],
   );
 
   return (
@@ -214,6 +230,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             api,
             captureCanvasImage,
             insertElements,
+            removeElements,
           });
         }}
         initialData={{

@@ -7,6 +7,7 @@ import {
   BookOpen,
   FolderOpen,
   PencilLine,
+  RotateCcw,
   Send,
   Sparkles,
   UserRound,
@@ -26,6 +27,12 @@ const starterPrompts = [
   { prompt: "Explain FlowState visually", note: "context + action", tilt: "1.2deg" },
   { prompt: "What connects Luke's projects?", note: "follow the thread", tilt: "-.8deg" },
   { prompt: "Surprise me", note: "dealer's choice", tilt: ".5deg" },
+] as const;
+
+const malcomPrompt = "Sketch how MALCOM works";
+const malcomFollowUps = [
+  "Add a policy check before every tool call",
+  "Show me where the work actually lives",
 ] as const;
 
 type ResponseNode = {
@@ -408,6 +415,58 @@ const buildProjectResponse = (
   ];
 };
 
+const wait = (duration: number) => new Promise<void>((resolve) => window.setTimeout(resolve, duration));
+
+const buildMalcomFollowUp = (
+  question: string,
+  turn: number,
+  isMobile: boolean,
+): ExcalidrawElementSkeleton[] => {
+  const prefix = `malcom-follow-up-${turn}-${Date.now()}`;
+  const baseX = isMobile ? 70 : 95;
+  const baseY = 140;
+  const policyX = baseX + (isMobile ? 55 : 275);
+  const workspaceX = baseX + (isMobile ? 0 : 795);
+
+  if (question === malcomFollowUps[0]) {
+    return [
+      {
+        id: `${prefix}-note`, type: "text", x: policyX, y: baseY + (isMobile ? 48 : 38),
+        text: "✓ credentials, scope, then approval", fontSize: isMobile ? 16 : 18,
+        fontFamily: 1, strokeColor: "#047857", textAlign: "left",
+      },
+      {
+        id: `${prefix}-arrow`, type: "arrow", x: policyX + 95, y: baseY + 76,
+        width: 0, height: 87, points: [[0, 0], [0, 87]], strokeColor: "#047857",
+        strokeWidth: 2, strokeStyle: "dashed", roughness: 1, endArrowhead: "arrow",
+      },
+      {
+        id: `${prefix}-aside`, type: "text", x: baseX, y: baseY + (isMobile ? 1170 : 475),
+        text: "↳ MALCOM: 'I check the door before anyone touches the knobs.'", fontSize: 17,
+        fontFamily: 1, strokeColor: "#3f3b34", textAlign: "left",
+      },
+    ];
+  }
+
+  return [
+    {
+      id: `${prefix}-ring`, type: "ellipse", x: workspaceX - 12, y: baseY + (isMobile ? 585 : 70),
+      width: isMobile ? 325 : 214, height: isMobile ? 148 : 120, strokeColor: "#7c3aed",
+      strokeWidth: 3, strokeStyle: "dashed", roughness: 1, backgroundColor: "transparent",
+    },
+    {
+      id: `${prefix}-note`, type: "text", x: workspaceX, y: baseY + (isMobile ? 750 : 210),
+      text: "↳ repos, artifacts, logs & recovery live here", fontSize: isMobile ? 16 : 18,
+      fontFamily: 1, strokeColor: "#6d28d9", textAlign: "left",
+    },
+    {
+      id: `${prefix}-aside`, type: "text", x: baseX, y: baseY + (isMobile ? 1230 : 505),
+      text: "↳ nothing disappears into the void. pinky promise.", fontSize: 17,
+      fontFamily: 1, strokeColor: "#3f3b34", textAlign: "left",
+    },
+  ];
+};
+
 export default function HomepageWhiteboard() {
   const [agentState, setAgentState] = useState<AgentState>("loading");
   const [prompt, setPrompt] = useState("");
@@ -415,6 +474,8 @@ export default function HomepageWhiteboard() {
   const timers = useRef<number[]>([]);
   const canvasSnapshot = useRef<CanvasSnapshot | null>(null);
   const turn = useRef(0);
+  const agentElementIds = useRef<string[]>([]);
+  const [malcomShowcase, setMalcomShowcase] = useState(false);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -425,6 +486,20 @@ export default function HomepageWhiteboard() {
     timers.current.push(timer);
     return () => timers.current.forEach(window.clearTimeout);
   }, []);
+
+  const insertAndTrack = async (elements: ExcalidrawElementSkeleton[]) => {
+    const inserted = await canvasSnapshot.current?.insertElements(elements);
+    agentElementIds.current.push(...(inserted ?? []).map((element) => element.id));
+  };
+
+  const clearAgentSketch = () => {
+    canvasSnapshot.current?.removeElements(agentElementIds.current);
+    agentElementIds.current = [];
+    turn.current = 0;
+    setMalcomShowcase(false);
+    setQuestion("");
+    setAgentState("idle");
+  };
 
   const explore = (value: string) => {
     const nextQuestion = value.trim();
@@ -449,9 +524,25 @@ export default function HomepageWhiteboard() {
         }
 
         const isMobile = window.matchMedia("(max-width: 760px)").matches;
-        await snapshot.insertElements(
-          buildProjectResponse(nextQuestion, turn.current, isMobile),
-        );
+        const isMalcomStart = nextQuestion === malcomPrompt && turn.current === 0;
+        const isMalcomFollowUp = malcomShowcase && malcomFollowUps.includes(nextQuestion as (typeof malcomFollowUps)[number]);
+
+        if (isMalcomStart) {
+          setMalcomShowcase(true);
+          const elements = buildProjectResponse(nextQuestion, turn.current, isMobile);
+          const headingAndController = elements.filter((element) => /-(question|node-0|accent-0)$/.test(element.id ?? ""));
+          const policyAndRegistry = elements.filter((element) => /-(node-[12]|accent-[12]|arrow-[01])$/.test(element.id ?? ""));
+          const workingParts = elements.filter((element) => /-(node-[3-5]|accent-[3-5]|arrow-[2-4]|aside)$/.test(element.id ?? ""));
+          await insertAndTrack(headingAndController);
+          await wait(360);
+          await insertAndTrack(policyAndRegistry);
+          await wait(360);
+          await insertAndTrack(workingParts);
+        } else if (isMalcomFollowUp) {
+          await insertAndTrack(buildMalcomFollowUp(nextQuestion, turn.current, isMobile));
+        } else {
+          await insertAndTrack(buildProjectResponse(nextQuestion, turn.current, isMobile));
+        }
         turn.current += 1;
         setAgentState("active");
       }, 900),
@@ -581,6 +672,20 @@ export default function HomepageWhiteboard() {
               <Send size={17} />
             </button>
           </form>
+        )}
+
+        {malcomShowcase && agentState === "active" && (
+          <div className={styles.showcaseActions} aria-label="MALCOM sketch controls">
+            <span>Try a real follow-up:</span>
+            {malcomFollowUps.map((followUp) => (
+              <button key={followUp} type="button" onClick={() => explore(followUp)}>
+                {followUp}
+              </button>
+            ))}
+            <button type="button" className={styles.clearSketch} onClick={clearAgentSketch}>
+              <RotateCcw size={14} /> clear sketch
+            </button>
+          </div>
         )}
 
         <aside className={styles.cornerNote} aria-hidden="true">

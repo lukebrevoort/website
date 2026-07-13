@@ -404,6 +404,67 @@
 .followUpTray button:hover { background: var(--red); }
 .followUpTray button:disabled { opacity: .3; cursor: default; }
 
+.showcaseActions {
+  position: absolute;
+  z-index: 20;
+  right: 28px;
+  bottom: 142px;
+  display: grid;
+  width: min(270px, calc(100% - 48px));
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid rgb(32 32 29 / 16%);
+  border-radius: 10px 3px 9px 4px;
+  color: #625f57;
+  background: rgb(255 249 217 / 93%);
+  box-shadow: 4px 7px 18px rgb(61 51 34 / 13%);
+  font-size: .68rem;
+  transform: rotate(.7deg);
+}
+
+.showcaseActions > span {
+  color: var(--red);
+  font-family: var(--font-lukes, cursive);
+  font-size: .82rem;
+}
+
+.showcaseActions button {
+  border: 1px solid rgb(32 32 29 / 13%);
+  border-radius: 4px;
+  padding: 7px 8px;
+  color: var(--ink);
+  background: rgb(255 255 255 / 70%);
+  font: inherit;
+  font-size: .7rem;
+  font-weight: 700;
+  line-height: 1.22;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.showcaseActions button:hover,
+.showcaseActions button:focus-visible {
+  border-color: var(--red);
+  outline: none;
+  background: #fffdf4;
+  transform: translateX(-2px);
+}
+
+.showcaseActions .clearSketch {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: max-content;
+  border: 0;
+  padding-inline: 1px;
+  color: #777168;
+  background: transparent;
+  font-weight: 500;
+}
+
+.showcaseActions .clearSketch:hover { color: var(--red); background: transparent; }
+
 .results {
   position: absolute;
   z-index: 4;
@@ -611,6 +672,11 @@
   }
   .followUpTray > div { grid-column: 1 / -1; }
   .followUpTray input { padding-block: 7px; }
+  .showcaseActions {
+    right: 18px;
+    bottom: 168px;
+    width: min(260px, calc(100% - 36px));
+  }
   .signature, .presence, .dock, .followUpTray { backdrop-filter: none; }
 }
 
