@@ -62,28 +62,6 @@
   overflow: hidden;
 }
 
-.paperTexture {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: .25;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply;
-}
-
-.sketches {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke: rgb(32 32 29 / 30%);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-dasharray: 4 5;
-  pointer-events: none;
-}
-
 .invitation,
 .loading,
 .thoughtWrap {
@@ -98,6 +76,13 @@
   width: min(650px, calc(100% - 48px));
   text-align: center;
   animation: fade-in .7s ease both;
+  pointer-events: none;
+}
+
+.promptForm,
+.promptList,
+.errorNote {
+  pointer-events: auto;
 }
 
 .eyebrow {
@@ -258,6 +243,7 @@
   display: flex;
   align-items: flex-end;
   gap: 12px;
+  pointer-events: none;
 }
 
 .orb {
@@ -291,6 +277,72 @@
 .thoughtBubble b { width: 4px; height: 4px; border-radius: 50%; background: var(--red); animation: dots .8s ease-in-out infinite alternate; }
 .thoughtBubble b:nth-child(2) { animation-delay: .2s; }
 .thoughtBubble b:nth-child(3) { animation-delay: .4s; }
+
+.followUpTray {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: 76px;
+  display: grid;
+  grid-template-columns: auto minmax(220px, 440px) 38px;
+  align-items: center;
+  gap: 10px;
+  width: min(720px, calc(100% - 48px));
+  padding: 8px 8px 8px 14px;
+  border: 1px solid rgb(32 32 29 / 18%);
+  border-radius: 11px;
+  background: rgb(255 253 247 / 90%);
+  box-shadow: 0 12px 34px rgb(53 45 33 / 15%);
+  transform: translateX(-50%);
+  backdrop-filter: blur(14px);
+  animation: tray-arrive .35s ease both;
+}
+
+.followUpTray > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.followUpTray .agentGlyph { font-size: 1rem; }
+
+.followUpTray label {
+  color: #6d675e;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.followUpTray input {
+  min-width: 0;
+  padding: 9px 12px;
+  border: 0;
+  border-left: 1px solid rgb(32 32 29 / 12%);
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: .82rem;
+}
+
+.followUpTray input:focus { border-left-color: var(--red); }
+
+.followUpTray button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  color: white;
+  background: var(--ink);
+  cursor: pointer;
+}
+
+.followUpTray button:hover { background: var(--red); }
+.followUpTray button:disabled { opacity: .3; cursor: default; }
 
 .results {
   position: absolute;
@@ -400,6 +452,7 @@
 
 .cornerNote {
   position: absolute;
+  z-index: 3;
   right: 30px;
   bottom: 32px;
   display: flex;
@@ -444,6 +497,10 @@
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes tray-arrive {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes loading { from { transform: translateX(-110%); } to { transform: translateX(250%); } }
 @keyframes breathe { 50% { transform: scale(.94); box-shadow: 0 5px 15px rgb(228 87 62 / 15%); } }
@@ -455,7 +512,7 @@
   .topbar { inset: 14px 16px auto; }
   .signature { font-size: 1.3rem; }
   .presence { padding: 7px 9px; font-size: 8px; }
-  .sketches, .cornerNote { display: none; }
+  .cornerNote { display: none; }
   .invitation { top: 47%; width: calc(100% - 32px); }
   .invitation h1 { font-size: clamp(3.2rem, 18vw, 5rem); line-height: .78; }
   .invitation > p { max-width: 340px; margin-top: 24px; font-size: .87rem; }
@@ -480,6 +537,16 @@
   .dock a { padding: 9px 12px; }
   .thoughtWrap { width: calc(100% - 36px); }
   .thoughtBubble { min-width: 0; }
+  .followUpTray {
+    bottom: 74px;
+    grid-template-columns: 1fr 38px;
+    gap: 6px;
+    width: calc(100% - 28px);
+    padding-left: 10px;
+  }
+  .followUpTray > div { grid-column: 1 / -1; }
+  .followUpTray input { padding-block: 7px; }
+  .presence, .dock, .followUpTray { backdrop-filter: none; }
 }
 
 @media (max-height: 690px) and (min-width: 761px) {
@@ -489,8 +556,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .invitation, .results, .loadingLine::after, .orb, .thoughtBubble b {
+  .invitation, .results, .followUpTray, .loadingLine::after, .orb, .thoughtBubble b {
     animation: none !important;
   }
+  .followUpTray { transform: translateX(-50%); }
   .projectNote, .promptForm button { transition: none; }
 }
