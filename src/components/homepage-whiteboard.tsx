@@ -475,7 +475,9 @@ export default function HomepageWhiteboard() {
   const canvasSnapshot = useRef<CanvasSnapshot | null>(null);
   const turn = useRef(0);
   const agentElementIds = useRef<string[]>([]);
+  const usedMalcomFollowUps = useRef<Set<string>>(new Set());
   const [malcomShowcase, setMalcomShowcase] = useState(false);
+  const [completedFollowUps, setCompletedFollowUps] = useState<string[]>([]);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -496,6 +498,8 @@ export default function HomepageWhiteboard() {
     canvasSnapshot.current?.removeElements(agentElementIds.current);
     agentElementIds.current = [];
     turn.current = 0;
+    usedMalcomFollowUps.current.clear();
+    setCompletedFollowUps([]);
     setMalcomShowcase(false);
     setQuestion("");
     setAgentState("idle");
@@ -504,6 +508,7 @@ export default function HomepageWhiteboard() {
   const explore = (value: string) => {
     const nextQuestion = value.trim();
     if (!nextQuestion) return;
+    if (usedMalcomFollowUps.current.has(nextQuestion)) return;
 
     timers.current.forEach(window.clearTimeout);
     setQuestion(nextQuestion);
@@ -540,6 +545,8 @@ export default function HomepageWhiteboard() {
           await insertAndTrack(workingParts);
         } else if (isMalcomFollowUp) {
           await insertAndTrack(buildMalcomFollowUp(nextQuestion, turn.current, isMobile));
+          usedMalcomFollowUps.current.add(nextQuestion);
+          setCompletedFollowUps((current) => [...current, nextQuestion]);
         } else {
           await insertAndTrack(buildProjectResponse(nextQuestion, turn.current, isMobile));
         }
@@ -678,8 +685,13 @@ export default function HomepageWhiteboard() {
           <div className={styles.showcaseActions} aria-label="MALCOM sketch controls">
             <span>Try a real follow-up:</span>
             {malcomFollowUps.map((followUp) => (
-              <button key={followUp} type="button" onClick={() => explore(followUp)}>
-                {followUp}
+              <button
+                key={followUp}
+                type="button"
+                onClick={() => explore(followUp)}
+                disabled={completedFollowUps.includes(followUp)}
+              >
+                {completedFollowUps.includes(followUp) ? `✓ ${followUp}` : followUp}
               </button>
             ))}
             <button type="button" className={styles.clearSketch} onClick={clearAgentSketch}>

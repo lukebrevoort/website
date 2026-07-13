@@ -451,6 +451,14 @@
   transform: translateX(-2px);
 }
 
+.showcaseActions button:disabled {
+  border-color: rgb(4 120 87 / 28%);
+  color: #047857;
+  background: rgb(209 250 229 / 54%);
+  cursor: default;
+  transform: none;
+}
+
 .showcaseActions .clearSketch {
   display: inline-flex;
   align-items: center;
