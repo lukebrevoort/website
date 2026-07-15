@@ -11,7 +11,10 @@ import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
 import {
   applyCompiledPatchToElements,
+  NORMALIZED_CANVAS_SIZE,
   type CompiledCanvasPatch,
+  type CanvasContextElement,
+  type CanvasPatchContext,
 } from "@/lib/canvas-agent";
 import "@excalidraw/excalidraw/index.css";
 import styles from "./excalidraw-canvas.module.css";
@@ -71,6 +74,7 @@ export type CanvasSnapshot = {
     elements: ExcalidrawElementSkeleton[],
   ) => Promise<readonly ExcalidrawElement[]>;
   removeElements: (elementIds: readonly string[]) => void;
+  getPatchContext: () => CanvasPatchContext | null;
   applyCompiledPatch: (
     patch: CompiledCanvasPatch,
     options?: { confirmed?: boolean },
@@ -94,8 +98,67 @@ const emptySnapshot: CanvasSnapshot = {
   captureCanvasImage: async () => null,
   insertElements: async () => [],
   removeElements: () => undefined,
+  getPatchContext: () => null,
   applyCompiledPatch: async () => ({ status: "unavailable" }),
 };
+
+function sceneVersion(elements: readonly ExcalidrawElement[]) {
+  let hash = 2_166_136_261;
+  const signature = elements
+    .map((element) => `${element.id}:${element.version}:${element.versionNonce}`)
+    .join("|");
+
+  for (let index = 0; index < signature.length; index += 1) {
+    hash ^= signature.charCodeAt(index);
+    hash = Math.imul(hash, 16_777_619);
+  }
+
+  return `scene-${(hash >>> 0).toString(36)}`;
+}
+
+function contextKind(element: ExcalidrawElement): CanvasContextElement["kind"] | null {
+  switch (element.type) {
+    case "text":
+    case "rectangle":
+    case "ellipse":
+    case "frame":
+    case "arrow":
+      return element.type;
+    case "freedraw":
+      return "freehand";
+    default:
+      return null;
+  }
+}
+
+function normalizedBox(
+  element: ExcalidrawElement,
+  bounds: CanvasPatchContext["bounds"],
+): CanvasContextElement["box"] | null {
+  const rawX = Math.round(((element.x - bounds.x) / bounds.width) * NORMALIZED_CANVAS_SIZE);
+  const rawY = Math.round(((element.y - bounds.y) / bounds.height) * NORMALIZED_CANVAS_SIZE);
+  const rawWidth = Math.round((element.width / bounds.width) * NORMALIZED_CANVAS_SIZE);
+  const rawHeight = Math.round((element.height / bounds.height) * NORMALIZED_CANVAS_SIZE);
+
+  if (
+    rawX >= NORMALIZED_CANVAS_SIZE ||
+    rawY >= NORMALIZED_CANVAS_SIZE ||
+    rawX + rawWidth <= 0 ||
+    rawY + rawHeight <= 0
+  ) {
+    return null;
+  }
+
+  const x = Math.max(0, rawX);
+  const y = Math.max(0, rawY);
+  const width = Math.max(10, Math.min(NORMALIZED_CANVAS_SIZE - x, rawWidth));
+  const height = Math.max(10, Math.min(NORMALIZED_CANVAS_SIZE - y, rawHeight));
+  if (x + width > NORMALIZED_CANVAS_SIZE || y + height > NORMALIZED_CANVAS_SIZE) {
+    return null;
+  }
+
+  return { x, y, width, height };
+}
 
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
@@ -199,6 +262,45 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     api.setToast({ message: "Cleared the agent's sketch", duration: 1800 });
   }, []);
 
+  const getPatchContext = useCallback((): CanvasPatchContext | null => {
+    const { elements, appState } = sceneRef.current;
+    if (!appState) return null;
+
+    const zoom = Math.max(0.01, appState.zoom.value);
+    const bounds = {
+      x: -appState.scrollX,
+      y: -appState.scrollY,
+      width: Math.max(1, appState.width / zoom),
+      height: Math.max(1, appState.height / zoom),
+    };
+    const contextElements = elements.flatMap<CanvasContextElement>((element) => {
+      const kind = contextKind(element);
+      const box = normalizedBox(element, bounds);
+      if (!kind || !box) return [];
+
+      const customData = element.customData as Record<string, unknown> | undefined;
+      const declaredOrigin = customData?.origin;
+      const origin =
+        declaredOrigin === "agent" || declaredOrigin === "system"
+          ? declaredOrigin
+          : "visitor";
+
+      return [{
+        ref: `existing:${element.id.replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}`,
+        elementId: element.id,
+        kind,
+        box,
+        origin,
+      }];
+    });
+
+    return {
+      sceneVersion: sceneVersion(elements),
+      bounds,
+      elements: contextElements,
+    };
+  }, []);
+
   const applyCompiledPatch = useCallback(
     async (
       patch: CompiledCanvasPatch,
@@ -232,6 +334,16 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         captureUpdate: CaptureUpdateAction.IMMEDIATELY,
       });
       api.setActiveTool({ type: "selection" });
+      if (createdElements.length > 0) {
+        api.scrollToContent(createdElements, {
+          fitToViewport: true,
+          viewportZoomFactor: 0.78,
+          animate: true,
+          duration: 420,
+          maxZoom: 1.1,
+          canvasOffsets: { top: 70, bottom: 150 },
+        });
+      }
       api.setToast({ message: "Applied the agent's canvas update", duration: 2200 });
 
       return {
@@ -272,10 +384,11 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         captureCanvasImage,
         insertElements,
         removeElements,
+        getPatchContext,
         applyCompiledPatch,
       });
     },
-    [applyCompiledPatch, captureCanvasImage, insertElements, publishSnapshot, removeElements],
+    [applyCompiledPatch, captureCanvasImage, getPatchContext, insertElements, publishSnapshot, removeElements],
   );
 
   return (
@@ -289,6 +402,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             captureCanvasImage,
             insertElements,
             removeElements,
+            getPatchContext,
             applyCompiledPatch,
           });
         }}

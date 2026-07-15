@@ -16,6 +16,7 @@ import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/tran
 import { projects } from "@/data/projects";
 import { lukesFont, satoshi } from "@/app/fonts";
 import ExcalidrawCanvas, { type CanvasSnapshot } from "./excalidraw-canvas";
+import CanvasContractLab from "./canvas-contract-lab";
 import styles from "./homepage-whiteboard.module.css";
 
 type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
@@ -466,7 +467,13 @@ const buildMalcomFollowUp = (
   ];
 };
 
-export default function HomepageWhiteboard() {
+type HomepageWhiteboardProps = {
+  canvasDebugEnabled?: boolean;
+};
+
+export default function HomepageWhiteboard({
+  canvasDebugEnabled = false,
+}: HomepageWhiteboardProps) {
   const [agentState, setAgentState] = useState<AgentState>("loading");
   const [prompt, setPrompt] = useState("");
   const [question, setQuestion] = useState("");
@@ -477,6 +484,7 @@ export default function HomepageWhiteboard() {
   const usedMalcomFollowUps = useRef<Set<string>>(new Set());
   const [malcomShowcase, setMalcomShowcase] = useState(false);
   const [completedFollowUps, setCompletedFollowUps] = useState<string[]>([]);
+  const [contractLabActive, setContractLabActive] = useState(false);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -575,6 +583,13 @@ export default function HomepageWhiteboard() {
       <section className={styles.canvas} aria-label="Luke's project exploration canvas">
         <ExcalidrawCanvas onSnapshot={handleSnapshot} />
 
+        {canvasDebugEnabled && (
+          <CanvasContractLab
+            getSnapshot={() => canvasSnapshot.current}
+            onPatchApplied={() => setContractLabActive(true)}
+          />
+        )}
+
         {agentState === "loading" && (
           <div className={styles.loading} role="status">
             <span className={styles.agentGlyph}>✦</span>
@@ -583,7 +598,9 @@ export default function HomepageWhiteboard() {
           </div>
         )}
 
-        {(agentState === "idle" || agentState === "error") && turn.current === 0 && (
+        {(agentState === "idle" || agentState === "error") &&
+          turn.current === 0 &&
+          !contractLabActive && (
           <div className={styles.invitation}>
             <div className={`${styles.eyebrow} ${lukesFont.className}`}>
               <PencilLine size={17} /> pick a thread or write your own
