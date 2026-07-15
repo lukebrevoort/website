@@ -16,6 +16,7 @@ export type CanvasContextElement = {
   kind: "text" | "note" | "rectangle" | "ellipse" | "frame" | "arrow" | "freehand";
   box: NormalizedBox;
   origin: CanvasElementOrigin;
+  text?: string;
 };
 
 export type CanvasPatchContext = {

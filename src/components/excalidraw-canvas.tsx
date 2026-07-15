@@ -11,6 +11,9 @@ import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
 import {
   applyCompiledPatchToElements,
+  MAX_CANVAS_IMAGE_BYTES,
+  MAX_CANVAS_IMAGE_DIMENSION,
+  MAX_CONTEXT_ELEMENTS,
   NORMALIZED_CANVAS_SIZE,
   type CompiledCanvasPatch,
   type CanvasContextElement,
@@ -70,6 +73,7 @@ export type CanvasSnapshot = {
   selectedElements: readonly ExcalidrawElement[];
   exportedCanvas: Blob | null;
   captureCanvasImage: () => Promise<Blob | null>;
+  captureAgentContext: () => Promise<CanvasAgentContextCapture | null>;
   insertElements: (
     elements: ExcalidrawElementSkeleton[],
   ) => Promise<readonly ExcalidrawElement[]>;
@@ -79,6 +83,12 @@ export type CanvasSnapshot = {
     patch: CompiledCanvasPatch,
     options?: { confirmed?: boolean },
   ) => Promise<CanvasPatchApplyResult>;
+};
+
+export type CanvasAgentContextCapture = {
+  scope: "selection" | "viewport";
+  context: CanvasPatchContext;
+  image: Blob;
 };
 
 export type CanvasPatchApplyResult =
@@ -96,6 +106,7 @@ const emptySnapshot: CanvasSnapshot = {
   selectedElements: [],
   exportedCanvas: null,
   captureCanvasImage: async () => null,
+  captureAgentContext: async () => null,
   insertElements: async () => [],
   removeElements: () => undefined,
   getPatchContext: () => null,
@@ -160,6 +171,82 @@ function normalizedBox(
   return { x, y, width, height };
 }
 
+function viewportBounds(appState: AppState): CanvasPatchContext["bounds"] {
+  const zoom = Math.max(0.01, appState.zoom.value);
+  return {
+    x: -appState.scrollX,
+    y: -appState.scrollY,
+    width: Math.max(1, appState.width / zoom),
+    height: Math.max(1, appState.height / zoom),
+  };
+}
+
+function selectionBounds(
+  elements: readonly ExcalidrawElement[],
+  fallback: CanvasPatchContext["bounds"],
+): CanvasPatchContext["bounds"] {
+  if (elements.length === 0) return fallback;
+  const minX = Math.min(...elements.map((element) => element.x));
+  const minY = Math.min(...elements.map((element) => element.y));
+  const maxX = Math.max(...elements.map((element) => element.x + element.width));
+  const maxY = Math.max(...elements.map((element) => element.y + element.height));
+  const padding = Math.max(24, Math.min(120, Math.max(maxX - minX, maxY - minY) * 0.08));
+  return {
+    x: minX - padding,
+    y: minY - padding,
+    width: Math.max(1, maxX - minX + padding * 2),
+    height: Math.max(1, maxY - minY + padding * 2),
+  };
+}
+
+function intersectsBounds(element: ExcalidrawElement, bounds: CanvasPatchContext["bounds"]) {
+  return element.x < bounds.x + bounds.width &&
+    element.x + element.width > bounds.x &&
+    element.y < bounds.y + bounds.height &&
+    element.y + element.height > bounds.y;
+}
+
+function contextForElements(
+  allElements: readonly ExcalidrawElement[],
+  scopedElements: readonly ExcalidrawElement[],
+  bounds: CanvasPatchContext["bounds"],
+): CanvasPatchContext {
+  const elements = scopedElements.slice(0, MAX_CONTEXT_ELEMENTS).flatMap<CanvasContextElement>((element) => {
+    const kind = contextKind(element);
+    const box = normalizedBox(element, bounds);
+    if (!kind || !box) return [];
+
+    const customData = element.customData as Record<string, unknown> | undefined;
+    const declaredOrigin = customData?.origin;
+    const origin = declaredOrigin === "agent" || declaredOrigin === "system"
+      ? declaredOrigin
+      : "visitor";
+    const text = element.type === "text" ? element.text.slice(0, 500) : undefined;
+
+    return [{
+      ref: `existing:${element.id.replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}`,
+      elementId: element.id,
+      kind,
+      box,
+      origin,
+      ...(text ? { text } : {}),
+    }];
+  });
+
+  return { sceneVersion: sceneVersion(allElements), bounds, elements };
+}
+
+async function blankCanvasBlob() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1_024;
+  canvas.height = 640;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  context.fillStyle = "#f4f0e7";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+}
+
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const snapshotRef = useRef<CanvasSnapshot>(emptySnapshot);
@@ -204,6 +291,49 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       return exportedCanvas;
     } catch (error) {
       console.warn("Unable to capture the current canvas image", error);
+      return null;
+    }
+  }, [publishSnapshot]);
+
+  const captureAgentContext = useCallback(async (): Promise<CanvasAgentContextCapture | null> => {
+    const { elements, appState, files } = sceneRef.current;
+    if (!appState) return null;
+
+    const selected = elements.filter((element) => appState.selectedElementIds[element.id]);
+    const scope = selected.length > 0 ? "selection" as const : "viewport" as const;
+    const visibleBounds = viewportBounds(appState);
+    const bounds = scope === "selection" ? selectionBounds(selected, visibleBounds) : visibleBounds;
+    const scopedElements = (scope === "selection"
+      ? selected
+      : elements.filter((element) => intersectsBounds(element, bounds)))
+      .slice(0, MAX_CONTEXT_ELEMENTS);
+    const context = contextForElements(elements, scopedElements, bounds);
+
+    try {
+      const image = scopedElements.length === 0
+        ? await blankCanvasBlob()
+        : await (async () => {
+            const { exportToBlob } = await import("@excalidraw/excalidraw");
+            return exportToBlob({
+              elements: scopedElements,
+              appState: {
+                ...appState,
+                exportBackground: true,
+                exportWithDarkMode: false,
+                viewBackgroundColor: "#f4f0e7",
+              },
+              files,
+              mimeType: "image/png",
+              exportPadding: 24,
+              maxWidthOrHeight: MAX_CANVAS_IMAGE_DIMENSION,
+            });
+          })();
+
+      if (!image || image.size > MAX_CANVAS_IMAGE_BYTES) return null;
+      publishSnapshot({ ...snapshotRef.current, exportedCanvas: image });
+      return { scope, context, image };
+    } catch (error) {
+      console.warn("Unable to capture scoped canvas context", error);
       return null;
     }
   }, [publishSnapshot]);
@@ -266,39 +396,12 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     const { elements, appState } = sceneRef.current;
     if (!appState) return null;
 
-    const zoom = Math.max(0.01, appState.zoom.value);
-    const bounds = {
-      x: -appState.scrollX,
-      y: -appState.scrollY,
-      width: Math.max(1, appState.width / zoom),
-      height: Math.max(1, appState.height / zoom),
-    };
-    const contextElements = elements.flatMap<CanvasContextElement>((element) => {
-      const kind = contextKind(element);
-      const box = normalizedBox(element, bounds);
-      if (!kind || !box) return [];
-
-      const customData = element.customData as Record<string, unknown> | undefined;
-      const declaredOrigin = customData?.origin;
-      const origin =
-        declaredOrigin === "agent" || declaredOrigin === "system"
-          ? declaredOrigin
-          : "visitor";
-
-      return [{
-        ref: `existing:${element.id.replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}`,
-        elementId: element.id,
-        kind,
-        box,
-        origin,
-      }];
-    });
-
-    return {
-      sceneVersion: sceneVersion(elements),
+    const bounds = viewportBounds(appState);
+    return contextForElements(
+      elements,
+      elements.filter((element) => intersectsBounds(element, bounds)),
       bounds,
-      elements: contextElements,
-    };
+    );
   }, []);
 
   const applyCompiledPatch = useCallback(
@@ -382,13 +485,14 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         selectedElements,
         exportedCanvas: snapshotRef.current.exportedCanvas,
         captureCanvasImage,
+        captureAgentContext,
         insertElements,
         removeElements,
         getPatchContext,
         applyCompiledPatch,
       });
     },
-    [applyCompiledPatch, captureCanvasImage, getPatchContext, insertElements, publishSnapshot, removeElements],
+    [applyCompiledPatch, captureAgentContext, captureCanvasImage, getPatchContext, insertElements, publishSnapshot, removeElements],
   );
 
   return (
@@ -400,6 +504,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             ...snapshotRef.current,
             api,
             captureCanvasImage,
+            captureAgentContext,
             insertElements,
             removeElements,
             getPatchContext,
