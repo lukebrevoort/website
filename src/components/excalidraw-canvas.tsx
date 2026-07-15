@@ -9,6 +9,10 @@ import type {
 } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
+import {
+  applyCompiledPatchToElements,
+  type CompiledCanvasPatch,
+} from "@/lib/canvas-agent";
 import "@excalidraw/excalidraw/index.css";
 import styles from "./excalidraw-canvas.module.css";
 
@@ -67,7 +71,16 @@ export type CanvasSnapshot = {
     elements: ExcalidrawElementSkeleton[],
   ) => Promise<readonly ExcalidrawElement[]>;
   removeElements: (elementIds: readonly string[]) => void;
+  applyCompiledPatch: (
+    patch: CompiledCanvasPatch,
+    options?: { confirmed?: boolean },
+  ) => Promise<CanvasPatchApplyResult>;
 };
+
+export type CanvasPatchApplyResult =
+  | { status: "applied"; elementIds: string[] }
+  | { status: "confirmation-required"; reasons: string[] }
+  | { status: "unavailable" };
 
 type ExcalidrawCanvasProps = {
   onSnapshot?: (snapshot: CanvasSnapshot) => void;
@@ -81,6 +94,7 @@ const emptySnapshot: CanvasSnapshot = {
   captureCanvasImage: async () => null,
   insertElements: async () => [],
   removeElements: () => undefined,
+  applyCompiledPatch: async () => ({ status: "unavailable" }),
 };
 
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
@@ -185,6 +199,49 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     api.setToast({ message: "Cleared the agent's sketch", duration: 1800 });
   }, []);
 
+  const applyCompiledPatch = useCallback(
+    async (
+      patch: CompiledCanvasPatch,
+      options: { confirmed?: boolean } = {},
+    ): Promise<CanvasPatchApplyResult> => {
+      const api = apiRef.current;
+      if (!api) return { status: "unavailable" };
+
+      if (patch.risk.requiresConfirmation && !options.confirmed) {
+        return {
+          status: "confirmation-required",
+          reasons: patch.risk.reasons,
+        };
+      }
+
+      const { CaptureUpdateAction, convertToExcalidrawElements } = await import(
+        "@excalidraw/excalidraw"
+      );
+      const createdElements = convertToExcalidrawElements(patch.createElements, {
+        regenerateIds: false,
+      });
+      const nextElements = applyCompiledPatchToElements(
+        api.getSceneElements(),
+        createdElements,
+        patch,
+      );
+
+      // One captured scene update makes the accepted patch one undoable action.
+      api.updateScene({
+        elements: nextElements,
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      });
+      api.setActiveTool({ type: "selection" });
+      api.setToast({ message: "Applied the agent's canvas update", duration: 2200 });
+
+      return {
+        status: "applied",
+        elementIds: createdElements.map((element) => element.id),
+      };
+    },
+    [],
+  );
+
   const handleChange = useCallback(
     (
       elements: readonly ExcalidrawElement[],
@@ -215,9 +272,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         captureCanvasImage,
         insertElements,
         removeElements,
+        applyCompiledPatch,
       });
     },
-    [captureCanvasImage, insertElements, publishSnapshot, removeElements],
+    [applyCompiledPatch, captureCanvasImage, insertElements, publishSnapshot, removeElements],
   );
 
   return (
@@ -231,6 +289,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             captureCanvasImage,
             insertElements,
             removeElements,
+            applyCompiledPatch,
           });
         }}
         initialData={{
