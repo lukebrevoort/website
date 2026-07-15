@@ -1,0 +1,141 @@
+.lab {
+  --lab-ink: #171714;
+  --lab-paper: #fffdf4;
+  position: absolute;
+  z-index: 40;
+  top: 102px;
+  right: 22px;
+  width: min(410px, calc(100% - 44px));
+  color: var(--lab-ink);
+  filter: drop-shadow(8px 12px 24px rgb(49 42 29 / 18%));
+  font-family: var(--font-satoshi), sans-serif;
+}
+
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 13px;
+  border: 1px solid rgb(23 23 20 / 72%);
+  border-radius: 4px;
+  color: var(--lab-paper);
+  background: var(--lab-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.handle span { display: inline-flex; align-items: center; gap: 7px; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.handle > svg { transition: transform .2s ease; }
+.open .handle > svg { transform: rotate(180deg); }
+
+.body {
+  position: relative;
+  margin-top: -1px;
+  padding: 17px;
+  border: 1px solid rgb(23 23 20 / 35%);
+  border-top: 0;
+  border-radius: 0 0 5px 5px;
+  background-color: var(--lab-paper);
+  background-image: linear-gradient(rgb(29 78 216 / 7%) 1px, transparent 1px);
+  background-size: 100% 24px;
+}
+
+.body::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 32px;
+  border-left: 1px solid rgb(228 87 62 / 22%);
+  pointer-events: none;
+}
+
+.heading,
+.fixtures,
+.editorLabel,
+.body textarea,
+.result,
+.actions { position: relative; z-index: 1; }
+
+.heading { display: flex; align-items: flex-start; justify-content: space-between; padding-left: 27px; }
+.heading span { color: #b54533; font-size: .58rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.heading h2 { margin: 3px 0 0; font-size: 1rem; line-height: 1.05; }
+.heading i { color: #8a857a; font-family: monospace; font-size: .58rem; }
+
+.fixtures { display: flex; flex-wrap: wrap; gap: 5px; margin: 14px 0 11px 27px; }
+.fixtures button {
+  padding: 5px 8px;
+  border: 1px solid rgb(23 23 20 / 18%);
+  border-radius: 3px;
+  color: #5c584f;
+  background: rgb(255 255 255 / 68%);
+  font: inherit;
+  font-size: .62rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fixtures button:hover,
+.fixtures button:focus-visible { outline: none; border-color: #b54533; color: #b54533; transform: translateY(-1px); }
+
+.editorLabel { display: block; margin: 0 0 5px 27px; color: #777168; font-family: monospace; font-size: .58rem; letter-spacing: .06em; text-transform: uppercase; }
+.body textarea {
+  display: block;
+  width: calc(100% - 27px);
+  height: 210px;
+  margin-left: 27px;
+  resize: vertical;
+  border: 1px solid rgb(23 23 20 / 22%);
+  border-radius: 3px;
+  outline: none;
+  padding: 11px 12px;
+  color: #24231f;
+  background: rgb(255 255 255 / 86%);
+  font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  tab-size: 2;
+}
+.body textarea:focus { border-color: #1d4ed8; box-shadow: 0 0 0 3px rgb(29 78 216 / 9%); }
+
+.result {
+  display: grid;
+  grid-template-columns: 17px 1fr;
+  gap: 8px;
+  margin: 10px 0 0 27px;
+  padding: 9px 10px;
+  border-left: 3px solid #777168;
+  background: rgb(119 113 104 / 8%);
+}
+.result strong,
+.result span { display: block; }
+.result strong { font-size: .68rem; }
+.result span,
+.result li { color: #68635a; font-size: .61rem; line-height: 1.35; }
+.result ul { margin: 5px 0 0; padding-left: 15px; }
+.success { border-color: #047857; background: rgb(4 120 87 / 8%); }
+.success > svg { color: #047857; }
+.warning { border-color: #a16207; background: rgb(161 98 7 / 9%); }
+.warning > svg { color: #a16207; }
+.error { border-color: #b91c1c; background: rgb(185 28 28 / 8%); }
+.error > svg { color: #b91c1c; }
+
+.actions { display: flex; align-items: center; gap: 7px; margin: 11px 0 0 27px; }
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid var(--lab-ink);
+  border-radius: 3px;
+  color: var(--lab-paper);
+  background: var(--lab-ink);
+  font: inherit;
+  font-size: .64rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.actions button:hover { transform: translateY(-1px); }
+.actions button:disabled { opacity: .35; cursor: default; transform: none; }
+.actions .confirm { border-color: #a16207; color: #7c4c08; background: #fef3c7; }
+
+@media (max-width: 720px) {
+  .lab { top: 82px; right: 12px; width: calc(100% - 24px); }
+  .body textarea { height: 170px; }
+}
