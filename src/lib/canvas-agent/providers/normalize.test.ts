@@ -22,7 +22,11 @@ test("clamps model-authored geometry without changing semantic fields", () => {
   const patch = canvasPatchSchema.parse(normalized);
   const operation = patch.operations[0];
   assert.equal(operation.op, "create");
-  if (operation.op !== "create" || !("box" in operation.element)) return;
+  if (
+    operation.op !== "create" ||
+    !("box" in operation.element) ||
+    !("text" in operation.element)
+  ) return;
   assert.deepEqual(operation.element.box, { x: 880, y: 0, width: 120, height: 121 });
   assert.equal(operation.element.text, "Still visible");
 });
@@ -71,4 +75,40 @@ test("uniquifies repeated model-authored declaration refs without another model 
     patch.operations.map((operation) => operation.op === "create" ? operation.ref : null),
     ["new:rectangle", "new:rectangle-2", "new:rectangle-3"],
   );
+});
+
+test("prunes provider nulls and maps the flattened connection destination", () => {
+  const normalized = normalizeCanvasPatchCandidate({
+    version: "1",
+    baseSceneVersion: "scene-1",
+    summary: "Connect two nodes",
+    operations: [{
+      op: "connect",
+      ref: "new:a-b",
+      groupRef: null,
+      members: null,
+      from: null,
+      target: "existing:a",
+      to: null,
+      connectionTo: "existing:b",
+      label: "routes",
+      reason: "irrelevant provider filler",
+      text: null,
+      style: null,
+      element: null,
+    }],
+  });
+
+  assert.deepEqual(normalized, {
+    version: "1",
+    baseSceneVersion: "scene-1",
+    summary: "Connect two nodes",
+    operations: [{
+      op: "connect",
+      ref: "new:a-b",
+      from: "existing:a",
+      to: "existing:b",
+      label: "routes",
+    }],
+  });
 });

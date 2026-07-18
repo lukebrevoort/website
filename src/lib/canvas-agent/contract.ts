@@ -39,7 +39,8 @@ export const normalizedBoxSchema = z
   .refine((box) => box.y + box.height <= NORMALIZED_CANVAS_SIZE, {
     message: "box must fit within the normalized canvas height",
     path: ["height"],
-  });
+  })
+  .describe("An integer box in the 1000x1000 normalized canvas; leave visual gaps between peer boxes.");
 
 export const canvasThemeSchema = z.enum([
   "ink",
@@ -57,7 +58,7 @@ export const canvasStyleSchema = z.strictObject({
   stroke: z.enum(["solid", "dashed", "dotted"]).optional(),
   weight: z.enum(["thin", "regular", "bold"]).optional(),
   opacity: z.number().int().min(20).max(100).optional(),
-});
+}).describe("A restrained semantic style. Use accent sparingly and omit fields that do not add meaning.");
 
 const shortTextSchema = z.string().trim().min(1).max(500);
 const labelSchema = z.string().trim().min(1).max(160);
@@ -102,7 +103,7 @@ export const canvasElementSpecSchema = z.discriminatedUnion("kind", [
   frameElementSchema,
   arrowElementSchema,
   freehandElementSchema,
-]);
+]).describe("One readable Excalidraw element. Box text must be concise enough to scan without zooming.");
 
 const createOperationSchema = z.strictObject({
   op: z.literal("create"),
@@ -155,13 +156,16 @@ export const canvasOperationSchema = z.discriminatedUnion("op", [
   groupOperationSchema,
   connectOperationSchema,
   deleteOperationSchema,
-]);
+]).describe("One ordered canvas mutation. Create endpoints before referring to them in later operations.");
 
 export const canvasPatchSchema = z.strictObject({
   version: z.literal(CANVAS_PATCH_VERSION),
-  baseSceneVersion: z.string().trim().min(1).max(128),
-  summary: z.string().trim().min(1).max(300),
-  operations: z.array(canvasOperationSchema).min(1).max(MAX_PATCH_OPERATIONS),
+  baseSceneVersion: z.string().trim().min(1).max(128)
+    .describe("Copy the supplied sceneVersion exactly."),
+  summary: z.string().trim().min(1).max(300)
+    .describe("A concise description of the insight and visual change, not implementation metadata."),
+  operations: z.array(canvasOperationSchema).min(1).max(MAX_PATCH_OPERATIONS)
+    .describe("An ordered, cohesive composition; normally 12 operations or fewer."),
 });
 
 export const canvasPatchJsonSchema = z.toJSONSchema(canvasPatchSchema, {

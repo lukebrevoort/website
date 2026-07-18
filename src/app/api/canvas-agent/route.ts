@@ -10,6 +10,7 @@ import {
 } from "@/lib/canvas-agent/providers";
 import { getOpenAIApiKey } from "@/lib/canvas-agent/providers/config";
 import { validateCanvasPatch } from "@/lib/canvas-agent";
+import { reviewCanvasPatchComposition } from "@/lib/canvas-agent/composition";
 import { createSafetyIdentifier } from "@/lib/canvas-agent/security";
 
 export const runtime = "nodejs";
@@ -65,6 +66,15 @@ export async function POST(request: Request) {
         code: "invalid-patch",
         message: "The agent returned an unsafe canvas change, so nothing was applied.",
         issues: validation.issues,
+      }, { status: 422 });
+    }
+    const composition = reviewCanvasPatchComposition(validation.value.patch, parsed.data.prompt);
+    if (!composition.ok) {
+      return NextResponse.json({
+        ok: false,
+        code: "low-quality-patch",
+        message: "The agent's sketch did not meet the canvas quality bar, so nothing was applied. Try that question once more.",
+        issues: composition.issues,
       }, { status: 422 });
     }
 
