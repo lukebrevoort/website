@@ -6,13 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "tsx --test src/lib/canvas-agent/*.test.ts",
+    "test": "tsx --test src/lib/canvas-agent/*.test.ts src/lib/canvas-agent/providers/*.test.ts",
     "lint": "next lint",
     "generate-blog": "tsx scripts/generate-all-blog-posts.ts",
     "fix-blog": "tsx scripts/fix-current-blog.ts"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.93",
+    "@ai-sdk/openai": "^3.0.86",
     "@excalidraw/excalidraw": "^0.18.1",
     "@mlc-ai/web-llm": "^0.2.78",
     "@octokit/rest": "^21.1.1",

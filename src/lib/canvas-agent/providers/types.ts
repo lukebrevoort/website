@@ -3,6 +3,7 @@ import type { CanvasAgentRequest } from "../request";
 
 export type VisionProviderInput = CanvasAgentRequest & {
   knowledgeSnippets: string[];
+  safetyIdentifier: string;
 };
 
 export type VisionProviderResult = {
@@ -16,4 +17,3 @@ export interface CanvasVisionProvider {
 }
 
 export class ProviderUnavailableError extends Error {}
-

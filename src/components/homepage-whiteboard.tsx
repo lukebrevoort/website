@@ -77,7 +77,7 @@ export default function HomepageWhiteboard({
   }, []);
 
   const recordTurn = (prompt: string, summary: string) => {
-    priorTurns.current = [...priorTurns.current, { prompt, summary }].slice(-4);
+    priorTurns.current = [...priorTurns.current, { prompt, summary }].slice(-2);
   };
 
   const explore = async (value: string) => {
@@ -121,7 +121,12 @@ export default function HomepageWhiteboard({
           priorTurns: priorTurns.current,
         }),
       });
-      const payload = await response.json() as {
+      const payload = await response.json().catch(() => ({
+        ok: false,
+        message: response.status === 429
+          ? "Too many questions from this connection. Wait a few minutes and try again."
+          : "The vision agent could not read that response. Your canvas was not changed.",
+      })) as {
         ok: boolean;
         message?: string;
         patch?: CanvasPatch;

@@ -11,7 +11,7 @@ const knowledge = [
 
 export function selectKnowledgeSnippets(prompt: string): string[] {
   const terms = new Set(prompt.toLowerCase().match(/[a-z0-9]+/g) ?? []);
-  return knowledge
+  const ranked = knowledge
     .map((snippet, index) => ({
       snippet,
       index,
@@ -20,8 +20,10 @@ export function selectKnowledgeSnippets(prompt: string): string[] {
         0,
       ),
     }))
-    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .sort((left, right) => right.score - left.score || left.index - right.index);
+  const matched = ranked.filter(({ score }) => score > 0);
+
+  return (matched.length > 0 ? matched : [ranked[4]])
     .slice(0, MAX_KNOWLEDGE_SNIPPETS)
     .map(({ snippet }) => snippet);
 }
-

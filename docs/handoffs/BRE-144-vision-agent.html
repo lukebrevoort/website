@@ -30,30 +30,30 @@
 <main>
   <p>BRE-144 · Vision Agent</p>
   <h1>Scoped canvas context,<br><span>validated end to end.</span></h1>
-  <p>The live Explore canvas now sends one bounded structural snapshot and its matching PNG to a server-only Gemini adapter after an explicit visitor submission.</p>
+  <p>The live Explore canvas now sends one bounded structural snapshot and its matching PNG to a server-only OpenAI adapter after an explicit visitor submission.</p>
 
   <section class="flow" aria-label="Request flow">
     <div><b>1 · Capture</b>Selection, otherwise the visible viewport.</div>
     <div><b>2 · Bound</b>Elements, PNG size, prompt, history, and request bytes.</div>
-    <div><b>3 · Generate</b>Gemini returns a typed CanvasPatchV1.</div>
+    <div><b>3 · Generate</b>OpenAI returns a typed CanvasPatchV1.</div>
     <div><b>4 · Validate</b>Server and client both run semantic validation.</div>
     <div><b>5 · Apply</b>One undoable transaction; risky changes pause for approval.</div>
   </section>
 
   <h2>Server configuration</h2>
-  <p>Set <code>GOOGLE_GENERATIVE_AI_API_KEY</code> in local and Vercel Preview environments. Optional overrides are <code>CANVAS_VISION_PROVIDER=gemini</code> and <code>CANVAS_GEMINI_MODEL=gemini-2.5-flash</code>. No provider value is serialized into the browser bundle or response.</p>
-  <p class="note">When the credential, provider, or free-tier quota is unavailable, the API fails closed with a human-readable resting state. The board remains unchanged.</p>
+  <p>Set <code>OPENAI_API_KEY</code> in the gitignored local <code>.env</code> and in Vercel environments. The existing <code>OpenAIKey</code> name is accepted as a compatibility alias. Optional overrides are <code>CANVAS_VISION_PROVIDER=openai</code> and <code>CANVAS_OPENAI_MODEL=gpt-4o-mini</code>. The key never enters the browser bundle or API response.</p>
+  <p class="note">Add a Vercel Firewall rate-limit rule for <code>POST /api/canvas-agent</code>: fixed window, 600 seconds, limit 5, key <code>ip</code>, action <code>deny</code>. The API also fails closed when its credential or provider is unavailable.</p>
 
   <h2>Hard limits</h2>
   <table>
     <thead><tr><th>Boundary</th><th>Limit</th></tr></thead>
     <tbody>
       <tr><td>HTTP request</td><td>1.9 MB</td></tr>
-      <tr><td>PNG</td><td>1.5 MB and 1,280 px maximum edge</td></tr>
-      <tr><td>Structural elements</td><td>80</td></tr>
-      <tr><td>Prior board turns</td><td>4</td></tr>
-      <tr><td>Model output</td><td>2,500 tokens and 25 CanvasPatch operations</td></tr>
-      <tr><td>Provider duration</td><td>25 seconds, no automatic retry</td></tr>
+      <tr><td>PNG</td><td>1.5 MB, 768 px maximum edge, low-detail vision</td></tr>
+      <tr><td>Structural elements</td><td>40</td></tr>
+      <tr><td>Prior board turns</td><td>2</td></tr>
+      <tr><td>Model output</td><td>1,400 tokens and 25 CanvasPatch operations</td></tr>
+      <tr><td>Provider duration</td><td>20 seconds, no automatic retry</td></tr>
     </tbody>
   </table>
 

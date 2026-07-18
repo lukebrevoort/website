@@ -8,12 +8,18 @@ import {
   ProviderUnavailableError,
   createCanvasVisionProvider,
 } from "@/lib/canvas-agent/providers";
+import { getOpenAIApiKey } from "@/lib/canvas-agent/providers/config";
 import { validateCanvasPatch } from "@/lib/canvas-agent";
+import { createSafetyIdentifier } from "@/lib/canvas-agent/security";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
+  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+    return restingResponse("The canvas request must be sent as JSON.", 415, "invalid-request");
+  }
+
   const contentLength = Number(request.headers.get("content-length") || 0);
   if (contentLength > MAX_CANVAS_REQUEST_BYTES) {
     return restingResponse("That canvas view is too large to inspect safely. Select fewer marks and try again.", 413);
@@ -40,15 +46,17 @@ export async function POST(request: Request) {
     }, { status: 400 });
   }
 
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY &&
-      (process.env.CANVAS_VISION_PROVIDER || "gemini") === "gemini") {
-    return restingResponse("The vision agent is resting while its free-tier connection is unavailable.", 503);
+  const provider = process.env.CANVAS_VISION_PROVIDER || "openai";
+  const openaiApiKey = getOpenAIApiKey();
+  if (!openaiApiKey && provider === "openai") {
+    return restingResponse("The vision agent is resting while its OpenAI connection is unavailable.", 503);
   }
 
   try {
     const result = await createCanvasVisionProvider().generatePatch({
       ...parsed.data,
       knowledgeSnippets: selectKnowledgeSnippets(parsed.data.prompt),
+      safetyIdentifier: createSafetyIdentifier(request, openaiApiKey || "unconfigured"),
     });
     const validation = validateCanvasPatch(result.patch, parsed.data.context);
     if (!validation.ok) {
@@ -73,15 +81,18 @@ export async function POST(request: Request) {
       return restingResponse("The configured vision provider is unavailable. Your board was not changed.", 503);
     }
     if (isQuotaError(error)) {
-      return restingResponse("The vision agent has used its free-tier allowance and is resting for now.", 429);
+      return restingResponse("The vision agent is receiving too many requests. Wait a moment and try again.", 429);
     }
     console.error("Canvas vision request failed", error);
     return restingResponse("The vision agent lost the thread. Your board is untouched—please try again.", 502);
   }
 }
 
-function restingResponse(message: string, status: number) {
-  return NextResponse.json({ ok: false, code: "agent-resting", message }, { status });
+function restingResponse(message: string, status: number, code = "agent-resting") {
+  return NextResponse.json(
+    { ok: false, code, message },
+    { status, headers: { "cache-control": "private, no-store" } },
+  );
 }
 
 function isQuotaError(error: unknown) {
