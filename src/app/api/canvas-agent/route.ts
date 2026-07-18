@@ -68,7 +68,11 @@ export async function POST(request: Request) {
         issues: validation.issues,
       }, { status: 422 });
     }
-    const composition = reviewCanvasPatchComposition(validation.value.patch, parsed.data.prompt);
+    const composition = reviewCanvasPatchComposition(
+      validation.value.patch,
+      parsed.data.prompt,
+      parsed.data.context,
+    );
     if (!composition.ok) {
       return NextResponse.json({
         ok: false,

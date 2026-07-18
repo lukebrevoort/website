@@ -2,6 +2,18 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { CanvasPatch } from "./contract";
 import { reviewCanvasPatchComposition } from "./composition";
+import type { CanvasPatchContext } from "./validation";
+
+const portraitContext: CanvasPatchContext = {
+  sceneVersion: "scene-v1",
+  bounds: { x: 0, y: 0, width: 390, height: 844 },
+  elements: [],
+};
+
+const landscapeContext: CanvasPatchContext = {
+  ...portraitContext,
+  bounds: { x: 0, y: 0, width: 1200, height: 800 },
+};
 
 function patchWith(operations: CanvasPatch["operations"]): CanvasPatch {
   return {
@@ -60,6 +72,63 @@ test("rejects prose-heavy nodes", () => {
   assert.match(review.issues[0], /too much text/);
 });
 
+test("rejects a portrait connector that crosses an unrelated center node", () => {
+  const patch = patchWith([
+    node("new:first", 390, 80, "First"),
+    node("new:middle", 390, 310, "Middle"),
+    node("new:last", 390, 540, "Last"),
+    { op: "connect", ref: "new:first-last", from: "new:first", to: "new:last", label: "skips ahead" },
+  ]);
+
+  const review = reviewCanvasPatchComposition(patch, "Show the process", portraitContext);
+  assert.equal(review.ok, false);
+  if (review.ok) return;
+  assert.ok(review.issues.some((issue) => /crosses unrelated node new:middle/.test(issue)));
+});
+
+test("accepts the existing landscape composition policy without portrait corridor checks", () => {
+  const patch = patchWith([
+    node("new:first", 390, 80, "First"),
+    node("new:middle", 390, 310, "Middle"),
+    node("new:last", 390, 540, "Last"),
+    { op: "connect", ref: "new:first-last", from: "new:first", to: "new:last", label: "skips ahead" },
+  ]);
+
+  assert.deepEqual(
+    reviewCanvasPatchComposition(patch, "Show the process", landscapeContext),
+    { ok: true },
+  );
+});
+
+test("rejects a portrait connector label that intrudes into tightly spaced node text", () => {
+  const patch = patchWith([
+    node("new:first", 390, 100, "First"),
+    node("new:second", 390, 225, "Second"),
+    { op: "connect", ref: "new:first-second", from: "new:first", to: "new:second", label: "then" },
+  ]);
+
+  const review = reviewCanvasPatchComposition(patch, "Show the flow", portraitContext);
+  assert.equal(review.ok, false);
+  if (review.ok) return;
+  assert.ok(review.issues.some((issue) => /label overlaps node text/.test(issue)));
+});
+
+test("rejects portrait connector labels that converge in one corridor", () => {
+  const patch = patchWith([
+    compactNode("new:left-one", 100, 200, "A"),
+    compactNode("new:right-one", 700, 200, "B"),
+    compactNode("new:left-two", 100, 220, "C"),
+    compactNode("new:right-two", 700, 220, "D"),
+    { op: "connect", ref: "new:one", from: "new:left-one", to: "new:right-one", label: "routes" },
+    { op: "connect", ref: "new:two", from: "new:left-two", to: "new:right-two", label: "starts" },
+  ]);
+
+  const review = reviewCanvasPatchComposition(patch, "Show the system", portraitContext);
+  assert.equal(review.ok, false);
+  if (review.ok) return;
+  assert.ok(review.issues.some((issue) => /label overlaps connector label/.test(issue)));
+});
+
 function node(
   ref: `new:${string}`,
   x: number,
@@ -72,6 +141,24 @@ function node(
     element: {
       kind: "rectangle",
       box: { x, y, width: 220, height: 120 },
+      text,
+      style: { theme: "ink", fill: "hachure" },
+    },
+  };
+}
+
+function compactNode(
+  ref: `new:${string}`,
+  x: number,
+  y: number,
+  text: string,
+): CanvasPatch["operations"][number] {
+  return {
+    op: "create",
+    ref,
+    element: {
+      kind: "rectangle",
+      box: { x, y, width: 100, height: 10 },
       text,
       style: { theme: "ink", fill: "hachure" },
     },

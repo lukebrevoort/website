@@ -10,6 +10,8 @@ test("director prompt establishes factual and visual quality rules", () => {
   assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /never overlap readable nodes/);
   assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /must not pass through an unrelated node/);
   assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /sceneBounds is portrait/);
+  assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /Connect consecutive stages only/);
+  assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /exactly one vertical corridor/);
   assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /Do not squeeze a desktop hub-and-spoke/);
   assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /Create all endpoint nodes before connect/);
   assert.match(CANVAS_DIRECTOR_INSTRUCTIONS, /Preserve visitor work/);

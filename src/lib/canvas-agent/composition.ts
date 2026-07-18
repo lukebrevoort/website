@@ -1,9 +1,28 @@
-import type { CanvasPatch, NormalizedBox } from "./contract";
+import type { CanvasPatch, NormalizedBox, NormalizedPoint } from "./contract";
+import type { CanvasPatchContext } from "./validation";
 
 const ARCHITECTURE_INTENT = /\b(architecture|how\b.+\bworks?|flow|pipeline|process|system|connects?|decide)\b/i;
 const MAX_BOX_TEXT_LENGTH = 220;
 const MAX_BOX_TEXT_LINES = 6;
 const MAX_OVERLAP_RATIO = 0.35;
+const PORTRAIT_ASPECT_RATIO = 1.25;
+const CONNECTOR_LABEL_FONT_SIZE = 16;
+const CONNECTOR_LABEL_CHARACTER_WIDTH = 8.5;
+const CONNECTOR_LABEL_LINE_HEIGHT = 22;
+
+type CompositionContext = Pick<CanvasPatchContext, "bounds" | "elements">;
+
+type CompositionBox = {
+  ref: string;
+  box: NormalizedBox;
+};
+
+type Connector = {
+  ref: string;
+  label?: string;
+  segments: Array<readonly [NormalizedPoint, NormalizedPoint]>;
+  endpointRefs: ReadonlySet<string>;
+};
 
 export type CanvasCompositionReview =
   | { ok: true }
@@ -12,6 +31,7 @@ export type CanvasCompositionReview =
 export function reviewCanvasPatchComposition(
   patch: CanvasPatch,
   prompt: string,
+  context?: CompositionContext,
 ): CanvasCompositionReview {
   const issues: string[] = [];
   const boxes = patch.operations.flatMap((operation) => {
@@ -49,7 +69,193 @@ export function reviewCanvasPatchComposition(
     }
   }
 
+  if (context && context.bounds.height >= context.bounds.width * PORTRAIT_ASPECT_RATIO) {
+    reviewPortraitConnectors(patch, collectCompositionBoxes(patch, context), context, issues);
+  }
+
   return issues.length === 0 ? { ok: true } : { ok: false, issues };
+}
+
+function collectCompositionBoxes(
+  patch: CanvasPatch,
+  context?: CompositionContext,
+): CompositionBox[] {
+  const boxes = new Map<string, NormalizedBox>();
+
+  for (const element of context?.elements ?? []) {
+    if (["frame", "arrow", "freehand"].includes(element.kind)) continue;
+    boxes.set(element.ref, element.box);
+  }
+
+  for (const operation of patch.operations) {
+    if (operation.op === "create" && "box" in operation.element && operation.element.kind !== "frame") {
+      boxes.set(operation.ref, operation.element.box);
+    }
+    if (operation.op === "move") {
+      const box = boxes.get(operation.target);
+      if (box) boxes.set(operation.target, { ...box, x: operation.to.x, y: operation.to.y });
+    }
+  }
+
+  return [...boxes].map(([ref, box]) => ({ ref, box }));
+}
+
+function reviewPortraitConnectors(
+  patch: CanvasPatch,
+  boxes: CompositionBox[],
+  context: CompositionContext,
+  issues: string[],
+) {
+  const boxByRef = new Map(boxes.map(({ ref, box }) => [ref, box]));
+  const connectors = collectConnectors(patch, boxByRef);
+  const labelBoxes: CompositionBox[] = [];
+
+  for (const connector of connectors) {
+    const crossedBox = boxes.find(({ ref, box }) =>
+      !connector.endpointRefs.has(ref) &&
+      connector.segments.some(([start, end]) => segmentCrossesBoxInterior(start, end, box))
+    );
+    if (crossedBox) {
+      issues.push(`${connector.ref} crosses unrelated node ${crossedBox.ref} in portrait layout`);
+    }
+
+    if (!connector.label) continue;
+    const center = polylineMidpoint(connector.segments);
+    if (!center) continue;
+    const labelBox = connectorLabelBox(connector.label, center, context.bounds);
+    const overlappedNode = boxes.find(({ box }) => boxesOverlap(labelBox, box));
+    if (overlappedNode) {
+      issues.push(`${connector.ref} label overlaps node text in ${overlappedNode.ref} in portrait layout`);
+    }
+    const overlappedLabel = labelBoxes.find(({ box }) => boxesOverlap(labelBox, box));
+    if (overlappedLabel) {
+      issues.push(`${connector.ref} label overlaps connector label ${overlappedLabel.ref} in portrait layout`);
+    }
+    labelBoxes.push({ ref: connector.ref, box: labelBox });
+  }
+}
+
+function collectConnectors(
+  patch: CanvasPatch,
+  boxByRef: ReadonlyMap<string, NormalizedBox>,
+): Connector[] {
+  return patch.operations.flatMap((operation): Connector[] => {
+    if (operation.op === "connect") {
+      const from = boxByRef.get(operation.from);
+      const to = boxByRef.get(operation.to);
+      if (!from || !to) return [];
+      return [{
+        ref: operation.ref,
+        label: operation.label,
+        segments: [[boxCenter(from), boxCenter(to)]],
+        endpointRefs: new Set([operation.from, operation.to]),
+      }];
+    }
+    if (operation.op !== "create" || operation.element.kind !== "arrow") return [];
+    const arrow = operation.element;
+    const endpointRefs = new Set(
+      [...boxByRef]
+        .filter(([, box]) =>
+          pointInsideBox(arrow.points[0], box) || pointInsideBox(arrow.points.at(-1)!, box)
+        )
+        .map(([ref]) => ref),
+    );
+    return [{
+      ref: operation.ref,
+      label: arrow.label,
+      segments: arrow.points.slice(1).map((point, index) => [
+        arrow.points[index],
+        point,
+      ] as const),
+      endpointRefs,
+    }];
+  });
+}
+
+function pointInsideBox(point: NormalizedPoint, box: NormalizedBox) {
+  return point.x >= box.x && point.x <= box.x + box.width &&
+    point.y >= box.y && point.y <= box.y + box.height;
+}
+
+function boxCenter(box: NormalizedBox): NormalizedPoint {
+  return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+}
+
+function segmentCrossesBoxInterior(
+  start: NormalizedPoint,
+  end: NormalizedPoint,
+  box: NormalizedBox,
+) {
+  const inset = 1;
+  const left = box.x + inset;
+  const right = box.x + box.width - inset;
+  const top = box.y + inset;
+  const bottom = box.y + box.height - inset;
+  let minimum = 0;
+  let maximum = 1;
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+
+  for (const [direction, distance] of [
+    [-dx, start.x - left],
+    [dx, right - start.x],
+    [-dy, start.y - top],
+    [dy, bottom - start.y],
+  ] as const) {
+    if (direction === 0) {
+      if (distance < 0) return false;
+      continue;
+    }
+    const ratio = distance / direction;
+    if (direction < 0) minimum = Math.max(minimum, ratio);
+    else maximum = Math.min(maximum, ratio);
+    if (minimum > maximum) return false;
+  }
+  return maximum > 0 && minimum < 1;
+}
+
+function polylineMidpoint(segments: Connector["segments"]): NormalizedPoint | undefined {
+  const lengths = segments.map(([start, end]) => Math.hypot(end.x - start.x, end.y - start.y));
+  const halfLength = lengths.reduce((total, length) => total + length, 0) / 2;
+  let traversed = 0;
+
+  for (let index = 0; index < segments.length; index += 1) {
+    const [start, end] = segments[index];
+    const length = lengths[index];
+    if (traversed + length >= halfLength) {
+      const ratio = length === 0 ? 0 : (halfLength - traversed) / length;
+      return {
+        x: start.x + (end.x - start.x) * ratio,
+        y: start.y + (end.y - start.y) * ratio,
+      };
+    }
+    traversed += length;
+  }
+  return segments.at(-1)?.[1];
+}
+
+function connectorLabelBox(
+  label: string,
+  center: NormalizedPoint,
+  bounds: CompositionContext["bounds"],
+): NormalizedBox {
+  const width = Math.min(
+    1000,
+    Math.max(CONNECTOR_LABEL_FONT_SIZE * 2, label.length * CONNECTOR_LABEL_CHARACTER_WIDTH) *
+      1000 / bounds.width,
+  );
+  const height = Math.min(1000, CONNECTOR_LABEL_LINE_HEIGHT * 1000 / bounds.height);
+  return {
+    x: center.x - width / 2,
+    y: center.y - height / 2,
+    width,
+    height,
+  };
+}
+
+function boxesOverlap(left: NormalizedBox, right: NormalizedBox) {
+  return left.x < right.x + right.width && left.x + left.width > right.x &&
+    left.y < right.y + right.height && left.y + left.height > right.y;
 }
 
 function overlapRatio(left: NormalizedBox, right: NormalizedBox) {
