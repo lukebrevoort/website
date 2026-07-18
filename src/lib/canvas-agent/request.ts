@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { existingElementRefSchema, normalizedBoxSchema } from "./contract";
+import { CANVAS_STARTER_PROMPTS } from "./starter-prompts";
 
 export const MAX_CANVAS_REQUEST_BYTES = 1_900_000;
 export const MAX_CANVAS_IMAGE_BYTES = 1_500_000;
@@ -48,6 +49,8 @@ export const canvasAgentRequestSchema = z.strictObject({
     .startsWith("data:image/png;base64,")
     .max(Math.ceil((MAX_CANVAS_IMAGE_BYTES * 4) / 3) + 64),
   priorTurns: z.array(priorCanvasTurnSchema).max(MAX_PRIOR_TURNS).default([]),
+  starterId: z.enum(CANVAS_STARTER_PROMPTS.map((starter) => starter.id)).optional(),
+  turnstileToken: z.string().min(1).max(2_048).optional(),
 });
 
 export type CanvasAgentRequest = z.infer<typeof canvasAgentRequestSchema>;

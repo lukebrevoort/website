@@ -7,6 +7,7 @@ import {
   BookOpen,
   FolderOpen,
   PencilLine,
+  RotateCcw,
   Send,
   Sparkles,
   UserRound,
@@ -21,6 +22,11 @@ import {
 } from "@/lib/canvas-agent";
 import ExcalidrawCanvas, { type CanvasSnapshot } from "./excalidraw-canvas";
 import CanvasContractLab from "./canvas-contract-lab";
+import TurnstileChallenge from "./turnstile-challenge";
+import {
+  CANVAS_STARTER_PROMPTS,
+  type CanvasStarterId,
+} from "@/lib/canvas-agent/starter-prompts";
 import styles from "./homepage-whiteboard.module.css";
 
 type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
@@ -41,14 +47,15 @@ async function blobToDataUrl(blob: Blob) {
   });
 }
 
-const starterPrompts = [
-  { prompt: "Sketch how MALCOM works", note: "controller + sessions", tilt: "-1.4deg" },
-  { prompt: "Show me the architecture of Dispatch", note: "agents + worktrees", tilt: ".8deg" },
-  { prompt: "How does Orca Mail decide what matters?", note: "signal, not noise", tilt: "-0.5deg" },
-  { prompt: "Explain FlowState visually", note: "context + action", tilt: "1.2deg" },
-  { prompt: "What connects Luke's projects?", note: "follow the thread", tilt: "-.8deg" },
-  { prompt: "Surprise me", note: "dealer's choice", tilt: ".5deg" },
-] as const;
+type LivePolicy = {
+  live: {
+    available: boolean;
+    verificationRequired: boolean;
+    turnstileSiteKey: string | null;
+  };
+  limits: { sessionDaily: number; cooldownSeconds: number };
+  usage: { sessionUsed: number } | null;
+};
 
 type HomepageWhiteboardProps = {
   canvasDebugEnabled?: boolean;
@@ -66,9 +73,14 @@ export default function HomepageWhiteboard({
   const [agentMessage, setAgentMessage] = useState("");
   const [pendingPatch, setPendingPatch] = useState<PendingAgentPatch | null>(null);
   const priorTurns = useRef<PriorCanvasTurn[]>([]);
+  const [boardHasContent, setBoardHasContent] = useState(false);
+  const [livePolicy, setLivePolicy] = useState<LivePolicy | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
+    setBoardHasContent(snapshot.sceneElements.length > 0);
   }, []);
 
   useEffect(() => {
@@ -76,15 +88,23 @@ export default function HomepageWhiteboard({
     return () => window.clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/canvas-agent", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((policy: LivePolicy | null) => policy && setLivePolicy(policy))
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
+
   const recordTurn = (prompt: string, summary: string) => {
     priorTurns.current = [...priorTurns.current, { prompt, summary }].slice(-2);
   };
 
-  const explore = async (value: string) => {
+  const explore = async (value: string, starterId?: CanvasStarterId) => {
     const nextQuestion = value.trim();
     if (!nextQuestion) return;
     setQuestion(nextQuestion);
-    setPrompt("");
     setAgentMessage("");
     setPendingPatch(null);
 
@@ -94,6 +114,17 @@ export default function HomepageWhiteboard({
       return;
     }
 
+    if (!starterId && livePolicy?.live.verificationRequired && !turnstileToken) {
+      setAgentMessage(
+        livePolicy.live.turnstileSiteKey
+          ? "Complete the quick human check, then send that thought again."
+          : "Live verification is not configured yet. The authored starting points still work.",
+      );
+      setAgentState("error");
+      return;
+    }
+
+    setPrompt("");
     setAgentState("thinking");
     const snapshot = canvasSnapshot.current;
     if (!snapshot) {
@@ -119,6 +150,8 @@ export default function HomepageWhiteboard({
           context: capture.context,
           imageDataUrl: await blobToDataUrl(capture.image),
           priorTurns: priorTurns.current,
+          ...(starterId ? { starterId } : {}),
+          ...(!starterId && turnstileToken ? { turnstileToken } : {}),
         }),
       });
       const payload = await response.json().catch(() => ({
@@ -130,11 +163,19 @@ export default function HomepageWhiteboard({
         ok: boolean;
         message?: string;
         patch?: CanvasPatch;
+        usage?: { counted?: boolean; sessionUsed?: number; sessionLimit?: number };
       };
       if (!response.ok || !payload.ok || !payload.patch) {
         setAgentMessage(payload.message || "The vision agent is resting. Your canvas was not changed.");
         setAgentState("error");
         return;
+      }
+
+      if (payload.usage?.counted) {
+        setLivePolicy((current) => current ? {
+          ...current,
+          usage: { sessionUsed: payload.usage?.sessionUsed || current.usage?.sessionUsed || 0 },
+        } : current);
       }
 
       if (snapshot.getPatchContext()?.sceneVersion !== capture.context.sceneVersion) {
@@ -179,8 +220,19 @@ export default function HomepageWhiteboard({
       console.error("Canvas agent request failed", error);
       setAgentMessage("The vision agent lost the thread. Your canvas is untouched—please try again.");
       setAgentState("error");
+    } finally {
+      if (!starterId && livePolicy?.live.verificationRequired) {
+        setTurnstileToken(null);
+        setTurnstileResetKey((current) => current + 1);
+      }
     }
   };
+
+  useEffect(() => {
+    if (boardHasContent && turn.current === 0 && agentState === "idle") {
+      setAgentState("active");
+    }
+  }, [agentState, boardHasContent]);
 
   const confirmPendingPatch = async () => {
     if (!pendingPatch) return;
@@ -211,6 +263,23 @@ export default function HomepageWhiteboard({
     explore(prompt);
   };
 
+  const startNewBoard = () => {
+    if (boardHasContent && !window.confirm("Start a new board? This clears the locally saved canvas on this device.")) return;
+    canvasSnapshot.current?.resetBoard();
+    priorTurns.current = [];
+    turn.current = 0;
+    setBoardHasContent(false);
+    setPendingPatch(null);
+    setQuestion("");
+    setPrompt("");
+    setAgentMessage("");
+    setAgentState("idle");
+  };
+
+  const liveUsageLabel = livePolicy?.usage
+    ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today`
+    : "authored notes don't use the live allowance";
+
   return (
     <main className={`${styles.shell} ${satoshi.variable}`}>
       <header className={styles.topbar}>
@@ -218,8 +287,13 @@ export default function HomepageWhiteboard({
           <ArrowLeft size={15} strokeWidth={1.8} />
           <span>luke.brev</span>
         </Link>
-        <div className={styles.presence} aria-label="Vision agent status">
-          <span className={styles.presenceDot} /> vision agent
+        <div className={styles.topbarActions}>
+          <button type="button" className={styles.newBoardButton} onClick={startNewBoard}>
+            <RotateCcw size={13} /> new board
+          </button>
+          <div className={styles.presence} aria-label="Vision agent status">
+            <span className={styles.presenceDot} /> vision agent
+          </div>
         </div>
       </header>
 
@@ -274,6 +348,8 @@ export default function HomepageWhiteboard({
               </button>
             </form>
 
+            <div className={styles.usageNote}>{liveUsageLabel}</div>
+
             {agentState === "error" && (
               <div className={styles.errorNote} role="alert">
                 {agentMessage || "The agent lost the thread. Your canvas is still here—try again."}
@@ -281,11 +357,11 @@ export default function HomepageWhiteboard({
             )}
 
             <div className={styles.promptList} aria-label="Suggested starting points">
-              {starterPrompts.map((item, index) => (
+              {CANVAS_STARTER_PROMPTS.map((item, index) => (
                 <button
                   key={item.prompt}
                   type="button"
-                  onClick={() => explore(item.prompt)}
+                  onClick={() => explore(item.prompt, item.id)}
                   style={{ "--prompt-tilt": item.tilt } as React.CSSProperties}
                 >
                   <span className={styles.promptNumber}>0{index + 1}</span>
@@ -326,6 +402,18 @@ export default function HomepageWhiteboard({
           <div className={`${styles.agentNotice} ${styles.agentNoticeError}`} role="alert">
             <strong>Nothing changed</strong>
             <span>{agentMessage}</span>
+          </div>
+        )}
+
+        {livePolicy?.live.verificationRequired && livePolicy.live.turnstileSiteKey &&
+          prompt.trim() && agentState !== "thinking" && (
+          <div className={styles.verificationNote}>
+            <span>quick human check for live prompts</span>
+            <TurnstileChallenge
+              siteKey={livePolicy.live.turnstileSiteKey}
+              resetKey={turnstileResetKey}
+              onToken={setTurnstileToken}
+            />
           </div>
         )}
 
