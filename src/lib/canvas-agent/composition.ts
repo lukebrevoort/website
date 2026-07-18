@@ -16,7 +16,7 @@ type CompositionBox = {
   ref: string;
   box: NormalizedBox;
   kind: CanvasContextElement["kind"];
-  source: "existing" | "created";
+  source: "existing" | "created" | "moved";
   containerRef?: string;
 };
 
@@ -112,6 +112,7 @@ function collectCompositionBoxes(
         boxes.set(operation.target, {
           ...compositionBox,
           box: { ...compositionBox.box, x: operation.to.x, y: operation.to.y },
+          source: compositionBox.source === "created" ? "created" : "moved",
         });
       }
     }

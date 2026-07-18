@@ -174,6 +174,40 @@ test("does not reject overlap between two pre-existing readable nodes", () => {
   );
 });
 
+test("rejects moving one existing node onto another in portrait and landscape", () => {
+  const elements: CanvasPatchContext["elements"] = [
+    {
+      ref: "existing:stationary",
+      elementId: "stationary-id",
+      kind: "rectangle",
+      box: { x: 100, y: 100, width: 220, height: 120 },
+      origin: "visitor",
+    },
+    {
+      ref: "existing:moving",
+      elementId: "moving-id",
+      kind: "rectangle",
+      box: { x: 500, y: 100, width: 220, height: 120 },
+      origin: "visitor",
+    },
+  ];
+  const patch = patchWith([
+    { op: "move", target: "existing:moving", to: { x: 100, y: 100 } },
+  ]);
+
+  for (const context of [
+    { ...portraitContext, elements },
+    { ...landscapeContext, elements },
+  ]) {
+    const review = reviewCanvasPatchComposition(patch, "Rearrange these nodes", context);
+    assert.equal(review.ok, false);
+    if (review.ok) continue;
+    assert.ok(review.issues.some((issue) =>
+      /existing:stationary and existing:moving overlap too heavily/.test(issue)
+    ));
+  }
+});
+
 test("treats bound text inside an endpoint container as endpoint-owned", () => {
   const contextWithBoundText: CanvasPatchContext = {
     ...portraitContext,
