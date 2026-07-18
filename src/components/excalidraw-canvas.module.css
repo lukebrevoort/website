@@ -58,11 +58,11 @@
   }
 
   .root :global(.excalidraw .layer-ui__wrapper__footer-right) {
-    bottom: 62px;
+    bottom: calc(62px + var(--mobile-safe-bottom, 0px));
   }
 
   .sceneStatus {
     right: 10px;
-    bottom: 66px;
+    bottom: calc(66px + var(--mobile-safe-bottom, 0px));
   }
 }

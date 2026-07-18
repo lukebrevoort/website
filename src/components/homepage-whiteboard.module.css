@@ -669,7 +669,13 @@
 @keyframes dots { to { opacity: .25; transform: translateY(-2px); } }
 
 @media (max-width: 760px) {
-  .shell { overflow: auto; background: var(--paper); }
+  .shell {
+    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-dock-bottom: calc(12px + var(--mobile-safe-bottom));
+    --mobile-follow-up-bottom: calc(80px + var(--mobile-safe-bottom));
+    overflow: auto;
+    background: var(--paper);
+  }
   .canvas { min-height: 100svh; margin: 0; border-radius: 0; overflow-y: auto; }
   .topbar { inset: 68px 14px auto; }
   .signature { padding: 6px 9px 6px 7px; font-size: 1.05rem; }
@@ -700,12 +706,19 @@
   .dragHandle, .connectionLine { display: none; }
   .noteDescription { -webkit-line-clamp: 3; }
   .resetButton { position: relative; float: right; margin-top: -53px; }
-  .dock { bottom: 13px; }
-  .dock a { padding: 9px 12px; }
+  .dock {
+    bottom: var(--mobile-dock-bottom);
+    transform: translateX(calc(-50% - 16px));
+  }
+  .dock a {
+    min-height: 44px;
+    gap: 4px;
+    padding: 9px 7px;
+  }
   .thoughtWrap { width: calc(100% - 36px); }
   .thoughtBubble { min-width: 0; }
   .followUpTray {
-    bottom: 74px;
+    bottom: var(--mobile-follow-up-bottom);
     grid-template-columns: 1fr 38px;
     gap: 6px;
     width: calc(100% - 28px);
