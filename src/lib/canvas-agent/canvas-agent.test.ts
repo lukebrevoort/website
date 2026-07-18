@@ -141,6 +141,42 @@ test("rejects duplicate model-authored aliases", () => {
   assert.ok(result.issues.includes("operations[5] declares duplicate ref new:policy-gate"));
 });
 
+test("fails closed when duplicate refs are later used by connect and group operations", () => {
+  const patch: CanvasPatch = {
+    version: "1",
+    baseSceneVersion: "scene-v1",
+    summary: "Reject ambiguous aliases",
+    operations: [
+      {
+        op: "create",
+        ref: "new:ambiguous",
+        element: { kind: "rectangle", box: { x: 260, y: 200, width: 180, height: 100 } },
+      },
+      {
+        op: "create",
+        ref: "new:ambiguous",
+        element: { kind: "rectangle", box: { x: 520, y: 200, width: 180, height: 100 } },
+      },
+      {
+        op: "connect",
+        ref: "new:ambiguous-arrow",
+        from: "new:ambiguous",
+        to: "existing:controller",
+      },
+      {
+        op: "group",
+        groupRef: "new:ambiguous-group",
+        members: ["new:ambiguous", "new:ambiguous-arrow"],
+      },
+    ],
+  };
+
+  const result = validateCanvasPatch(patch, context);
+  assert.equal(result.ok, false);
+  if (result.ok) return;
+  assert.ok(result.issues.includes("operations[1] declares duplicate ref new:ambiguous"));
+});
+
 test("requires confirmation for deletes and visitor-authored changes", () => {
   const patch: CanvasPatch = {
     version: "1",

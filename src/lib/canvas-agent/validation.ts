@@ -17,6 +17,7 @@ export type CanvasContextElement = {
   box: NormalizedBox;
   origin: CanvasElementOrigin;
   text?: string;
+  containerRef?: `existing:${string}`;
 };
 
 export type CanvasPatchContext = {

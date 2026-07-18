@@ -46,7 +46,7 @@ test("leaves malformed geometry for strict validation to reject", () => {
   assert.equal(canvasPatchSchema.safeParse(normalized).success, false);
 });
 
-test("uniquifies repeated model-authored declaration refs without another model request", () => {
+test("preserves repeated model-authored declaration refs for fail-closed validation", () => {
   const normalized = normalizeCanvasPatchCandidate({
     version: "1",
     baseSceneVersion: "scene-1",
@@ -73,7 +73,7 @@ test("uniquifies repeated model-authored declaration refs without another model 
   const patch = canvasPatchSchema.parse(normalized);
   assert.deepEqual(
     patch.operations.map((operation) => operation.op === "create" ? operation.ref : null),
-    ["new:rectangle", "new:rectangle-2", "new:rectangle-3"],
+    ["new:rectangle", "new:rectangle", "new:rectangle"],
   );
 });
 

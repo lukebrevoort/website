@@ -1,5 +1,5 @@
 import type { CanvasPatch, NormalizedBox, NormalizedPoint } from "./contract";
-import type { CanvasPatchContext } from "./validation";
+import type { CanvasContextElement, CanvasPatchContext } from "./validation";
 
 const ARCHITECTURE_INTENT = /\b(architecture|how\b.+\bworks?|flow|pipeline|process|system|connects?|decide)\b/i;
 const MAX_BOX_TEXT_LENGTH = 220;
@@ -15,6 +15,9 @@ type CompositionContext = Pick<CanvasPatchContext, "bounds" | "elements">;
 type CompositionBox = {
   ref: string;
   box: NormalizedBox;
+  kind: CanvasContextElement["kind"];
+  source: "existing" | "created";
+  containerRef?: string;
 };
 
 type Connector = {
@@ -34,11 +37,7 @@ export function reviewCanvasPatchComposition(
   context?: CompositionContext,
 ): CanvasCompositionReview {
   const issues: string[] = [];
-  const boxes = patch.operations.flatMap((operation) => {
-    if (operation.op !== "create" || !("box" in operation.element)) return [];
-    if (operation.element.kind === "frame") return [];
-    return [{ ref: operation.ref, box: operation.element.box }];
-  });
+  const boxes = collectCompositionBoxes(patch, context);
 
   for (const operation of patch.operations) {
     if (operation.op !== "create" || !("text" in operation.element)) continue;
@@ -53,13 +52,18 @@ export function reviewCanvasPatchComposition(
     for (let rightIndex = leftIndex + 1; rightIndex < boxes.length; rightIndex += 1) {
       const left = boxes[leftIndex];
       const right = boxes[rightIndex];
+      if (
+        left.source === "existing" && right.source === "existing" ||
+        isBoundTextPair(left, right)
+      ) continue;
       if (overlapRatio(left.box, right.box) > MAX_OVERLAP_RATIO) {
         issues.push(`${left.ref} and ${right.ref} overlap too heavily`);
       }
     }
   }
 
-  if (ARCHITECTURE_INTENT.test(prompt) && boxes.length >= 3) {
+  const createdBoxes = boxes.filter((box) => box.source === "created");
+  if (ARCHITECTURE_INTENT.test(prompt) && createdBoxes.length >= 3) {
     const relationshipCount = patch.operations.filter(
       (operation) => operation.op === "connect" ||
         (operation.op === "create" && operation.element.kind === "arrow"),
@@ -70,7 +74,7 @@ export function reviewCanvasPatchComposition(
   }
 
   if (context && context.bounds.height >= context.bounds.width * PORTRAIT_ASPECT_RATIO) {
-    reviewPortraitConnectors(patch, collectCompositionBoxes(patch, context), context, issues);
+    reviewPortraitConnectors(patch, boxes, context, issues);
   }
 
   return issues.length === 0 ? { ok: true } : { ok: false, issues };
@@ -80,24 +84,43 @@ function collectCompositionBoxes(
   patch: CanvasPatch,
   context?: CompositionContext,
 ): CompositionBox[] {
-  const boxes = new Map<string, NormalizedBox>();
+  const boxes = new Map<string, CompositionBox>();
 
   for (const element of context?.elements ?? []) {
     if (["frame", "arrow", "freehand"].includes(element.kind)) continue;
-    boxes.set(element.ref, element.box);
+    boxes.set(element.ref, {
+      ref: element.ref,
+      box: element.box,
+      kind: element.kind,
+      source: "existing",
+      ...(element.containerRef ? { containerRef: element.containerRef } : {}),
+    });
   }
 
   for (const operation of patch.operations) {
     if (operation.op === "create" && "box" in operation.element && operation.element.kind !== "frame") {
-      boxes.set(operation.ref, operation.element.box);
+      boxes.set(operation.ref, {
+        ref: operation.ref,
+        box: operation.element.box,
+        kind: operation.element.kind,
+        source: "created",
+      });
     }
     if (operation.op === "move") {
-      const box = boxes.get(operation.target);
-      if (box) boxes.set(operation.target, { ...box, x: operation.to.x, y: operation.to.y });
+      const compositionBox = boxes.get(operation.target);
+      if (compositionBox) {
+        boxes.set(operation.target, {
+          ...compositionBox,
+          box: { ...compositionBox.box, x: operation.to.x, y: operation.to.y },
+        });
+      }
+    }
+    if (operation.op === "delete") {
+      boxes.delete(operation.target);
     }
   }
 
-  return [...boxes].map(([ref, box]) => ({ ref, box }));
+  return [...boxes.values()];
 }
 
 function reviewPortraitConnectors(
@@ -108,12 +131,12 @@ function reviewPortraitConnectors(
 ) {
   const boxByRef = new Map(boxes.map(({ ref, box }) => [ref, box]));
   const connectors = collectConnectors(patch, boxByRef);
-  const labelBoxes: CompositionBox[] = [];
+  const labelBoxes: Array<{ ref: string; box: NormalizedBox }> = [];
 
   for (const connector of connectors) {
-    const crossedBox = boxes.find(({ ref, box }) =>
-      !connector.endpointRefs.has(ref) &&
-      connector.segments.some(([start, end]) => segmentCrossesBoxInterior(start, end, box))
+    const crossedBox = boxes.find((candidate) =>
+      !isEndpointOwnedBox(candidate, connector.endpointRefs) &&
+      connector.segments.some(([start, end]) => segmentCrossesBoxInterior(start, end, candidate.box))
     );
     if (crossedBox) {
       issues.push(`${connector.ref} crosses unrelated node ${crossedBox.ref} in portrait layout`);
@@ -123,7 +146,10 @@ function reviewPortraitConnectors(
     const center = polylineMidpoint(connector.segments);
     if (!center) continue;
     const labelBox = connectorLabelBox(connector.label, center, context.bounds);
-    const overlappedNode = boxes.find(({ box }) => boxesOverlap(labelBox, box));
+    const overlappedNode = boxes.find(({ ref, box, containerRef, kind }) =>
+      !isBoundTextOfEndpoint({ ref, containerRef, kind }, connector.endpointRefs) &&
+      boxesOverlap(labelBox, box)
+    );
     if (overlappedNode) {
       issues.push(`${connector.ref} label overlaps node text in ${overlappedNode.ref} in portrait layout`);
     }
@@ -133,6 +159,24 @@ function reviewPortraitConnectors(
     }
     labelBoxes.push({ ref: connector.ref, box: labelBox });
   }
+}
+
+function isBoundTextPair(left: CompositionBox, right: CompositionBox) {
+  return left.containerRef === right.ref || right.containerRef === left.ref;
+}
+
+function isBoundTextOfEndpoint(
+  box: Pick<CompositionBox, "ref" | "kind" | "containerRef">,
+  endpointRefs: ReadonlySet<string>,
+) {
+  return box.kind === "text" && box.containerRef !== undefined && endpointRefs.has(box.containerRef);
+}
+
+function isEndpointOwnedBox(
+  box: Pick<CompositionBox, "ref" | "kind" | "containerRef">,
+  endpointRefs: ReadonlySet<string>,
+) {
+  return endpointRefs.has(box.ref) || isBoundTextOfEndpoint(box, endpointRefs);
 }
 
 function collectConnectors(

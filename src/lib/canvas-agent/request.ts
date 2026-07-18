@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { normalizedBoxSchema } from "./contract";
+import { existingElementRefSchema, normalizedBoxSchema } from "./contract";
 
 export const MAX_CANVAS_REQUEST_BYTES = 1_900_000;
 export const MAX_CANVAS_IMAGE_BYTES = 1_500_000;
@@ -25,6 +25,7 @@ const contextElementSchema = z.strictObject({
   box: normalizedBoxSchema,
   origin: z.enum(["visitor", "agent", "system"]),
   text: z.string().max(500).optional(),
+  containerRef: existingElementRefSchema.optional(),
 });
 
 export const canvasAgentContextSchema = z.strictObject({

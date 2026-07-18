@@ -33,6 +33,17 @@ test("accepts a bounded selection-scoped vision request", () => {
   assert.equal(parsed.context.elements[0].ref, "existing:note-1");
 });
 
+test("accepts the bound-text container relation in serialized context", () => {
+  const parsed = canvasAgentRequestSchema.parse({
+    ...validRequest,
+    context: {
+      ...validRequest.context,
+      elements: [{ ...element, containerRef: "existing:container-1" }],
+    },
+  });
+  assert.equal(parsed.context.elements[0].containerRef, "existing:container-1");
+});
+
 test("rejects context and conversation entries over their budgets", () => {
   const tooManyElements = canvasAgentRequestSchema.safeParse({
     ...validRequest,
@@ -68,4 +79,3 @@ test("rejects non-PNG visual context and invalid existing refs", () => {
     context: { ...validRequest.context, elements: [{ ...element, ref: "new:note" }] },
   }).success, false);
 });
-

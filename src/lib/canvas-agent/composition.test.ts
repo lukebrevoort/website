@@ -15,6 +15,19 @@ const landscapeContext: CanvasPatchContext = {
   bounds: { x: 0, y: 0, width: 1200, height: 800 },
 };
 
+const existingLandscapeContext: CanvasPatchContext = {
+  ...landscapeContext,
+  elements: [
+    {
+      ref: "existing:visitor-card",
+      elementId: "visitor-card-id",
+      kind: "rectangle",
+      box: { x: 420, y: 300, width: 220, height: 120 },
+      origin: "visitor",
+    },
+  ],
+};
+
 function patchWith(operations: CanvasPatch["operations"]): CanvasPatch {
   return {
     version: "1",
@@ -127,6 +140,122 @@ test("rejects portrait connector labels that converge in one corridor", () => {
   assert.equal(review.ok, false);
   if (review.ok) return;
   assert.ok(review.issues.some((issue) => /label overlaps connector label/.test(issue)));
+});
+
+test("rejects created nodes that overlap a surviving existing visitor node", () => {
+  const patch = patchWith([
+    node("new:overlap", 430, 320, "New node"),
+  ]);
+
+  const review = reviewCanvasPatchComposition(patch, "Compare these ideas", existingLandscapeContext);
+  assert.equal(review.ok, false);
+  if (review.ok) return;
+  assert.ok(review.issues.some((issue) => /existing:visitor-card and new:overlap overlap too heavily/.test(issue)));
+});
+
+test("does not reject overlap between two pre-existing readable nodes", () => {
+  const contextWithExistingOverlap: CanvasPatchContext = {
+    ...existingLandscapeContext,
+    elements: [
+      ...existingLandscapeContext.elements,
+      {
+        ref: "existing:visitor-card-2",
+        elementId: "visitor-card-2-id",
+        kind: "rectangle",
+        box: { x: 450, y: 320, width: 220, height: 120 },
+        origin: "visitor",
+      },
+    ],
+  };
+
+  assert.deepEqual(
+    reviewCanvasPatchComposition(patchWith([node("new:note", 50, 50, "Note")]), "Compare", contextWithExistingOverlap),
+    { ok: true },
+  );
+});
+
+test("treats bound text inside an endpoint container as endpoint-owned", () => {
+  const contextWithBoundText: CanvasPatchContext = {
+    ...portraitContext,
+    elements: [
+      {
+        ref: "existing:container",
+        elementId: "container-id",
+        kind: "rectangle",
+        box: { x: 390, y: 100, width: 220, height: 120 },
+        origin: "visitor",
+      },
+      {
+        ref: "existing:container-text",
+        elementId: "container-text-id",
+        kind: "text",
+        box: { x: 420, y: 135, width: 160, height: 45 },
+        origin: "visitor",
+        text: "Container label",
+        containerRef: "existing:container",
+      },
+    ],
+  };
+  const patch = patchWith([
+    node("new:next", 390, 300, "Next"),
+    { op: "connect", ref: "new:container-next", from: "existing:container", to: "new:next", label: "continues" },
+  ]);
+
+  assert.deepEqual(reviewCanvasPatchComposition(patch, "Show the flow", contextWithBoundText), { ok: true });
+});
+
+test("keeps standalone existing text as a connector obstacle", () => {
+  const contextWithStandaloneText: CanvasPatchContext = {
+    ...portraitContext,
+    elements: [{
+      ref: "existing:unrelated-text",
+      elementId: "unrelated-text-id",
+      kind: "text",
+      box: { x: 420, y: 300, width: 160, height: 60 },
+      origin: "visitor",
+      text: "Unrelated note",
+    }],
+  };
+  const patch = patchWith([
+    node("new:first", 390, 100, "First"),
+    node("new:last", 390, 500, "Last"),
+    { op: "connect", ref: "new:first-last", from: "new:first", to: "new:last", label: "skips" },
+  ]);
+
+  const review = reviewCanvasPatchComposition(patch, "Show the process", contextWithStandaloneText);
+  assert.equal(review.ok, false);
+  if (review.ok) return;
+  assert.ok(review.issues.some((issue) => /crosses unrelated node existing:unrelated-text/.test(issue)));
+});
+
+test("replays delete and move operations before reviewing final boxes", () => {
+  const contextWithState: CanvasPatchContext = {
+    ...landscapeContext,
+    elements: [
+      {
+        ref: "existing:deleted-card",
+        elementId: "deleted-card-id",
+        kind: "rectangle",
+        box: { x: 420, y: 300, width: 220, height: 120 },
+        origin: "visitor",
+      },
+      {
+        ref: "existing:moved-card",
+        elementId: "moved-card-id",
+        kind: "rectangle",
+        box: { x: 700, y: 300, width: 180, height: 100 },
+        origin: "visitor",
+      },
+    ],
+  };
+  const patch = patchWith([
+    { op: "delete", target: "existing:deleted-card", reason: "remove stale card" },
+    { op: "move", target: "existing:moved-card", to: { x: 760, y: 700 } },
+    node("new:replacement", 430, 320, "Replacement"),
+    node("new:near-moved", 700, 300, "New node"),
+  ]);
+
+  assert.deepEqual(reviewCanvasPatchComposition(patch, "Compare these ideas", contextWithState), { ok: true });
 });
 
 function node(

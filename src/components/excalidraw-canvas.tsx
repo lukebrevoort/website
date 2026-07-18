@@ -211,7 +211,11 @@ function contextForElements(
   scopedElements: readonly ExcalidrawElement[],
   bounds: CanvasPatchContext["bounds"],
 ): CanvasPatchContext {
-  const elements = scopedElements.slice(0, MAX_CONTEXT_ELEMENTS).flatMap<CanvasContextElement>((element) => {
+  const visibleElements = scopedElements.slice(0, MAX_CONTEXT_ELEMENTS);
+  const refsByElementId = new Map(
+    visibleElements.map((element) => [element.id, elementRef(element)]),
+  );
+  const elements = visibleElements.flatMap<CanvasContextElement>((element) => {
     const kind = contextKind(element);
     const box = normalizedBox(element, bounds);
     if (!kind || !box) return [];
@@ -222,18 +226,25 @@ function contextForElements(
       ? declaredOrigin
       : "visitor";
     const text = element.type === "text" ? element.text.slice(0, 500) : undefined;
+    const containerId = (element as ExcalidrawElement & { containerId?: string | null }).containerId;
+    const containerRef = containerId ? refsByElementId.get(containerId) : undefined;
 
     return [{
-      ref: `existing:${element.id.replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}`,
+      ref: elementRef(element),
       elementId: element.id,
       kind,
       box,
       origin,
       ...(text ? { text } : {}),
+      ...(containerRef ? { containerRef } : {}),
     }];
   });
 
   return { sceneVersion: sceneVersion(allElements), bounds, elements };
+}
+
+function elementRef(element: ExcalidrawElement): `existing:${string}` {
+  return `existing:${element.id.replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}`;
 }
 
 async function blankCanvasBlob() {
