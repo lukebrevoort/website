@@ -4,6 +4,7 @@ export {
   MAX_PATCH_OPERATIONS,
   MAX_PATCH_TEXT_LENGTH,
   NORMALIZED_CANVAS_SIZE,
+  normalizedBoxSchema,
   canvasPatchJsonSchema,
   canvasPatchSchema,
   type CanvasElementRef,
@@ -15,6 +16,16 @@ export {
   type NormalizedBox,
   type NormalizedPoint,
 } from "./contract";
+export {
+  MAX_CANVAS_IMAGE_BYTES,
+  MAX_CANVAS_IMAGE_DIMENSION,
+  MAX_CANVAS_REQUEST_BYTES,
+  MAX_CONTEXT_ELEMENTS,
+  MAX_PRIOR_TURNS,
+  canvasAgentRequestSchema,
+  type CanvasAgentRequest,
+  type PriorCanvasTurn,
+} from "./request";
 export {
   classifyCanvasPatchRisk,
   validateCanvasPatch,

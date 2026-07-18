@@ -141,6 +141,42 @@ test("rejects duplicate model-authored aliases", () => {
   assert.ok(result.issues.includes("operations[5] declares duplicate ref new:policy-gate"));
 });
 
+test("fails closed when duplicate refs are later used by connect and group operations", () => {
+  const patch: CanvasPatch = {
+    version: "1",
+    baseSceneVersion: "scene-v1",
+    summary: "Reject ambiguous aliases",
+    operations: [
+      {
+        op: "create",
+        ref: "new:ambiguous",
+        element: { kind: "rectangle", box: { x: 260, y: 200, width: 180, height: 100 } },
+      },
+      {
+        op: "create",
+        ref: "new:ambiguous",
+        element: { kind: "rectangle", box: { x: 520, y: 200, width: 180, height: 100 } },
+      },
+      {
+        op: "connect",
+        ref: "new:ambiguous-arrow",
+        from: "new:ambiguous",
+        to: "existing:controller",
+      },
+      {
+        op: "group",
+        groupRef: "new:ambiguous-group",
+        members: ["new:ambiguous", "new:ambiguous-arrow"],
+      },
+    ],
+  };
+
+  const result = validateCanvasPatch(patch, context);
+  assert.equal(result.ok, false);
+  if (result.ok) return;
+  assert.ok(result.issues.includes("operations[1] declares duplicate ref new:ambiguous"));
+});
+
 test("requires confirmation for deletes and visitor-authored changes", () => {
   const patch: CanvasPatch = {
     version: "1",
@@ -283,6 +319,37 @@ test("applies connection bindings to existing and created elements", () => {
   assert.ok(policy?.boundElements?.some((bound) => bound.id === arrowId));
 });
 
+test("aligns programmatic connection points to node edges before first render", () => {
+  const result = validateCanvasPatch(validPatch, context);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  const compiled = compileCanvasPatch(result.value.patch, context, result.value.risk);
+  const policyId = compiled.elementIdsByRef["new:policy-gate"];
+  const arrowId = compiled.elementIdsByRef["new:controller-policy-arrow"];
+  const scene = [fakeBox("controller-id", "rectangle", 200, 300, 360, 120)];
+  // The policy node is moved by the patch before its connection is applied.
+  const created = [
+    fakeBox(policyId, "rectangle", 800, 420, 440, 150),
+    fakeArrow(arrowId, 380, 360, [0, 0], [640, 135]),
+  ];
+
+  const applied = applyCompiledPatchToElements(scene, created, compiled);
+  const arrow = applied.find((element) => element.id === arrowId);
+  assert.equal(arrow?.type, "arrow");
+  if (arrow?.type !== "arrow") return;
+
+  const controllerRightEdge = 560;
+  const movedPolicyLeftEdge = 900;
+  const start = { x: arrow.x + arrow.points[0][0], y: arrow.y + arrow.points[0][1] };
+  const endPoint = arrow.points.at(-1)!;
+  const end = { x: arrow.x + endPoint[0], y: arrow.y + endPoint[1] };
+
+  assert.ok(start.x > controllerRightEdge, "start should sit outside the source edge");
+  assert.ok(end.x < movedPolicyLeftEdge, "end should sit outside the destination edge");
+  assert.equal(arrow.startBinding?.gap, 8);
+  assert.equal(arrow.endBinding?.gap, 8);
+});
+
 test("rejects patches that exceed the aggregate text budget", () => {
   const patch: CanvasPatch = {
     version: "1",
@@ -314,5 +381,43 @@ function fakeElement(id: string, type: "rectangle" | "arrow" | "freedraw"): Exca
     groupIds: [],
     boundElements: null,
     isDeleted: false,
+  } as unknown as ExcalidrawElement;
+}
+
+function fakeBox(
+  id: string,
+  type: "rectangle" | "ellipse" | "diamond",
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): ExcalidrawElement {
+  return {
+    ...fakeElement(id, "rectangle"),
+    type,
+    x,
+    y,
+    width,
+    height,
+  } as ExcalidrawElement;
+}
+
+function fakeArrow(
+  id: string,
+  x: number,
+  y: number,
+  start: [number, number],
+  end: [number, number],
+): ExcalidrawElement {
+  return {
+    ...fakeElement(id, "arrow"),
+    type: "arrow",
+    x,
+    y,
+    width: Math.abs(end[0] - start[0]),
+    height: Math.abs(end[1] - start[1]),
+    points: [start, end],
+    startBinding: null,
+    endBinding: null,
   } as unknown as ExcalidrawElement;
 }
