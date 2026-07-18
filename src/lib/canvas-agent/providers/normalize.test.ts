@@ -41,3 +41,34 @@ test("leaves malformed geometry for strict validation to reject", () => {
 
   assert.equal(canvasPatchSchema.safeParse(normalized).success, false);
 });
+
+test("uniquifies repeated model-authored declaration refs without another model request", () => {
+  const normalized = normalizeCanvasPatchCandidate({
+    version: "1",
+    baseSceneVersion: "scene-1",
+    summary: "Repeated generic refs",
+    operations: [
+      {
+        op: "create",
+        ref: "new:rectangle",
+        element: { kind: "rectangle", box: { x: 0, y: 0, width: 100, height: 100 } },
+      },
+      {
+        op: "create",
+        ref: "new:rectangle",
+        element: { kind: "rectangle", box: { x: 120, y: 0, width: 100, height: 100 } },
+      },
+      {
+        op: "create",
+        ref: "new:rectangle",
+        element: { kind: "rectangle", box: { x: 240, y: 0, width: 100, height: 100 } },
+      },
+    ],
+  });
+
+  const patch = canvasPatchSchema.parse(normalized);
+  assert.deepEqual(
+    patch.operations.map((operation) => operation.op === "create" ? operation.ref : null),
+    ["new:rectangle", "new:rectangle-2", "new:rectangle-3"],
+  );
+});

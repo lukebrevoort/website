@@ -17,6 +17,7 @@ const instructions = `Return only valid JSON containing one compact CanvasPatchV
 Treat the supplied structure and PNG as the same bounded area. Use only supplied existing: refs.
 Use normalized integer coordinates from 0 to 1000. Never invent raw Excalidraw IDs or metadata.
 Prefer 3-6 operations and short labels. Never exceed 8 operations unless the visitor explicitly asks for a complex diagram.
+Every declared ref and groupRef must be globally unique. Use short semantic aliases, never repeated element-kind aliases.
 Do not delete or broadly rewrite visitor work unless explicitly asked.
 The baseSceneVersion must exactly match the supplied sceneVersion.
 Return {"version":"1","baseSceneVersion":"...","summary":"...","operations":[...]}.

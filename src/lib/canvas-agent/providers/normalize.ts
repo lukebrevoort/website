@@ -3,10 +3,40 @@ import { NORMALIZED_CANVAS_SIZE } from "../contract";
 export function normalizeCanvasPatchCandidate(input: unknown): unknown {
   if (!isRecord(input) || !Array.isArray(input.operations)) return input;
 
+  const declaredRefs = new Set<string>();
+
   return {
     ...input,
-    operations: input.operations.map((operation) => normalizeOperation(operation)),
+    operations: input.operations.map((operation) => {
+      const normalized = normalizeOperation(operation);
+      return normalizeDeclaredRef(normalized, declaredRefs);
+    }),
   };
+}
+
+function normalizeDeclaredRef(input: unknown, declaredRefs: Set<string>): unknown {
+  if (!isRecord(input)) return input;
+  const field = input.op === "group" ? "groupRef" :
+    input.op === "create" || input.op === "connect" ? "ref" : null;
+  if (!field || typeof input[field] !== "string") return input;
+
+  const ref = input[field];
+  if (!ref.startsWith("new:") || !declaredRefs.has(ref)) {
+    declaredRefs.add(ref);
+    return input;
+  }
+
+  const alias = ref.slice(4);
+  let suffix = 2;
+  let uniqueRef = ref;
+  do {
+    const suffixText = `-${suffix}`;
+    uniqueRef = `new:${alias.slice(0, 64 - suffixText.length)}${suffixText}`;
+    suffix += 1;
+  } while (declaredRefs.has(uniqueRef));
+
+  declaredRefs.add(uniqueRef);
+  return { ...input, [field]: uniqueRef };
 }
 
 function normalizeOperation(input: unknown): unknown {
