@@ -6,6 +6,7 @@ import type {
   AppState,
   BinaryFiles,
   ExcalidrawImperativeAPI,
+  ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
@@ -23,6 +24,8 @@ import "@excalidraw/excalidraw/index.css";
 import styles from "./excalidraw-canvas.module.css";
 
 const HANDWRITING_FONT_URL = "/fonts/luke-brevoort-handwriting.otf";
+const BOARD_STORAGE_KEY = "luke-explore-board-v1";
+const MAX_LOCAL_BOARD_BYTES = 3_500_000;
 
 let handwritingFontConfigured = false;
 
@@ -83,6 +86,7 @@ export type CanvasSnapshot = {
     patch: CompiledCanvasPatch,
     options?: { confirmed?: boolean },
   ) => Promise<CanvasPatchApplyResult>;
+  resetBoard: () => void;
 };
 
 export type CanvasAgentContextCapture = {
@@ -111,7 +115,21 @@ const emptySnapshot: CanvasSnapshot = {
   removeElements: () => undefined,
   getPatchContext: () => null,
   applyCompiledPatch: async () => ({ status: "unavailable" }),
+  resetBoard: () => undefined,
 };
+
+function loadPersistedBoard(): ExcalidrawInitialDataState | null {
+  try {
+    const raw = window.localStorage.getItem(BOARD_STORAGE_KEY);
+    if (!raw || raw.length > MAX_LOCAL_BOARD_BYTES) return null;
+    const parsed = JSON.parse(raw) as ExcalidrawInitialDataState;
+    if (!parsed || !Array.isArray(parsed.elements) || typeof parsed.appState !== "object") return null;
+    return parsed;
+  } catch {
+    window.localStorage.removeItem(BOARD_STORAGE_KEY);
+    return null;
+  }
+}
 
 function sceneVersion(elements: readonly ExcalidrawElement[]) {
   let hash = 2_166_136_261;
@@ -261,12 +279,37 @@ async function blankCanvasBlob() {
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const snapshotRef = useRef<CanvasSnapshot>(emptySnapshot);
+  const persistenceTimer = useRef<number | null>(null);
+  const persistenceRevision = useRef(0);
   const sceneRef = useRef<{
     elements: readonly ExcalidrawElement[];
     appState: AppState | null;
     files: BinaryFiles;
   }>({ elements: [], appState: null, files: {} });
   const [counts, setCounts] = useState({ scene: 0, selected: 0 });
+
+  const schedulePersistence = useCallback((
+    elements: readonly ExcalidrawElement[],
+    appState: AppState,
+    files: BinaryFiles,
+  ) => {
+    const revision = ++persistenceRevision.current;
+    if (persistenceTimer.current) window.clearTimeout(persistenceTimer.current);
+    persistenceTimer.current = window.setTimeout(async () => {
+      try {
+        const { serializeAsJSON } = await import("@excalidraw/excalidraw");
+        const serialized = serializeAsJSON(elements, appState, files, "local");
+        if (revision !== persistenceRevision.current) return;
+        if (serialized.length <= MAX_LOCAL_BOARD_BYTES) {
+          window.localStorage.setItem(BOARD_STORAGE_KEY, serialized);
+        } else {
+          window.localStorage.removeItem(BOARD_STORAGE_KEY);
+        }
+      } catch {
+        // Local recovery is best-effort; drawing must keep working if storage is unavailable.
+      }
+    }, 650);
+  }, []);
 
   const publishSnapshot = useCallback(
     (snapshot: CanvasSnapshot) => {
@@ -468,6 +511,15 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     [],
   );
 
+  const resetBoard = useCallback(() => {
+    persistenceRevision.current += 1;
+    if (persistenceTimer.current) window.clearTimeout(persistenceTimer.current);
+    window.localStorage.removeItem(BOARD_STORAGE_KEY);
+    apiRef.current?.resetScene();
+    apiRef.current?.history.clear();
+    apiRef.current?.setToast({ message: "Started a fresh local board", duration: 1800 });
+  }, []);
+
   const handleChange = useCallback(
     (
       elements: readonly ExcalidrawElement[],
@@ -479,6 +531,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         (element) => appState.selectedElementIds[element.id],
       );
       sceneRef.current = { elements: sceneElements, appState, files };
+      schedulePersistence(elements, appState, files);
 
       setCounts((current) => {
         if (
@@ -501,9 +554,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         removeElements,
         getPatchContext,
         applyCompiledPatch,
+        resetBoard,
       });
     },
-    [applyCompiledPatch, captureAgentContext, captureCanvasImage, getPatchContext, insertElements, publishSnapshot, removeElements],
+    [applyCompiledPatch, captureAgentContext, captureCanvasImage, getPatchContext, insertElements, publishSnapshot, removeElements, resetBoard, schedulePersistence],
   );
 
   return (
@@ -520,15 +574,19 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             removeElements,
             getPatchContext,
             applyCompiledPatch,
+            resetBoard,
           });
         }}
-        initialData={{
-          appState: {
-            currentItemStrokeColor: "#20201d",
-            currentItemBackgroundColor: "transparent",
-            currentItemFontFamily: 1,
-            viewBackgroundColor: "#f4f0e7",
-          },
+        initialData={() => {
+          const recovered = loadPersistedBoard();
+          return recovered || {
+            appState: {
+              currentItemStrokeColor: "#20201d",
+              currentItemBackgroundColor: "transparent",
+              currentItemFontFamily: 1,
+              viewBackgroundColor: "#f4f0e7",
+            },
+          };
         }}
         onChange={handleChange}
         theme="light"
@@ -536,7 +594,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       />
       <div className={styles.sceneStatus} aria-live="polite">
         {counts.scene} {counts.scene === 1 ? "mark" : "marks"} · {counts.selected}{" "}
-        selected
+        selected · saved locally
       </div>
     </div>
   );

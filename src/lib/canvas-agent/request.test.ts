@@ -79,3 +79,18 @@ test("rejects non-PNG visual context and invalid existing refs", () => {
     context: { ...validRequest.context, elements: [{ ...element, ref: "new:note" }] },
   }).success, false);
 });
+
+test("accepts bounded verification and authored starter metadata", () => {
+  const parsed = canvasAgentRequestSchema.parse({
+    ...validRequest,
+    starterId: "malcom",
+    turnstileToken: "verified-token",
+  });
+  assert.equal(parsed.starterId, "malcom");
+  assert.equal(parsed.turnstileToken, "verified-token");
+
+  assert.equal(canvasAgentRequestSchema.safeParse({
+    ...validRequest,
+    starterId: "unknown",
+  }).success, false);
+});

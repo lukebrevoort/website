@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BRE-147 · Safety & persistence field guide</title>
+  <style>
+    :root { --ink:#20201d; --paper:#f4f0e7; --deep:#ddd5c7; --red:#c83f2f; --green:#35705a; --muted:#6f6a61; --line:#20201d22; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--deep); font:16px/1.55 ui-sans-serif,system-ui,sans-serif; }
+    main { width:min(1120px,calc(100% - 28px)); margin:18px auto; padding:clamp(24px,5vw,62px); border:1px solid var(--line); border-radius:18px; background:var(--paper); box-shadow:0 20px 60px #392f2322; }
+    h1,h2,h3 { line-height:1.08; letter-spacing:-.025em; }
+    h1 { max-width:900px; margin:8px 0 18px; font:500 clamp(2.6rem,7vw,5.8rem)/.95 Georgia,serif; }
+    h1 em { color:var(--red); font-style:normal; }
+    h2 { margin:58px 0 16px; font:500 clamp(1.8rem,4vw,3rem)/1 Georgia,serif; }
+    h3 { margin:0 0 7px; font-size:1rem; }
+    p,li,td { color:var(--muted); }
+    code,pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    code { padding:.1em .35em; border-radius:4px; color:var(--ink); background:#20201d0c; }
+    pre { margin:12px 0 0; padding:16px; overflow:auto; border-radius:8px; color:#f7f1e6; background:var(--ink); font-size:.8rem; line-height:1.65; }
+    .eyebrow { color:var(--red); font-size:.75rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+    .lede { max-width:780px; font-size:1.15rem; }
+    .flow { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin:28px 0; }
+    .flow div { position:relative; min-height:145px; padding:14px; border:1px solid var(--line); background:#ebe5d9; }
+    .flow div:not(:last-child)::after { content:"→"; position:absolute; z-index:2; top:45%; right:-13px; color:var(--red); font-weight:900; }
+    .flow b { display:block; margin-bottom:7px; }
+    .flow span { color:var(--muted); font-size:.8rem; }
+    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .card { padding:20px; border:1px solid var(--line); background:#fff9; }
+    .card.good { border-top:4px solid var(--green); }
+    .card.stop { border-top:4px solid var(--red); }
+    .card p { margin:5px 0 0; }
+    table { width:100%; border-collapse:collapse; background:#fff8; }
+    th,td { padding:12px 13px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; }
+    td:first-child { color:var(--ink); font-weight:750; }
+    .steps { display:grid; gap:10px; counter-reset:step; }
+    .step { position:relative; padding:20px 20px 20px 68px; border:1px solid var(--line); background:#fff7; counter-increment:step; }
+    .step::before { content:counter(step,decimal-leading-zero); position:absolute; top:20px; left:20px; color:var(--red); font:800 1rem ui-monospace,monospace; }
+    .step p { margin:4px 0; }
+    .note { margin:24px 0; padding:18px 20px; border-left:4px solid var(--red); background:#fee2e25c; }
+    .checklist { columns:2; padding-left:22px; }
+    .checklist li { break-inside:avoid; margin:0 0 9px; }
+    footer { margin-top:52px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.84rem; }
+    @media(max-width:860px){ .flow{grid-template-columns:1fr}.flow div{min-height:auto}.flow div:not(:last-child)::after{content:"↓";top:auto;right:50%;bottom:-18px}.grid{grid-template-columns:1fr}.checklist{columns:1} }
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">BRE-147 · review & deployment guide · 18 July 2026</div>
+  <h1>The public canvas now has <em>guardrails that feel like part of it.</em></h1>
+  <p class="lede">Authored notes stay playful and instant. Live inference is deliberately scarce, verified, pseudonymous, and fail-closed. The visitor's board remains local and survives refreshes—even when every server-side control says “stop.”</p>
+
+  <section class="flow" aria-label="Live request safety flow">
+    <div><b>1 · Local board</b><span>Excalidraw recovers a bounded device-local snapshot.</span></div>
+    <div><b>2 · Human check</b><span>Custom live prompts require Turnstile in production.</span></div>
+    <div><b>3 · Daily identity</b><span>Session and IP become rotating HMAC digests.</span></div>
+    <div><b>4 · Atomic budget</b><span>Session, IP, project, cooldown, and lock are checked together.</span></div>
+    <div><b>5 · Hard envelope</b><span>Input, image, tokens, operations, retries, and time are capped.</span></div>
+    <div><b>6 · Safe apply</b><span>Only a validated patch reaches the board; errors apply nothing.</span></div>
+  </section>
+
+  <h2>What works without a model</h2>
+  <section class="grid">
+    <article class="card good"><h3>Six authored starting points</h3><p>Each suggestion returns a cached semantic canvas patch. It uses no provider token, ignores live quotas, and remains available during outages.</p></article>
+    <article class="card good"><h3>Local recovery</h3><p>The active board is debounced into browser storage, bounded to 3.5 MB, and restored on refresh. No canvas content is sent anywhere until a visitor submits.</p></article>
+    <article class="card good"><h3>Clear new-board control</h3><p>The top-right control confirms before clearing a non-empty board, removes the local recovery copy, resets conversation context, and starts fresh.</p></article>
+    <article class="card stop"><h3>Fail-closed live mode</h3><p>Missing Redis, HMAC, Turnstile, or provider configuration stops inference in production and points visitors back to authored notes. Existing marks remain untouched.</p></article>
+  </section>
+
+  <h2>Default policy</h2>
+  <table>
+    <thead><tr><th>Control</th><th>Default</th><th>Where it lives</th></tr></thead>
+    <tbody>
+      <tr><td>Live requests / session / UTC day</td><td>6</td><td><code>CANVAS_SESSION_DAILY_LIMIT</code></td></tr>
+      <tr><td>Live requests / daily IP digest</td><td>18</td><td><code>CANVAS_IP_DAILY_LIMIT</code></td></tr>
+      <tr><td>Project live requests / UTC day</td><td>180</td><td><code>CANVAS_PROJECT_DAILY_LIMIT</code>; set below the provider quota</td></tr>
+      <tr><td>Cooldown / one in-flight</td><td>8 seconds / 25-second lease</td><td>Atomic Redis script; in-memory only outside production</td></tr>
+      <tr><td>Execution / retry / output</td><td>18 seconds / 0 / 1,600 tokens</td><td>Server-only policy and provider adapter</td></tr>
+      <tr><td>Prompt / image / operations</td><td>400 chars / 1.5 MB / 25</td><td>Zod request schema and patch contract</td></tr>
+      <tr><td>Logs</td><td>Metadata only</td><td>No prompt, image, raw IP, request body, credential, or provider body</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Production setup</h2>
+  <section class="steps">
+    <article class="step"><h3>Add distributed counters</h3><p>Create Vercel KV or Upstash Redis and set <code>KV_REST_API_URL</code> plus <code>KV_REST_API_TOKEN</code>. The route refuses live inference in production if they are absent or unreachable.</p></article>
+    <article class="step"><h3>Add a separate HMAC secret</h3><p>Generate at least 32 random bytes for <code>CANVAS_USAGE_HMAC_SECRET</code>. This rotates session/IP digests daily and is not the provider credential.</p><pre>openssl rand -base64 32</pre></article>
+    <article class="step"><h3>Configure Turnstile</h3><p>Set <code>NEXT_PUBLIC_TURNSTILE_SITE_KEY</code>, <code>TURNSTILE_SECRET_KEY</code>, and <code>TURNSTILE_EXPECTED_HOSTNAME</code>. Only the site key may be public.</p></article>
+    <article class="step"><h3>Set the project cap below free quota</h3><p>Use an unbilled provider project during validation. Set <code>CANVAS_PROJECT_DAILY_LIMIT</code> below its active daily quota. There is no automatic provider or billable fallback.</p></article>
+    <article class="step"><h3>Create the upstream Firewall rule</h3><p>In Vercel → Firewall → Custom Rules, rate-limit <code>POST /api/canvas-agent</code> to <strong>10 requests per IP per 60 seconds</strong>. This absorbs bursts before the function and complements—rather than replaces—the application limits.</p></article>
+    <article class="step"><h3>Bound log retention</h3><p>Set the Vercel log drain or project retention to the shortest operational window (recommended: 7 days). The application emits request ID, event, duration, provider, and operation count only.</p></article>
+  </section>
+
+  <div class="note"><strong>Deployment order matters:</strong> add Redis, HMAC, Turnstile, provider budget, and Firewall settings before enabling unrestricted public traffic. Until then, authored starters remain functional while custom live requests fail safely.</div>
+
+  <h2>Fast manual verification</h2>
+  <ol class="checklist">
+    <li>Run <code>npm test</code> and <code>npm run build</code>.</li>
+    <li>Open <code>/explore</code> on desktop.</li>
+    <li>Choose an authored starter; verify editable native marks appear.</li>
+    <li>Refresh; verify those marks recover.</li>
+    <li>Add a visitor mark, refresh again, and verify it recovers.</li>
+    <li>Use “new board,” cancel once, then confirm; verify the canvas clears.</li>
+    <li>Submit a custom prompt without live config; verify the board remains unchanged.</li>
+    <li>With Turnstile configured, verify a custom prompt requires the human check.</li>
+    <li>Send two live requests rapidly; verify cooldown or in-flight rejection.</li>
+    <li>Lower the session limit to 1; verify the next request falls back gracefully.</li>
+    <li>Disable Redis in production mode; verify live mode fails closed.</li>
+    <li>Repeat starter, refresh, and reset on a mobile viewport.</li>
+    <li>Inspect browser console for runtime errors.</li>
+    <li>Inspect logs and confirm no prompt, image, raw IP, or secret appears.</li>
+  </ol>
+
+  <footer>Ticket: BRE-147 · Integration base: <code>homepage-canvas</code> · Main implementation: <code>src/app/api/canvas-agent/route.ts</code>, <code>src/lib/canvas-agent/usage-controls.ts</code>, and <code>src/components/excalidraw-canvas.tsx</code>.</footer>
+</main></body>
+</html>

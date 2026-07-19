@@ -16,7 +16,7 @@ import {
 import type { CanvasVisionProvider, VisionProviderInput } from "./types";
 
 const DEFAULT_OPENAI_MODEL = "gpt-5.4";
-const MAX_OUTPUT_TOKENS = 5_000;
+const DEFAULT_MAX_OUTPUT_TOKENS = 1_600;
 
 export class OpenAICanvasVisionProvider implements CanvasVisionProvider {
   async generatePatch(input: VisionProviderInput) {
@@ -26,6 +26,10 @@ export class OpenAICanvasVisionProvider implements CanvasVisionProvider {
     const modelId = process.env.CANVAS_OPENAI_MODEL || DEFAULT_OPENAI_MODEL;
     const openai = createOpenAI({ apiKey });
     const structuralContext = buildCanvasDirectorContext(input);
+    const configuredOutputTokens = Number(process.env.CANVAS_MAX_OUTPUT_TOKENS);
+    const maxOutputTokens = Number.isInteger(configuredOutputTokens) && configuredOutputTokens >= 600 && configuredOutputTokens <= 3_000
+      ? configuredOutputTokens
+      : DEFAULT_MAX_OUTPUT_TOKENS;
 
     const { output } = await generateText({
       model: openai.responses(modelId),
@@ -47,9 +51,9 @@ export class OpenAICanvasVisionProvider implements CanvasVisionProvider {
         name: "CanvasPatchV1",
         description: "A factual, readable, well-composed semantic patch for the supplied Excalidraw canvas.",
       }),
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      maxRetries: 1,
-      timeout: { totalMs: 28_000 },
+      maxOutputTokens,
+      maxRetries: 0,
+      timeout: { totalMs: input.executionMs || 18_000 },
       providerOptions: {
         openai: {
           store: false,

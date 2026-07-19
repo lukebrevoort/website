@@ -4,6 +4,7 @@ import type { CanvasAgentRequest } from "../request";
 export type VisionProviderInput = CanvasAgentRequest & {
   knowledgeSnippets: string[];
   safetyIdentifier: string;
+  executionMs?: number;
 };
 
 export type VisionProviderResult = {
