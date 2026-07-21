@@ -64,6 +64,12 @@ export const knowledgePackSlugs = [
   "dispatch",
   "orca-mail",
   "flowstate",
+  "canvas-notion",
+  "hftc",
+  "zen80",
+  "while-unemployed",
+  "sga-finance",
+  "website",
 ] as const;
 
 export type KnowledgePackSlug = (typeof knowledgePackSlugs)[number];

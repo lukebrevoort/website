@@ -3,6 +3,12 @@ import { malcomPack } from "./malcom";
 import { dispatchPack } from "./dispatch";
 import { orcaMailPack } from "./orca-mail";
 import { flowstatePack } from "./flowstate";
+import { canvasNotionPack } from "./canvas-notion";
+import { hftcPack } from "./hftc";
+import { zen80Pack } from "./zen80";
+import { whileUnemployedPack } from "./while-unemployed";
+import { sgaFinancePack } from "./sga-finance";
+import { personalWebsitePack } from "./personal-website";
 
 export type { KnowledgePack, KnowledgePackSlug } from "./schema";
 
@@ -11,6 +17,12 @@ const packs: Record<KnowledgePackSlug, KnowledgePack> = {
   dispatch: dispatchPack,
   "orca-mail": orcaMailPack,
   flowstate: flowstatePack,
+  "canvas-notion": canvasNotionPack,
+  hftc: hftcPack,
+  zen80: zen80Pack,
+  "while-unemployed": whileUnemployedPack,
+  "sga-finance": sgaFinancePack,
+  website: personalWebsitePack,
 };
 
 export function listKnowledgePackSlugs(): readonly KnowledgePackSlug[] {
