@@ -8,8 +8,6 @@ import { ModernAppSidebar } from "@/components/modern-app-sidebar";
 import { motion, MotionConfig } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export default function Page() {
   const [emblaRef, emblaApi] = useEmblaCarousel();
@@ -66,23 +64,9 @@ export default function Page() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="absolute bottom-6 sm:bottom-8 md:bottom-[18%] left-4 right-4 md:left-12 md:right-auto max-w-full md:max-w-[58%]"
+              className={`absolute bottom-6 sm:bottom-8 md:bottom-1/4 left-4 right-4 md:left-12 md:right-auto text-white font-bold max-w-full md:max-w-[50%] text-3xl sm:text-3xl md:text-6xl drop-shadow-lg ${lukesFont.className}`}
             >
-              <div
-                className={`text-white font-bold text-3xl sm:text-3xl md:text-6xl leading-[.95] drop-shadow-lg ${lukesFont.className}`}
-              >
-                I am Luke Brevoort, I like to build stuff
-              </div>
-              <Link
-                href="/explore"
-                className="group mt-5 inline-flex items-center gap-3 rounded-[7px] border-2 border-[#211f1a] bg-[#f5f0e6] px-5 py-3 text-[#211f1a] no-underline shadow-[6px_6px_0_#e4573e] transition-all duration-200 hover:-translate-y-1 hover:rotate-[-1deg] hover:shadow-[8px_9px_0_#e4573e] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/70 md:px-7 md:py-4"
-              >
-                <Sparkles className="h-5 w-5 text-[#e4573e] md:h-6 md:w-6" />
-                <span className="text-base font-black tracking-[0.2em] md:text-xl">
-                  EXPLORE
-                </span>
-                <ArrowUpRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1 md:h-6 md:w-6" />
-              </Link>
+              I am Luke Brevoort, I like to build stuff
             </motion.div>
           </motion.div>
 

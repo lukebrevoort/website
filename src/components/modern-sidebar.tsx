@@ -29,7 +29,6 @@ import {
   FileUser,
   Mail,
   PanelsTopLeft,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { lukesFont } from "@/app/fonts";
@@ -111,7 +110,8 @@ const navSections: NavSection[] = [
     title: "Information",
     items: [
       { title: "About Me", icon: User, href: "/about" },
-      { title: "Explore", icon: Sparkles, href: "/explore" },
+      { title: "Models", icon: Bot, href: "/models" },
+      { title: "Documentation", icon: BookOpen, href: "/documentation" },
       { title: "Blog", icon: NotebookPen, href: "/blog/posts" },
     ],
   },

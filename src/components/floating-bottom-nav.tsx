@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Home, User, NotebookPen, FolderKanban, Sparkles } from "lucide-react";
+import { Home, User, NotebookPen, FolderKanban, Bot } from "lucide-react";
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -15,7 +15,7 @@ const navItems: NavItem[] = [
   { icon: User, href: "/about", label: "About" },
   { icon: NotebookPen, href: "/blog/posts", label: "Blog" },
   { icon: FolderKanban, href: "/projects", label: "Projects" },
-  { icon: Sparkles, href: "/explore", label: "Explore" },
+  { icon: Bot, href: "/models", label: "Models" },
 ];
 
 interface FloatingBottomNavProps {
