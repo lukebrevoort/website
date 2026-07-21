@@ -55,6 +55,11 @@ const SCRUB_PATTERNS: { name: string; re: RegExp; replacement: string }[] = [
   { name: "credit-card", re: /\b(?:\d[ -]*?){13,16}\b/g, replacement: "[REDACTED_CC]" },
   { name: "private-key-block", re: /-----BEGIN (?:RSA |EC |OPENSSH |)PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC |OPENSSH |)PRIVATE KEY-----/g, replacement: "[REDACTED_PRIVATE_KEY]" },
   { name: "aws", re: /\b(AKIA[0-9A-Z]{16}|aws_secret_access_key["'\s:=]+["']?[A-Za-z0-9/+=]{40})\b/g, replacement: "[REDACTED_AWS]" },
+  { name: "github-pat", re: /\b(gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{22,})\b/g, replacement: "[REDACTED_GITHUB_PAT]" },
+  { name: "stripe", re: /\b(sk_live_[A-Za-z0-9]{16,}|sk_test_[A-Za-z0-9]{16,}|rk_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,})\b/g, replacement: "[REDACTED_STRIPE]" },
+  { name: "slack-token", re: /\b(xox[bpors]-[A-Za-z0-9-]{10,})\b/g, replacement: "[REDACTED_SLACK]" },
+  { name: "generic-secret", re: /\b(secret[_-]?key|client[_-]?secret|auth[_-]?token|access[_-]?token|refresh[_-]?token|database[_-]?url|connection[_-]?string)["'\s:=]+["']?[A-Za-z0-9_:/+.\-=]{12,}/gi, replacement: "[REDACTED_SECRET]" },
+  { name: "url-credentials", re: /:\/\/[^:/@\s"']+:[^@/\s"']+@/g, replacement: "://[REDACTED_URL_CREDENTIALS]@" },
 ];
 
 interface ScrubResult {
