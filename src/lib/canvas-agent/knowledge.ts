@@ -1,4 +1,9 @@
 import { MAX_KNOWLEDGE_SNIPPETS } from "./request";
+import {
+  getKnowledgePack,
+  listKnowledgePackSlugs,
+} from "@/data/knowledge-packs";
+import type { KnowledgePack } from "@/data/knowledge-packs/schema";
 
 export type CanvasKnowledgeDocument = {
   id: string;
@@ -8,97 +13,129 @@ export type CanvasKnowledgeDocument = {
   facts: readonly string[];
 };
 
-// Curated, source-controlled records are the first knowledge index. Keeping the
-// retrieval boundary document-shaped makes it straightforward to replace this
-// source with hosted search later without changing the provider prompt.
+const PROJECT_ALIAS_MAP: Record<string, readonly string[]> = {
+  malcom: ["malcom"],
+  dispatch: ["dispatch"],
+  "orca-mail": ["orca", "orca mail", "email client", "orca-mail"],
+  flowstate: ["flowstate", "flow state"],
+  "canvas-notion": ["canvas notion", "canvas to notion", "canvas-notion"],
+  hftc: ["hftc", "trading", "trading competition", "shift"],
+  zen80: ["zen80", "zen 80"],
+  "while-unemployed": ["while unemployed", "while_unemployed", "interview practice"],
+  "sga-finance": ["sga finance", "sga", "campusgroups", "budget"],
+  website: ["personal website", "website", "portfolio"],
+};
+
+const PROJECT_KEYWORD_MAP: Record<string, readonly string[]> = {
+  malcom: [
+    "controller", "coding agent", "remote mac", "session", "registry", "cli",
+    "codex", "opencode", "cursor", "policy", "adapter", "recovery",
+  ],
+  dispatch: [
+    "control plane", "parallel agent", "coding agent", "tmux", "terminal",
+    "worktree", "xterm", "job", "mcp", "whiteboard", "media", "persona",
+  ],
+  "orca-mail": [
+    "email", "gmail", "inbox", "human signal", "attention", "contact signature",
+    "zen mode", "oauth", "drizzle", "sqlite", "hono",
+  ],
+  flowstate: [
+    "student", "study", "academic", "assignment", "calendar", "notion", "gmail",
+    "opencode", "approval", "context", "schedule", "course",
+  ],
+  "canvas-notion": [
+    "canvas", "notion", "assignment", "deadline", "grade", "lms", "sync",
+    "academic", "automation",
+  ],
+  hftc: [
+    "trading", "market making", "momentum", "competition", "shift",
+    "backtrader", "bid ask", "spread",
+  ],
+  zen80: [
+    "productivity", "signal", "noise", "focus", "task", "calendar", "flutter",
+    "time block", "planning", "ratio",
+  ],
+  "while-unemployed": [
+    "interview", "mock interview", "ai interviewer", "code analysis",
+    "voice", "practice", "mvp",
+  ],
+  "sga-finance": [
+    "finance", "sga", "senate", "budget", "campusgroups", "spreadsheet",
+    "google slides", "document automation",
+  ],
+  website: [
+    "portfolio", "blog", "personal website", "webllm", "nextjs",
+    "tailwind", "vercel", "experiment",
+  ],
+};
+
+const GENERAL_DOCUMENT: CanvasKnowledgeDocument = {
+  id: "shared-principles",
+  title: "Threads across Luke's work",
+  aliases: [
+    "luke's projects", "lukes projects", "connect luke's projects", "surprise me",
+  ],
+  keywords: [
+    "luke", "project", "projects", "connect", "thread", "theme", "themes",
+    "philosophy", "principle", "principles", "surprise",
+  ],
+  facts: [
+    "Luke builds tools from workflow friction: MALCOM and Dispatch make agent work inspectable, Orca Mail protects human attention, FlowState coordinates student context, and Zen80 separates signal from noise.",
+    "The recurring design principles are local ownership, visible system seams, recoverable state, calm interfaces, constrained automation, and human approval where actions carry risk.",
+    "The common product question is not how to automate everything, but how software can surface the right context and let a person make the consequential choice.",
+  ],
+};
+
+function buildFactsFromPack(pack: KnowledgePack): string[] {
+  const facts: string[] = [pack.summary];
+
+  const componentNames = pack.components.map((c) => c.name);
+  facts.push(
+    `Key components: ${componentNames.join(", ")}. ` +
+      `${pack.architecture}`,
+  );
+
+  const topDecisions = pack.designDecisions
+    .slice(0, 3)
+    .map((d) => d.decision);
+  facts.push(`Design decisions: ${topDecisions.join("; ")}.`);
+
+  const visualHints = pack.diagramPatterns.slice(0, 2).map((d) => {
+    return `${d.name}: ${d.nodes.slice(0, 5).join(" → ")}`;
+  });
+  if (pack.visualVocabulary.length >= 2) {
+    const colors = pack.visualVocabulary
+      .slice(0, 2)
+      .map((v) => `${v.token}${v.value ? ` (${v.value})` : ""}`)
+      .join(", ");
+    facts.push(
+      `Visual: ${colors}. Diagrams: ${visualHints.join("; ")}.`,
+    );
+  }
+
+  return facts;
+}
+
+function buildKnowledgeDocument(slug: string): CanvasKnowledgeDocument {
+  const pack = getKnowledgePack(slug);
+  if (!pack) throw new Error(`Unknown knowledge pack: ${slug}`);
+
+  return {
+    id: slug,
+    title: pack.title,
+    aliases: PROJECT_ALIAS_MAP[slug] ?? [slug],
+    keywords: PROJECT_KEYWORD_MAP[slug] ?? [],
+    facts: Object.freeze(buildFactsFromPack(pack)),
+  };
+}
+
+const projectDocuments: readonly CanvasKnowledgeDocument[] =
+  listKnowledgePackSlugs().map(buildKnowledgeDocument);
+
 export const canvasKnowledgeDocuments: readonly CanvasKnowledgeDocument[] = [
-  {
-    id: "malcom",
-    title: "MALCOM",
-    aliases: ["malcom"],
-    keywords: [
-      "controller", "coding agent", "remote mac", "session", "registry", "cli",
-      "codex", "opencode", "cursor", "policy", "adapter", "recovery",
-    ],
-    facts: [
-      "MALCOM is the controlled execution layer for Luke's remote Mac-based personal coding and assistant host; Hermes remains the conversational orchestrator.",
-      "Its source of truth is a session registry plus predictable workspace and log layouts, so long-running work remains inspectable and recoverable.",
-      "Stable CLI commands start and track manual, Codex, OpenCode, and Cursor harnesses, while adapters connect GitHub, Notion, and Linear behind constrained credentials and policy controls.",
-    ],
-  },
-  {
-    id: "dispatch",
-    title: "Dispatch",
-    aliases: ["dispatch"],
-    keywords: [
-      "control plane", "parallel agent", "coding agent", "tmux", "terminal",
-      "worktree", "xterm", "job", "mcp", "whiteboard", "media", "persona",
-    ],
-    facts: [
-      "Dispatch is a local-first browser control plane for multiple long-lived coding agents, including Claude, Codex, Cursor, OpenCode, and plain terminals.",
-      "xterm.js browser terminals attach to tmux-backed sessions; Git worktrees isolate parallel changes so browser disconnects do not kill work or mix branches.",
-      "Lifecycle controls, scheduled jobs, review personas, live status, media sharing, project-scoped MCP tools, pins, notifications, and analytics make parallel work visible and manageable.",
-    ],
-  },
-  {
-    id: "orca-mail",
-    title: "Orca Mail",
-    aliases: ["orca", "orca mail", "email client"],
-    keywords: [
-      "email", "gmail", "inbox", "human signal", "attention", "contact signature",
-      "zen mode", "oauth", "drizzle", "sqlite", "hono",
-    ],
-    facts: [
-      "Orca Mail is a human-first email client that connects to Gmail through read-only OAuth and normalizes provider-specific mail into a clean internal model intended to support other providers later.",
-      "Human Signal foregrounds messages written by people and filters marketing automation and inbox clutter; configurable attention views help decide what needs attention now versus later.",
-      "Contact signatures make conversations scannable and full-screen Zen Mode protects writing focus. The active Bun monorepo uses React/Vite, Hono, shared Zod schemas, SQLite, and Drizzle.",
-    ],
-  },
-  {
-    id: "flowstate",
-    title: "FlowState",
-    aliases: ["flowstate", "flow state"],
-    keywords: [
-      "student", "study", "academic", "assignment", "calendar", "notion", "gmail",
-      "opencode", "approval", "context", "schedule", "course",
-    ],
-    facts: [
-      "FlowState was an early, completed local-first OpenCode wrapper that gave study workflows a durable context layer before connected MCP tooling became commonplace.",
-      "It brought assignments, course context, Notion, Gmail, Google Calendar, LMS APIs, and specialized agents into one academic hub while keeping higher-risk actions behind human approval.",
-      "Its interaction goal was a quiet daily plan: translate raw requirements into priorities, adaptive scheduling, overload warnings, and clear progress without constant alerts.",
-    ],
-  },
-  {
-    id: "zen80",
-    title: "Zen80",
-    aliases: ["zen80", "zen 80"],
-    keywords: [
-      "productivity", "signal", "noise", "focus", "task", "calendar", "flutter",
-      "time block", "planning", "ratio",
-    ],
-    facts: [
-      "Zen80 is a local-first Flutter productivity tracker built around Signal versus Noise: choose three to five tasks that genuinely move goals forward, then make drift visible.",
-      "It compares estimated and actual time, protects Signal work with Google Calendar time blocks, and uses a simple Signal percentage for daily and multi-week review.",
-      "The goal is awareness rather than perfect productivity; constraints keep planning quick, and calendar events can count toward planned Signal time when they represent the intended work.",
-    ],
-  },
-  {
-    id: "shared-principles",
-    title: "Threads across Luke's work",
-    aliases: [
-      "luke's projects", "lukes projects", "connect luke's projects", "surprise me",
-    ],
-    keywords: [
-      "luke", "project", "projects", "connect", "thread", "theme", "themes",
-      "philosophy", "principle", "principles", "surprise",
-    ],
-    facts: [
-      "Luke builds tools from workflow friction: MALCOM and Dispatch make agent work inspectable, Orca Mail protects human attention, FlowState coordinates student context, and Zen80 separates signal from noise.",
-      "The recurring design principles are local ownership, visible system seams, recoverable state, calm interfaces, constrained automation, and human approval where actions carry risk.",
-      "The common product question is not how to automate everything, but how software can surface the right context and let a person make the consequential choice.",
-    ],
-  },
-] as const;
+  ...projectDocuments,
+  GENERAL_DOCUMENT,
+];
 
 const GENERAL_DOCUMENT_ID = "shared-principles";
 
