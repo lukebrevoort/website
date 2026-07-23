@@ -916,16 +916,24 @@
 }
 
 @media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
+  /*
+   * Landscape phones still show the fixed dock (~56px tall + 25px inset).
+   * Keep follow-up chrome clear of it — never park at 18px under the dock.
+   */
+  .shell,
+  .shellCompact {
+    --mobile-follow-up-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
   .followUpTray,
   .shellCompact .followUpTray {
-    --follow-up-bottom: 18px;
+    --follow-up-bottom: var(--mobile-follow-up-bottom);
   }
   .followUpLauncher,
   .shellCompact .followUpLauncher {
-    bottom: calc(18px + var(--keyboard-inset, 0px));
+    bottom: calc(var(--mobile-follow-up-bottom) + var(--keyboard-inset, 0px));
   }
   .loading {
-    bottom: 18px;
+    bottom: calc(var(--mobile-follow-up-bottom) + 8px);
     right: 14px;
   }
 }
