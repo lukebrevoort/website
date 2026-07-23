@@ -21,15 +21,24 @@
   top: 58px;
 }
 
+/*
+ * Keep Excalidraw's zoom / undo chrome above our dock + follow-up tray
+ * so pan/zoom controls don't fight the explore overlays.
+ */
+.root :global(.excalidraw .layer-ui__wrapper__footer-left),
 .root :global(.excalidraw .layer-ui__wrapper__footer-right) {
-  bottom: 64px;
+  bottom: 138px;
+}
+
+.root :global(.excalidraw .App-bottom-bar) {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
 .sceneStatus {
   position: absolute;
   z-index: 4;
   right: 18px;
-  bottom: 76px;
+  bottom: 148px;
   padding: 6px 9px;
   border: 1px solid rgb(32 32 29 / 12%);
   border-radius: 999px;
@@ -57,12 +66,32 @@
     top: 52px;
   }
 
+  .root :global(.excalidraw .layer-ui__wrapper__footer-left),
   .root :global(.excalidraw .layer-ui__wrapper__footer-right) {
-    bottom: calc(62px + var(--mobile-safe-bottom, 0px));
+    bottom: calc(156px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .root :global(.excalidraw .App-bottom-bar) {
+    padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px));
   }
 
   .sceneStatus {
     right: 10px;
-    bottom: calc(66px + var(--mobile-safe-bottom, 0px));
+    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
+  .root :global(.excalidraw .layer-ui__wrapper__footer-left),
+  .root :global(.excalidraw .layer-ui__wrapper__footer-right) {
+    bottom: calc(128px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .root :global(.excalidraw .App-bottom-bar) {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .sceneStatus {
+    bottom: calc(136px + env(safe-area-inset-bottom, 0px));
   }
 }

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   BookOpen,
   FolderOpen,
+  LoaderCircle,
   PencilLine,
   RotateCcw,
   Send,
@@ -562,6 +563,16 @@ export default function HomepageWhiteboard({
           </div>
         )}
 
+        {agentState === "thinking" && turn.current > 0 && (
+          <div className={styles.followUpWaiting} role="status" aria-live="polite">
+            <LoaderCircle className={styles.followUpSpinner} size={18} aria-hidden="true" />
+            <div>
+              <strong>Sketching on the board…</strong>
+              <span>“{question}”</span>
+            </div>
+          </div>
+        )}
+
         {showFollowUpLauncher && (
           <button
             ref={followUpLauncherRef}
@@ -576,7 +587,7 @@ export default function HomepageWhiteboard({
 
         {showFollowUpTray && (
           <form
-            className={styles.followUpTray}
+            className={`${styles.followUpTray} ${agentState === "thinking" ? styles.followUpTrayThinking : ""}`}
             onSubmit={submit}
             onKeyDown={onFollowUpKeyDown}
           >
@@ -584,7 +595,11 @@ export default function HomepageWhiteboard({
               role={announceFollowUpStatus ? "status" : undefined}
               aria-live={announceFollowUpStatus ? "polite" : undefined}
             >
-              <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+              {agentState === "thinking" ? (
+                <LoaderCircle className={styles.followUpSpinner} size={16} aria-hidden="true" />
+              ) : (
+                <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+              )}
               <label htmlFor="follow-up-prompt">
                 {followUpStatusLabel}
               </label>
