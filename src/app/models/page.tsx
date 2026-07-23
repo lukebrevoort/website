@@ -273,7 +273,7 @@ export default function Page() {
           <div
             role="status"
             aria-live="polite"
-            className="pointer-events-none fixed z-[60] bottom-24 right-4 max-w-[min(18rem,calc(100vw-2rem))] md:bottom-6 md:right-6"
+            className="pointer-events-none fixed z-[60] bottom-32 right-4 max-w-[min(18rem,calc(100vw-2rem))] md:bottom-6 md:right-6"
           >
             <div className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/95 px-3.5 py-2.5 text-sm text-foreground shadow-lg backdrop-blur-md">
               <span
