@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 // Remove static imports
 // import * as webllm from "@mlc-ai/web-llm"
@@ -50,12 +51,17 @@ export default function Page() {
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [appConfig, setAppConfig] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isClient, setIsClient] = useState(false);
 
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const userInputRef = useRef<HTMLTextAreaElement>(null);
   const engineRef = useRef<any>(null);
   // Add a ref for the webllm module
   const webllmRef = useRef<any>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     // Import webllm only in client-side code
@@ -111,7 +117,12 @@ export default function Page() {
         if (hash && hash in MODEL_HASH_MAP && MODEL_HASH_MAP[hash as keyof typeof MODEL_HASH_MAP]) {
           setSelectedModel(MODEL_HASH_MAP[hash as keyof typeof MODEL_HASH_MAP]);
         }
-        
+
+        // Keep the loading toast visible for visual QA / screenshots.
+        if (new URLSearchParams(window.location.search).has("loadingPreview")) {
+          return;
+        }
+
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to initialize web-llm:", error);
@@ -254,17 +265,29 @@ export default function Page() {
     }
   }, [messages]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading AI capabilities...</p>
-      </div>
-    );
-  }
-
   return (
-    <ModernAppSidebar currentPath="/models">
-      <div className="min-h-screen">
+    <>
+      {isClient &&
+        isLoading &&
+        createPortal(
+          <div
+            role="status"
+            aria-live="polite"
+            className="pointer-events-none fixed z-[60] bottom-24 right-4 max-w-[min(18rem,calc(100vw-2rem))] md:bottom-6 md:right-6"
+          >
+            <div className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/95 px-3.5 py-2.5 text-sm text-foreground shadow-lg backdrop-blur-md">
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 animate-pulse"
+              />
+              <span className="leading-snug">Loading AI capabilities...</span>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      <ModernAppSidebar currentPath="/models">
+        <div className="min-h-screen">
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/10">
           <div className="flex items-center gap-2 px-4">
             <Breadcrumb>
@@ -404,5 +427,6 @@ export default function Page() {
         </motion.div>
       </div>
     </ModernAppSidebar>
+    </>
   );
 }
