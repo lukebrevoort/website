@@ -414,7 +414,7 @@ export default function HomepageWhiteboard({
   return (
     <main
       ref={shellRef}
-      className={`${styles.shell} ${satoshi.variable}`}
+      className={`${styles.shell} ${isCompactViewport ? styles.shellCompact : ""} ${satoshi.variable}`}
       onPointerDown={dismissKeyboardOnCanvas}
     >
       <header className={styles.topbar}>

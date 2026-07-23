@@ -795,13 +795,11 @@
 @keyframes breathe { 50% { transform: scale(.94); box-shadow: 0 5px 15px rgb(228 87 62 / 15%); } }
 @keyframes dots { to { opacity: .25; transform: translateY(-2px); } }
 
-/* Compact: narrow phones OR short coarse pointers (phone landscape). */
+/* Compact follow-up chrome: keep in sync with matchMedia in homepage-whiteboard.tsx */
 @media (max-width: 760px), ((max-height: 500px) and (pointer: coarse)) {
   .shell {
-    /* Prefer pan/scroll over double-tap page zoom traps. */
     touch-action: manipulation;
   }
-  /* 16px prevents iOS Safari from zooming the page when the field focuses. */
   .promptForm input,
   .followUpTray input {
     font-size: 16px;
@@ -812,7 +810,43 @@
   .followUpDismiss {
     display: grid;
   }
+  .followUpTray {
+    --follow-up-bottom: var(--mobile-follow-up-bottom, 80px);
+    grid-template-columns: 1fr 38px 38px;
+    gap: 6px;
+    width: calc(100% - 28px);
+    padding-left: 10px;
+  }
+  .followUpTray > div { grid-column: 1 / -1; }
+  .followUpTray input { padding-block: 10px; }
 }
+
+/*
+ * JS-driven compact class — same styles as the media query above so landscape
+ * phones still get Done/16px when pointer:coarse media evaluation differs.
+ */
+.shellCompact {
+  touch-action: manipulation;
+}
+.shellCompact .promptForm input,
+.shellCompact .followUpTray input {
+  font-size: 16px;
+}
+.shellCompact .followUpLauncher {
+  display: inline-flex;
+}
+.shellCompact .followUpDismiss {
+  display: grid;
+}
+.shellCompact .followUpTray {
+  --follow-up-bottom: var(--mobile-follow-up-bottom, 80px);
+  grid-template-columns: 1fr 38px 38px;
+  gap: 6px;
+  width: calc(100% - 28px);
+  padding-left: 10px;
+}
+.shellCompact .followUpTray > div { grid-column: 1 / -1; }
+.shellCompact .followUpTray input { padding-block: 10px; }
 
 @media (max-width: 760px) {
   .shell {
@@ -870,15 +904,6 @@
   }
   .thoughtWrap { width: calc(100% - 36px); }
   .thoughtBubble { min-width: 0; }
-  .followUpTray {
-    --follow-up-bottom: var(--mobile-follow-up-bottom);
-    grid-template-columns: 1fr 38px 38px;
-    gap: 6px;
-    width: calc(100% - 28px);
-    padding-left: 10px;
-  }
-  .followUpTray > div { grid-column: 1 / -1; }
-  .followUpTray input { padding-block: 10px; }
   .showcaseActions {
     right: 18px;
     bottom: 168px;
@@ -891,16 +916,12 @@
 }
 
 @media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
-  .followUpTray {
+  .followUpTray,
+  .shellCompact .followUpTray {
     --follow-up-bottom: 18px;
-    grid-template-columns: 1fr 38px 38px;
-    gap: 6px;
-    width: calc(100% - 28px);
-    padding-left: 10px;
   }
-  .followUpTray > div { grid-column: 1 / -1; }
-  .followUpTray input { padding-block: 10px; }
-  .followUpLauncher {
+  .followUpLauncher,
+  .shellCompact .followUpLauncher {
     bottom: calc(18px + var(--keyboard-inset, 0px));
   }
   .loading {
