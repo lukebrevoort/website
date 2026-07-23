@@ -795,6 +795,25 @@
 @keyframes breathe { 50% { transform: scale(.94); box-shadow: 0 5px 15px rgb(228 87 62 / 15%); } }
 @keyframes dots { to { opacity: .25; transform: translateY(-2px); } }
 
+/* Compact: narrow phones OR short coarse pointers (phone landscape). */
+@media (max-width: 760px), ((max-height: 500px) and (pointer: coarse)) {
+  .shell {
+    /* Prefer pan/scroll over double-tap page zoom traps. */
+    touch-action: manipulation;
+  }
+  /* 16px prevents iOS Safari from zooming the page when the field focuses. */
+  .promptForm input,
+  .followUpTray input {
+    font-size: 16px;
+  }
+  .followUpLauncher {
+    display: inline-flex;
+  }
+  .followUpDismiss {
+    display: grid;
+  }
+}
+
 @media (max-width: 760px) {
   .shell {
     --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -802,8 +821,6 @@
     --mobile-follow-up-bottom: calc(80px + var(--mobile-safe-bottom));
     overflow: auto;
     background: var(--paper);
-    /* Prefer browser pan/scroll over double-tap page zoom traps. */
-    touch-action: manipulation;
   }
   .canvas { min-height: 100svh; margin: 0; border-radius: 0; overflow-y: auto; }
   .topbar { inset: 68px 14px auto; }
@@ -819,11 +836,6 @@
   .invitation h1 { font-size: clamp(3.1rem, 16vw, 4.6rem); line-height: .78; }
   .invitation > p { max-width: 340px; margin-top: 24px; font-size: .87rem; }
   .promptForm { padding-left: 14px; }
-  /* 16px prevents iOS Safari from zooming the page when the field focuses. */
-  .promptForm input,
-  .followUpTray input {
-    font-size: 16px;
-  }
   .promptList { grid-template-columns: 1fr; gap: 9px; width: auto; margin-inline: 4px; }
   .promptList button { min-height: 70px; text-align: left; }
   .results {
@@ -858,9 +870,6 @@
   }
   .thoughtWrap { width: calc(100% - 36px); }
   .thoughtBubble { min-width: 0; }
-  .followUpLauncher {
-    display: inline-flex;
-  }
   .followUpTray {
     --follow-up-bottom: var(--mobile-follow-up-bottom);
     grid-template-columns: 1fr 38px 38px;
@@ -870,7 +879,6 @@
   }
   .followUpTray > div { grid-column: 1 / -1; }
   .followUpTray input { padding-block: 10px; }
-  .followUpDismiss { display: grid; }
   .showcaseActions {
     right: 18px;
     bottom: 168px;
@@ -880,6 +888,25 @@
   .newBoardButton { padding: 7px 8px; font-size: 8px; backdrop-filter: none; }
   .verificationNote { right: 14px; bottom: calc(142px + var(--mobile-safe-bottom)); }
   .signature, .presence, .dock, .followUpTray, .followUpLauncher, .loading { backdrop-filter: none; }
+}
+
+@media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
+  .followUpTray {
+    --follow-up-bottom: 18px;
+    grid-template-columns: 1fr 38px 38px;
+    gap: 6px;
+    width: calc(100% - 28px);
+    padding-left: 10px;
+  }
+  .followUpTray > div { grid-column: 1 / -1; }
+  .followUpTray input { padding-block: 10px; }
+  .followUpLauncher {
+    bottom: calc(18px + var(--keyboard-inset, 0px));
+  }
+  .loading {
+    bottom: 18px;
+    right: 14px;
+  }
 }
 
 @media (max-height: 690px) and (min-width: 761px) {

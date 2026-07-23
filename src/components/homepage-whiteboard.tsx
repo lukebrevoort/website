@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CSSProperties, FormEvent, PointerEvent, useCallback, useEffect, useRef, useState } from "react";
+import { CSSProperties, FormEvent, KeyboardEvent, PointerEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -70,6 +70,8 @@ export default function HomepageWhiteboard({
   const canvasSnapshot = useRef<CanvasSnapshot | null>(null);
   const turn = useRef(0);
   const followUpInputRef = useRef<HTMLInputElement | null>(null);
+  const followUpLauncherRef = useRef<HTMLButtonElement | null>(null);
+  const restoreLauncherFocusRef = useRef(false);
   const shellRef = useRef<HTMLElement | null>(null);
   const [contractLabActive, setContractLabActive] = useState(false);
   const [agentMessage, setAgentMessage] = useState("");
@@ -89,7 +91,10 @@ export default function HomepageWhiteboard({
   }, []);
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 760px)");
+    // Narrow phones OR short coarse viewports (typical phone landscape).
+    const media = window.matchMedia(
+      "(max-width: 760px), ((max-height: 500px) and (pointer: coarse))",
+    );
     const sync = () => setIsCompactViewport(media.matches);
     sync();
     media.addEventListener("change", sync);
@@ -128,14 +133,20 @@ export default function HomepageWhiteboard({
     if (!isCompactViewport) {
       setFollowUpOpen(false);
       setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
       return;
     }
     if (agentState === "thinking" || agentState === "error") {
       setFollowUpOpen(true);
       setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
     } else if (agentState === "active") {
       setFollowUpOpen(false);
       setFollowUpShouldFocus(false);
+      // Restore after a completed follow-up turn, not on first board activation.
+      if (turn.current > 0) {
+        restoreLauncherFocusRef.current = true;
+      }
     }
   }, [agentState, isCompactViewport]);
 
@@ -147,6 +158,21 @@ export default function HomepageWhiteboard({
     });
     return () => window.cancelAnimationFrame(frame);
   }, [followUpOpen, followUpShouldFocus, isCompactViewport]);
+
+  const showFollowUpSurface =
+    agentState === "active" ||
+    ((agentState === "thinking" || agentState === "error") && turn.current > 0);
+  const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
+  const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+
+  useEffect(() => {
+    if (!showFollowUpLauncher || !restoreLauncherFocusRef.current) return;
+    restoreLauncherFocusRef.current = false;
+    const frame = window.requestAnimationFrame(() => {
+      followUpLauncherRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [showFollowUpLauncher]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -322,7 +348,10 @@ export default function HomepageWhiteboard({
     event.preventDefault();
     explore(prompt);
     if (isCompactViewport) {
+      // Thinking will auto-reopen the tray; don't yank focus to the launcher.
       setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
       followUpInputRef.current?.blur();
     }
   };
@@ -331,17 +360,27 @@ export default function HomepageWhiteboard({
     setFollowUpOpen(false);
     setFollowUpShouldFocus(false);
     followUpInputRef.current?.blur();
+    if (isCompactViewport) {
+      restoreLauncherFocusRef.current = true;
+    }
   };
 
   const openFollowUpComposer = () => {
     setFollowUpOpen(true);
     setFollowUpShouldFocus(true);
+    restoreLauncherFocusRef.current = false;
   };
 
   const dismissKeyboardOnCanvas = (event: PointerEvent<HTMLElement>) => {
     if (!isCompactViewport || !followUpOpen) return;
     const target = event.target as HTMLElement | null;
     if (target?.closest("form, button, a, input, textarea, label")) return;
+    closeFollowUp();
+  };
+
+  const onFollowUpKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {
+    if (event.key !== "Escape" || !isCompactViewport) return;
+    event.preventDefault();
     closeFollowUp();
   };
 
@@ -363,11 +402,14 @@ export default function HomepageWhiteboard({
     ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today`
     : "authored notes don't use the live allowance";
 
-  const showFollowUpSurface =
-    agentState === "active" ||
-    ((agentState === "thinking" || agentState === "error") && turn.current > 0);
-  const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
-  const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+  const followUpStatusLabel =
+    agentState === "thinking"
+      ? "adding to the board…"
+      : agentState === "error"
+        ? "connection lost — try again"
+        : "ask a follow-up";
+  const announceFollowUpStatus =
+    showFollowUpSurface && (agentState === "thinking" || agentState === "error");
 
   return (
     <main
@@ -512,8 +554,17 @@ export default function HomepageWhiteboard({
           </div>
         )}
 
+        {announceFollowUpStatus && !showFollowUpTray && (
+          <div className="sr-only" role="status" aria-live="polite">
+            {agentState === "thinking"
+              ? `Adding to the board: ${question}`
+              : agentMessage || "Connection lost — try again"}
+          </div>
+        )}
+
         {showFollowUpLauncher && (
           <button
+            ref={followUpLauncherRef}
             type="button"
             className={styles.followUpLauncher}
             onClick={openFollowUpComposer}
@@ -524,15 +575,18 @@ export default function HomepageWhiteboard({
         )}
 
         {showFollowUpTray && (
-          <form className={styles.followUpTray} onSubmit={submit}>
-            <div>
-              <span className={styles.agentGlyph}>✦</span>
+          <form
+            className={styles.followUpTray}
+            onSubmit={submit}
+            onKeyDown={onFollowUpKeyDown}
+          >
+            <div
+              role={announceFollowUpStatus ? "status" : undefined}
+              aria-live={announceFollowUpStatus ? "polite" : undefined}
+            >
+              <span className={styles.agentGlyph} aria-hidden="true">✦</span>
               <label htmlFor="follow-up-prompt">
-                {agentState === "thinking"
-                  ? "adding to the board…"
-                  : agentState === "error"
-                    ? "connection lost — try again"
-                    : "ask a follow-up"}
+                {followUpStatusLabel}
               </label>
             </div>
             <input
