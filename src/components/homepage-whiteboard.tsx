@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { CSSProperties, FormEvent, PointerEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -69,6 +69,8 @@ export default function HomepageWhiteboard({
   const [question, setQuestion] = useState("");
   const canvasSnapshot = useRef<CanvasSnapshot | null>(null);
   const turn = useRef(0);
+  const followUpInputRef = useRef<HTMLInputElement | null>(null);
+  const shellRef = useRef<HTMLElement | null>(null);
   const [contractLabActive, setContractLabActive] = useState(false);
   const [agentMessage, setAgentMessage] = useState("");
   const [pendingPatch, setPendingPatch] = useState<PendingAgentPatch | null>(null);
@@ -77,6 +79,9 @@ export default function HomepageWhiteboard({
   const [livePolicy, setLivePolicy] = useState<LivePolicy | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [followUpShouldFocus, setFollowUpShouldFocus] = useState(false);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -84,9 +89,64 @@ export default function HomepageWhiteboard({
   }, []);
 
   useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const sync = () => setIsCompactViewport(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    const preview = new URLSearchParams(window.location.search).has("loadingPreview");
+    if (preview) return;
     const timer = window.setTimeout(() => setAgentState("idle"), 650);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    const viewport = window.visualViewport;
+    if (!shell || !viewport) return;
+
+    const syncKeyboardInset = () => {
+      const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      shell.style.setProperty("--keyboard-inset", `${inset}px`);
+    };
+
+    syncKeyboardInset();
+    viewport.addEventListener("resize", syncKeyboardInset);
+    viewport.addEventListener("scroll", syncKeyboardInset);
+    window.addEventListener("resize", syncKeyboardInset);
+    return () => {
+      viewport.removeEventListener("resize", syncKeyboardInset);
+      viewport.removeEventListener("scroll", syncKeyboardInset);
+      window.removeEventListener("resize", syncKeyboardInset);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isCompactViewport) {
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      return;
+    }
+    if (agentState === "thinking" || agentState === "error") {
+      setFollowUpOpen(true);
+      setFollowUpShouldFocus(false);
+    } else if (agentState === "active") {
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+    }
+  }, [agentState, isCompactViewport]);
+
+  useEffect(() => {
+    if (!followUpOpen || !followUpShouldFocus || !isCompactViewport) return;
+    const frame = window.requestAnimationFrame(() => {
+      followUpInputRef.current?.focus();
+      setFollowUpShouldFocus(false);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [followUpOpen, followUpShouldFocus, isCompactViewport]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -261,6 +321,28 @@ export default function HomepageWhiteboard({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     explore(prompt);
+    if (isCompactViewport) {
+      setFollowUpOpen(false);
+      followUpInputRef.current?.blur();
+    }
+  };
+
+  const closeFollowUp = () => {
+    setFollowUpOpen(false);
+    setFollowUpShouldFocus(false);
+    followUpInputRef.current?.blur();
+  };
+
+  const openFollowUpComposer = () => {
+    setFollowUpOpen(true);
+    setFollowUpShouldFocus(true);
+  };
+
+  const dismissKeyboardOnCanvas = (event: PointerEvent<HTMLElement>) => {
+    if (!isCompactViewport || !followUpOpen) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("form, button, a, input, textarea, label")) return;
+    closeFollowUp();
   };
 
   const startNewBoard = () => {
@@ -273,6 +355,7 @@ export default function HomepageWhiteboard({
     setQuestion("");
     setPrompt("");
     setAgentMessage("");
+    setFollowUpOpen(false);
     setAgentState("idle");
   };
 
@@ -280,8 +363,18 @@ export default function HomepageWhiteboard({
     ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today`
     : "authored notes don't use the live allowance";
 
+  const showFollowUpSurface =
+    agentState === "active" ||
+    ((agentState === "thinking" || agentState === "error") && turn.current > 0);
+  const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
+  const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+
   return (
-    <main className={`${styles.shell} ${satoshi.variable}`}>
+    <main
+      ref={shellRef}
+      className={`${styles.shell} ${satoshi.variable}`}
+      onPointerDown={dismissKeyboardOnCanvas}
+    >
       <header className={styles.topbar}>
         <Link href="/" className={`${styles.signature} ${lukesFont.className}`}>
           <ArrowLeft size={15} strokeWidth={1.8} />
@@ -309,9 +402,9 @@ export default function HomepageWhiteboard({
 
         {agentState === "loading" && (
           <div className={styles.loading} role="status">
-            <span className={styles.agentGlyph}>✦</span>
+            <span className={styles.agentGlyph} aria-hidden="true">✦</span>
             <span>unrolling the canvas…</span>
-            <span className={styles.loadingLine} />
+            <span className={styles.loadingLine} aria-hidden="true" />
           </div>
         )}
 
@@ -342,6 +435,8 @@ export default function HomepageWhiteboard({
                 onChange={(event) => setPrompt(event.target.value)}
                 placeholder="Ask Luke's canvas anything…"
                 autoComplete="off"
+                enterKeyHint="go"
+                inputMode="text"
               />
               <button type="submit" disabled={!prompt.trim()} aria-label="Explore">
                 <Send size={18} />
@@ -362,7 +457,7 @@ export default function HomepageWhiteboard({
                   key={item.prompt}
                   type="button"
                   onClick={() => explore(item.prompt, item.id)}
-                  style={{ "--prompt-tilt": item.tilt } as React.CSSProperties}
+                  style={{ "--prompt-tilt": item.tilt } as CSSProperties}
                 >
                   <span className={styles.promptNumber}>0{index + 1}</span>
                   <strong>{item.prompt}</strong>
@@ -373,7 +468,7 @@ export default function HomepageWhiteboard({
           </div>
         )}
 
-        {agentState === "thinking" && (
+        {agentState === "thinking" && turn.current === 0 && (
           <div className={styles.thoughtWrap} role="status" aria-live="polite">
             <div className={styles.orb}><Sparkles size={22} /></div>
             <div className={styles.thoughtBubble}>
@@ -417,8 +512,18 @@ export default function HomepageWhiteboard({
           </div>
         )}
 
-        {(agentState === "active" ||
-          ((agentState === "thinking" || agentState === "error") && turn.current > 0)) && (
+        {showFollowUpLauncher && (
+          <button
+            type="button"
+            className={styles.followUpLauncher}
+            onClick={openFollowUpComposer}
+          >
+            <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+            ask a follow-up
+          </button>
+        )}
+
+        {showFollowUpTray && (
           <form className={styles.followUpTray} onSubmit={submit}>
             <div>
               <span className={styles.agentGlyph}>✦</span>
@@ -431,11 +536,14 @@ export default function HomepageWhiteboard({
               </label>
             </div>
             <input
+              ref={followUpInputRef}
               id="follow-up-prompt"
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
               placeholder="What should we explore next?"
               autoComplete="off"
+              enterKeyHint="send"
+              inputMode="text"
               disabled={agentState === "thinking"}
             />
             <button
@@ -445,6 +553,16 @@ export default function HomepageWhiteboard({
             >
               <Send size={17} />
             </button>
+            {isCompactViewport && (
+              <button
+                type="button"
+                className={styles.followUpDismiss}
+                onClick={closeFollowUp}
+                aria-label="Done editing follow-up"
+              >
+                done
+              </button>
+            )}
           </form>
         )}
 
