@@ -783,6 +783,62 @@
 .agentNotice button:hover { border-color: var(--red); color: var(--red); }
 .agentNoticeError { border-color: rgb(185 28 28 / 25%); background: rgb(254 226 226 / 94%); }
 
+.sketchFeedback {
+  position: absolute;
+  z-index: 11;
+  top: 92px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: min(280px, calc(100% - 40px));
+  padding: 7px 10px;
+  border: 1px solid rgb(32 32 29 / 16%);
+  border-radius: 8px 5px 9px 6px;
+  background: rgb(255 252 244 / 92%);
+  box-shadow: 3px 4px 0 rgb(32 32 29 / 6%);
+  transform: rotate(0.4deg);
+}
+
+.sketchFeedbackLabel {
+  margin-right: 2px;
+  color: #5f5a52;
+  font-size: .78rem;
+  letter-spacing: .01em;
+}
+
+.sketchFeedbackButton {
+  min-width: 34px;
+  min-height: 30px;
+  padding: 2px 6px;
+  border: 1px dashed rgb(32 32 29 / 28%);
+  border-radius: 5px;
+  background: #fffdf6;
+  font-size: .95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sketchFeedbackButton:hover:not(:disabled) {
+  border-style: solid;
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.sketchFeedbackButton:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.sketchFeedbackThanks,
+.sketchFeedbackError {
+  color: #625f57;
+  font-size: .74rem;
+  line-height: 1.35;
+}
+
+.sketchFeedbackError { color: #9b3a2f; }
+
 .verificationNote {
   position: absolute;
   z-index: 24;
@@ -976,6 +1032,14 @@
   .topbarActions { gap: 5px; }
   .newBoardButton { padding: 7px 8px; font-size: 8px; backdrop-filter: none; }
   .verificationNote { right: 14px; bottom: calc(142px + var(--mobile-safe-bottom)); }
+  .sketchFeedback {
+    top: 86px;
+    right: 14px;
+    left: 14px;
+    max-width: none;
+    justify-content: flex-end;
+    transform: none;
+  }
   .signature, .presence, .dock, .followUpTray, .followUpLauncher, .loading { backdrop-filter: none; }
 }
 

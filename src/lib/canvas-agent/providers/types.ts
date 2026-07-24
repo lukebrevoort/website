@@ -1,8 +1,12 @@
 import type { CanvasPatch } from "../contract";
 import type { CanvasAgentRequest } from "../request";
 
+import type { ApprovedFormatPrior } from "../format-memory";
+
 export type VisionProviderInput = CanvasAgentRequest & {
   knowledgeSnippets: string[];
+  /** Layout/format priors only — never treat as factual ground truth. */
+  approvedFormats?: ApprovedFormatPrior[];
   safetyIdentifier: string;
   executionMs?: number;
 };

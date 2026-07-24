@@ -34,11 +34,20 @@ type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
 
 type PendingAgentPatch = {
   compiled: CompiledCanvasPatch;
+  patch: CanvasPatch;
   prompt: string;
   summary: string;
   sceneVersion: string;
   reason: "risk" | "quality";
   issues?: string[];
+};
+
+type SketchFeedbackState = {
+  prompt: string;
+  summary: string;
+  patch: CanvasPatch;
+  vote: "up" | "down" | null;
+  status: "open" | "sending" | "saved" | "error";
 };
 
 async function blobToDataUrl(blob: Blob) {
@@ -79,6 +88,7 @@ export default function HomepageWhiteboard({
   const [contractLabActive, setContractLabActive] = useState(false);
   const [agentMessage, setAgentMessage] = useState("");
   const [pendingPatch, setPendingPatch] = useState<PendingAgentPatch | null>(null);
+  const [sketchFeedback, setSketchFeedback] = useState<SketchFeedbackState | null>(null);
   const priorTurns = useRef<PriorCanvasTurn[]>([]);
   const [boardHasContent, setBoardHasContent] = useState(false);
   const [livePolicy, setLivePolicy] = useState<LivePolicy | null>(null);
@@ -105,7 +115,34 @@ export default function HomepageWhiteboard({
   }, []);
 
   useEffect(() => {
-    const preview = new URLSearchParams(window.location.search).has("loadingPreview");
+    const params = new URLSearchParams(window.location.search);
+    const preview = params.has("loadingPreview");
+    if (params.has("feedbackPreview")) {
+      setSketchFeedback({
+        prompt: "Compare MALCOM and Dispatch",
+        summary: "Side-by-side control planes",
+        patch: {
+          version: "1",
+          baseSceneVersion: "preview",
+          summary: "Side-by-side control planes",
+          operations: [{
+            op: "create",
+            ref: "new:preview",
+            element: {
+              kind: "rectangle",
+              box: { x: 100, y: 100, width: 200, height: 100 },
+              text: "preview",
+              style: { theme: "ink" },
+            },
+          }],
+        },
+        vote: null,
+        status: "open",
+      });
+      setAgentState("active");
+      turn.current = 1;
+      return;
+    }
     if (preview) return;
     const timer = window.setTimeout(() => setAgentState("idle"), 650);
     return () => window.clearTimeout(timer);
@@ -190,12 +227,51 @@ export default function HomepageWhiteboard({
     priorTurns.current = [...priorTurns.current, { prompt, summary }].slice(-2);
   };
 
+  const offerSketchFeedback = (prompt: string, patch: CanvasPatch) => {
+    // Live sketches only — authored starters are curated already.
+    setSketchFeedback({
+      prompt,
+      summary: patch.summary,
+      patch,
+      vote: null,
+      status: "open",
+    });
+  };
+
+  const submitSketchFeedback = async (vote: "up" | "down") => {
+    if (!sketchFeedback || sketchFeedback.status === "sending" || sketchFeedback.vote) return;
+    setSketchFeedback({ ...sketchFeedback, status: "sending", vote });
+    try {
+      const response = await fetch("/api/canvas-agent/feedback", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          prompt: sketchFeedback.prompt,
+          summary: sketchFeedback.summary,
+          vote,
+          patch: sketchFeedback.patch,
+        }),
+      });
+      if (!response.ok) {
+        setSketchFeedback({ ...sketchFeedback, vote: null, status: "error" });
+        return;
+      }
+      setSketchFeedback({ ...sketchFeedback, vote, status: "saved" });
+      window.setTimeout(() => {
+        setSketchFeedback((current) => current?.status === "saved" ? null : current);
+      }, 2_400);
+    } catch {
+      setSketchFeedback({ ...sketchFeedback, vote: null, status: "error" });
+    }
+  };
+
   const explore = async (value: string, starterId?: CanvasStarterId) => {
     const nextQuestion = value.trim();
     if (!nextQuestion) return;
     setQuestion(nextQuestion);
     setAgentMessage("");
     setPendingPatch(null);
+    setSketchFeedback(null);
 
     if (!navigator.onLine) {
       setAgentMessage("The vision agent is offline. Your canvas was not changed.");
@@ -290,6 +366,7 @@ export default function HomepageWhiteboard({
       if (compiled.risk.requiresConfirmation) {
         setPendingPatch({
           compiled,
+          patch: validation.value.patch,
           prompt: nextQuestion,
           summary: validation.value.patch.summary,
           sceneVersion: capture.context.sceneVersion,
@@ -308,6 +385,7 @@ export default function HomepageWhiteboard({
         const issues = payload.quality.issues?.filter(Boolean) ?? [];
         setPendingPatch({
           compiled,
+          patch: validation.value.patch,
           prompt: nextQuestion,
           summary: validation.value.patch.summary,
           sceneVersion: capture.context.sceneVersion,
@@ -327,6 +405,7 @@ export default function HomepageWhiteboard({
       if (application.status === "confirmation-required") {
         setPendingPatch({
           compiled,
+          patch: validation.value.patch,
           prompt: nextQuestion,
           summary: validation.value.patch.summary,
           sceneVersion: capture.context.sceneVersion,
@@ -344,6 +423,7 @@ export default function HomepageWhiteboard({
 
       recordTurn(nextQuestion, validation.value.patch.summary);
       turn.current += 1;
+      if (!starterId) offerSketchFeedback(nextQuestion, validation.value.patch);
       setAgentState("active");
     } catch (error) {
       console.error("Canvas agent request failed", error);
@@ -382,6 +462,7 @@ export default function HomepageWhiteboard({
     }
     recordTurn(pendingPatch.prompt, pendingPatch.summary);
     turn.current += 1;
+    offerSketchFeedback(pendingPatch.prompt, pendingPatch.patch);
     setPendingPatch(null);
     setAgentMessage(
       pendingPatch.reason === "quality"
@@ -438,6 +519,7 @@ export default function HomepageWhiteboard({
     turn.current = 0;
     setBoardHasContent(false);
     setPendingPatch(null);
+    setSketchFeedback(null);
     setQuestion("");
     setPrompt("");
     setAgentMessage("");
@@ -587,6 +669,43 @@ export default function HomepageWhiteboard({
                 {pendingPatch.reason === "quality" ? "discard sketch" : "keep canvas as-is"}
               </button>
             </div>
+          </div>
+        )}
+
+        {sketchFeedback && !pendingPatch && (
+          <div className={styles.sketchFeedback} role="group" aria-label="Sketch format feedback">
+            {sketchFeedback.status === "saved" ? (
+              <span className={styles.sketchFeedbackThanks}>
+                {sketchFeedback.vote === "up" ? "noted — thanks" : "noted — we’ll try a different layout next time"}
+              </span>
+            ) : (
+              <>
+                <span className={`${styles.sketchFeedbackLabel} ${lukesFont.className}`}>
+                  layout feel?
+                </span>
+                <button
+                  type="button"
+                  className={styles.sketchFeedbackButton}
+                  aria-label="Thumbs up this layout"
+                  disabled={sketchFeedback.status === "sending"}
+                  onClick={() => submitSketchFeedback("up")}
+                >
+                  👍
+                </button>
+                <button
+                  type="button"
+                  className={styles.sketchFeedbackButton}
+                  aria-label="Thumbs down this layout"
+                  disabled={sketchFeedback.status === "sending"}
+                  onClick={() => submitSketchFeedback("down")}
+                >
+                  👎
+                </button>
+                {sketchFeedback.status === "error" && (
+                  <span className={styles.sketchFeedbackError}>couldn’t save — try once more</span>
+                )}
+              </>
+            )}
           </div>
         )}
 
