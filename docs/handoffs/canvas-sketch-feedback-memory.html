@@ -74,7 +74,9 @@
   <ul>
     <li><code>npm test</code> — fingerprint + store/retrieve</li>
     <li><code>npm run build</code></li>
-    <li>Manual: live prompt → apply → thumbs → second similar prompt should receive priors (check logs / provider context in non-prod)</li>
+    <li>Local play: after a thumbs-up, open <code>GET /api/canvas-agent/feedback?prompt=…</code> — expect <code>approvedCount ≥ 1</code> (disabled in production unless <code>CANVAS_FORMAT_MEMORY_INSPECT=true</code>)</li>
+    <li>Network tab on the next live generate: response includes <code>formatMemory.approvedCount</code> and summaries</li>
+    <li>Manual: live prompt → apply → thumbs → similar prompt should receive priors</li>
   </ul>
 
   <footer>Branch: <code>luke/canvas-sketch-feedback-memory</code> · base: <code>homepage-canvas</code> (draft PR)</footer>
