@@ -60,6 +60,35 @@ async function blobToDataUrl(blob: Blob) {
   });
 }
 
+function clarifyLiveRestingMessage(message: string | undefined, firstTurn: boolean) {
+  const fallback = firstTurn
+    ? "Live sketching is resting right now. Preset sketches still work—pick one of the notes above."
+    : "Live follow-ups are resting right now, so nothing new was added. Preset sketches still work—use new board, then pick a note.";
+
+  if (!message?.trim()) return fallback;
+
+  const normalized = message.toLowerCase();
+  const soundsResting =
+    normalized.includes("resting") ||
+    normalized.includes("unavailable") ||
+    normalized.includes("vision agent") ||
+    normalized.includes("live sketching");
+
+  if (!soundsResting) return message;
+
+  if (
+    normalized.includes("authored") ||
+    normalized.includes("starting point") ||
+    normalized.includes("preset")
+  ) {
+    return message;
+  }
+
+  return firstTurn
+    ? `${message.replace(/\s*$/, "")} Preset sketches still work—pick one of the notes above.`
+    : `${message.replace(/\s*$/, "")} Preset sketches still work—use new board, then pick a note.`;
+}
+
 type LivePolicy = {
   live: {
     available: boolean;
@@ -303,7 +332,11 @@ export default function HomepageWhiteboard({
     }
 
     if (!navigator.onLine) {
-      setAgentMessage("The vision agent is offline. Your canvas was not changed.");
+      setAgentMessage(
+        turn.current === 0
+          ? "You’re offline, so live sketching can’t run. Preset sketches still work once you’re back online—or keep drawing on the board."
+          : "You’re offline, so live follow-ups can’t run. Your canvas is unchanged—draw freely, or use new board for a preset sketch when you’re back online.",
+      );
       setAgentState("error");
       return;
     }
@@ -351,17 +384,20 @@ export default function HomepageWhiteboard({
       const payload = await response.json().catch(() => ({
         ok: false,
         message: response.status === 429
-          ? "Too many questions from this connection. Wait a few minutes and try again."
-          : "The vision agent could not read that response. Your canvas was not changed.",
+          ? "Too many live questions from this connection. Wait a few minutes, or start a new board and use a preset sketch."
+          : "Live sketching couldn’t finish that request. Your canvas is unchanged—try a preset from a new board, or ask again in a moment.",
       })) as {
         ok: boolean;
         message?: string;
+        code?: string;
         patch?: CanvasPatch;
         quality?: { ok: boolean; issues?: string[] };
         usage?: { counted?: boolean; sessionUsed?: number; sessionLimit?: number };
       };
       if (!response.ok || !payload.ok || !payload.patch) {
-        setAgentMessage(payload.message || "The vision agent is resting. Your canvas was not changed.");
+        setAgentMessage(
+          clarifyLiveRestingMessage(payload.message, Boolean(starterId) || turn.current === 0),
+        );
         setAgentState("error");
         return;
       }
@@ -465,7 +501,12 @@ export default function HomepageWhiteboard({
       setAgentState("active");
     } catch (error) {
       console.error("Canvas agent request failed", error);
-      setAgentMessage("The live sketch hiccuped before it could finish. Your canvas is untouched—please try again.");
+      setAgentMessage(
+        clarifyLiveRestingMessage(
+          "Live sketching couldn’t finish that request. Your canvas is unchanged.",
+          Boolean(starterId) || turn.current === 0,
+        ),
+      );
       setAgentState("error");
     } finally {
       if (!starterId && livePolicy?.live.verificationRequired) {
@@ -668,7 +709,7 @@ export default function HomepageWhiteboard({
 
             {agentState === "error" && (
               <div className={styles.errorNote} role="alert">
-                {agentMessage || "The live sketch hiccuped. Your canvas is still here—try again."}
+                {agentMessage || "Something went wrong with live sketching. Your canvas is still here—try a preset note, or ask again."}
               </div>
             )}
 
@@ -732,8 +773,8 @@ export default function HomepageWhiteboard({
               </span>
             ) : (
               <>
-                <span className={`${styles.sketchFeedbackLabel} ${lukesFont.className}`}>
-                  layout feel?
+                <span className={styles.sketchFeedbackLabel}>
+                  Did this layout work?
                 </span>
                 <button
                   type="button"
@@ -777,7 +818,7 @@ export default function HomepageWhiteboard({
 
         {showFollowUpSuggestions && (
           <div className={styles.showcaseActions} aria-label="Suggested follow-ups">
-            <span>Try a visual follow-up:</span>
+            <span className={lukesFont.className}>Try a visual follow-up:</span>
             {availableFollowUps.map((followUp) => (
               <button key={followUp} type="button" onClick={() => explore(followUp)}>
                 {followUp}

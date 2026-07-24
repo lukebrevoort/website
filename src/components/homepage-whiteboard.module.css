@@ -583,8 +583,8 @@
 
 .showcaseActions > span {
   color: var(--red);
-  font-family: var(--font-lukes, cursive);
-  font-size: .82rem;
+  font-size: .92rem;
+  line-height: 1.15;
 }
 
 .showcaseActions button {
@@ -804,10 +804,10 @@
 .sketchFeedback {
   position: absolute;
   z-index: 11;
-  top: auto;
-  left: auto;
+  top: 92px;
   right: 28px;
-  bottom: calc(var(--follow-up-bottom, 76px) + 72px + var(--keyboard-inset, 0px));
+  bottom: auto;
+  left: auto;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -823,7 +823,8 @@
 .sketchFeedbackLabel {
   margin-right: 2px;
   color: #5f5a52;
-  font-size: .78rem;
+  font-size: .74rem;
+  font-weight: 650;
   letter-spacing: .01em;
 }
 
@@ -1053,11 +1054,11 @@
   .newBoardButton { padding: 7px 8px; font-size: 8px; backdrop-filter: none; }
   .verificationNote { right: 14px; bottom: calc(142px + var(--mobile-safe-bottom)); }
   .sketchFeedback {
-    top: auto;
+    top: 86px;
     right: 14px;
     left: auto;
-    bottom: calc(var(--mobile-follow-up-bottom, 80px) + 72px + var(--keyboard-inset, 0px));
-    max-width: min(220px, calc(100% - 28px));
+    bottom: auto;
+    max-width: min(240px, calc(100% - 28px));
     justify-content: flex-end;
     transform: none;
   }
