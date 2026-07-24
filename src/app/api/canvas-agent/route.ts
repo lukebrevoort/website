@@ -174,25 +174,24 @@ export async function POST(request: Request) {
       parsed.data.prompt,
       parsed.data.context,
     );
-    if (!composition.ok) {
-      return jsonResponse({
-        ok: false,
-        code: "low-quality-patch",
-        message: "The agent's sketch did not meet the canvas quality bar, so nothing was applied. Your existing board is untouched.",
-        issues: composition.issues,
-      }, 422, session);
-    }
+    // Soft quality: return a usable patch with issues so the visitor can Apply
+    // anyway (and undo). Hard-reject only unsafe/invalid patches above.
+    const quality = composition.ok
+      ? { ok: true as const, issues: [] as string[] }
+      : { ok: false as const, issues: composition.issues };
 
-    logCanvasEvent("live-complete", {
+    logCanvasEvent(quality.ok ? "live-complete" : "live-quality-warn", {
       requestId,
       provider: result.provider,
       durationMs: Date.now() - startedAt,
       operationCount: validation.value.patch.operations.length,
+      ...(quality.ok ? {} : { issueCount: quality.issues.length }),
     });
     return jsonResponse({
       ok: true,
       patch: validation.value.patch,
       risk: validation.value.risk,
+      quality,
       provider: result.provider,
       model: result.model,
       scope: parsed.data.scope,

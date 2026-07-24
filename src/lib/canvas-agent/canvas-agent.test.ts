@@ -244,6 +244,43 @@ test("compiles the same patch deterministically into scene coordinates", () => {
   assert.equal(note.y, 420);
   assert.equal(note.width, 440);
   assert.equal(note.height, 150);
+  assert.equal(
+    "label" in note && note.label && "fontFamily" in note.label ? note.label.fontFamily : undefined,
+    5,
+  );
+});
+
+test("grows cramped labeled boxes so text fits (Dispatch #735 layout)", () => {
+  const patch: CanvasPatch = {
+    version: "1",
+    baseSceneVersion: "scene-v1",
+    summary: "Tiny box with a long label",
+    operations: [
+      {
+        op: "create",
+        ref: "new:cramped",
+        element: {
+          kind: "rectangle",
+          box: { x: 100, y: 100, width: 40, height: 30 },
+          text: "Authentication gateway\ncredentials · scope · approval",
+          style: { theme: "ink", fill: "hachure" },
+        },
+      },
+    ],
+  };
+
+  const result = validateCanvasPatch(patch, context);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+
+  const compiled = compileCanvasPatch(result.value.patch, context, result.value.risk);
+  const box = compiled.createElements[0];
+  assert.ok((box.width ?? 0) > 80, "box should auto-grow wider for long words");
+  assert.ok((box.height ?? 0) > 30, "box should auto-grow taller for wrapped lines");
+  assert.equal(
+    "label" in box && box.label && "textAlign" in box.label ? box.label.textAlign : undefined,
+    "center",
+  );
 });
 
 test("compiles every supported create element kind", () => {

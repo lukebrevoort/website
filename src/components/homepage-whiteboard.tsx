@@ -37,6 +37,8 @@ type PendingAgentPatch = {
   prompt: string;
   summary: string;
   sceneVersion: string;
+  reason: "risk" | "quality";
+  issues?: string[];
 };
 
 async function blobToDataUrl(blob: Blob) {
@@ -250,6 +252,7 @@ export default function HomepageWhiteboard({
         ok: boolean;
         message?: string;
         patch?: CanvasPatch;
+        quality?: { ok: boolean; issues?: string[] };
         usage?: { counted?: boolean; sessionUsed?: number; sessionLimit?: number };
       };
       if (!response.ok || !payload.ok || !payload.patch) {
@@ -282,6 +285,44 @@ export default function HomepageWhiteboard({
         capture.context,
         validation.value.risk,
       );
+
+      // Risk confirmation wins over soft quality — never skip destructive review.
+      if (compiled.risk.requiresConfirmation) {
+        setPendingPatch({
+          compiled,
+          prompt: nextQuestion,
+          summary: validation.value.patch.summary,
+          sceneVersion: capture.context.sceneVersion,
+          reason: "risk",
+          ...(payload.quality && !payload.quality.ok
+            ? { issues: payload.quality.issues?.filter(Boolean) ?? [] }
+            : {}),
+        });
+        setAgentMessage(`This change needs your approval: ${compiled.risk.reasons.join(", ")}.`);
+        setAgentState("active");
+        return;
+      }
+
+      // Soft quality bar: offer Apply anyway (one undoable scene update) instead of discarding.
+      if (payload.quality && !payload.quality.ok) {
+        const issues = payload.quality.issues?.filter(Boolean) ?? [];
+        setPendingPatch({
+          compiled,
+          prompt: nextQuestion,
+          summary: validation.value.patch.summary,
+          sceneVersion: capture.context.sceneVersion,
+          reason: "quality",
+          issues,
+        });
+        setAgentMessage(
+          issues.length > 0
+            ? `The sketch is a bit rough: ${issues.slice(0, 2).join("; ")}${issues.length > 2 ? "…" : ""}. You can apply it anyway and undo if you dislike it.`
+            : "The sketch is a bit rough. You can apply it anyway and undo if you dislike it.",
+        );
+        setAgentState("active");
+        return;
+      }
+
       const application = await snapshot.applyCompiledPatch(compiled);
       if (application.status === "confirmation-required") {
         setPendingPatch({
@@ -289,6 +330,7 @@ export default function HomepageWhiteboard({
           prompt: nextQuestion,
           summary: validation.value.patch.summary,
           sceneVersion: capture.context.sceneVersion,
+          reason: "risk",
         });
         setAgentMessage(`This change needs your approval: ${application.reasons.join(", ")}.`);
         setAgentState("active");
@@ -341,7 +383,11 @@ export default function HomepageWhiteboard({
     recordTurn(pendingPatch.prompt, pendingPatch.summary);
     turn.current += 1;
     setPendingPatch(null);
-    setAgentMessage("");
+    setAgentMessage(
+      pendingPatch.reason === "quality"
+        ? "Applied. Undo (⌘Z / Ctrl+Z) if you want the board back."
+        : "",
+    );
     setAgentState("active");
   };
 
@@ -524,15 +570,30 @@ export default function HomepageWhiteboard({
 
         {pendingPatch && (
           <div className={styles.agentNotice} role="alert">
-            <strong>Review before changing the board</strong>
+            <strong>
+              {pendingPatch.reason === "quality"
+                ? "Sketch looks imperfect"
+                : "Review before changing the board"}
+            </strong>
             <span>{agentMessage}</span>
             <div>
-              <button type="button" onClick={confirmPendingPatch}>apply change</button>
+              <button type="button" onClick={confirmPendingPatch}>
+                {pendingPatch.reason === "quality" ? "apply anyway" : "apply change"}
+              </button>
               <button type="button" onClick={() => {
                 setPendingPatch(null);
                 setAgentMessage("");
-              }}>keep canvas as-is</button>
+              }}>
+                {pendingPatch.reason === "quality" ? "discard sketch" : "keep canvas as-is"}
+              </button>
             </div>
+          </div>
+        )}
+
+        {agentState === "active" && !pendingPatch && agentMessage && turn.current > 0 && (
+          <div className={styles.agentNotice} role="status">
+            <strong>On the board</strong>
+            <span>{agentMessage}</span>
           </div>
         )}
 
