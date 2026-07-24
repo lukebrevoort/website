@@ -8,39 +8,52 @@ test("provider generation schema avoids unsupported oneOf constructs", () => {
   assert.equal(containsKey(schema, "oneOf"), false);
 });
 
-test("provider generation schema requires nullable superset fields", () => {
+test("provider generation schema accepts flat Dispatch-style ops", () => {
   const result = canvasPatchGenerationSchema.safeParse({
     version: "1",
     baseSceneVersion: "scene-v1",
-    summary: "Add a node",
-    operations: [{
-      op: "create",
-      ref: "new:node",
-      target: null,
-      groupRef: null,
-      members: null,
-      from: null,
-      to: null,
-      connectionTo: null,
-      label: null,
-      reason: null,
-      text: null,
-      style: null,
-      element: {
-        kind: "rectangle",
-        box: { x: 100, y: 200, width: 220, height: 120 },
-        text: "Controller",
-        label: null,
-        points: null,
-        style: {
-          theme: "ink",
-          fill: "hachure",
-          stroke: null,
-          weight: null,
-          opacity: null,
-        },
+    summary: "Sketch a tiny flow",
+    ops: [
+      {
+        op: "add",
+        id: "runtime",
+        type: "rect",
+        x: 120,
+        y: 180,
+        w: 200,
+        h: 110,
+        label: "Runtime",
+        from: null,
+        to: null,
+        theme: "ink",
       },
-    }],
+      {
+        op: "add",
+        id: "policy",
+        type: "note",
+        x: 400,
+        y: 180,
+        w: 200,
+        h: 110,
+        label: "Policy",
+        from: null,
+        to: null,
+        theme: "warning",
+      },
+      {
+        op: "connect",
+        id: "runtime-policy",
+        type: null,
+        x: null,
+        y: null,
+        w: null,
+        h: null,
+        label: "checks",
+        from: "runtime",
+        to: "policy",
+        theme: "muted",
+      },
+    ],
   });
 
   assert.equal(result.success, true);

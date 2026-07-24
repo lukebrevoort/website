@@ -9,4 +9,4 @@ export function createCanvasVisionProvider(): CanvasVisionProvider {
   throw new ProviderUnavailableError(`Canvas vision provider "${provider}" is not available`);
 }
 
-export { ProviderUnavailableError } from "./types";
+export { ProviderUnavailableError, CanvasPatchGenerationError } from "./types";

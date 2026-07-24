@@ -501,7 +501,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
           canvasOffsets: { top: 70, bottom: 150 },
         });
       }
-      api.setToast({ message: "Applied the agent's canvas update", duration: 2200 });
+      api.setToast({
+        message: "Applied the agent's canvas update — undo anytime (⌘Z / Ctrl+Z)",
+        duration: 2800,
+      });
 
       return {
         status: "applied",

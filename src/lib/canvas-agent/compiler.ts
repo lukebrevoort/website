@@ -57,14 +57,25 @@ type ResolvedElement = {
 };
 
 const THEME_COLORS = {
-  ink: { stroke: "#20201d", fill: "#f4f0e7" },
-  muted: { stroke: "#6f6a61", fill: "#ebe6dc" },
-  accent: { stroke: "#c83f2f", fill: "#fee2e2" },
-  info: { stroke: "#1d4ed8", fill: "#dbeafe" },
-  success: { stroke: "#047857", fill: "#d1fae5" },
-  warning: { stroke: "#a16207", fill: "#fef3c7" },
-  danger: { stroke: "#b91c1c", fill: "#fee2e2" },
+  // Sketchbook ink + Excalidraw-style washes (ported from Dispatch #735 named fills).
+  ink: { stroke: "#1e1e1e", fill: "#f4f0e7" },
+  muted: { stroke: "#868e96", fill: "#e9ecef" },
+  accent: { stroke: "#c83f2f", fill: "#ffc9c9" },
+  info: { stroke: "#1971c2", fill: "#a5d8ff" },
+  success: { stroke: "#2f9e44", fill: "#b2f2bb" },
+  warning: { stroke: "#f08c00", fill: "#ffec99" },
+  danger: { stroke: "#e03131", fill: "#ffc9c9" },
 } as const;
+
+// Excalifont — same handwriting family Dispatch #735 uses for agent ink.
+const AGENT_FONT_FAMILY = 5;
+const AGENT_LABEL_FONT_SIZE = 18;
+const AGENT_TEXT_FONT_SIZE = 20;
+const AGENT_LINE_HEIGHT = 1.25;
+const AGENT_CHAR_WIDTH = AGENT_LABEL_FONT_SIZE * 0.55;
+const BOUND_TEXT_PADDING = 5;
+const PAD2 = BOUND_TEXT_PADDING * 2;
+const MAX_AUTO_TEXT_WIDTH = 440;
 
 export function compileCanvasPatch(
   patch: CanvasPatch,
@@ -147,7 +158,13 @@ export function compileCanvasPatch(
           ...style,
           ...(operation.label === undefined
             ? {}
-            : { label: { text: operation.label, fontFamily: 1, fontSize: 16 } }),
+            : {
+                label: {
+                  text: operation.label,
+                  fontFamily: AGENT_FONT_FAMILY,
+                  fontSize: 16,
+                },
+              }),
           customData: { canvasAgentRef: operation.ref, canvasAgentPatch: patchKey },
         });
         connections.push({
@@ -209,7 +226,13 @@ function compileCreateElement(
       ...style,
       ...(element.label === undefined
         ? {}
-        : { label: { text: element.label, fontFamily: 1, fontSize: 16 } }),
+        : {
+            label: {
+              text: element.label,
+              fontFamily: AGENT_FONT_FAMILY,
+              fontSize: 16,
+            },
+          }),
       customData,
     };
   }
@@ -218,16 +241,17 @@ function compileCreateElement(
     return compileFreehand(id, element.points, style, customData, context);
   }
 
-  const box = normalizedBoxToScene(element.box, context);
+  let box = normalizedBoxToScene(element.box, context);
 
   if (element.kind === "text") {
+    const fitted = fitStandaloneText(element.text, box);
     return {
       id,
       type: "text",
-      ...box,
-      text: element.text,
-      fontFamily: 1,
-      fontSize: 18,
+      ...fitted.box,
+      text: fitted.text,
+      fontFamily: AGENT_FONT_FAMILY,
+      fontSize: AGENT_TEXT_FONT_SIZE,
       textAlign: "left",
       verticalAlign: "top",
       strokeColor: style.strokeColor,
@@ -249,6 +273,12 @@ function compileCreateElement(
     };
   }
 
+  // Bound labels: grow the container so text never clips (Dispatch #735 layoutBoundText).
+  const labelText = "text" in element ? element.text : undefined;
+  if (labelText) {
+    box = fitBoundLabelBox(element.kind === "note" ? "rectangle" : element.kind, labelText, box);
+  }
+
   return {
     id,
     type: element.kind === "note" ? "rectangle" : element.kind,
@@ -256,14 +286,14 @@ function compileCreateElement(
     roughness: 1,
     roundness: element.kind === "rectangle" || element.kind === "note" ? { type: 3 } : undefined,
     ...style,
-    ...(element.text === undefined
+    ...(labelText === undefined
       ? {}
       : {
           label: {
-            text: element.text,
-            fontFamily: 1,
-            fontSize: 17,
-            textAlign: "left",
+            text: wrapLabel(labelText, usableTextWidth(element.kind === "note" ? "rectangle" : element.kind, box.width)),
+            fontFamily: AGENT_FONT_FAMILY,
+            fontSize: AGENT_LABEL_FONT_SIZE,
+            textAlign: "center",
             verticalAlign: "middle",
           },
         }),
@@ -331,6 +361,119 @@ function compileStyle(style?: CanvasStyle, defaultTheme: keyof typeof THEME_COLO
     strokeStyle: style?.stroke ?? "solid",
     strokeWidth: style?.weight === "thin" ? 1 : style?.weight === "bold" ? 4 : 2,
     opacity: style?.opacity ?? 100,
+  };
+}
+
+/** Measure + wrap helpers adapted from Dispatch whiteboard-builder (#735). */
+function measureText(text: string, fontSize = AGENT_LABEL_FONT_SIZE) {
+  const charWidth = fontSize * 0.55;
+  const lines = text.split("\n");
+  const longest = Math.max(...lines.map((line) => line.length), 1);
+  return {
+    width: Math.ceil(longest * charWidth),
+    height: Math.ceil(lines.length * fontSize * AGENT_LINE_HEIGHT),
+  };
+}
+
+function usableTextWidth(kind: string, width: number) {
+  if (kind === "ellipse") return Math.round(width / Math.SQRT2) - PAD2;
+  if (kind === "diamond") return width / 2 - PAD2;
+  return width - PAD2;
+}
+
+function usableTextHeight(kind: string, height: number) {
+  if (kind === "ellipse") return Math.round(height / Math.SQRT2) - PAD2;
+  if (kind === "diamond") return height / 2 - PAD2;
+  return height - PAD2;
+}
+
+function containerWidthFor(kind: string, textWidth: number) {
+  if (kind === "ellipse") return Math.round((textWidth + PAD2) * Math.SQRT2);
+  if (kind === "diamond") return 2 * (textWidth + PAD2);
+  return textWidth + PAD2;
+}
+
+function containerHeightFor(kind: string, textHeight: number) {
+  if (kind === "ellipse") return Math.round((textHeight + PAD2) * Math.SQRT2);
+  if (kind === "diamond") return 2 * (textHeight + PAD2);
+  return textHeight + PAD2;
+}
+
+function longestWordWidth(text: string) {
+  let max = 1;
+  for (const word of text.split(/[\s\n]+/)) max = Math.max(max, word.length);
+  return Math.ceil(max * AGENT_CHAR_WIDTH);
+}
+
+function wrapLabel(text: string, maxWidth: number) {
+  const maxChars = Math.max(1, Math.floor(maxWidth / AGENT_CHAR_WIDTH));
+  const out: string[] = [];
+  for (const raw of text.split("\n")) {
+    const words = raw.split(" ").filter((word) => word.length > 0);
+    if (words.length === 0) {
+      out.push("");
+      continue;
+    }
+    let line = "";
+    for (let word of words) {
+      while (word.length > maxChars) {
+        if (line) {
+          out.push(line);
+          line = "";
+        }
+        out.push(word.slice(0, maxChars));
+        word = word.slice(maxChars);
+      }
+      if (!line) line = word;
+      else if (line.length + 1 + word.length <= maxChars) line += ` ${word}`;
+      else {
+        out.push(line);
+        line = word;
+      }
+    }
+    out.push(line);
+  }
+  return out.join("\n");
+}
+
+function fitBoundLabelBox(
+  kind: string,
+  text: string,
+  box: { x: number; y: number; width: number; height: number },
+) {
+  const fittedKinds = new Set(["rectangle", "ellipse", "diamond"]);
+  if (!fittedKinds.has(kind)) return box;
+
+  let width = box.width;
+  let height = box.height;
+  let maxW = usableTextWidth(kind, width);
+  const wordW = Math.min(longestWordWidth(text), MAX_AUTO_TEXT_WIDTH);
+  if (wordW > maxW) {
+    maxW = wordW;
+    width = containerWidthFor(kind, wordW);
+  }
+  const wrapped = wrapLabel(text, maxW);
+  const size = measureText(wrapped);
+  if (size.height > usableTextHeight(kind, height)) {
+    height = containerHeightFor(kind, size.height);
+  }
+  return { ...box, width: round(width), height: round(height) };
+}
+
+function fitStandaloneText(
+  text: string,
+  box: { x: number; y: number; width: number; height: number },
+) {
+  const maxW = Math.max(box.width - PAD2, AGENT_CHAR_WIDTH);
+  const wrapped = wrapLabel(text, maxW);
+  const size = measureText(wrapped, AGENT_TEXT_FONT_SIZE);
+  return {
+    text: wrapped,
+    box: {
+      ...box,
+      width: round(Math.max(box.width, size.width + PAD2)),
+      height: round(Math.max(box.height, size.height + PAD2)),
+    },
   };
 }
 
