@@ -140,6 +140,7 @@ export default function CanvasContractLab({
     }
 
     setSource(JSON.stringify(samplePatch(fixture, context), null, 2));
+    getSnapshot()?.clearPatchPreview();
     setPendingPatch(null);
     onPatchApplied?.();
     setResult({
@@ -162,14 +163,16 @@ export default function CanvasContractLab({
 
     if (response.status === "confirmation-required") {
       setPendingPatch(patch);
+      void getSnapshot()?.previewCompiledPatch(patch);
       setResult({
         tone: "warning",
         title: "Human confirmation required",
-        detail: `Blocked before mutation: ${response.reasons.join(", ")}.`,
+        detail: `Blocked before mutation: ${response.reasons.join(", ")}. Ghost marks preview the change.`,
       });
       return;
     }
 
+    getSnapshot()?.clearPatchPreview();
     setPendingPatch(null);
     setResult({
       tone: "success",

@@ -563,9 +563,10 @@
 
 .showcaseActions {
   position: absolute;
-  z-index: 20;
-  right: 28px;
-  bottom: 142px;
+  z-index: 19;
+  left: 28px;
+  right: auto;
+  bottom: calc(var(--follow-up-bottom, 76px) + 72px + var(--keyboard-inset, 0px));
   display: grid;
   width: min(270px, calc(100% - 48px));
   gap: 7px;
@@ -576,13 +577,22 @@
   background: rgb(255 249 217 / 93%);
   box-shadow: 4px 7px 18px rgb(61 51 34 / 13%);
   font-size: .68rem;
-  transform: rotate(.7deg);
+  transform: rotate(-0.6deg);
+  animation: fade-in .3s ease both;
 }
 
 .showcaseActions > span {
   color: var(--red);
-  font-family: var(--font-lukes, cursive);
-  font-size: .82rem;
+  font-size: .92rem;
+  line-height: 1.15;
+}
+
+.followUpUnavailable {
+  margin: 0;
+  color: #6d675e;
+  font-size: .7rem;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .showcaseActions button {
@@ -750,6 +760,11 @@
   transform: rotate(-3deg);
 }
 
+.cornerNoteHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .agentNotice {
   position: absolute;
   z-index: 12;
@@ -766,6 +781,17 @@
   box-shadow: 5px 7px 0 rgb(32 32 29 / 8%);
   transform: translateX(-50%) rotate(-.25deg);
   font-size: .78rem;
+}
+
+.changePreviewNotice {
+  border-color: rgb(228 87 62 / 35%);
+  background: rgb(255 247 237 / 96%);
+}
+
+.previewHint {
+  color: #8a6250 !important;
+  font-size: .7rem !important;
+  font-style: italic;
 }
 
 .agentNotice strong { font-size: .82rem; }
@@ -788,6 +814,8 @@
   z-index: 11;
   top: 92px;
   right: 28px;
+  bottom: auto;
+  left: auto;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -803,7 +831,8 @@
 .sketchFeedbackLabel {
   margin-right: 2px;
   color: #5f5a52;
-  font-size: .78rem;
+  font-size: .74rem;
+  font-weight: 650;
   letter-spacing: .01em;
 }
 
@@ -1035,10 +1064,18 @@
   .sketchFeedback {
     top: 86px;
     right: 14px;
-    left: 14px;
-    max-width: none;
+    left: auto;
+    bottom: auto;
+    max-width: min(240px, calc(100% - 28px));
     justify-content: flex-end;
     transform: none;
+  }
+  .showcaseActions {
+    left: 14px;
+    right: auto;
+    bottom: calc(var(--mobile-follow-up-bottom, 80px) + 72px + var(--keyboard-inset, 0px));
+    width: min(250px, calc(100% - 28px));
+    transform: rotate(-0.4deg);
   }
   .signature, .presence, .dock, .followUpTray, .followUpLauncher, .loading { backdrop-filter: none; }
 }

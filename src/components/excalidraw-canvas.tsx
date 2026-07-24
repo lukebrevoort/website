@@ -82,6 +82,8 @@ export type CanvasSnapshot = {
   ) => Promise<readonly ExcalidrawElement[]>;
   removeElements: (elementIds: readonly string[]) => void;
   getPatchContext: () => CanvasPatchContext | null;
+  previewCompiledPatch: (patch: CompiledCanvasPatch) => Promise<void>;
+  clearPatchPreview: () => void;
   applyCompiledPatch: (
     patch: CompiledCanvasPatch,
     options?: { confirmed?: boolean },
@@ -104,6 +106,8 @@ type ExcalidrawCanvasProps = {
   onSnapshot?: (snapshot: CanvasSnapshot) => void;
 };
 
+const PREVIEW_ID_PREFIX = "canvas-change-preview:";
+
 const emptySnapshot: CanvasSnapshot = {
   api: null,
   sceneElements: [],
@@ -114,9 +118,18 @@ const emptySnapshot: CanvasSnapshot = {
   insertElements: async () => [],
   removeElements: () => undefined,
   getPatchContext: () => null,
+  previewCompiledPatch: async () => undefined,
+  clearPatchPreview: () => undefined,
   applyCompiledPatch: async () => ({ status: "unavailable" }),
   resetBoard: () => undefined,
 };
+
+function isChangePreviewElement(element: ExcalidrawElement) {
+  return (
+    element.id.startsWith(PREVIEW_ID_PREFIX) ||
+    Boolean((element.customData as { changePreview?: boolean } | null)?.changePreview)
+  );
+}
 
 function loadPersistedBoard(): ExcalidrawInitialDataState | null {
   try {
@@ -279,6 +292,7 @@ async function blankCanvasBlob() {
 export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const snapshotRef = useRef<CanvasSnapshot>(emptySnapshot);
+  const previewElementIds = useRef<string[]>([]);
   const persistenceTimer = useRef<number | null>(null);
   const persistenceRevision = useRef(0);
   const sceneRef = useRef<{
@@ -458,6 +472,97 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     );
   }, []);
 
+  const clearPatchPreview = useCallback(() => {
+    const api = apiRef.current;
+    const previewIds = previewElementIds.current;
+    if (!api || previewIds.length === 0) return;
+
+    const ids = new Set(previewIds);
+    previewElementIds.current = [];
+    void import("@excalidraw/excalidraw").then(({ CaptureUpdateAction }) => {
+      api.updateScene({
+        elements: api.getSceneElements().map((element) =>
+          ids.has(element.id) || element.id.startsWith(PREVIEW_ID_PREFIX)
+            ? { ...element, isDeleted: true }
+            : element,
+        ),
+        captureUpdate: CaptureUpdateAction.NEVER,
+      });
+    });
+  }, []);
+
+  const previewCompiledPatch = useCallback(
+    async (patch: CompiledCanvasPatch) => {
+      const api = apiRef.current;
+      if (!api || patch.createElements.length === 0) return;
+
+      const { CaptureUpdateAction, convertToExcalidrawElements } = await import(
+        "@excalidraw/excalidraw"
+      );
+
+      if (previewElementIds.current.length > 0) {
+        const staleIds = new Set(previewElementIds.current);
+        previewElementIds.current = [];
+        api.updateScene({
+          elements: api.getSceneElements().map((element) =>
+            staleIds.has(element.id) || element.id.startsWith(PREVIEW_ID_PREFIX)
+              ? { ...element, isDeleted: true }
+              : element,
+          ),
+          captureUpdate: CaptureUpdateAction.NEVER,
+        });
+      }
+
+      const ghostSkeletons = patch.createElements.map((element) => ({
+        ...element,
+        id: `${PREVIEW_ID_PREFIX}${element.id}`,
+        opacity: Math.min(
+          typeof element.opacity === "number" ? element.opacity : 100,
+          42,
+        ),
+        locked: true,
+        strokeStyle: "dashed" as const,
+        customData: {
+          ...(element.customData && typeof element.customData === "object"
+            ? element.customData
+            : {}),
+          changePreview: true,
+        },
+      }));
+
+      const previewElements = convertToExcalidrawElements(ghostSkeletons, {
+        regenerateIds: false,
+      }).map((element) => ({
+        ...element,
+        opacity: Math.min(element.opacity ?? 100, 42),
+        locked: true,
+        customData: {
+          ...(element.customData ?? {}),
+          changePreview: true,
+        },
+      }));
+
+      previewElementIds.current = previewElements.map((element) => element.id);
+      api.updateScene({
+        elements: [...api.getSceneElements(), ...previewElements],
+        captureUpdate: CaptureUpdateAction.NEVER,
+      });
+      api.scrollToContent(previewElements, {
+        fitToViewport: true,
+        viewportZoomFactor: 0.78,
+        animate: true,
+        duration: 360,
+        maxZoom: 1.1,
+        canvasOffsets: { top: 90, bottom: 170 },
+      });
+      api.setToast({
+        message: "Previewing the proposed change — apply or keep the board as-is",
+        duration: 2600,
+      });
+    },
+    [],
+  );
+
   const applyCompiledPatch = useCallback(
     async (
       patch: CompiledCanvasPatch,
@@ -476,11 +581,20 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       const { CaptureUpdateAction, convertToExcalidrawElements } = await import(
         "@excalidraw/excalidraw"
       );
+
+      // Drop any ghost preview before committing the real patch.
+      const previewIds = new Set(previewElementIds.current);
+      previewElementIds.current = [];
+      const sceneWithoutPreview = api.getSceneElements().filter(
+        (element) =>
+          !previewIds.has(element.id) && !element.id.startsWith(PREVIEW_ID_PREFIX),
+      );
+
       const createdElements = convertToExcalidrawElements(patch.createElements, {
         regenerateIds: false,
       });
       const nextElements = applyCompiledPatchToElements(
-        api.getSceneElements(),
+        sceneWithoutPreview,
         createdElements,
         patch,
       );
@@ -498,7 +612,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
           animate: true,
           duration: 420,
           maxZoom: 1.1,
-          canvasOffsets: { top: 70, bottom: 150 },
+          canvasOffsets: { top: 70, bottom: 210 },
         });
       }
       api.setToast({
@@ -518,6 +632,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     persistenceRevision.current += 1;
     if (persistenceTimer.current) window.clearTimeout(persistenceTimer.current);
     window.localStorage.removeItem(BOARD_STORAGE_KEY);
+    previewElementIds.current = [];
     apiRef.current?.resetScene();
     apiRef.current?.history.clear();
     apiRef.current?.setToast({ message: "Started a fresh local board", duration: 1800 });
@@ -529,12 +644,18 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       appState: AppState,
       files: BinaryFiles,
     ) => {
-      const sceneElements = elements.filter((element) => !element.isDeleted);
+      const sceneElements = elements.filter(
+        (element) => !element.isDeleted && !isChangePreviewElement(element),
+      );
       const selectedElements = sceneElements.filter(
         (element) => appState.selectedElementIds[element.id],
       );
       sceneRef.current = { elements: sceneElements, appState, files };
-      schedulePersistence(elements, appState, files);
+      schedulePersistence(
+        elements.filter((element) => !isChangePreviewElement(element)),
+        appState,
+        files,
+      );
 
       setCounts((current) => {
         if (
@@ -556,11 +677,13 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         insertElements,
         removeElements,
         getPatchContext,
+        previewCompiledPatch,
+        clearPatchPreview,
         applyCompiledPatch,
         resetBoard,
       });
     },
-    [applyCompiledPatch, captureAgentContext, captureCanvasImage, getPatchContext, insertElements, publishSnapshot, removeElements, resetBoard, schedulePersistence],
+    [applyCompiledPatch, captureAgentContext, captureCanvasImage, clearPatchPreview, getPatchContext, insertElements, previewCompiledPatch, publishSnapshot, removeElements, resetBoard, schedulePersistence],
   );
 
   return (
@@ -576,6 +699,8 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
             insertElements,
             removeElements,
             getPatchContext,
+            previewCompiledPatch,
+            clearPatchPreview,
             applyCompiledPatch,
             resetBoard,
           });

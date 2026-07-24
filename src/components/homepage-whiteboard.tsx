@@ -26,8 +26,11 @@ import CanvasContractLab from "./canvas-contract-lab";
 import TurnstileChallenge from "./turnstile-challenge";
 import {
   CANVAS_STARTER_PROMPTS,
+  getStarterFollowUps,
+  isMatchingStarterPrompt,
   type CanvasStarterId,
 } from "@/lib/canvas-agent/starter-prompts";
+import { createAuthoredStarterPatch } from "@/lib/canvas-agent/fallbacks";
 import styles from "./homepage-whiteboard.module.css";
 
 type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
@@ -57,6 +60,35 @@ async function blobToDataUrl(blob: Blob) {
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(blob);
   });
+}
+
+function clarifyLiveRestingMessage(message: string | undefined, firstTurn: boolean) {
+  const fallback = firstTurn
+    ? "Live sketching is resting right now. Preset sketches still work—pick one of the notes above."
+    : "Live follow-ups are resting right now, so nothing new was added. Preset sketches still work—use new board, then pick a note.";
+
+  if (!message?.trim()) return fallback;
+
+  const normalized = message.toLowerCase();
+  const soundsResting =
+    normalized.includes("resting") ||
+    normalized.includes("unavailable") ||
+    normalized.includes("vision agent") ||
+    normalized.includes("live sketching");
+
+  if (!soundsResting) return message;
+
+  if (
+    normalized.includes("authored") ||
+    normalized.includes("starting point") ||
+    normalized.includes("preset")
+  ) {
+    return message;
+  }
+
+  return firstTurn
+    ? `${message.replace(/\s*$/, "")} Preset sketches still work—pick one of the notes above.`
+    : `${message.replace(/\s*$/, "")} Preset sketches still work—use new board, then pick a note.`;
 }
 
 type LivePolicy = {
@@ -97,6 +129,8 @@ export default function HomepageWhiteboard({
   const [isCompactViewport, setIsCompactViewport] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [followUpShouldFocus, setFollowUpShouldFocus] = useState(false);
+  const [activeStarterId, setActiveStarterId] = useState<CanvasStarterId | null>(null);
+  const [usedFollowUps, setUsedFollowUps] = useState<string[]>([]);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -204,6 +238,30 @@ export default function HomepageWhiteboard({
     ((agentState === "thinking" || agentState === "error") && turn.current > 0);
   const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
   const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+  const starterFollowUps = activeStarterId ? getStarterFollowUps(activeStarterId) : [];
+  const availableFollowUps = starterFollowUps.filter((item) => !usedFollowUps.includes(item));
+  const liveSketchesRemaining = livePolicy?.usage
+    ? Math.max(0, livePolicy.limits.sessionDaily - livePolicy.usage.sessionUsed)
+    : null;
+  const liveQuotaExhausted = liveSketchesRemaining === 0;
+  const liveFollowUpsAvailable = !liveQuotaExhausted && livePolicy?.live.available !== false;
+  const showFollowUpSuggestions =
+    showFollowUpSurface &&
+    !pendingPatch &&
+    agentState === "active" &&
+    availableFollowUps.length > 0 &&
+    !(isCompactViewport && followUpOpen);
+
+  useEffect(() => {
+    if (!pendingPatch) {
+      canvasSnapshot.current?.clearPatchPreview();
+      return;
+    }
+    void canvasSnapshot.current?.previewCompiledPatch(pendingPatch.compiled);
+    return () => {
+      canvasSnapshot.current?.clearPatchPreview();
+    };
+  }, [pendingPatch]);
 
   useEffect(() => {
     if (!showFollowUpLauncher || !restoreLauncherFocusRef.current) return;
@@ -268,13 +326,24 @@ export default function HomepageWhiteboard({
   const explore = async (value: string, starterId?: CanvasStarterId) => {
     const nextQuestion = value.trim();
     if (!nextQuestion) return;
+    if (usedFollowUps.includes(nextQuestion)) return;
     setQuestion(nextQuestion);
     setAgentMessage("");
     setPendingPatch(null);
     setSketchFeedback(null);
+    canvasSnapshot.current?.clearPatchPreview();
+
+    if (starterId) {
+      setActiveStarterId(starterId);
+      setUsedFollowUps([]);
+    }
 
     if (!navigator.onLine) {
-      setAgentMessage("The vision agent is offline. Your canvas was not changed.");
+      setAgentMessage(
+        turn.current === 0
+          ? "You’re offline, so live sketching can’t run. Preset sketches still work once you’re back online—or keep drawing on the board."
+          : "You’re offline, so live follow-ups can’t run. Your canvas is unchanged—draw freely, or use new board for a preset sketch when you’re back online.",
+      );
       setAgentState("error");
       return;
     }
@@ -283,7 +352,7 @@ export default function HomepageWhiteboard({
       setAgentMessage(
         livePolicy.live.turnstileSiteKey
           ? "Complete the quick human check, then send that thought again."
-          : "Live verification is not configured yet. The authored starting points still work.",
+          : "Live verification is not configured yet. Preset notes still work—pick one above.",
       );
       setAgentState("error");
       return;
@@ -294,6 +363,84 @@ export default function HomepageWhiteboard({
     const snapshot = canvasSnapshot.current;
     if (!snapshot) {
       setAgentMessage("The canvas is still opening. Give it a moment and try again.");
+      setAgentState("error");
+      return;
+    }
+
+    // Preset notes are authored locally — never spend live quota or call the vision API.
+    if (starterId && isMatchingStarterPrompt(starterId, nextQuestion)) {
+      try {
+        const context = snapshot.getPatchContext();
+        if (!context) {
+          setAgentMessage("The canvas is still opening. Give it a moment and try again.");
+          setAgentState("error");
+          return;
+        }
+
+        const patch = createAuthoredStarterPatch(starterId, context);
+        const validation = validateCanvasPatch(patch, context);
+        if (!validation.ok) {
+          setAgentMessage("That preset sketch couldn’t be built safely. Your canvas was not changed—try another note.");
+          setAgentState("error");
+          return;
+        }
+
+        const compiled = compileCanvasPatch(
+          validation.value.patch,
+          context,
+          validation.value.risk,
+        );
+
+        if (compiled.risk.requiresConfirmation) {
+          setPendingPatch({
+            compiled,
+            patch: validation.value.patch,
+            prompt: nextQuestion,
+            summary: validation.value.patch.summary,
+            sceneVersion: context.sceneVersion,
+            reason: "risk",
+          });
+          setAgentMessage(`This change needs your approval: ${compiled.risk.reasons.join(", ")}.`);
+          setAgentState("active");
+          return;
+        }
+
+        const application = await snapshot.applyCompiledPatch(compiled);
+        if (application.status === "confirmation-required") {
+          setPendingPatch({
+            compiled,
+            patch: validation.value.patch,
+            prompt: nextQuestion,
+            summary: validation.value.patch.summary,
+            sceneVersion: context.sceneVersion,
+            reason: "risk",
+          });
+          setAgentMessage(`This change needs your approval: ${application.reasons.join(", ")}.`);
+          setAgentState("active");
+          return;
+        }
+        if (application.status !== "applied") {
+          setAgentMessage("The canvas was not ready to apply that preset. Nothing was modified.");
+          setAgentState("error");
+          return;
+        }
+
+        recordTurn(nextQuestion, validation.value.patch.summary);
+        turn.current += 1;
+        setAgentMessage("");
+        setAgentState("active");
+      } catch (error) {
+        console.error("Authored starter apply failed", error);
+        setAgentMessage("That preset sketch couldn’t be applied. Your canvas is untouched—try another note.");
+        setAgentState("error");
+      }
+      return;
+    }
+
+    if (liveQuotaExhausted) {
+      setAgentMessage(
+        "Today’s live sketch allowance is used up. Your canvas is unchanged—start a new board and pick a preset note (those stay free).",
+      );
       setAgentState("error");
       return;
     }
@@ -315,24 +462,26 @@ export default function HomepageWhiteboard({
           context: capture.context,
           imageDataUrl: await blobToDataUrl(capture.image),
           priorTurns: priorTurns.current,
-          ...(starterId ? { starterId } : {}),
           ...(!starterId && turnstileToken ? { turnstileToken } : {}),
         }),
       });
       const payload = await response.json().catch(() => ({
         ok: false,
         message: response.status === 429
-          ? "Too many questions from this connection. Wait a few minutes and try again."
-          : "The vision agent could not read that response. Your canvas was not changed.",
+          ? "Too many live questions from this connection. Wait a few minutes, or start a new board and use a preset sketch."
+          : "Live sketching couldn’t finish that request. Your canvas is unchanged—try a preset from a new board, or ask again in a moment.",
       })) as {
         ok: boolean;
         message?: string;
+        code?: string;
         patch?: CanvasPatch;
         quality?: { ok: boolean; issues?: string[] };
         usage?: { counted?: boolean; sessionUsed?: number; sessionLimit?: number };
       };
       if (!response.ok || !payload.ok || !payload.patch) {
-        setAgentMessage(payload.message || "The vision agent is resting. Your canvas was not changed.");
+        setAgentMessage(
+          clarifyLiveRestingMessage(payload.message, turn.current === 0),
+        );
         setAgentState("error");
         return;
       }
@@ -423,11 +572,25 @@ export default function HomepageWhiteboard({
 
       recordTurn(nextQuestion, validation.value.patch.summary);
       turn.current += 1;
+      if (
+        !starterId &&
+        activeStarterId &&
+        getStarterFollowUps(activeStarterId).includes(nextQuestion)
+      ) {
+        setUsedFollowUps((current) =>
+          current.includes(nextQuestion) ? current : [...current, nextQuestion],
+        );
+      }
       if (!starterId) offerSketchFeedback(nextQuestion, validation.value.patch);
       setAgentState("active");
     } catch (error) {
       console.error("Canvas agent request failed", error);
-      setAgentMessage("The live sketch hiccuped before it could finish. Your canvas is untouched—please try again.");
+      setAgentMessage(
+        clarifyLiveRestingMessage(
+          "Live sketching couldn’t finish that request. Your canvas is unchanged.",
+          Boolean(starterId) || turn.current === 0,
+        ),
+      );
       setAgentState("error");
     } finally {
       if (!starterId && livePolicy?.live.verificationRequired) {
@@ -462,8 +625,17 @@ export default function HomepageWhiteboard({
     }
     recordTurn(pendingPatch.prompt, pendingPatch.summary);
     turn.current += 1;
+    if (
+      activeStarterId &&
+      getStarterFollowUps(activeStarterId).includes(pendingPatch.prompt)
+    ) {
+      setUsedFollowUps((current) =>
+        current.includes(pendingPatch.prompt) ? current : [...current, pendingPatch.prompt],
+      );
+    }
     offerSketchFeedback(pendingPatch.prompt, pendingPatch.patch);
     setPendingPatch(null);
+    canvasSnapshot.current?.clearPatchPreview();
     setAgentMessage(
       pendingPatch.reason === "quality"
         ? "Applied. Undo (⌘Z / Ctrl+Z) if you want the board back."
@@ -514,12 +686,15 @@ export default function HomepageWhiteboard({
 
   const startNewBoard = () => {
     if (boardHasContent && !window.confirm("Start a new board? This clears the locally saved canvas on this device.")) return;
+    canvasSnapshot.current?.clearPatchPreview();
     canvasSnapshot.current?.resetBoard();
     priorTurns.current = [];
     turn.current = 0;
     setBoardHasContent(false);
     setPendingPatch(null);
     setSketchFeedback(null);
+    setActiveStarterId(null);
+    setUsedFollowUps([]);
     setQuestion("");
     setPrompt("");
     setAgentMessage("");
@@ -528,8 +703,8 @@ export default function HomepageWhiteboard({
   };
 
   const liveUsageLabel = livePolicy?.usage
-    ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today`
-    : "authored notes don't use the live allowance";
+    ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today · preset notes are always free`
+    : "preset notes are free · live questions use today’s allowance";
 
   const followUpStatusLabel =
     agentState === "thinking"
@@ -618,7 +793,7 @@ export default function HomepageWhiteboard({
 
             {agentState === "error" && (
               <div className={styles.errorNote} role="alert">
-                {agentMessage || "The live sketch hiccuped. Your canvas is still here—try again."}
+                {agentMessage || "Something went wrong with live sketching. Your canvas is still here—try a preset note, or ask again."}
               </div>
             )}
 
@@ -651,18 +826,20 @@ export default function HomepageWhiteboard({
         )}
 
         {pendingPatch && (
-          <div className={styles.agentNotice} role="alert">
+          <div className={`${styles.agentNotice} ${styles.changePreviewNotice}`} role="alert">
             <strong>
               {pendingPatch.reason === "quality"
-                ? "Sketch looks imperfect"
-                : "Review before changing the board"}
+                ? "Preview — sketch looks imperfect"
+                : "Preview — review before changing the board"}
             </strong>
             <span>{agentMessage}</span>
+            <span className={styles.previewHint}>Ghost marks show the proposed change.</span>
             <div>
               <button type="button" onClick={confirmPendingPatch}>
                 {pendingPatch.reason === "quality" ? "apply anyway" : "apply change"}
               </button>
               <button type="button" onClick={() => {
+                canvasSnapshot.current?.clearPatchPreview();
                 setPendingPatch(null);
                 setAgentMessage("");
               }}>
@@ -680,8 +857,8 @@ export default function HomepageWhiteboard({
               </span>
             ) : (
               <>
-                <span className={`${styles.sketchFeedbackLabel} ${lukesFont.className}`}>
-                  layout feel?
+                <span className={styles.sketchFeedbackLabel}>
+                  Did this layout work?
                 </span>
                 <button
                   type="button"
@@ -720,6 +897,25 @@ export default function HomepageWhiteboard({
           <div className={`${styles.agentNotice} ${styles.agentNoticeError}`} role="alert">
             <strong>Nothing changed</strong>
             <span>{agentMessage}</span>
+          </div>
+        )}
+
+        {showFollowUpSuggestions && (
+          <div className={styles.showcaseActions} aria-label="Suggested follow-ups">
+            <span className={lukesFont.className}>Try a visual follow-up:</span>
+            {liveFollowUpsAvailable ? (
+              availableFollowUps.map((followUp) => (
+                <button key={followUp} type="button" onClick={() => explore(followUp)}>
+                  {followUp}
+                </button>
+              ))
+            ) : (
+              <p className={styles.followUpUnavailable}>
+                {liveQuotaExhausted
+                  ? "Live follow-ups are out for today. Preset sketches on a new board are still free."
+                  : "Live follow-ups are resting. Preset sketches on a new board are still free."}
+              </p>
+            )}
           </div>
         )}
 
@@ -815,7 +1011,10 @@ export default function HomepageWhiteboard({
           </form>
         )}
 
-        <aside className={styles.cornerNote} aria-hidden="true">
+        <aside
+          className={`${styles.cornerNote} ${showFollowUpSurface ? styles.cornerNoteHidden : ""}`}
+          aria-hidden="true"
+        >
           <span>this space is yours</span>
           <span>draw, type, and move things around ↗</span>
         </aside>

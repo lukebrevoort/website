@@ -115,7 +115,7 @@ export async function POST(request: Request) {
       patch: validation.value.patch,
       risk: validation.value.risk,
       provider: "authored",
-      model: "cached-starter-v1",
+      model: "cached-starter-v2",
       scope: parsed.data.scope,
       usage: { counted: false },
     }, 200, session);
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
   const identity = usageIdentity(request, session.id);
   if (!identity || !providerConfigured()) {
     return restingResponse(
-      "Live sketching is resting, but the authored starting points still work and your board is safe.",
+      "Live follow-ups and freeform questions are resting right now. Preset sketches still work—start a new board and pick a note. Your canvas is unchanged.",
       503,
       "live-unavailable",
       session,
@@ -140,8 +140,8 @@ export async function POST(request: Request) {
     const unavailable = verification.reason === "unconfigured" || verification.reason === "unavailable";
     return restingResponse(
       unavailable
-        ? "Live verification is resting. Try an authored starting point—your board is unchanged."
-        : "Please complete the quick human check before asking the live canvas.",
+        ? "Live verification is resting. Preset sketches still work—pick a note above. Your board is unchanged."
+          : "Please complete the quick human check before asking a live follow-up or freeform question.",
       unavailable ? 503 : 403,
       unavailable ? "verification-unavailable" : "verification-required",
       session,
@@ -215,7 +215,7 @@ export async function POST(request: Request) {
     }, 200, session);
   } catch (error) {
     if (error instanceof ProviderUnavailableError) {
-      return restingResponse("The configured vision provider is unavailable. Your board was not changed.", 503, "live-unavailable", session);
+      return restingResponse("Live sketching is unavailable right now. Preset sketches still work—start a new board and pick a note. Your canvas is unchanged.", 503, "live-unavailable", session);
     }
     if (isQuotaError(error)) {
       return restingResponse(
@@ -283,10 +283,10 @@ function usageLimitResponse(
   const messages = {
     cooldown: "Give the canvas a few seconds before adding another live thought.",
     "in-flight": "This board already has a live sketch in progress. Let it finish before sending another.",
-    "session-limit": "This board has used today's live sketch allowance. Authored starting points still work.",
-    "ip-limit": "This connection has used today's live sketch allowance. Authored starting points still work.",
-    "project-limit": "The site's live sketch allowance is finished for today. Authored starting points still work.",
-    "usage-unavailable": "Live usage controls are resting, so inference was safely stopped. Authored starting points still work.",
+    "session-limit": "This board has used today's live sketch allowance. Preset sketches still work—start a new board and pick a note.",
+    "ip-limit": "This connection has used today's live sketch allowance. Preset sketches still work—start a new board and pick a note.",
+    "project-limit": "The site's live sketch allowance is finished for today. Preset sketches still work—start a new board and pick a note.",
+    "usage-unavailable": "Live usage controls are resting, so freeform questions were stopped. Preset sketches still work—start a new board and pick a note.",
   } as const;
   return restingResponse(
     messages[code],
