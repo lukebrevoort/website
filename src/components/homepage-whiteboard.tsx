@@ -347,7 +347,7 @@ export default function HomepageWhiteboard({
       setAgentState("active");
     } catch (error) {
       console.error("Canvas agent request failed", error);
-      setAgentMessage("The vision agent lost the thread. Your canvas is untouched—please try again.");
+      setAgentMessage("The live sketch hiccuped before it could finish. Your canvas is untouched—please try again.");
       setAgentState("error");
     } finally {
       if (!starterId && livePolicy?.live.verificationRequired) {
@@ -536,7 +536,7 @@ export default function HomepageWhiteboard({
 
             {agentState === "error" && (
               <div className={styles.errorNote} role="alert">
-                {agentMessage || "The agent lost the thread. Your canvas is still here—try again."}
+                {agentMessage || "The live sketch hiccuped. Your canvas is still here—try again."}
               </div>
             )}
 

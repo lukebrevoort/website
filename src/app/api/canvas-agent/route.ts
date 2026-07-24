@@ -12,6 +12,8 @@ import {
   ProviderUnavailableError,
   createCanvasVisionProvider,
 } from "@/lib/canvas-agent/providers";
+import { CanvasPatchGenerationError } from "@/lib/canvas-agent/providers/types";
+import { SimpleOpsConversionError } from "@/lib/canvas-agent/providers/simple-ops";
 import { getOpenAIApiKey } from "@/lib/canvas-agent/providers/config";
 import { validateCanvasPatch } from "@/lib/canvas-agent";
 import { reviewCanvasPatchComposition } from "@/lib/canvas-agent/composition";
@@ -213,16 +215,34 @@ export async function POST(request: Request) {
         session,
       );
     }
+    if (
+      error instanceof CanvasPatchGenerationError ||
+      error instanceof SimpleOpsConversionError ||
+      isStructuredOutputError(error)
+    ) {
+      logCanvasEvent("live-invalid-output", {
+        requestId,
+        durationMs: Date.now() - startedAt,
+        errorType: error instanceof Error ? error.name : "unknown",
+      });
+      return jsonResponse({
+        ok: false,
+        code: "invalid-patch",
+        message: "The agent sketched something we could not safely read, so nothing was applied. Try that thought once more.",
+        issues: [error instanceof Error ? error.message : "invalid structured output"],
+      }, 422, session);
+    }
     const timedOut = isTimeoutError(error);
     logCanvasEvent(timedOut ? "live-timeout" : "live-failed", {
       requestId,
       durationMs: Date.now() - startedAt,
       errorType: error instanceof Error ? error.name : "unknown",
+      errorMessage: error instanceof Error ? error.message.slice(0, 160) : "unknown",
     });
     return restingResponse(
       timedOut
-        ? "The live sketch took too long, so it was stopped. Your board is untouched."
-        : "The vision agent lost the thread. Your board is untouched—try an authored starting point.",
+        ? "The live sketch took too long, so it was stopped. Your board is untouched—try again in a moment."
+        : "The live sketch hiccuped before it could finish. Your board is untouched—please try that thought again.",
       timedOut ? 504 : 502,
       timedOut ? "execution-timeout" : "agent-resting",
       session,
@@ -295,7 +315,15 @@ function isQuotaError(error: unknown) {
 }
 
 function isTimeoutError(error: unknown) {
-  return error instanceof Error && /timeout|abort/i.test(`${error.name} ${error.message}`);
+  if (!(error instanceof Error)) return false;
+  const haystack = `${error.name} ${error.message}`;
+  return /timeout|abort|etimedout|deadline/i.test(haystack);
+}
+
+function isStructuredOutputError(error: unknown) {
+  if (!(error instanceof Error)) return false;
+  return /structured output|no object generated|did not match schema|invalid.*schema|ai_noobjectgeneratederror/i
+    .test(`${error.name} ${error.message}`);
 }
 
 function logCanvasEvent(event: string, details: Record<string, string | number>) {
