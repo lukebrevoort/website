@@ -5,6 +5,7 @@ import {
   buildFormatRecipeFromPatch,
   formatFeedbackRequestSchema,
   formatRecipeSchema,
+  inspectFormatMemory,
   recordFormatFeedback,
 } from "@/lib/canvas-agent/format-memory";
 import {
@@ -17,6 +18,33 @@ export const runtime = "nodejs";
 export const maxDuration = 10;
 
 const NO_STORE_HEADERS = { "cache-control": "private, no-store" };
+
+/**
+ * Local play / confirmation: peek which formats a prompt would retrieve.
+ * Example: GET /api/canvas-agent/feedback?prompt=Compare%20MALCOM%20and%20Dispatch
+ */
+export async function GET(request: Request) {
+  const session = getCanvasSession(request);
+  if (process.env.NODE_ENV === "production" && process.env.CANVAS_FORMAT_MEMORY_INSPECT !== "true") {
+    return jsonResponse({
+      ok: false,
+      code: "inspect-disabled",
+      message: "Format-memory inspect is disabled in production.",
+    }, 404, session);
+  }
+
+  const prompt = new URL(request.url).searchParams.get("prompt")?.trim() || "";
+  if (!prompt) {
+    return jsonResponse({
+      ok: false,
+      code: "invalid-request",
+      message: "Pass ?prompt=… to inspect the format-memory rollup for that fingerprint.",
+    }, 400, session);
+  }
+
+  const inspection = await inspectFormatMemory(prompt.slice(0, 400));
+  return jsonResponse({ ok: true, ...inspection }, 200, session);
+}
 
 export async function POST(request: Request) {
   const session = getCanvasSession(request);

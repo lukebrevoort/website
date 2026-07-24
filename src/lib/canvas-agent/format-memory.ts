@@ -225,6 +225,35 @@ export async function retrieveApprovedFormats(
     }));
 }
 
+/** Peek rollup state for a prompt — useful for local play / confirmation. */
+export async function inspectFormatMemory(
+  prompt: string,
+  env: NodeJS.ProcessEnv = process.env,
+) {
+  const fingerprint = fingerprintPrompt(prompt);
+  const rollup = await readRollup(fingerprint.key, env);
+  const ranked = pruneAndRank(rollup.entries);
+  const approved = ranked.filter((entry) => entry.netScore > 0 && entry.ups > 0);
+  return {
+    fingerprint: fingerprint.key,
+    projects: fingerprint.projects,
+    intents: fingerprint.intents,
+    backend: redisConfiguration(env) ? "redis" : "memory",
+    entryCount: ranked.length,
+    approvedCount: approved.length,
+    entries: ranked.map((entry) => ({
+      id: entry.id,
+      summary: entry.summary,
+      ups: entry.ups,
+      downs: entry.downs,
+      netScore: entry.netScore,
+      updatedAt: entry.updatedAt,
+      recipe: entry.recipe,
+      eligible: entry.netScore > 0 && entry.ups > 0,
+    })),
+  };
+}
+
 export async function allowFormatFeedback(
   identity: { day: string; session: string; ip: string },
   env: NodeJS.ProcessEnv = process.env,

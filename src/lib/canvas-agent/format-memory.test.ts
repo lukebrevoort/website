@@ -7,6 +7,7 @@ import {
   recordFormatFeedback,
   resetFormatMemoryForTests,
   retrieveApprovedFormats,
+  inspectFormatMemory,
 } from "./format-memory";
 import { matchKnowledgeProjectIds } from "./knowledge";
 
@@ -87,6 +88,24 @@ test("downvotes demote formats out of approved retrieval", async () => {
 
   const approved = await retrieveApprovedFormats("Compare MALCOM and Dispatch");
   assert.equal(approved.length, 0);
+});
+
+test("inspect surfaces fingerprint and eligibility for local play", async () => {
+  resetFormatMemoryForTests();
+  const recipe = buildFormatRecipeFromPatch(samplePatch());
+  assert.ok(recipe);
+  await recordFormatFeedback({
+    prompt: "Compare MALCOM and Dispatch",
+    summary: "Side-by-side control planes",
+    vote: "up",
+    recipe,
+  });
+
+  const peek = await inspectFormatMemory("How do Dispatch and MALCOM differ?");
+  assert.equal(peek.approvedCount, 1);
+  assert.equal(peek.backend, "memory");
+  assert.equal(peek.entries[0]?.eligible, true);
+  assert.deepEqual(peek.projects.sort(), ["dispatch", "malcom"]);
 });
 
 function samplePatch(): CanvasPatch {

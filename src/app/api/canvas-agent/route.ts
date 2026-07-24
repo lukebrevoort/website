@@ -8,7 +8,7 @@ import {
 } from "@/lib/canvas-agent/request";
 import { MAX_PATCH_OPERATIONS } from "@/lib/canvas-agent/contract";
 import { selectKnowledgeSnippets } from "@/lib/canvas-agent/knowledge";
-import { retrieveApprovedFormats } from "@/lib/canvas-agent/format-memory";
+import { retrieveApprovedFormats, fingerprintPrompt } from "@/lib/canvas-agent/format-memory";
 import {
   ProviderUnavailableError,
   createCanvasVisionProvider,
@@ -158,6 +158,7 @@ export async function POST(request: Request) {
 
   try {
     const approvedFormats = await retrieveApprovedFormats(parsed.data.prompt);
+    const formatFingerprint = fingerprintPrompt(parsed.data.prompt).key;
     const result = await createCanvasVisionProvider().generatePatch({
       ...parsed.data,
       knowledgeSnippets: selectKnowledgeSnippets(parsed.data.prompt),
@@ -190,6 +191,7 @@ export async function POST(request: Request) {
       provider: result.provider,
       durationMs: Date.now() - startedAt,
       operationCount: validation.value.patch.operations.length,
+      approvedFormatCount: approvedFormats.length,
       ...(quality.ok ? {} : { issueCount: quality.issues.length }),
     });
     return jsonResponse({
@@ -197,6 +199,11 @@ export async function POST(request: Request) {
       patch: validation.value.patch,
       risk: validation.value.risk,
       quality,
+      formatMemory: {
+        fingerprint: formatFingerprint,
+        approvedCount: approvedFormats.length,
+        summaries: approvedFormats.map((format) => format.summary),
+      },
       provider: result.provider,
       model: result.model,
       scope: parsed.data.scope,
