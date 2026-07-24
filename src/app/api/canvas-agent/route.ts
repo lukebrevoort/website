@@ -115,7 +115,7 @@ export async function POST(request: Request) {
       patch: validation.value.patch,
       risk: validation.value.risk,
       provider: "authored",
-      model: "cached-starter-v1",
+      model: "cached-starter-v2",
       scope: parsed.data.scope,
       usage: { counted: false },
     }, 200, session);

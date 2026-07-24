@@ -26,6 +26,7 @@ import CanvasContractLab from "./canvas-contract-lab";
 import TurnstileChallenge from "./turnstile-challenge";
 import {
   CANVAS_STARTER_PROMPTS,
+  getStarterFollowUps,
   type CanvasStarterId,
 } from "@/lib/canvas-agent/starter-prompts";
 import styles from "./homepage-whiteboard.module.css";
@@ -97,6 +98,8 @@ export default function HomepageWhiteboard({
   const [isCompactViewport, setIsCompactViewport] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [followUpShouldFocus, setFollowUpShouldFocus] = useState(false);
+  const [activeStarterId, setActiveStarterId] = useState<CanvasStarterId | null>(null);
+  const [usedFollowUps, setUsedFollowUps] = useState<string[]>([]);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -204,6 +207,25 @@ export default function HomepageWhiteboard({
     ((agentState === "thinking" || agentState === "error") && turn.current > 0);
   const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
   const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+  const starterFollowUps = activeStarterId ? getStarterFollowUps(activeStarterId) : [];
+  const availableFollowUps = starterFollowUps.filter((item) => !usedFollowUps.includes(item));
+  const showFollowUpSuggestions =
+    showFollowUpSurface &&
+    !pendingPatch &&
+    agentState === "active" &&
+    availableFollowUps.length > 0 &&
+    !(isCompactViewport && followUpOpen);
+
+  useEffect(() => {
+    if (!pendingPatch) {
+      canvasSnapshot.current?.clearPatchPreview();
+      return;
+    }
+    void canvasSnapshot.current?.previewCompiledPatch(pendingPatch.compiled);
+    return () => {
+      canvasSnapshot.current?.clearPatchPreview();
+    };
+  }, [pendingPatch]);
 
   useEffect(() => {
     if (!showFollowUpLauncher || !restoreLauncherFocusRef.current) return;
@@ -268,10 +290,17 @@ export default function HomepageWhiteboard({
   const explore = async (value: string, starterId?: CanvasStarterId) => {
     const nextQuestion = value.trim();
     if (!nextQuestion) return;
+    if (usedFollowUps.includes(nextQuestion)) return;
     setQuestion(nextQuestion);
     setAgentMessage("");
     setPendingPatch(null);
     setSketchFeedback(null);
+    canvasSnapshot.current?.clearPatchPreview();
+
+    if (starterId) {
+      setActiveStarterId(starterId);
+      setUsedFollowUps([]);
+    }
 
     if (!navigator.onLine) {
       setAgentMessage("The vision agent is offline. Your canvas was not changed.");
@@ -423,6 +452,15 @@ export default function HomepageWhiteboard({
 
       recordTurn(nextQuestion, validation.value.patch.summary);
       turn.current += 1;
+      if (
+        !starterId &&
+        activeStarterId &&
+        getStarterFollowUps(activeStarterId).includes(nextQuestion)
+      ) {
+        setUsedFollowUps((current) =>
+          current.includes(nextQuestion) ? current : [...current, nextQuestion],
+        );
+      }
       if (!starterId) offerSketchFeedback(nextQuestion, validation.value.patch);
       setAgentState("active");
     } catch (error) {
@@ -462,8 +500,17 @@ export default function HomepageWhiteboard({
     }
     recordTurn(pendingPatch.prompt, pendingPatch.summary);
     turn.current += 1;
+    if (
+      activeStarterId &&
+      getStarterFollowUps(activeStarterId).includes(pendingPatch.prompt)
+    ) {
+      setUsedFollowUps((current) =>
+        current.includes(pendingPatch.prompt) ? current : [...current, pendingPatch.prompt],
+      );
+    }
     offerSketchFeedback(pendingPatch.prompt, pendingPatch.patch);
     setPendingPatch(null);
+    canvasSnapshot.current?.clearPatchPreview();
     setAgentMessage(
       pendingPatch.reason === "quality"
         ? "Applied. Undo (⌘Z / Ctrl+Z) if you want the board back."
@@ -514,12 +561,15 @@ export default function HomepageWhiteboard({
 
   const startNewBoard = () => {
     if (boardHasContent && !window.confirm("Start a new board? This clears the locally saved canvas on this device.")) return;
+    canvasSnapshot.current?.clearPatchPreview();
     canvasSnapshot.current?.resetBoard();
     priorTurns.current = [];
     turn.current = 0;
     setBoardHasContent(false);
     setPendingPatch(null);
     setSketchFeedback(null);
+    setActiveStarterId(null);
+    setUsedFollowUps([]);
     setQuestion("");
     setPrompt("");
     setAgentMessage("");
@@ -651,18 +701,20 @@ export default function HomepageWhiteboard({
         )}
 
         {pendingPatch && (
-          <div className={styles.agentNotice} role="alert">
+          <div className={`${styles.agentNotice} ${styles.changePreviewNotice}`} role="alert">
             <strong>
               {pendingPatch.reason === "quality"
-                ? "Sketch looks imperfect"
-                : "Review before changing the board"}
+                ? "Preview — sketch looks imperfect"
+                : "Preview — review before changing the board"}
             </strong>
             <span>{agentMessage}</span>
+            <span className={styles.previewHint}>Ghost marks show the proposed change.</span>
             <div>
               <button type="button" onClick={confirmPendingPatch}>
                 {pendingPatch.reason === "quality" ? "apply anyway" : "apply change"}
               </button>
               <button type="button" onClick={() => {
+                canvasSnapshot.current?.clearPatchPreview();
                 setPendingPatch(null);
                 setAgentMessage("");
               }}>
@@ -720,6 +772,17 @@ export default function HomepageWhiteboard({
           <div className={`${styles.agentNotice} ${styles.agentNoticeError}`} role="alert">
             <strong>Nothing changed</strong>
             <span>{agentMessage}</span>
+          </div>
+        )}
+
+        {showFollowUpSuggestions && (
+          <div className={styles.showcaseActions} aria-label="Suggested follow-ups">
+            <span>Try a visual follow-up:</span>
+            {availableFollowUps.map((followUp) => (
+              <button key={followUp} type="button" onClick={() => explore(followUp)}>
+                {followUp}
+              </button>
+            ))}
           </div>
         )}
 
@@ -815,7 +878,10 @@ export default function HomepageWhiteboard({
           </form>
         )}
 
-        <aside className={styles.cornerNote} aria-hidden="true">
+        <aside
+          className={`${styles.cornerNote} ${showFollowUpSurface ? styles.cornerNoteHidden : ""}`}
+          aria-hidden="true"
+        >
           <span>this space is yours</span>
           <span>draw, type, and move things around ↗</span>
         </aside>
