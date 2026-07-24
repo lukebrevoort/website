@@ -8,6 +8,7 @@ import {
 } from "@/lib/canvas-agent/request";
 import { MAX_PATCH_OPERATIONS } from "@/lib/canvas-agent/contract";
 import { selectKnowledgeSnippets } from "@/lib/canvas-agent/knowledge";
+import { retrieveApprovedFormats } from "@/lib/canvas-agent/format-memory";
 import {
   ProviderUnavailableError,
   createCanvasVisionProvider,
@@ -156,9 +157,11 @@ export async function POST(request: Request) {
   }
 
   try {
+    const approvedFormats = await retrieveApprovedFormats(parsed.data.prompt);
     const result = await createCanvasVisionProvider().generatePatch({
       ...parsed.data,
       knowledgeSnippets: selectKnowledgeSnippets(parsed.data.prompt),
+      approvedFormats,
       safetyIdentifier: identity.ip.slice(0, 32),
       executionMs: policy.executionMs,
     });

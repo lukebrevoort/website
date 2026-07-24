@@ -140,17 +140,7 @@ export const canvasKnowledgeDocuments: readonly CanvasKnowledgeDocument[] = [
 const GENERAL_DOCUMENT_ID = "shared-principles";
 
 export function selectKnowledgeSnippets(prompt: string): string[] {
-  const normalizedPrompt = normalize(prompt);
-  const terms = new Set(tokenize(normalizedPrompt));
-  const ranked = canvasKnowledgeDocuments
-    .map((document, index) => ({
-      document,
-      index,
-      score: scoreDocument(document, normalizedPrompt, terms),
-    }))
-    .filter(({ score }) => score > 0)
-    .sort((left, right) => right.score - left.score || left.index - right.index);
-
+  const ranked = rankKnowledgeDocuments(prompt);
   const strongProjectMatches = ranked.filter(
     ({ document, score }) => document.id !== GENERAL_DOCUMENT_ID && score >= 8,
   );
@@ -165,6 +155,27 @@ export function selectKnowledgeSnippets(prompt: string): string[] {
   return selected
     .slice(0, MAX_KNOWLEDGE_SNIPPETS)
     .map(({ document }) => formatDocument(document));
+}
+
+/** Project ids matched for prompt fingerprinting (excludes the general fallback). */
+export function matchKnowledgeProjectIds(prompt: string): string[] {
+  return rankKnowledgeDocuments(prompt)
+    .filter(({ document, score }) => document.id !== GENERAL_DOCUMENT_ID && score > 0)
+    .slice(0, MAX_KNOWLEDGE_SNIPPETS)
+    .map(({ document }) => document.id);
+}
+
+function rankKnowledgeDocuments(prompt: string) {
+  const normalizedPrompt = normalize(prompt);
+  const terms = new Set(tokenize(normalizedPrompt));
+  return canvasKnowledgeDocuments
+    .map((document, index) => ({
+      document,
+      index,
+      score: scoreDocument(document, normalizedPrompt, terms),
+    }))
+    .filter(({ score }) => score > 0)
+    .sort((left, right) => right.score - left.score || left.index - right.index);
 }
 
 function scoreDocument(
