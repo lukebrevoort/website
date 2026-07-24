@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { CSSProperties, FormEvent, KeyboardEvent, PointerEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   BookOpen,
   FolderOpen,
+  LoaderCircle,
   PencilLine,
   RotateCcw,
   Send,
@@ -69,6 +70,10 @@ export default function HomepageWhiteboard({
   const [question, setQuestion] = useState("");
   const canvasSnapshot = useRef<CanvasSnapshot | null>(null);
   const turn = useRef(0);
+  const followUpInputRef = useRef<HTMLInputElement | null>(null);
+  const followUpLauncherRef = useRef<HTMLButtonElement | null>(null);
+  const restoreLauncherFocusRef = useRef(false);
+  const shellRef = useRef<HTMLElement | null>(null);
   const [contractLabActive, setContractLabActive] = useState(false);
   const [agentMessage, setAgentMessage] = useState("");
   const [pendingPatch, setPendingPatch] = useState<PendingAgentPatch | null>(null);
@@ -77,6 +82,9 @@ export default function HomepageWhiteboard({
   const [livePolicy, setLivePolicy] = useState<LivePolicy | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [followUpShouldFocus, setFollowUpShouldFocus] = useState(false);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -84,9 +92,88 @@ export default function HomepageWhiteboard({
   }, []);
 
   useEffect(() => {
+    // Narrow phones OR short coarse viewports (typical phone landscape).
+    const media = window.matchMedia(
+      "(max-width: 760px), ((max-height: 500px) and (pointer: coarse))",
+    );
+    const sync = () => setIsCompactViewport(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    const preview = new URLSearchParams(window.location.search).has("loadingPreview");
+    if (preview) return;
     const timer = window.setTimeout(() => setAgentState("idle"), 650);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    const viewport = window.visualViewport;
+    if (!shell || !viewport) return;
+
+    const syncKeyboardInset = () => {
+      const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      shell.style.setProperty("--keyboard-inset", `${inset}px`);
+    };
+
+    syncKeyboardInset();
+    viewport.addEventListener("resize", syncKeyboardInset);
+    viewport.addEventListener("scroll", syncKeyboardInset);
+    window.addEventListener("resize", syncKeyboardInset);
+    return () => {
+      viewport.removeEventListener("resize", syncKeyboardInset);
+      viewport.removeEventListener("scroll", syncKeyboardInset);
+      window.removeEventListener("resize", syncKeyboardInset);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isCompactViewport) {
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
+      return;
+    }
+    if (agentState === "thinking" || agentState === "error") {
+      setFollowUpOpen(true);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
+    } else if (agentState === "active") {
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      // Restore after a completed follow-up turn, not on first board activation.
+      if (turn.current > 0) {
+        restoreLauncherFocusRef.current = true;
+      }
+    }
+  }, [agentState, isCompactViewport]);
+
+  useEffect(() => {
+    if (!followUpOpen || !followUpShouldFocus || !isCompactViewport) return;
+    const frame = window.requestAnimationFrame(() => {
+      followUpInputRef.current?.focus();
+      setFollowUpShouldFocus(false);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [followUpOpen, followUpShouldFocus, isCompactViewport]);
+
+  const showFollowUpSurface =
+    agentState === "active" ||
+    ((agentState === "thinking" || agentState === "error") && turn.current > 0);
+  const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
+  const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+
+  useEffect(() => {
+    if (!showFollowUpLauncher || !restoreLauncherFocusRef.current) return;
+    restoreLauncherFocusRef.current = false;
+    const frame = window.requestAnimationFrame(() => {
+      followUpLauncherRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [showFollowUpLauncher]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -261,6 +348,41 @@ export default function HomepageWhiteboard({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     explore(prompt);
+    if (isCompactViewport) {
+      // Thinking will auto-reopen the tray; don't yank focus to the launcher.
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
+      followUpInputRef.current?.blur();
+    }
+  };
+
+  const closeFollowUp = () => {
+    setFollowUpOpen(false);
+    setFollowUpShouldFocus(false);
+    followUpInputRef.current?.blur();
+    if (isCompactViewport) {
+      restoreLauncherFocusRef.current = true;
+    }
+  };
+
+  const openFollowUpComposer = () => {
+    setFollowUpOpen(true);
+    setFollowUpShouldFocus(true);
+    restoreLauncherFocusRef.current = false;
+  };
+
+  const dismissKeyboardOnCanvas = (event: PointerEvent<HTMLElement>) => {
+    if (!isCompactViewport || !followUpOpen) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("form, button, a, input, textarea, label")) return;
+    closeFollowUp();
+  };
+
+  const onFollowUpKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {
+    if (event.key !== "Escape" || !isCompactViewport) return;
+    event.preventDefault();
+    closeFollowUp();
   };
 
   const startNewBoard = () => {
@@ -273,6 +395,7 @@ export default function HomepageWhiteboard({
     setQuestion("");
     setPrompt("");
     setAgentMessage("");
+    setFollowUpOpen(false);
     setAgentState("idle");
   };
 
@@ -280,8 +403,21 @@ export default function HomepageWhiteboard({
     ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today`
     : "authored notes don't use the live allowance";
 
+  const followUpStatusLabel =
+    agentState === "thinking"
+      ? "adding to the board…"
+      : agentState === "error"
+        ? "connection lost — try again"
+        : "ask a follow-up";
+  const announceFollowUpStatus =
+    showFollowUpSurface && (agentState === "thinking" || agentState === "error");
+
   return (
-    <main className={`${styles.shell} ${satoshi.variable}`}>
+    <main
+      ref={shellRef}
+      className={`${styles.shell} ${isCompactViewport ? styles.shellCompact : ""} ${satoshi.variable}`}
+      onPointerDown={dismissKeyboardOnCanvas}
+    >
       <header className={styles.topbar}>
         <Link href="/" className={`${styles.signature} ${lukesFont.className}`}>
           <ArrowLeft size={15} strokeWidth={1.8} />
@@ -309,9 +445,9 @@ export default function HomepageWhiteboard({
 
         {agentState === "loading" && (
           <div className={styles.loading} role="status">
-            <span className={styles.agentGlyph}>✦</span>
+            <span className={styles.agentGlyph} aria-hidden="true">✦</span>
             <span>unrolling the canvas…</span>
-            <span className={styles.loadingLine} />
+            <span className={styles.loadingLine} aria-hidden="true" />
           </div>
         )}
 
@@ -342,6 +478,8 @@ export default function HomepageWhiteboard({
                 onChange={(event) => setPrompt(event.target.value)}
                 placeholder="Ask Luke's canvas anything…"
                 autoComplete="off"
+                enterKeyHint="go"
+                inputMode="text"
               />
               <button type="submit" disabled={!prompt.trim()} aria-label="Explore">
                 <Send size={18} />
@@ -362,7 +500,7 @@ export default function HomepageWhiteboard({
                   key={item.prompt}
                   type="button"
                   onClick={() => explore(item.prompt, item.id)}
-                  style={{ "--prompt-tilt": item.tilt } as React.CSSProperties}
+                  style={{ "--prompt-tilt": item.tilt } as CSSProperties}
                 >
                   <span className={styles.promptNumber}>0{index + 1}</span>
                   <strong>{item.prompt}</strong>
@@ -373,7 +511,7 @@ export default function HomepageWhiteboard({
           </div>
         )}
 
-        {agentState === "thinking" && (
+        {agentState === "thinking" && turn.current === 0 && (
           <div className={styles.thoughtWrap} role="status" aria-live="polite">
             <div className={styles.orb}><Sparkles size={22} /></div>
             <div className={styles.thoughtBubble}>
@@ -417,25 +555,64 @@ export default function HomepageWhiteboard({
           </div>
         )}
 
-        {(agentState === "active" ||
-          ((agentState === "thinking" || agentState === "error") && turn.current > 0)) && (
-          <form className={styles.followUpTray} onSubmit={submit}>
+        {announceFollowUpStatus && !showFollowUpTray && (
+          <div className="sr-only" role="status" aria-live="polite">
+            {agentState === "thinking"
+              ? `Adding to the board: ${question}`
+              : agentMessage || "Connection lost — try again"}
+          </div>
+        )}
+
+        {agentState === "thinking" && turn.current > 0 && (
+          <div className={styles.followUpWaiting} role="status" aria-live="polite">
+            <LoaderCircle className={styles.followUpSpinner} size={18} aria-hidden="true" />
             <div>
-              <span className={styles.agentGlyph}>✦</span>
+              <strong>Sketching on the board…</strong>
+              <span>“{question}”</span>
+            </div>
+          </div>
+        )}
+
+        {showFollowUpLauncher && (
+          <button
+            ref={followUpLauncherRef}
+            type="button"
+            className={styles.followUpLauncher}
+            onClick={openFollowUpComposer}
+          >
+            <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+            ask a follow-up
+          </button>
+        )}
+
+        {showFollowUpTray && (
+          <form
+            className={`${styles.followUpTray} ${agentState === "thinking" ? styles.followUpTrayThinking : ""}`}
+            onSubmit={submit}
+            onKeyDown={onFollowUpKeyDown}
+          >
+            <div
+              role={announceFollowUpStatus ? "status" : undefined}
+              aria-live={announceFollowUpStatus ? "polite" : undefined}
+            >
+              {agentState === "thinking" ? (
+                <LoaderCircle className={styles.followUpSpinner} size={16} aria-hidden="true" />
+              ) : (
+                <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+              )}
               <label htmlFor="follow-up-prompt">
-                {agentState === "thinking"
-                  ? "adding to the board…"
-                  : agentState === "error"
-                    ? "connection lost — try again"
-                    : "ask a follow-up"}
+                {followUpStatusLabel}
               </label>
             </div>
             <input
+              ref={followUpInputRef}
               id="follow-up-prompt"
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
               placeholder="What should we explore next?"
               autoComplete="off"
+              enterKeyHint="send"
+              inputMode="text"
               disabled={agentState === "thinking"}
             />
             <button
@@ -445,6 +622,16 @@ export default function HomepageWhiteboard({
             >
               <Send size={17} />
             </button>
+            {isCompactViewport && (
+              <button
+                type="button"
+                className={styles.followUpDismiss}
+                onClick={closeFollowUp}
+                aria-label="Done editing follow-up"
+              >
+                done
+              </button>
+            )}
           </form>
         )}
 

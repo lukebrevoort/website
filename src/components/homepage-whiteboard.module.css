@@ -112,7 +112,6 @@
 }
 
 .invitation,
-.loading,
 .thoughtWrap {
   position: absolute;
   z-index: 3;
@@ -314,20 +313,36 @@
 }
 
 .loading {
-  display: grid;
-  justify-items: center;
-  gap: 12px;
+  position: absolute;
+  z-index: 12;
+  right: 22px;
+  bottom: 78px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(18rem, calc(100% - 40px));
+  padding: 10px 14px;
+  border: 1px solid rgb(32 32 29 / 14%);
+  border-radius: 999px;
   color: #555149;
-  font-size: .76rem;
+  background: rgb(255 253 247 / 92%);
+  box-shadow: 0 10px 28px rgb(53 45 33 / 14%);
+  font-size: .68rem;
   letter-spacing: .08em;
   text-transform: uppercase;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+  animation: fade-in .35s ease both;
 }
 
 .agentGlyph { color: var(--red); font-size: 1.7rem; }
 
+.loading .agentGlyph { font-size: 1rem; }
+
 .loadingLine {
-  width: 150px;
-  height: 1px;
+  width: 42px;
+  height: 2px;
+  border-radius: 999px;
   background: rgb(32 32 29 / 12%);
   overflow: hidden;
 }
@@ -335,7 +350,7 @@
 .loadingLine::after {
   content: "";
   display: block;
-  width: 45%;
+  width: 55%;
   height: 100%;
   background: var(--red);
   animation: loading 1s ease-in-out infinite;
@@ -381,10 +396,11 @@
 .thoughtBubble b:nth-child(3) { animation-delay: .4s; }
 
 .followUpTray {
+  --follow-up-bottom: 76px;
   position: absolute;
   z-index: 20;
   left: 50%;
-  bottom: 76px;
+  bottom: calc(var(--follow-up-bottom) + var(--keyboard-inset, 0px));
   display: grid;
   grid-template-columns: auto minmax(220px, 440px) 38px;
   align-items: center;
@@ -398,6 +414,52 @@
   transform: translateX(-50%);
   backdrop-filter: blur(14px);
   animation: tray-arrive .35s ease both;
+}
+
+.followUpLauncher {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(var(--mobile-follow-up-bottom, 80px) + var(--keyboard-inset, 0px));
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: 1px solid rgb(32 32 29 / 18%);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgb(255 253 247 / 94%);
+  box-shadow: 0 10px 28px rgb(53 45 33 / 14%);
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 650;
+  transform: translateX(-50%);
+  cursor: pointer;
+  animation: fade-in .3s ease both;
+}
+
+.followUpLauncher .agentGlyph { font-size: 1rem; }
+
+.followUpDismiss {
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgb(32 32 29 / 16%);
+  border-radius: 7px;
+  color: #6d675e;
+  background: rgb(255 255 255 / 55%);
+  font: inherit;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.followUpDismiss:hover {
+  border-color: var(--red);
+  color: var(--red);
 }
 
 .followUpTray > div {
@@ -445,6 +507,59 @@
 
 .followUpTray button:hover { background: var(--red); }
 .followUpTray button:disabled { opacity: .3; cursor: default; }
+
+.followUpTrayThinking {
+  border-color: rgb(228 87 62 / 42%);
+  box-shadow: 0 12px 34px rgb(53 45 33 / 15%), 0 0 0 3px rgb(228 87 62 / 10%);
+}
+
+.followUpTrayThinking label {
+  color: var(--red);
+}
+
+.followUpWaiting {
+  position: absolute;
+  z-index: 21;
+  left: 50%;
+  bottom: calc(var(--follow-up-bottom, 76px) + 64px + var(--keyboard-inset, 0px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(360px, calc(100% - 40px));
+  padding: 10px 14px;
+  border: 1px solid rgb(228 87 62 / 35%);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgb(255 253 247 / 96%);
+  box-shadow: 0 10px 28px rgb(53 45 33 / 14%);
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: fade-in .25s ease both;
+}
+
+.followUpWaiting strong {
+  display: block;
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.followUpWaiting span {
+  display: block;
+  max-width: 240px;
+  overflow: hidden;
+  color: #6d675e;
+  font-size: .72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.followUpSpinner {
+  flex-shrink: 0;
+  color: var(--red);
+  animation: spin 0.85s linear infinite;
+}
 
 .showcaseActions {
   position: absolute;
@@ -732,6 +847,70 @@
 @keyframes loading { from { transform: translateX(-110%); } to { transform: translateX(250%); } }
 @keyframes breathe { 50% { transform: scale(.94); box-shadow: 0 5px 15px rgb(228 87 62 / 15%); } }
 @keyframes dots { to { opacity: .25; transform: translateY(-2px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Compact follow-up chrome: keep in sync with matchMedia in homepage-whiteboard.tsx */
+@media (max-width: 760px), ((max-height: 500px) and (pointer: coarse)) {
+  .shell {
+    touch-action: manipulation;
+  }
+  .promptForm input,
+  .followUpTray input {
+    font-size: 16px;
+  }
+  .followUpLauncher {
+    display: inline-flex;
+  }
+  .followUpDismiss {
+    display: grid;
+  }
+  .followUpTray {
+    --follow-up-bottom: var(--mobile-follow-up-bottom, 80px);
+    grid-template-columns: 1fr 38px 38px;
+    gap: 6px;
+    width: calc(100% - 28px);
+    padding-left: 10px;
+  }
+  .followUpTray > div { grid-column: 1 / -1; }
+  .followUpTray input { padding-block: 10px; }
+  .followUpWaiting {
+    bottom: calc(var(--mobile-follow-up-bottom, 80px) + 72px + var(--keyboard-inset, 0px));
+    width: calc(100% - 28px);
+    max-width: none;
+  }
+}
+
+/*
+ * JS-driven compact class — same styles as the media query above so landscape
+ * phones still get Done/16px when pointer:coarse media evaluation differs.
+ */
+.shellCompact {
+  touch-action: manipulation;
+}
+.shellCompact .promptForm input,
+.shellCompact .followUpTray input {
+  font-size: 16px;
+}
+.shellCompact .followUpLauncher {
+  display: inline-flex;
+}
+.shellCompact .followUpDismiss {
+  display: grid;
+}
+.shellCompact .followUpTray {
+  --follow-up-bottom: var(--mobile-follow-up-bottom, 80px);
+  grid-template-columns: 1fr 38px 38px;
+  gap: 6px;
+  width: calc(100% - 28px);
+  padding-left: 10px;
+}
+.shellCompact .followUpTray > div { grid-column: 1 / -1; }
+.shellCompact .followUpTray input { padding-block: 10px; }
+.shellCompact .followUpWaiting {
+  bottom: calc(var(--mobile-follow-up-bottom, 80px) + 72px + var(--keyboard-inset, 0px));
+  width: calc(100% - 28px);
+  max-width: none;
+}
 
 @media (max-width: 760px) {
   .shell {
@@ -780,17 +959,15 @@
     gap: 4px;
     padding: 9px 7px;
   }
+  .loading {
+    right: 14px;
+    bottom: calc(88px + var(--mobile-safe-bottom));
+    max-width: min(16.5rem, calc(100% - 28px));
+    padding: 9px 12px;
+    font-size: .62rem;
+  }
   .thoughtWrap { width: calc(100% - 36px); }
   .thoughtBubble { min-width: 0; }
-  .followUpTray {
-    bottom: var(--mobile-follow-up-bottom);
-    grid-template-columns: 1fr 38px;
-    gap: 6px;
-    width: calc(100% - 28px);
-    padding-left: 10px;
-  }
-  .followUpTray > div { grid-column: 1 / -1; }
-  .followUpTray input { padding-block: 7px; }
   .showcaseActions {
     right: 18px;
     bottom: 168px;
@@ -799,7 +976,30 @@
   .topbarActions { gap: 5px; }
   .newBoardButton { padding: 7px 8px; font-size: 8px; backdrop-filter: none; }
   .verificationNote { right: 14px; bottom: calc(142px + var(--mobile-safe-bottom)); }
-  .signature, .presence, .dock, .followUpTray { backdrop-filter: none; }
+  .signature, .presence, .dock, .followUpTray, .followUpLauncher, .loading { backdrop-filter: none; }
+}
+
+@media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
+  /*
+   * Landscape phones still show the fixed dock (~56px tall + 25px inset).
+   * Keep follow-up chrome clear of it — never park at 18px under the dock.
+   */
+  .shell,
+  .shellCompact {
+    --mobile-follow-up-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+  .followUpTray,
+  .shellCompact .followUpTray {
+    --follow-up-bottom: var(--mobile-follow-up-bottom);
+  }
+  .followUpLauncher,
+  .shellCompact .followUpLauncher {
+    bottom: calc(var(--mobile-follow-up-bottom) + var(--keyboard-inset, 0px));
+  }
+  .loading {
+    bottom: calc(var(--mobile-follow-up-bottom) + 8px);
+    right: 14px;
+  }
 }
 
 @media (max-height: 690px) and (min-width: 761px) {
@@ -809,7 +1009,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .invitation, .results, .followUpTray, .loadingLine::after, .orb, .thoughtBubble b {
+  .invitation, .results, .followUpTray, .followUpLauncher, .followUpWaiting, .loadingLine::after, .orb, .thoughtBubble b, .loading {
+    animation: none !important;
+  }
+  .followUpSpinner {
     animation: none !important;
   }
   .followUpTray { transform: translateX(-50%); }
