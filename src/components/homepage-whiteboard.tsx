@@ -27,8 +27,10 @@ import TurnstileChallenge from "./turnstile-challenge";
 import {
   CANVAS_STARTER_PROMPTS,
   getStarterFollowUps,
+  isMatchingStarterPrompt,
   type CanvasStarterId,
 } from "@/lib/canvas-agent/starter-prompts";
+import { createAuthoredStarterPatch } from "@/lib/canvas-agent/fallbacks";
 import styles from "./homepage-whiteboard.module.css";
 
 type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
@@ -238,6 +240,11 @@ export default function HomepageWhiteboard({
   const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
   const starterFollowUps = activeStarterId ? getStarterFollowUps(activeStarterId) : [];
   const availableFollowUps = starterFollowUps.filter((item) => !usedFollowUps.includes(item));
+  const liveSketchesRemaining = livePolicy?.usage
+    ? Math.max(0, livePolicy.limits.sessionDaily - livePolicy.usage.sessionUsed)
+    : null;
+  const liveQuotaExhausted = liveSketchesRemaining === 0;
+  const liveFollowUpsAvailable = !liveQuotaExhausted && livePolicy?.live.available !== false;
   const showFollowUpSuggestions =
     showFollowUpSurface &&
     !pendingPatch &&
@@ -345,7 +352,7 @@ export default function HomepageWhiteboard({
       setAgentMessage(
         livePolicy.live.turnstileSiteKey
           ? "Complete the quick human check, then send that thought again."
-          : "Live verification is not configured yet. The authored starting points still work.",
+          : "Live verification is not configured yet. Preset notes still work—pick one above.",
       );
       setAgentState("error");
       return;
@@ -356,6 +363,84 @@ export default function HomepageWhiteboard({
     const snapshot = canvasSnapshot.current;
     if (!snapshot) {
       setAgentMessage("The canvas is still opening. Give it a moment and try again.");
+      setAgentState("error");
+      return;
+    }
+
+    // Preset notes are authored locally — never spend live quota or call the vision API.
+    if (starterId && isMatchingStarterPrompt(starterId, nextQuestion)) {
+      try {
+        const context = snapshot.getPatchContext();
+        if (!context) {
+          setAgentMessage("The canvas is still opening. Give it a moment and try again.");
+          setAgentState("error");
+          return;
+        }
+
+        const patch = createAuthoredStarterPatch(starterId, context);
+        const validation = validateCanvasPatch(patch, context);
+        if (!validation.ok) {
+          setAgentMessage("That preset sketch couldn’t be built safely. Your canvas was not changed—try another note.");
+          setAgentState("error");
+          return;
+        }
+
+        const compiled = compileCanvasPatch(
+          validation.value.patch,
+          context,
+          validation.value.risk,
+        );
+
+        if (compiled.risk.requiresConfirmation) {
+          setPendingPatch({
+            compiled,
+            patch: validation.value.patch,
+            prompt: nextQuestion,
+            summary: validation.value.patch.summary,
+            sceneVersion: context.sceneVersion,
+            reason: "risk",
+          });
+          setAgentMessage(`This change needs your approval: ${compiled.risk.reasons.join(", ")}.`);
+          setAgentState("active");
+          return;
+        }
+
+        const application = await snapshot.applyCompiledPatch(compiled);
+        if (application.status === "confirmation-required") {
+          setPendingPatch({
+            compiled,
+            patch: validation.value.patch,
+            prompt: nextQuestion,
+            summary: validation.value.patch.summary,
+            sceneVersion: context.sceneVersion,
+            reason: "risk",
+          });
+          setAgentMessage(`This change needs your approval: ${application.reasons.join(", ")}.`);
+          setAgentState("active");
+          return;
+        }
+        if (application.status !== "applied") {
+          setAgentMessage("The canvas was not ready to apply that preset. Nothing was modified.");
+          setAgentState("error");
+          return;
+        }
+
+        recordTurn(nextQuestion, validation.value.patch.summary);
+        turn.current += 1;
+        setAgentMessage("");
+        setAgentState("active");
+      } catch (error) {
+        console.error("Authored starter apply failed", error);
+        setAgentMessage("That preset sketch couldn’t be applied. Your canvas is untouched—try another note.");
+        setAgentState("error");
+      }
+      return;
+    }
+
+    if (liveQuotaExhausted) {
+      setAgentMessage(
+        "Today’s live sketch allowance is used up. Your canvas is unchanged—start a new board and pick a preset note (those stay free).",
+      );
       setAgentState("error");
       return;
     }
@@ -377,7 +462,6 @@ export default function HomepageWhiteboard({
           context: capture.context,
           imageDataUrl: await blobToDataUrl(capture.image),
           priorTurns: priorTurns.current,
-          ...(starterId ? { starterId } : {}),
           ...(!starterId && turnstileToken ? { turnstileToken } : {}),
         }),
       });
@@ -396,7 +480,7 @@ export default function HomepageWhiteboard({
       };
       if (!response.ok || !payload.ok || !payload.patch) {
         setAgentMessage(
-          clarifyLiveRestingMessage(payload.message, Boolean(starterId) || turn.current === 0),
+          clarifyLiveRestingMessage(payload.message, turn.current === 0),
         );
         setAgentState("error");
         return;
@@ -619,8 +703,8 @@ export default function HomepageWhiteboard({
   };
 
   const liveUsageLabel = livePolicy?.usage
-    ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today`
-    : "authored notes don't use the live allowance";
+    ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today · preset notes are always free`
+    : "preset notes are free · live questions use today’s allowance";
 
   const followUpStatusLabel =
     agentState === "thinking"
@@ -819,11 +903,19 @@ export default function HomepageWhiteboard({
         {showFollowUpSuggestions && (
           <div className={styles.showcaseActions} aria-label="Suggested follow-ups">
             <span className={lukesFont.className}>Try a visual follow-up:</span>
-            {availableFollowUps.map((followUp) => (
-              <button key={followUp} type="button" onClick={() => explore(followUp)}>
-                {followUp}
-              </button>
-            ))}
+            {liveFollowUpsAvailable ? (
+              availableFollowUps.map((followUp) => (
+                <button key={followUp} type="button" onClick={() => explore(followUp)}>
+                  {followUp}
+                </button>
+              ))
+            ) : (
+              <p className={styles.followUpUnavailable}>
+                {liveQuotaExhausted
+                  ? "Live follow-ups are out for today. Preset sketches on a new board are still free."
+                  : "Live follow-ups are resting. Preset sketches on a new board are still free."}
+              </p>
+            )}
           </div>
         )}
 

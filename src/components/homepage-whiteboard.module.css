@@ -587,6 +587,14 @@
   line-height: 1.15;
 }
 
+.followUpUnavailable {
+  margin: 0;
+  color: #6d675e;
+  font-size: .7rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .showcaseActions button {
   border: 1px solid rgb(32 32 29 / 13%);
   border-radius: 4px;
