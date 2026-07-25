@@ -38,7 +38,8 @@ const PROJECT_KEYWORD_MAP: Record<string, readonly string[]> = {
   ],
   mytra: [
     "mytra", "internship", "interactivity", "debugging agent", "diagnostic",
-    "airgapped", "fortune 500", "brisbane", "office",
+    "airgapped", "fortune 500", "brisbane", "office", "kubernetes", "open source model",
+    "data pipeline", "entity-based", "multi-source",
   ],
   "orca-mail": [
     "email", "gmail", "inbox", "human signal", "attention", "contact signature",
