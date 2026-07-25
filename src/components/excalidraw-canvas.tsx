@@ -638,6 +638,13 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     previewElementIds.current = [];
     apiRef.current?.resetScene();
     apiRef.current?.history.clear();
+    const isMobile = window.matchMedia("(max-width: 760px)").matches;
+    apiRef.current?.updateScene({
+      appState: {
+        zoom: { value: (isMobile ? 0.5 : 1) as NormalizedZoomValue },
+        viewBackgroundColor: "#f4f0e7",
+      },
+    });
     apiRef.current?.setToast({ message: "Started a fresh local board", duration: 1800 });
   }, []);
 
