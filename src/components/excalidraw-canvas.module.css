@@ -63,35 +63,38 @@
 
 @media (max-width: 760px) {
   .root :global(.excalidraw .App-menu_top) {
-    top: 52px;
+    display: none;
   }
 
   .root :global(.excalidraw .layer-ui__wrapper__footer-left),
   .root :global(.excalidraw .layer-ui__wrapper__footer-right) {
-    bottom: calc(156px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
   .root :global(.excalidraw .App-bottom-bar) {
-    padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+    display: none;
   }
 
   .sceneStatus {
-    right: 10px;
-    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
+    display: none;
   }
 }
 
 @media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
+  .root :global(.excalidraw .App-menu_top) {
+    display: none;
+  }
+
   .root :global(.excalidraw .layer-ui__wrapper__footer-left),
   .root :global(.excalidraw .layer-ui__wrapper__footer-right) {
-    bottom: calc(128px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
   .root :global(.excalidraw .App-bottom-bar) {
-    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    display: none;
   }
 
   .sceneStatus {
-    bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+    display: none;
   }
 }

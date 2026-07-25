@@ -4,14 +4,12 @@ import Link from "next/link";
 import { CSSProperties, FormEvent, KeyboardEvent, PointerEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
-  BookOpen,
-  FolderOpen,
   LoaderCircle,
   PencilLine,
   RotateCcw,
   Send,
   Sparkles,
-  UserRound,
+  X,
 } from "lucide-react";
 import { lukesFont, satoshi } from "@/app/fonts";
 import {
@@ -131,6 +129,8 @@ export default function HomepageWhiteboard({
   const [followUpShouldFocus, setFollowUpShouldFocus] = useState(false);
   const [activeStarterId, setActiveStarterId] = useState<CanvasStarterId | null>(null);
   const [usedFollowUps, setUsedFollowUps] = useState<string[]>([]);
+  const [showFirstTimeHelper, setShowFirstTimeHelper] = useState(false);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -147,6 +147,25 @@ export default function HomepageWhiteboard({
     media.addEventListener("change", sync);
     return () => media.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    try {
+      const dismissed = window.localStorage.getItem("explore-first-visit-dismissed");
+      if (!dismissed) setShowFirstTimeHelper(true);
+    } catch {
+      // Storage unavailable — show the helper once per session as fallback.
+      setShowFirstTimeHelper(true);
+    }
+  }, []);
+
+  const dismissFirstTimeHelper = () => {
+    setShowFirstTimeHelper(false);
+    try {
+      window.localStorage.setItem("explore-first-visit-dismissed", "1");
+    } catch {
+      // Best-effort persistence.
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -250,7 +269,8 @@ export default function HomepageWhiteboard({
     !pendingPatch &&
     agentState === "active" &&
     availableFollowUps.length > 0 &&
-    !(isCompactViewport && followUpOpen);
+    !(isCompactViewport && followUpOpen) &&
+    !dismissedSuggestions;
 
   useEffect(() => {
     if (!pendingPatch) {
@@ -330,6 +350,7 @@ export default function HomepageWhiteboard({
     setQuestion(nextQuestion);
     setAgentMessage("");
     setPendingPatch(null);
+    setDismissedSuggestions(false);
     setSketchFeedback(null);
     canvasSnapshot.current?.clearPatchPreview();
 
@@ -695,6 +716,7 @@ export default function HomepageWhiteboard({
     setSketchFeedback(null);
     setActiveStarterId(null);
     setUsedFollowUps([]);
+    setDismissedSuggestions(false);
     setQuestion("");
     setPrompt("");
     setAgentMessage("");
@@ -730,9 +752,6 @@ export default function HomepageWhiteboard({
           <button type="button" className={styles.newBoardButton} onClick={startNewBoard}>
             <RotateCcw size={13} /> new board
           </button>
-          <div className={styles.presence} aria-label="Vision agent status">
-            <span className={styles.presenceDot} /> vision agent
-          </div>
         </div>
       </header>
 
@@ -751,6 +770,43 @@ export default function HomepageWhiteboard({
             <span className={styles.agentGlyph} aria-hidden="true">✦</span>
             <span>unrolling the canvas…</span>
             <span className={styles.loadingLine} aria-hidden="true" />
+          </div>
+        )}
+
+        {showFirstTimeHelper && agentState === "idle" && turn.current === 0 && (
+          <div className={styles.firstTimeOverlay} role="dialog" aria-label="Welcome to Explore" aria-modal="true">
+            <div className={styles.firstTimeCard}>
+              <button
+                type="button"
+                className={styles.firstTimeClose}
+                onClick={dismissFirstTimeHelper}
+                aria-label="Dismiss welcome message"
+              >
+                <X size={16} strokeWidth={2} />
+              </button>
+              <div className={`${styles.firstTimeEyebrow} ${lukesFont.className}`}>
+                <Sparkles size={16} /> Welcome to Explore
+              </div>
+              <h2 className={lukesFont.className}>How this works</h2>
+              <ul className={styles.firstTimeList}>
+                <li>
+                  <strong>Pick a note</strong> below to see a sketch about Luke’s work.
+                </li>
+                <li>
+                  <strong>Ask anything</strong> — the agent draws answers directly on the canvas.
+                </li>
+                <li>
+                  <strong>Draw freely</strong> — this space is yours to mark up.
+                </li>
+              </ul>
+              <button
+                type="button"
+                className={styles.firstTimeAction}
+                onClick={dismissFirstTimeHelper}
+              >
+                Start exploring
+              </button>
+            </div>
           </div>
         )}
 
@@ -902,7 +958,17 @@ export default function HomepageWhiteboard({
 
         {showFollowUpSuggestions && (
           <div className={styles.showcaseActions} aria-label="Suggested follow-ups">
-            <span className={lukesFont.className}>Try a visual follow-up:</span>
+            {isCompactViewport && (
+              <button
+                type="button"
+                className={styles.suggestionDismiss}
+                onClick={() => setDismissedSuggestions(true)}
+                aria-label="Dismiss suggestions"
+              >
+                <X size={14} strokeWidth={2} />
+              </button>
+            )}
+            <span className={`${styles.suggestionLabel} ${lukesFont.className}`}>Try a visual follow-up:</span>
             {liveFollowUpsAvailable ? (
               availableFollowUps.map((followUp) => (
                 <button key={followUp} type="button" onClick={() => explore(followUp)}>
@@ -1003,9 +1069,9 @@ export default function HomepageWhiteboard({
                 type="button"
                 className={styles.followUpDismiss}
                 onClick={closeFollowUp}
-                aria-label="Done editing follow-up"
+                aria-label="Close follow-up"
               >
-                done
+                <X size={17} strokeWidth={2} />
               </button>
             )}
           </form>
@@ -1020,11 +1086,6 @@ export default function HomepageWhiteboard({
         </aside>
       </section>
 
-      <nav className={styles.dock} aria-label="Primary navigation">
-        <Link href="/about"><UserRound size={18} /><span>About</span></Link>
-        <Link href="/projects"><FolderOpen size={18} /><span>Projects</span></Link>
-        <Link href="/blog/posts"><BookOpen size={18} /><span>Blog</span></Link>
-      </nav>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { knowledgePackSlugs, type KnowledgePack, type KnowledgePackSlug } from "./schema";
 import { malcomPack } from "./malcom";
 import { dispatchPack } from "./dispatch";
+import { mytraPack } from "./mytra";
 import { orcaMailPack } from "./orca-mail";
 import { flowstatePack } from "./flowstate";
 import { canvasNotionPack } from "./canvas-notion";
@@ -15,6 +16,7 @@ export type { KnowledgePack, KnowledgePackSlug } from "./schema";
 const packs: Record<KnowledgePackSlug, KnowledgePack> = {
   malcom: malcomPack,
   dispatch: dispatchPack,
+  "mytra": mytraPack,
   "orca-mail": orcaMailPack,
   flowstate: flowstatePack,
   "canvas-notion": canvasNotionPack,
