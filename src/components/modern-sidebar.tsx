@@ -113,6 +113,7 @@ const navSections: NavSection[] = [
       { title: "About Me", icon: User, href: "/about" },
       { title: "Explore", icon: Sparkles, href: "/explore" },
       { title: "Blog", icon: NotebookPen, href: "/blog/posts" },
+      { title: "Resume", icon: FileText, href: "/resume" },
     ],
   },
   {
