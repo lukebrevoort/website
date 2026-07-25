@@ -22,48 +22,46 @@ import styles from "./landing-story.module.css";
 
 const chapters = [
   {
-    composition: "skyline",
-    eyebrow: "01 / build with intent",
-    title: "I make useful things from curious questions.",
-    copy: "I’m Luke Brevoort — a computer science student, researcher, and product-minded engineer. I turn messy, human problems into software that feels clear enough to use every day.",
-    detail: "Stevens Institute of Technology · B.S. Computer Science · 2028",
-    annotation: "leave room for the next idea",
-    image: "/images/nycSunset.jpg",
-    alt: "New York City at sunset seen from the Hoboken waterfront",
-    position: "center",
-  },
-  {
-    composition: "slope",
-    eyebrow: "02 / work in the real world",
-    title: "The work has to survive outside the whiteboard.",
-    copy: "At Mytra, I build AI solution software on the Interactivity team. With Blueprint, I lead nonprofit product engagements from the first ticket through delivery.",
-    detail: "Software Engineering Intern · Project Lead",
-    annotation: "make the difficult part useful",
-    image: "/images/Skiing.jpg",
-    alt: "Skiers and chairlifts on a snowy mountain",
-    position: "center",
-  },
-  {
-    composition: "sun",
-    eyebrow: "03 / learn in public",
-    title: "Research gives the next idea somewhere to go.",
-    copy: "My work in the Stevens NLP Lab keeps me close to the questions underneath the interface: language, models, and how people make sense of technical systems.",
-    detail: "Research Assistant · AI, NLP, and product systems",
-    annotation: "stay close to the question",
-    image: "/images/sunset.jpg",
-    alt: "Sunlight reflecting across the ocean at sunset",
-    position: "center",
-  },
-  {
-    composition: "horizon",
-    eyebrow: "04 / make space for people",
-    title: "Good systems create more room for the humans using them.",
-    copy: "From student government finance to personal tools, I care about reducing the overhead around important work so teams can spend their time on better decisions.",
-    detail: "Student Government · Finance · Community",
-    annotation: "less friction, more momentum",
+    composition: "experienceSky",
+    eyebrow: "01 / now at mytra",
+    title: "I build systems that help warehouses keep moving.",
+    copy: "I’m building Mytra Oracle, an agentic diagnostics platform that connects Splunk telemetry, PostgreSQL data, Kubernetes logs, and live warehouse data to investigate production issues.",
+    detail: "Software Engineering Intern · Brisbane, CA · June 2026—Present",
     image: "/images/tower.jpg",
     alt: "A view over the Hudson River and New York City skyline",
+    position: "center 31%",
+  },
+  {
+    composition: "experienceRiver",
+    eyebrow: "02 / stevens blueprint",
+    title: "Good data is a service to the people who need it.",
+    copy: "As a Project Lead, I work with nonprofit partners from requirements through delivery. Recent work includes an HSDS Transformer that maps inconsistent health and human-services records into the Open Referral standard.",
+    detail: "Project Lead · Hoboken, NJ · October 2025—Present",
+    image: "/images/nycSunset.jpg",
+    alt: "New York City at sunset seen from the Hoboken waterfront",
+    position: "center 47%",
+  },
+  {
+    composition: "experienceNight",
+    eyebrow: "03 / stevens nlp lab",
+    title: "Research is where interfaces learn to listen.",
+    copy: "At the Stevens NLP Lab, I was the only undergraduate on a multilingual news-analysis team, building a full-stack Next.js prototype and helping evaluate language models for equivalent phrases.",
+    detail: "Research Intern · Hoboken, NJ · December 2024—August 2025",
+    image: "/images/sunset.jpg",
+    alt: "Sunlight reflecting across the ocean at sunset",
+    position: "center 44%",
+  },
+  {
+    composition: "selectedProject",
+    eyebrow: "04 / selected work",
+    title: "Long-running agent work needs a real home.",
+    copy: "MALCOM is a personal execution control plane for durable coding-agent sessions: a stable CLI, session registry, recoverable workspaces, logs, and constrained adapters for GitHub, Notion, and Linear.",
+    detail: "MALCOM · Python · CLI Design · Agent Orchestration",
+    image: "/images/malcom-architecture.svg",
+    alt: "MALCOM hand-drawn architecture sketch",
     position: "center",
+    href: "/projects/malcom",
+    linkLabel: "See the MALCOM project",
   },
 ];
 
@@ -235,13 +233,13 @@ export default function LandingStory() {
             id="landing-title"
             className={`${styles.handwrittenTitle} ${lukesFont.className}`}
           >
-            Building thoughtful systems
+            Building useful systems
             <br />
-            for people and ideas in motion.
+            for work that matters.
           </h1>
           <p className={styles.heroLead}>
-            Software, research, and experiments in making complicated things
-            feel more human.
+            Software engineering, applied research, and personal tools for
+            making complicated work more legible.
           </p>
           <a className={styles.scrollPrompt} href="#story">
             <span>Read the story</span>
@@ -277,9 +275,6 @@ export default function LandingStory() {
               style={{ objectPosition: chapter.position }}
             />
             <div className={styles.chapterShade} />
-            <p className={styles.chapterAnnotation} aria-hidden="true">
-              <span>{chapter.annotation}</span>
-            </p>
             <div className={styles.chapterCopy}>
               <p className={styles.kicker}>{chapter.eyebrow}</p>
               <h2
@@ -290,6 +285,12 @@ export default function LandingStory() {
               </h2>
               <p>{chapter.copy}</p>
               <span className={styles.detail}>{chapter.detail}</span>
+              {chapter.href && chapter.linkLabel && (
+                <Link className={styles.chapterLink} href={chapter.href}>
+                  {chapter.linkLabel}
+                  <ArrowUpRight aria-hidden="true" size={17} />
+                </Link>
+              )}
             </div>
             <p className={styles.chapterIndex} aria-hidden="true">
               0{index + 2}
@@ -305,19 +306,22 @@ export default function LandingStory() {
       >
         <div className={styles.exploreGrid} aria-hidden="true" />
         <div className={styles.exploreContent}>
-          <p className={styles.kicker}>05 / resume, still in progress</p>
+          <p className={styles.kicker}>05 / keep following the thread</p>
           <h2
             id="explore-title"
             className={`${styles.handwrittenTitle} ${lukesFont.className}`}
           >
-            There’s more to explore.
+            The work keeps going.
           </h2>
           <p>
-            Projects, notes, and unfinished ideas live beyond this first
-            impression. The navigation is back whenever you are ready to look
-            around.
+            The resume is the outline. Projects, notes, and unfinished ideas
+            make the systems tangible.
           </p>
           <div className={styles.actions}>
+            <Link className={styles.projectAction} href="/projects/malcom">
+              MALCOM in detail
+              <ArrowUpRight aria-hidden="true" size={18} />
+            </Link>
             <Link className={styles.exploreAction} href="/explore">
               <Sparkles aria-hidden="true" size={19} />
               Explore the canvas
