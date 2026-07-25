@@ -9,6 +9,72 @@ import { crimsonText, lukesFont } from "../fonts";
 import { MotionConfig } from "framer-motion";
 import { ModernAppSidebar } from "@/components/modern-app-sidebar";
 
+const interests = [
+  {
+    emoji: "🎷",
+    label: "Jazz & Hip Hop",
+    note: "Mac Miller, Denzel Curry, Coltrane, Miles Davis, Ryo Fukui",
+  },
+  {
+    emoji: "📖",
+    label: "Reading",
+    note: "Rick Rubin's The Creative Act right now. Build by Tony Fadell as well.",
+  },
+  {
+    emoji: "🏀",
+    label: "Basketball Talk",
+    note: "Could talk hoops all day. Denver Nuggests beating the 76ers in 6",
+  },
+  {
+    emoji: "🥍",
+    label: "Lacrosse",
+    note: "Played for years. Miss the pace, still love the game.",
+  },
+  {
+    emoji: "🏔️",
+    label: "Skiing",
+    note: "Colorado kid at heart. Bluebird days are therapy.",
+  },
+  {
+    emoji: "🗺️",
+    label: "Solo Exploring",
+    note: "Wandering a new city alone with my thoughts and my own agenda.",
+  },
+  {
+    emoji: "☕",
+    label: "Good Coffee",
+    note: "The fuel behind most of the above. Not much beats a great cup",
+  },
+];
+
+const experiences = [
+  {
+    org: "Mytra",
+    role: "Software Engineering Intern · Interactivity Team",
+    note: "Building agentic AI diagnostics for warehouses. Splunk, Postgres, K8s logs, live sensor data. The kind of problem that keeps me up at night because I can't stop thinking about it.",
+  },
+  {
+    org: "Stevens NLP Lab",
+    role: "Research Assistant",
+    note: "Only undergrad on a multilingual news-analysis team. Built the prototype, ran evaluations, learned how real research works — messy, humbling, and exactly what I needed.",
+  },
+  {
+    org: "Blueprint",
+    role: "Project Lead",
+    note: "Shipping real software for nonprofit partners. Tickets, standups, stakeholder convos. Leading a team from requirements to delivery.",
+  },
+  {
+    org: "Student Government Association",
+    role: "Vice President of Finance",
+    note: "Helping allocate the student activity fee across clubs and initiatives. Still the same instinct: making sure money goes where it helps.",
+  },
+  {
+    org: "EH Yang Lab",
+    role: "Undergraduate Researcher",
+    note: "My first real taste of research. Messy, humbling, and the reason I knew I wanted more of it.",
+  },
+];
+
 export default function Page() {
   return (
     <ModernAppSidebar currentPath="/about">
@@ -26,6 +92,15 @@ export default function Page() {
                   I like building things in my freetime. coding, writing, and
                   creating :)
                 </h1>
+                <p
+                  className={`text-2xl md:text-2xl leading-relaxed text-muted-foreground ${lukesFont.className}`}
+                >
+                  I&apos;m Luke. I build systems from software, teams, budgets,
+                  whatever needs building. I grew up in Colorado, go to school
+                  in Hoboken, research NLP, intern at Mytra, and spend most of
+                  my free time thinking about how to enable other people to
+                  build too.
+                </p>
               </div>
               <div className="lg:w-1/2">
                 <Image
@@ -45,23 +120,35 @@ export default function Page() {
                 </h2>
                 <div className="space-y-4 text-md md:text-lg leading-relaxed">
                   <p>
-                    I&apos;m Luke Brevoort a freshman at Stevens Institute of
-                    Technology in Hoboken NJ who is studying Computer Science! I
-                    am passionate about AI, Fullstack Development, and Natural
-                    Language Processing.
+                    I grew up in Littleton, Colorado, one of the most pretty
+                    places on the planet in my opinion. From hiking, climbing,
+                    camping, backpacking, I have done it all with a smile.
+                    Colorado will forever be my home,
                   </p>
                   <p>
-                    I work on a variety of projects of different fields to learn
-                    as much as possible. From Machine Learning, Frontend
-                    Development, to Concurrency im always trying to expand my
-                    horizons which includes joining research and trying to learn
-                    as much as possible.
+                    Colorado taught me something I didn&apos;t fully appreciate
+                    until I left which was the value of balance. I love the
+                    hustle, the speed, the energy of a place like New York. But
+                    I also need the ability to slow down, feel the nature, smell
+                    the flowers. Colorado takes me back to being a kid in a way
+                    nowhere else does, and that reminder that you can move fast
+                    AND be present.
                   </p>
                   <p>
-                    Outside of school I enjoy Frisbee, Skiing, Weightlifting,
-                    and Lacrosse, so really anything active :). I am actively
-                    involved in the Schools Student Government Association and
-                    love giving back to the Hoboken Community.
+                    I found my love for building through a lot of avenues. I
+                    like to joke it was easy to be inspired when as a kid I
+                    thought for sure my Dad was Tony Stark. My family always
+                    pushed me to solve problems and not settle for less, even if
+                    that means spending hours to solve something that might have
+                    been easier to brute force.
+                  </p>
+                  <p>
+                    What continues to motivate what I build is this idea I have
+                    that every person is creative. I find it strange people
+                    attribute this like some arbitrary trait, but I find that
+                    most great ideas do not always come from those with the most
+                    knowledge. Taking in a fresh perspective is always
+                    worthwhile.
                   </p>
                 </div>
               </CardContent>
@@ -100,14 +187,11 @@ export default function Page() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.85, y: 0 }}
               viewport={{
-                once: true, // Makes the animation happen only once
-                amount: 0.3, // Triggers when 30% of the element is in view
-                margin: "0px 0px -100px 0px", // Offset for when animation triggers
+                once: true,
+                amount: 0.3,
+                margin: "0px 0px -100px 0px",
               }}
-              transition={{
-                duration: 0.5,
-                ease: "easeOut",
-              }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               whileHover={{ opacity: 1 }}
             >
               <div className="w-full md:w-1/2">
@@ -126,61 +210,18 @@ export default function Page() {
                 <h2 className={`${lukesFont.className} text-4xl mb-6`}>
                   Skills:
                 </h2>
-                <div className={`space-y-6 ${crimsonText.className}`}>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      Programming Languages
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>Python</Badge>
-                      <Badge>TypeScript</Badge>
-                      <Badge>JavaScript</Badge>
-                      <Badge>SQL</Badge>
-                      <Badge>HTML/CSS</Badge>
-                    </div>
+
+                <div className="space-y-6 mb-8 max-w-3xl">
+                  <div className="border-l-2 border-border/40 pl-4">
+                    <p className="text-muted-foreground italic">
+                      &ldquo;The goal is to be the person who can make something
+                      happen.&rdquo;
+                    </p>
+                    <p className="text-sm text-muted-foreground/70 mt-1">
+                      — Rick Rubin, The Creative Act
+                    </p>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      Web Technologies
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>React</Badge>
-                      <Badge>Next.js</Badge>
-                      <Badge>Node.js</Badge>
-                      <Badge>TailwindCSS</Badge>
-                      <Badge>HTML/CSS</Badge>
-                      <Badge>REST APIs</Badge>
-                      <Badge>WebLLM</Badge>
-                      <Badge>OAuth 2.0</Badge>
-                      <Badge>Agent Orchestration</Badge>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      Tools & Platforms
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>Git</Badge>
-                      <Badge>Docker</Badge>
-                      <Badge>AWS</Badge>
-                      <Badge>FastAPI</Badge>
-                      <Badge>Vercel</Badge>
-                      <Badge>Linux</Badge>
-                      <Badge>VS Code</Badge>
-                      <Badge>PostgreSQL</Badge>
-                      <Badge>SQLite</Badge>
-                      <Badge>Linear</Badge>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">Research</h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>Natural Language Processing</Badge>
-                      <Badge>Machine Learning</Badge>
-                      <Badge>Data Analysis</Badge>
-                      <Badge>Collaboration</Badge>
-                    </div>
-                  </div>
+                </div>
 
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Leadership</h3>
@@ -209,14 +250,11 @@ export default function Page() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.85, y: 0 }}
               viewport={{
-                once: true, // Makes the animation happen only once
-                amount: 0.3, // Triggers when 30% of the element is in view
-                margin: "0px 0px -100px 0px", // Offset for when animation triggers
+                once: true,
+                amount: 0.3,
+                margin: "0px 0px -100px 0px",
               }}
-              transition={{
-                duration: 0.5,
-                ease: "easeOut",
-              }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               whileHover={{ opacity: 1 }}
               id="experience"
             >
@@ -237,6 +275,98 @@ export default function Page() {
                   Experience:
                 </h2>
                 <div className={`space-y-8 ${crimsonText.className}`}>
+                  {experiences.map((item, index) => (
+                    <motion.div
+                      key={item.org}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.4,
+                        delay: index * 0.1,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <div className="space-y-1">
+                        <h3 className="text-xl font-bold text-foreground">
+                          {item.org}
+                        </h3>
+                        <p className="text-md text-muted-foreground">
+                          {item.role}
+                        </p>
+                        <p className="text-md leading-relaxed text-muted-foreground/80 max-w-2xl">
+                          {item.note}
+                        </p>
+                      </div>
+                      {index < experiences.length - 1 && (
+                        <Separator className="mt-6" />
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Baby photo */}
+            <motion.div
+              className="flex justify-center w-full mb-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 0.85, y: 0 }}
+              viewport={{
+                once: true,
+                amount: 0.3,
+                margin: "0px 0px -100px 0px",
+              }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileHover={{ opacity: 1 }}
+            >
+              <figure className="w-full md:w-1/2 space-y-2">
+                <Image
+                  src="/images/babyluke.jpeg"
+                  alt="Baby Luke"
+                  width={300}
+                  height={250}
+                  className="rounded-lg w-full"
+                />
+                <figcaption className="text-sm text-muted-foreground text-center italic">
+                  Future builder of systems, Colorado edition, circa 2006-ish.
+                </figcaption>
+              </figure>
+            </motion.div>
+
+            {/* Right now */}
+            <Card className="mb-8" id="now">
+              <CardContent className="p-6 md:p-8">
+                <h2
+                  className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}
+                >
+                  Right now.
+                </h2>
+                <div className="space-y-4 text-md md:text-lg leading-relaxed text-muted-foreground max-w-3xl">
+                  <p>
+                    I&apos;m the second oldest of five kids, which I think
+                    explains a lot about me. I&apos;m at Stevens in Hoboken now,
+                    studying CS, running SGA finance, and commuting to Brisbane
+                    for Mytra when I can. I&apos;m reading Rick Rubin, listening
+                    to Mac Miller on repeat, and trying to get to the mountains
+                    more often.
+                  </p>
+                  <p>
+                    Moving from Colorado to Hoboken was a mix of exciting and
+                    overwhelming. I love this city. Not because it&apos;s
+                    glamorous, but because the people here are grinding,
+                    they&apos;re ambitious, they&apos;re asking interesting
+                    questions. That energy is contagious and I&apos;m grateful
+                    to be around it.
+                  </p>
+                  <p>
+                    If any of this resonates or if you&apos;re building
+                    something you care abou, I&apos;d love to hear about it.
+                    That&apos;s the whole point.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-6 mt-8">
                   {[
                     {
                       title: "Mytra",
@@ -246,24 +376,9 @@ export default function Page() {
                         "Building AI solution software for Fortune 500 customers as part of the Interactivity Team.",
                     },
                     {
-                      title: (
-                        <a
-                          href="https://sitblueprint.com/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Blueprint
-                        </a>
-                      ),
-                      role: "Project Lead",
-                      date: "November 2025 - Present",
-                      description:
-                        "Leading end-to-end nonprofit engagements: shaping tickets, running standups, and incorporating stakeholder value propositions into product work.",
-                    },
-                    {
-                      title: "Stevens NLP Lab",
-                      role: "Research Assistant",
-                      date: "December 2024 – Present",
+                      href: "https://www.linkedin.com/in/luke-brevoort-6a545626a/",
+                      src: "/icons/linkedin.png",
+                      alt: "LinkedIn",
                     },
                     {
                       title: "EH Yang Lab",
@@ -316,9 +431,9 @@ export default function Page() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.85, y: 0 }}
               viewport={{
-                once: true, // Makes the animation happen only once
-                amount: 0.3, // Triggers when 30% of the element is in view
-                margin: "0px 0px -100px 0px", // Offset for when animation triggers
+                once: true,
+                amount: 0.3,
+                margin: "0px 0px -100px 0px",
               }}
               transition={{
                 duration: 0.5,
