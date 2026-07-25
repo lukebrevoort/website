@@ -111,9 +111,9 @@ const navSections: NavSection[] = [
     title: "Information",
     items: [
       { title: "About Me", icon: User, href: "/about" },
-      { title: "Resume", icon: FileText, href: "/resume" },
       { title: "Explore", icon: Sparkles, href: "/explore" },
       { title: "Blog", icon: NotebookPen, href: "/blog/posts" },
+      { title: "Resume", icon: FileText, href: "/resume" },
     ],
   },
   {
