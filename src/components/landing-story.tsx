@@ -344,7 +344,7 @@ export default function LandingStory() {
               Explore the canvas
               <ArrowUpRight aria-hidden="true" size={18} />
             </Link>
-            <Link className={styles.resumeAction} href="/about#experience">
+            <Link className={styles.resumeAction} href="/resume">
               <BookOpen aria-hidden="true" size={18} />
               Read my resume
             </Link>
