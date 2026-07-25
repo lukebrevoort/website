@@ -120,7 +120,7 @@ interface MobileNavbarProps {
 }
 
 export function MobileNavbar({
-  currentPath = "/dashboard",
+  currentPath = "/",
 }: MobileNavbarProps) {
   const router = useRouter();
   const [activeItem, setActiveItem] = useState(currentPath);
@@ -134,7 +134,7 @@ export function MobileNavbar({
             variant="ghost"
             size="sm"
             className="relative w-10 h-10 p-0 bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80"
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/?return=work")}
           >
             <Avatar className="h-8 w-8 ring-2 ring-sidebar-border">
               <AvatarImage src="/images/avatar.jpg" alt="Luke Brevoort" />

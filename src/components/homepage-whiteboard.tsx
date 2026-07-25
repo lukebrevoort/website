@@ -744,7 +744,7 @@ export default function HomepageWhiteboard({
       onPointerDown={dismissKeyboardOnCanvas}
     >
       <header className={styles.topbar}>
-        <Link href="/" className={`${styles.signature} ${lukesFont.className}`}>
+        <Link href="/?return=work" className={`${styles.signature} ${lukesFont.className}`}>
           <ArrowLeft size={15} strokeWidth={1.8} />
           <span>luke.brev</span>
         </Link>
