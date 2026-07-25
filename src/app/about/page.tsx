@@ -35,6 +35,11 @@ const interests = [
     note: "Colorado kid at heart. Bluebird days are therapy.",
   },
   {
+    emoji: "🗺️",
+    label: "Solo Exploring",
+    note: "Wandering a new city alone with my thoughts and my own agenda.",
+  },
+  {
     emoji: "☕",
     label: "Good Coffee",
     note: "The fuel behind most of the above.",
@@ -127,9 +132,19 @@ export default function Page() {
                   <p>
                     I grew up in Littleton, Colorado — a suburb south of Denver
                     where the Rockies are on the horizon and the air is dry
-                    enough that you feel it. My family has a ranch on Long
-                    Island too, so I&apos;ve always had a foot in two very
-                    different worlds: mountain quiet and coastal hustle.
+                    enough that you feel it. My dad&apos;s side of the family is
+                    from Long Island, so I got to know NYC through them and fell
+                    in love with the culture early. I&apos;ve always had a foot
+                    in two very different worlds: mountain quiet and coastal hustle.
+                  </p>
+                  <p>
+                    Colorado taught me something I didn&apos;t fully appreciate
+                    until I left: the value of balance. I love the hustle, the
+                    speed, the energy of a place like New York. But I also need
+                    the ability to slow down, feel the nature, smell the flowers.
+                    Colorado takes me back to being a kid in a way nowhere else
+                    does, and that reminder — that you can move fast AND be
+                    present — is one I carry everywhere.
                   </p>
                   <p>
                     My passion for building started with two things: Iron Man
@@ -140,18 +155,18 @@ export default function Page() {
                     people around you to make their own things. That idea stuck.
                   </p>
                   <p>
-                    I believe everyone is capable of building. Everyone has good
-                    ideas. The question is whether they have the right people
-                    around them, the right tools, the right environment. That
-                    belief is the thread through everything I do — research,
-                    engineering, student government, mentoring. Put the right
-                    people together and let them build.
+                    I believe every person is creative. Really. It&apos;s not
+                    about talent or training — it&apos;s about taking in enough
+                    perspectives and opening your eyes to what&apos;s possible.
+                    That belief is the thread through everything I do —
+                    research, engineering, student government, mentoring. Put
+                    the right people together and let them build.
                   </p>
                   <p>
                     That&apos;s what brought me to Stevens, to NLP research, to
-                    Mytra, to student government, to every project I&apos;ve
-                    started. Not because I had the answers, but because I wanted
-                    to be around people who were asking good questions.
+                    Mytra, to every project I&apos;ve started. Not because I had
+                    the answers, but because I wanted to be around people who
+                    were asking good questions.
                   </p>
                 </div>
               </CardContent>
@@ -218,11 +233,20 @@ export default function Page() {
                     same time. I love that tension.
                   </p>
                   <p className="text-md leading-relaxed text-muted-foreground">
-                    Outside of music, I can talk sports all day — basketball
-                    especially. The strategy, the stories, the rivalries. I
-                    played lacrosse for years and still love the pace of it.
-                    And I&apos;ll never say no to a good conversation about
-                    anything, really. That&apos;s the Colorado in me, probably.
+                    Outside of music, I love to solo explore. There&apos;s a
+                    beauty to being alone with your thoughts and your own
+                    devices, planning your day and making it meaningful for
+                    nobody else but yourself. I think that&apos;s something
+                    people don&apos;t always expect about me. Same with the
+                    fact that I used to be a picky eater — that always surprises
+                    people.
+                  </p>
+                  <p className="text-md leading-relaxed text-muted-foreground">
+                    I can talk sports all day — basketball especially. The
+                    strategy, the stories, the rivalries. I played lacrosse for
+                    years and still love the pace of it. And I&apos;ll never say
+                    no to a good conversation about anything, really. That&apos;s
+                    the Colorado in me, probably.
                   </p>
                 </div>
 
@@ -357,16 +381,20 @@ export default function Page() {
                 </h2>
                 <div className="space-y-4 text-md md:text-lg leading-relaxed text-muted-foreground max-w-3xl">
                   <p>
-                    I&apos;m at Stevens in Hoboken, studying CS, running SGA
-                    finance, and commuting to Brisbane for Mytra when I can.
-                    I&apos;m reading Rick Rubin, listening to Mac Miller on
-                    repeat, and trying to get to the mountains more often.
+                    I&apos;m the second oldest of five kids, which I think
+                    explains a lot about me. I&apos;m at Stevens in Hoboken now,
+                    studying CS, running SGA finance, and commuting to Brisbane
+                    for Mytra when I can. I&apos;m reading Rick Rubin, listening
+                    to Mac Miller on repeat, and trying to get to the mountains
+                    more often.
                   </p>
                   <p>
-                    I love this city. Not because it&apos;s glamorous — because
-                    the people here are grinding, they&apos;re ambitious,
-                    they&apos;re asking interesting questions. That energy is
-                    contagious and I&apos;m grateful to be around it.
+                    Moving from Colorado to Hoboken was a mix of exciting and
+                    overwhelming — exactly what I needed. I love this city. Not
+                    because it&apos;s glamorous, but because the people here are
+                    grinding, they&apos;re ambitious, they&apos;re asking
+                    interesting questions. That energy is contagious and
+                    I&apos;m grateful to be around it.
                   </p>
                   <p>
                     If any of this resonates — or if you&apos;re building
