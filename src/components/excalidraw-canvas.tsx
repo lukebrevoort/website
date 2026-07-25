@@ -711,7 +711,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         initialData={() => {
           const recovered = loadPersistedBoard();
           const isMobile = typeof window !== "undefined" && window.innerWidth <= 760;
-          const mobileZoom = 0.4 as NormalizedZoomValue;
+          const mobileZoom = 0.5 as NormalizedZoomValue;
           const desktopZoom = 1 as NormalizedZoomValue;
           const zoom = isMobile ? mobileZoom : desktopZoom;
           const defaultAppState = {

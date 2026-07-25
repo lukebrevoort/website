@@ -1,0 +1,82 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic:
+      - link "luke.brev" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e8]:
+        - button "new board" [ref=e9] [cursor=pointer]
+        - generic "Vision agent status" [ref=e13]: vision agent
+    - region "Luke's project exploration canvas" [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic:
+            - generic:
+              - generic:
+                - button [ref=e20] [cursor=pointer]
+                - region "Shapes":
+                  - generic [ref=e27]:
+                    - generic: To move canvas, hold mouse wheel or spacebar while dragging, or use the hand tool
+                    - heading "Shapes" [level=2] [ref=e28]
+                    - generic [ref=e29]:
+                      - generic "Keep selected tool active after drawing — Q" [ref=e30] [cursor=pointer]:
+                        - checkbox "Keep selected tool active after drawing"
+                      - generic "Hand (panning tool) — H" [ref=e39] [cursor=pointer]:
+                        - radio "Hand (panning tool) — H"
+                      - generic "Selection — V or 1" [ref=e48] [cursor=pointer]:
+                        - radio "Selection" [checked]
+                        - generic [ref=e49]: "1"
+                      - generic "Rectangle — R or 2" [ref=e56] [cursor=pointer]:
+                        - radio "Rectangle"
+                        - generic [ref=e57]: "2"
+                      - generic "Diamond — D or 3" [ref=e63] [cursor=pointer]:
+                        - radio "Diamond"
+                        - generic [ref=e64]: "3"
+                      - generic "Ellipse — O or 4" [ref=e70] [cursor=pointer]:
+                        - radio "Ellipse"
+                        - generic [ref=e71]: "4"
+                      - generic "Arrow — A or 5" [ref=e77] [cursor=pointer]:
+                        - radio "Arrow"
+                        - generic [ref=e78]: "5"
+                      - generic "Line — L or 6" [ref=e85] [cursor=pointer]:
+                        - radio "Line"
+                        - generic [ref=e86]: "6"
+                      - generic "Draw — P or 7" [ref=e89] [cursor=pointer]:
+                        - radio "Draw"
+                        - generic [ref=e90]: "7"
+                      - generic "Text — T or 8" [ref=e96] [cursor=pointer]:
+                        - radio "Text"
+                        - generic [ref=e97]: "8"
+                      - generic "Insert image — 9" [ref=e104] [cursor=pointer]:
+                        - radio "Insert image"
+                        - generic [ref=e105]: "9"
+                      - generic "Eraser — E or 0" [ref=e112] [cursor=pointer]:
+                        - radio "Eraser"
+                        - generic [ref=e113]: "0"
+                      - button "More tools" [ref=e121] [cursor=pointer]
+                - generic "Library" [ref=e128]:
+                  - checkbox "Library"
+            - contentinfo:
+              - region [ref=e137]:
+                - heading "Canvas actions" [level=2] [ref=e138]
+                - generic [ref=e140]:
+                  - button "Zoom out" [ref=e141] [cursor=pointer]
+                  - button "Reset zoom" [ref=e145] [cursor=pointer]: 100%
+                  - button "Zoom in" [ref=e146] [cursor=pointer]
+                - generic [ref=e150]:
+                  - button "Undo" [disabled] [ref=e153]
+                  - button "Redo" [disabled] [ref=e159]
+              - button "Help" [ref=e164] [cursor=pointer]
+          - generic [ref=e170]: Drawing canvas
+        - generic: 0 marks · 0 selected · saved locally
+      - status:
+        - generic: ✦
+        - generic: unrolling the canvas…
+    - navigation "Primary navigation" [ref=e171]:
+      - link "About" [ref=e172] [cursor=pointer]:
+        - /url: /about
+      - link "Projects" [ref=e177] [cursor=pointer]:
+        - /url: /projects
+      - link "Blog" [ref=e181] [cursor=pointer]:
+        - /url: /blog/posts
+  - button "Open Next.js Dev Tools" [ref=e190] [cursor=pointer]
+  - alert [ref=e194]
