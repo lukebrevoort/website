@@ -7,6 +7,7 @@ import type {
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
+  NormalizedZoomValue,
 } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
@@ -431,7 +432,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         : insertedElements;
       api.scrollToContent(cameraElements, {
         fitToViewport: true,
-        viewportZoomFactor: isMobile ? 0.82 : 0.72,
+        viewportZoomFactor: isMobile ? 0.5 : 0.72,
         animate: true,
         duration: 450,
         maxZoom: 1.15,
@@ -547,9 +548,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         elements: [...api.getSceneElements(), ...previewElements],
         captureUpdate: CaptureUpdateAction.NEVER,
       });
+      const isMobilePreview = window.matchMedia("(max-width: 760px)").matches;
       api.scrollToContent(previewElements, {
         fitToViewport: true,
-        viewportZoomFactor: 0.78,
+        viewportZoomFactor: isMobilePreview ? 0.5 : 0.78,
         animate: true,
         duration: 360,
         maxZoom: 1.1,
@@ -606,9 +608,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       });
       api.setActiveTool({ type: "selection" });
       if (createdElements.length > 0) {
+        const isMobileApply = window.matchMedia("(max-width: 760px)").matches;
         api.scrollToContent(createdElements, {
           fitToViewport: true,
-          viewportZoomFactor: 0.78,
+          viewportZoomFactor: isMobileApply ? 0.5 : 0.78,
           animate: true,
           duration: 420,
           maxZoom: 1.1,
@@ -635,6 +638,13 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
     previewElementIds.current = [];
     apiRef.current?.resetScene();
     apiRef.current?.history.clear();
+    const isMobile = window.matchMedia("(max-width: 760px)").matches;
+    apiRef.current?.updateScene({
+      appState: {
+        zoom: { value: (isMobile ? 0.5 : 1) as NormalizedZoomValue },
+        viewBackgroundColor: "#f4f0e7",
+      },
+    });
     apiRef.current?.setToast({ message: "Started a fresh local board", duration: 1800 });
   }, []);
 
@@ -707,14 +717,21 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         }}
         initialData={() => {
           const recovered = loadPersistedBoard();
-          return recovered || {
-            appState: {
-              currentItemStrokeColor: "#20201d",
-              currentItemBackgroundColor: "transparent",
-              currentItemFontFamily: 1,
-              viewBackgroundColor: "#f4f0e7",
-            },
+          const isMobile = typeof window !== "undefined" && window.innerWidth <= 760;
+          const mobileZoom = 0.5 as NormalizedZoomValue;
+          const desktopZoom = 1 as NormalizedZoomValue;
+          const zoom = isMobile ? mobileZoom : desktopZoom;
+          const defaultAppState = {
+            currentItemStrokeColor: "#20201d",
+            currentItemBackgroundColor: "transparent",
+            currentItemFontFamily: 1,
+            viewBackgroundColor: "#f4f0e7",
+            zenModeEnabled: true,
+            zoom: { value: zoom },
           };
+          return recovered
+            ? { ...recovered, appState: { ...recovered.appState, zenModeEnabled: true, zoom: { value: zoom } } }
+            : { appState: defaultAppState };
         }}
         onChange={handleChange}
         theme="light"
