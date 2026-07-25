@@ -24,7 +24,7 @@ const chapters = [
   {
     composition: "experienceMytra",
     eyebrow: "01 / now at mytra",
-    title: "I build systems that help warehouses keep moving.",
+    title: "Building on the latest frontier at Mytra",
     copy: "I’m building Mytra Oracle, an agentic diagnostics platform that connects Splunk telemetry, PostgreSQL data, Kubernetes logs, and live warehouse data to investigate production issues.",
     detail: "Software Engineering Intern · Brisbane, CA · June 2026—Present",
     image: "/images/mytra-cover.jpg",
@@ -34,7 +34,7 @@ const chapters = [
   {
     composition: "experienceBlueprint",
     eyebrow: "02 / stevens blueprint",
-    title: "Good data is a service to the people who need it.",
+    title: "Managing teams to help non-profits thrive",
     copy: "As a Project Lead, I work with nonprofit partners from requirements through delivery. Recent work includes an HSDS Transformer that maps inconsistent health and human-services records into the Open Referral standard.",
     detail: "Project Lead · Hoboken, NJ · October 2025—Present",
     image: "/images/nycSunset.jpg",
@@ -300,6 +300,7 @@ export default function LandingStory() {
               <p className={styles.kicker}>{chapter.eyebrow}</p>
               <h2
                 id={`chapter-${index}`}
+                lay
                 className={`${styles.handwrittenTitle} ${lukesFont.className}`}
               >
                 {chapter.title}
