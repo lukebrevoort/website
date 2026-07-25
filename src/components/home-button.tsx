@@ -23,7 +23,7 @@ export function HomeButton() {
           size="lg"
           className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
-          <Link href="/">
+          <Link href="/?return=work">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <Home className="size-4" />
             </div>

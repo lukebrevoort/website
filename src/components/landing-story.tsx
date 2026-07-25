@@ -90,6 +90,24 @@ export default function LandingStory() {
   }, []);
 
   useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("return") !== "work") {
+      return;
+    }
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      exploreRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+        block: "start",
+      });
+      window.history.replaceState(null, "", window.location.pathname);
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, []);
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const currentChapter = entries
@@ -121,7 +139,8 @@ export default function LandingStory() {
 
     const updateProgress = () => {
       animationFrame = 0;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
 
       progressRef.current?.style.setProperty(
@@ -233,9 +252,8 @@ export default function LandingStory() {
             id="landing-title"
             className={`${styles.handwrittenTitle} ${lukesFont.className}`}
           >
-            Building useful systems
-            <br />
-            for work that matters.
+            I am Luke Brevoort,
+            <br />I like to build stuff
           </h1>
           <p className={styles.heroLead}>
             Software engineering, applied research, and personal tools for
