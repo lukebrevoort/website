@@ -318,10 +318,6 @@ export default function LandingStory() {
             make the systems tangible.
           </p>
           <div className={styles.actions}>
-            <Link className={styles.projectAction} href="/projects/malcom">
-              MALCOM in detail
-              <ArrowUpRight aria-hidden="true" size={18} />
-            </Link>
             <Link className={styles.exploreAction} href="/explore">
               <Sparkles aria-hidden="true" size={19} />
               Explore the canvas

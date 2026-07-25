@@ -196,7 +196,6 @@
 
 .scrollPrompt,
 .exploreAction,
-.projectAction,
 .resumeAction,
 .directory a {
   align-items: center;
@@ -403,9 +402,9 @@
 .selectedProject .chapterImage {
   background: #18242d;
   filter: none;
-  inset: clamp(4.5rem, 10vh, 7rem) clamp(2.5rem, 5vw, 6rem) clamp(4.5rem, 10vh, 7rem) 48%;
+  inset: clamp(4.5rem, 10vh, 7rem) 48% clamp(4.5rem, 10vh, 7rem) clamp(2.5rem, 5vw, 6rem);
   object-fit: cover;
-  object-position: center;
+  object-position: 38% center;
   transform: translate3d(var(--pointer-shift-x), var(--pointer-shift-y), 0) scale(1.02);
 }
 
@@ -414,12 +413,14 @@
 }
 
 .selectedProject .chapterShade {
-  background: linear-gradient(90deg, #10171e 0%, #10171e 44%, rgba(16, 23, 30, 0.68) 54%, transparent 68%);
+  background: linear-gradient(90deg, transparent 32%, rgba(16, 23, 30, 0.68) 46%, #10171e 56%, #10171e 100%);
 }
 
 .selectedProject .chapterCopy {
   align-self: center;
-  margin-left: clamp(2rem, 7vw, 8rem);
+  justify-self: end;
+  margin-left: 0;
+  margin-right: clamp(2rem, 7vw, 8rem);
   max-width: min(34rem, 39vw);
   padding: 0;
 }
@@ -478,7 +479,6 @@
 }
 
 .exploreAction,
-.projectAction,
 .resumeAction {
   display: inline-flex;
   font-family: var(--font-geist-mono), ui-monospace, monospace;
@@ -497,19 +497,12 @@
   color: white;
 }
 
-.projectAction {
-  background: var(--ink);
-  box-shadow: 5px 5px 0 var(--accent);
-  color: white;
-}
-
 .resumeAction {
   border: 1px solid var(--ink);
   color: var(--ink);
 }
 
 .exploreAction:hover,
-.projectAction:hover,
 .resumeAction:hover {
   box-shadow: 8px 8px 0 var(--ink);
   transform: translate(-2px, -2px);
@@ -641,7 +634,6 @@
   .mobileNavigation,
   .scrollPrompt,
   .exploreAction,
-  .projectAction,
   .resumeAction,
   .chapterImage,
   .chapterCopy {
