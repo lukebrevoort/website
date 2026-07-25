@@ -23,6 +23,7 @@ import {
   PanelsTopLeft,
 } from "lucide-react";
 
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
@@ -121,6 +122,7 @@ interface MobileNavbarProps {
 export function MobileNavbar({
   currentPath = "/dashboard",
 }: MobileNavbarProps) {
+  const router = useRouter();
   const [activeItem, setActiveItem] = useState(currentPath);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -132,7 +134,7 @@ export function MobileNavbar({
             variant="ghost"
             size="sm"
             className="relative w-10 h-10 p-0 bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80"
-            onClick={() => (window.location.href = "/dashboard")}
+            onClick={() => router.push("/dashboard")}
           >
             <Avatar className="h-8 w-8 ring-2 ring-sidebar-border">
               <AvatarImage src="/images/avatar.jpg" alt="Luke Brevoort" />
@@ -272,7 +274,7 @@ export function MobileNavbar({
                                     onClick={() => {
                                       setActiveItem(item.href);
                                       setIsOpen(false);
-                                      window.location.href = item.href;
+                                      router.push(item.href);
                                     }}
                                   >
                                     <Icon className="h-4 w-4 mr-3" />
