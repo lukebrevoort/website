@@ -432,7 +432,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         : insertedElements;
       api.scrollToContent(cameraElements, {
         fitToViewport: true,
-        viewportZoomFactor: isMobile ? 0.82 : 0.72,
+        viewportZoomFactor: isMobile ? 0.65 : 0.72,
         animate: true,
         duration: 450,
         maxZoom: 1.15,
@@ -548,9 +548,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         elements: [...api.getSceneElements(), ...previewElements],
         captureUpdate: CaptureUpdateAction.NEVER,
       });
+      const isMobilePreview = window.matchMedia("(max-width: 760px)").matches;
       api.scrollToContent(previewElements, {
         fitToViewport: true,
-        viewportZoomFactor: 0.78,
+        viewportZoomFactor: isMobilePreview ? 0.6 : 0.78,
         animate: true,
         duration: 360,
         maxZoom: 1.1,
@@ -607,9 +608,10 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       });
       api.setActiveTool({ type: "selection" });
       if (createdElements.length > 0) {
+        const isMobileApply = window.matchMedia("(max-width: 760px)").matches;
         api.scrollToContent(createdElements, {
           fitToViewport: true,
-          viewportZoomFactor: 0.78,
+          viewportZoomFactor: isMobileApply ? 0.6 : 0.78,
           animate: true,
           duration: 420,
           maxZoom: 1.1,
@@ -709,7 +711,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         initialData={() => {
           const recovered = loadPersistedBoard();
           const isMobile = typeof window !== "undefined" && window.innerWidth <= 760;
-          const mobileZoom = 0.55 as NormalizedZoomValue;
+          const mobileZoom = 0.4 as NormalizedZoomValue;
           const desktopZoom = 1 as NormalizedZoomValue;
           const zoom = isMobile ? mobileZoom : desktopZoom;
           const defaultAppState = {
