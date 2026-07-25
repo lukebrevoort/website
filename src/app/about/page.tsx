@@ -10,34 +10,34 @@ import { ModernAppSidebar } from "@/components/modern-app-sidebar";
 
 const interests = [
   {
-    emoji: "🥏",
-    label: "Ultimate Frisbee",
-    note: "Chasing discs and getting steps in.",
-  },
-  {
-    emoji: "🏔️",
-    label: "Skiing",
-    note: "Nothing beats a bluebird day on the mountain.",
-  },
-  {
-    emoji: "🏋️",
-    label: "Weightlifting",
-    note: "Moving heavy things, putting them back down.",
-  },
-  {
-    emoji: "🥍",
-    label: "Lacrosse",
-    note: "Played through high school — still love the pace.",
+    emoji: "🎷",
+    label: "Jazz & Hip Hop",
+    note: "Mac Miller, Coltrane, Miles Davis, Ryo Fukui — the soundtrack to the work.",
   },
   {
     emoji: "📖",
     label: "Reading",
-    note: "Sci-fi, systems thinking, and the occasional beat novel.",
+    note: "Rick Rubin's The Creative Act right now. Sci-fi, systems thinking, and good nonfiction.",
+  },
+  {
+    emoji: "🏀",
+    label: "Basketball Talk",
+    note: "Could talk hoops all day. The strategy, the stories, the legacy.",
+  },
+  {
+    emoji: "🥍",
+    label: "Lacrosse",
+    note: "Played for years. Miss the pace, still love the game.",
+  },
+  {
+    emoji: "🏔️",
+    label: "Skiing",
+    note: "Colorado kid at heart. Bluebird days are therapy.",
   },
   {
     emoji: "☕",
     label: "Good Coffee",
-    note: "The fuel behind most of these projects.",
+    note: "The fuel behind most of the above.",
   },
 ];
 
@@ -45,27 +45,27 @@ const experiences = [
   {
     org: "Mytra",
     role: "Software Engineering Intern · Interactivity Team",
-    note: "Building agentic AI diagnostics for warehouses that move everything from groceries to auto parts.",
+    note: "Building agentic AI diagnostics for warehouses. Splunk, Postgres, K8s logs, live sensor data — the kind of problem that keeps me up at night because I can't stop thinking about it.",
   },
   {
     org: "Stevens NLP Lab",
     role: "Research Assistant",
-    note: "The only undergrad on a multilingual news-analysis team — built the prototype, ran evaluations, learned how research actually works.",
+    note: "Only undergrad on a multilingual news-analysis team. Built the prototype, ran evaluations, learned how real research works — messy, humbling, and exactly what I needed.",
   },
   {
     org: "Blueprint",
     role: "Project Lead",
-    note: "Leading a team shipping real software for nonprofit partners. Tickets, standups, stakeholder convos, the whole arc.",
+    note: "Shipping real software for nonprofit partners. Tickets, standups, stakeholder convos — leading a team from requirements to delivery.",
   },
   {
     org: "Student Government Association",
     role: "Vice President of Finance",
-    note: "Helping allocate the student activity fee across clubs, events, and initiatives that make campus life better.",
+    note: "Helping allocate the student activity fee across clubs and initiatives. Still the same instinct: making sure money goes where it helps.",
   },
   {
     org: "EH Yang Lab",
     role: "Undergraduate Researcher",
-    note: "My first taste of real research — messy, humbling, and the reason I knew I wanted more of it.",
+    note: "My first real taste of research. Messy, humbling, and the reason I knew I wanted more of it.",
   },
 ];
 
@@ -75,7 +75,7 @@ export default function Page() {
       <MotionConfig reducedMotion="user">
         <div className="min-h-screen p-4 md:p-8">
           <div className="container mx-auto py-8 px-4">
-            {/* Hero — personal, not professional headline */}
+            {/* Hero */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -83,22 +83,25 @@ export default function Page() {
               className="flex flex-col lg:flex-row items-center gap-8 mb-16"
             >
               <div className="lg:w-1/2 space-y-6">
-                <h1 className={`text-4xl md:text-5xl ${lukesFont.className} leading-tight`}>
-                  I like building things.
+                <h1
+                  className={`text-4xl md:text-5xl ${lukesFont.className} leading-tight`}
+                >
+                  I believe everyone has good ideas.
                   <br />
                   <span className="text-muted-foreground">
-                    Code, words, ideas, coffee — same impulse.
+                    The trick is putting the right people together.
                   </span>
                 </h1>
                 <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">
-                  I&apos;m Luke. I study Computer Science at Stevens, do research
-                  in NLP, build agentic systems at Mytra, and spend way too much
-                  time thinking about how to make complicated things feel simple.
+                  I&apos;m Luke. I build systems — software, teams, budgets,
+                  whatever needs building. I grew up in Colorado, go to school
+                  in Hoboken, research NLP, intern at Mytra, and spend most of
+                  my free time thinking about how to enable other people to
+                  build too.
                 </p>
                 <p className="text-base leading-relaxed text-muted-foreground">
-                  This page is the short version. Not the resume — that&apos;s
-                  on the homepage. This is the part that doesn&apos;t fit in a
-                  bullet point.
+                  This page isn&apos;t the resume. That&apos;s on the homepage.
+                  This is the stuff that doesn&apos;t fit in a bullet point.
                 </p>
               </div>
               <div className="lg:w-1/2">
@@ -112,52 +115,49 @@ export default function Page() {
               </div>
             </motion.div>
 
-            {/* The personal narrative — who, why, how */}
+            {/* Where I come from */}
             <Card className="mb-16">
               <CardContent className="p-6 md:p-8">
-                <h2 className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}>
-                  The short version.
+                <h2
+                  className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}
+                >
+                  Where I come from.
                 </h2>
                 <div className="space-y-4 text-md md:text-lg leading-relaxed text-muted-foreground max-w-3xl">
                   <p>
-                    I grew up in New Jersey, the oldest of four, which probably
-                    explains the project-lead instinct. I was the kid taking
-                    apart the family computer, the one who figured out that code
-                    was just another way of asking "what if?" — and that the
-                    answer was almost always worth pursuing.
+                    I grew up in Littleton, Colorado — a suburb south of Denver
+                    where the Rockies are on the horizon and the air is dry
+                    enough that you feel it. My family has a ranch on Long
+                    Island too, so I&apos;ve always had a foot in two very
+                    different worlds: mountain quiet and coastal hustle.
                   </p>
                   <p>
-                    By the time I got to Stevens, I already knew I wanted to
-                    build things that mattered. AI and NLP pulled me in because
-                    language is what makes us human, and teaching machines to
-                    understand it feels like the hardest, most interesting
-                    problem in the room. I joined the NLP lab as an undergrad —
-                    the only one on a multilingual news-analysis team — and
-                    learned that research is equal parts rigor and humility.
+                    My passion for building started with two things: Iron Man
+                    and my dad. Iron Man because Tony Stark built things in a
+                    cave with a box of scraps, and something about that clicked
+                    for me. My dad because he showed me that building isn&apos;t
+                    just about the thing you make — it&apos;s about enabling the
+                    people around you to make their own things. That idea stuck.
                   </p>
                   <p>
-                    Outside the lab, I threw myself into student government,
-                    first as Student Body President in high school, now as VP of
-                    Finance at Stevens. I love the boring stuff — budgets,
-                    systems, making sure the money goes where it actually helps.
-                    It&apos;s the same instinct that draws me to infrastructure
-                    and agent orchestration: the invisible work that lets
-                    everything else happen.
+                    I believe everyone is capable of building. Everyone has good
+                    ideas. The question is whether they have the right people
+                    around them, the right tools, the right environment. That
+                    belief is the thread through everything I do — research,
+                    engineering, student government, mentoring. Put the right
+                    people together and let them build.
                   </p>
                   <p>
-                    At Mytra, I&apos;m building Mytra Oracle, an agentic
-                    diagnostics platform that connects Splunk telemetry,
-                    PostgreSQL data, Kubernetes logs, and live warehouse
-                    sensor feeds to investigate production issues. It&apos;s the
-                    kind of problem I can&apos;t stop thinking about — how do
-                    you make something so complex feel almost obvious to the
-                    person using it?
+                    That&apos;s what brought me to Stevens, to NLP research, to
+                    Mytra, to student government, to every project I&apos;ve
+                    started. Not because I had the answers, but because I wanted
+                    to be around people who were asking good questions.
                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Personal snapshot — the rainy NYC photo */}
+            {/* NYC photo — the energy */}
             <motion.div
               className="flex justify-center w-full mb-16"
               initial={{ opacity: 0, y: 20 }}
@@ -175,22 +175,57 @@ export default function Page() {
                   className="rounded-lg w-full"
                 />
                 <figcaption className="text-sm text-muted-foreground text-center italic">
-                  New York in the rain. Still one of my favorite cities to get
-                  lost in.
+                  New York in the rain. I go to school here now, and I still
+                  haven&apos;t gotten used to the energy. Hope I never do.
                 </figcaption>
               </figure>
             </motion.div>
 
-            {/* Between the Code — personal interests */}
+            {/* What I'm into right now */}
             <Card className="mb-16">
               <CardContent className="p-6 md:p-8">
-                <h2 className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}>
-                  Between the code.
+                <h2
+                  className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}
+                >
+                  What I&apos;m into right now.
                 </h2>
                 <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-2xl">
-                  I don&apos;t live in the terminal. The stuff that fills the
-                  rest of the day matters just as much.
+                  The code stuff is on the homepage. Here&apos;s what fills the
+                  rest of the day.
                 </p>
+
+                <div className="space-y-6 mb-8 max-w-3xl">
+                  <div className="border-l-2 border-border/40 pl-4">
+                    <p className="text-muted-foreground italic">
+                      &ldquo;The goal is to be the person who can make something
+                      happen.&rdquo;
+                    </p>
+                    <p className="text-sm text-muted-foreground/70 mt-1">
+                      — Rick Rubin, The Creative Act
+                    </p>
+                  </div>
+                  <p className="text-md leading-relaxed text-muted-foreground">
+                    I picked up Rick Rubin&apos;s book recently and it&apos;s
+                    been living in my bag. It&apos;s less about music and more
+                    about paying attention — which is basically what building
+                    anything comes down to.
+                  </p>
+                  <p className="text-md leading-relaxed text-muted-foreground">
+                    When I&apos;m working, it&apos;s usually Mac Miller or
+                    Coltrane or Ryo Fukui on the speakers. Miles Davis when I
+                    need to think. Hip hop and jazz — there&apos;s a throughline
+                    there, the improvisation and the structure existing at the
+                    same time. I love that tension.
+                  </p>
+                  <p className="text-md leading-relaxed text-muted-foreground">
+                    Outside of music, I can talk sports all day — basketball
+                    especially. The strategy, the stories, the rivalries. I
+                    played lacrosse for years and still love the pace of it.
+                    And I&apos;ll never say no to a good conversation about
+                    anything, really. That&apos;s the Colorado in me, probably.
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {interests.map((item, index) => (
                     <motion.div
@@ -201,12 +236,18 @@ export default function Page() {
                       transition={{ duration: 0.4, delay: index * 0.08 }}
                       className="flex items-start gap-3 p-4 rounded-lg border border-border/40 bg-card/50 hover:bg-card/80 transition-colors"
                     >
-                      <span className="text-xl mt-0.5" role="img" aria-hidden="true">
+                      <span
+                        className="text-xl mt-0.5"
+                        role="img"
+                        aria-hidden="true"
+                      >
                         {item.emoji}
                       </span>
                       <div>
                         <p className="font-medium text-sm">{item.label}</p>
-                        <p className="text-sm text-muted-foreground">{item.note}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.note}
+                        </p>
                       </div>
                     </motion.div>
                   ))}
@@ -214,7 +255,7 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            {/* Personal snapshot — crocs photo */}
+            {/* Crocs photo */}
             <motion.div
               className="flex justify-center w-full mb-16"
               initial={{ opacity: 0, y: 20 }}
@@ -238,15 +279,17 @@ export default function Page() {
               </figure>
             </motion.div>
 
-            {/* A Few Things I've Built — narrative experience */}
+            {/* Stuff I've worked on */}
             <Card className="mb-16">
               <CardContent className="p-6 md:p-8">
-                <h2 className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}>
-                  A few things I&apos;ve worked on.
+                <h2
+                  className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}
+                >
+                  Stuff I&apos;ve worked on.
                 </h2>
                 <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-2xl">
-                  The resume has the full timeline. These are the ones that
-                  shaped how I think.
+                  The homepage has the full story. These are the ones that
+                  changed how I think.
                 </p>
                 <div className={`space-y-8 ${crimsonText.className}`}>
                   {experiences.map((item, index) => (
@@ -255,25 +298,33 @@ export default function Page() {
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
+                      transition={{
+                        duration: 0.4,
+                        delay: index * 0.1,
+                        ease: "easeOut",
+                      }}
                     >
                       <div className="space-y-1">
                         <h3 className="text-xl font-bold text-foreground">
                           {item.org}
                         </h3>
-                        <p className="text-md text-muted-foreground">{item.role}</p>
+                        <p className="text-md text-muted-foreground">
+                          {item.role}
+                        </p>
                         <p className="text-md leading-relaxed text-muted-foreground/80 max-w-2xl">
                           {item.note}
                         </p>
                       </div>
-                      {index < experiences.length - 1 && <Separator className="mt-6" />}
+                      {index < experiences.length - 1 && (
+                        <Separator className="mt-6" />
+                      )}
                     </motion.div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Personal snapshot — baby photo */}
+            {/* Baby photo */}
             <motion.div
               className="flex justify-center w-full mb-16"
               initial={{ opacity: 0, y: 20 }}
@@ -291,28 +342,36 @@ export default function Page() {
                   className="rounded-lg w-full"
                 />
                 <figcaption className="text-sm text-muted-foreground text-center italic">
-                  Future builder of systems, circa 2006-ish.
+                  Future builder of systems, Colorado edition, circa 2006-ish.
                 </figcaption>
               </figure>
             </motion.div>
 
-            {/* Now / Currently — replaces the old contact section with something warmer */}
+            {/* Right now */}
             <Card className="mb-8" id="now">
               <CardContent className="p-6 md:p-8">
-                <h2 className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}>
+                <h2
+                  className={`${lukesFont.className} text-3xl md:text-4xl mb-6`}
+                >
                   Right now.
                 </h2>
                 <div className="space-y-4 text-md md:text-lg leading-relaxed text-muted-foreground max-w-3xl">
                   <p>
-                    I&apos;m at Stevens in Hoboken, taking classes, running SGA
+                    I&apos;m at Stevens in Hoboken, studying CS, running SGA
                     finance, and commuting to Brisbane for Mytra when I can.
-                    I&apos;m reading about distributed systems, planning a
-                    cross-country road trip, and trying to figure out how to
-                    make time for everything.
+                    I&apos;m reading Rick Rubin, listening to Mac Miller on
+                    repeat, and trying to get to the mountains more often.
+                  </p>
+                  <p>
+                    I love this city. Not because it&apos;s glamorous — because
+                    the people here are grinding, they&apos;re ambitious,
+                    they&apos;re asking interesting questions. That energy is
+                    contagious and I&apos;m grateful to be around it.
                   </p>
                   <p>
                     If any of this resonates — or if you&apos;re building
-                    something interesting — I&apos;d love to hear about it.
+                    something you care about — I&apos;d love to hear about it.
+                    That&apos;s the whole point.
                   </p>
                 </div>
 
@@ -348,7 +407,11 @@ export default function Page() {
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.2, ease: "easeOut" }}
+                      transition={{
+                        duration: 0.5,
+                        delay: index * 0.2,
+                        ease: "easeOut",
+                      }}
                     >
                       <a
                         href={item.href}
