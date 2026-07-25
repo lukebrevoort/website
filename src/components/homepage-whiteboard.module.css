@@ -560,8 +560,8 @@
 
 .suggestionDismiss {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   display: none;
   place-items: center;
   width: 24px;

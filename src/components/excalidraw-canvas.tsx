@@ -432,7 +432,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         : insertedElements;
       api.scrollToContent(cameraElements, {
         fitToViewport: true,
-        viewportZoomFactor: isMobile ? 0.65 : 0.72,
+        viewportZoomFactor: isMobile ? 0.5 : 0.72,
         animate: true,
         duration: 450,
         maxZoom: 1.15,
@@ -551,7 +551,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
       const isMobilePreview = window.matchMedia("(max-width: 760px)").matches;
       api.scrollToContent(previewElements, {
         fitToViewport: true,
-        viewportZoomFactor: isMobilePreview ? 0.6 : 0.78,
+        viewportZoomFactor: isMobilePreview ? 0.5 : 0.78,
         animate: true,
         duration: 360,
         maxZoom: 1.1,
@@ -611,7 +611,7 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         const isMobileApply = window.matchMedia("(max-width: 760px)").matches;
         api.scrollToContent(createdElements, {
           fitToViewport: true,
-          viewportZoomFactor: isMobileApply ? 0.6 : 0.78,
+          viewportZoomFactor: isMobileApply ? 0.5 : 0.78,
           animate: true,
           duration: 420,
           maxZoom: 1.1,
