@@ -16,7 +16,7 @@ export type CanvasKnowledgeDocument = {
 const PROJECT_ALIAS_MAP: Record<string, readonly string[]> = {
   malcom: ["malcom"],
   dispatch: ["dispatch"],
-  mytra: ["mytra", "interactivity", "debugging agent", "airgapped"],
+  mytra: ["mytra", "interactivity", "debugging agent", "airgapped", "brisbane"],
   "orca-mail": ["orca", "orca mail", "email client", "orca-mail"],
   flowstate: ["flowstate", "flow state"],
   "canvas-notion": ["canvas notion", "canvas to notion", "canvas-notion"],
@@ -38,7 +38,7 @@ const PROJECT_KEYWORD_MAP: Record<string, readonly string[]> = {
   ],
   mytra: [
     "mytra", "internship", "interactivity", "debugging agent", "diagnostic",
-    "airgapped", "fortune 500", "remote work", "mobile workflow", "commute",
+    "airgapped", "fortune 500", "brisbane", "office",
   ],
   "orca-mail": [
     "email", "gmail", "inbox", "human signal", "attention", "contact signature",
