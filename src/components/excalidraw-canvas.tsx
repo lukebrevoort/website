@@ -7,6 +7,7 @@ import type {
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
+  NormalizedZoomValue,
 } from "@excalidraw/excalidraw/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
@@ -707,14 +708,21 @@ export default function ExcalidrawCanvas({ onSnapshot }: ExcalidrawCanvasProps) 
         }}
         initialData={() => {
           const recovered = loadPersistedBoard();
-          return recovered || {
-            appState: {
-              currentItemStrokeColor: "#20201d",
-              currentItemBackgroundColor: "transparent",
-              currentItemFontFamily: 1,
-              viewBackgroundColor: "#f4f0e7",
-            },
+          const isMobile = typeof window !== "undefined" && window.innerWidth <= 760;
+          const mobileZoom = 0.55 as NormalizedZoomValue;
+          const desktopZoom = 1 as NormalizedZoomValue;
+          const zoom = isMobile ? mobileZoom : desktopZoom;
+          const defaultAppState = {
+            currentItemStrokeColor: "#20201d",
+            currentItemBackgroundColor: "transparent",
+            currentItemFontFamily: 1,
+            viewBackgroundColor: "#f4f0e7",
+            zenModeEnabled: true,
+            zoom: { value: zoom },
           };
+          return recovered
+            ? { ...recovered, appState: { ...recovered.appState, zenModeEnabled: true, zoom: { value: zoom } } }
+            : { appState: defaultAppState };
         }}
         onChange={handleChange}
         theme="light"

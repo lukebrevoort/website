@@ -42,22 +42,6 @@
   transform: translateX(-2px);
 }
 
-.presence {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 12px;
-  border: 1px solid rgb(32 32 29 / 13%);
-  border-radius: 999px;
-  background: rgb(248 246 240 / 76%);
-  box-shadow: 0 4px 20px rgb(60 53 41 / 8%);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  backdrop-filter: blur(12px);
-}
-
 .topbarActions {
   display: flex;
   align-items: center;
@@ -89,14 +73,6 @@
   outline: none;
   border-color: rgb(228 87 62 / 45%);
   color: var(--red);
-}
-
-.presenceDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #6aa36c;
-  box-shadow: 0 0 0 3px rgb(106 163 108 / 15%);
 }
 
 .canvas {
@@ -443,22 +419,17 @@
 .followUpDismiss {
   display: none;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgb(32 32 29 / 16%);
-  border-radius: 7px;
-  color: #6d675e;
-  background: rgb(255 255 255 / 55%);
-  font: inherit;
-  font-size: .62rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 0;
+  color: rgb(109 103 94 / 65%);
+  background: transparent;
   cursor: pointer;
+  transition: color .15s ease;
 }
 
 .followUpDismiss:hover {
-  border-color: var(--red);
   color: var(--red);
 }
 
@@ -581,10 +552,30 @@
   animation: fade-in .3s ease both;
 }
 
-.showcaseActions > span {
+.showcaseActions > span.suggestionLabel {
   color: var(--red);
   font-size: .92rem;
   line-height: 1.15;
+}
+
+.suggestionDismiss {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 0;
+  color: rgb(109 103 94 / 65%);
+  background: transparent;
+  cursor: pointer;
+  transition: color .15s ease;
+}
+
+.suggestionDismiss:hover {
+  color: var(--red);
 }
 
 .followUpUnavailable {
@@ -765,6 +756,124 @@
   pointer-events: none;
 }
 
+.firstTimeOverlay {
+  position: absolute;
+  z-index: 25;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(32 32 29 / 28%);
+  backdrop-filter: blur(4px);
+  animation: fade-in .25s ease both;
+}
+
+.firstTimeCard {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 28px 26px 24px;
+  border: 1px solid rgb(32 32 29 / 16%);
+  border-radius: 10px 4px 12px 6px;
+  background: rgb(255 253 247 / 96%);
+  box-shadow: 6px 10px 30px rgb(53 45 33 / 18%), inset 0 0 60px rgb(255 249 217 / 40%);
+  text-align: left;
+  transform: rotate(-.3deg);
+  pointer-events: auto;
+}
+
+.firstTimeClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgb(32 32 29 / 14%);
+  border-radius: 7px;
+  color: #625f57;
+  background: rgb(255 255 255 / 60%);
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+
+.firstTimeClose:hover,
+.firstTimeClose:focus-visible {
+  outline: none;
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.firstTimeEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 14px;
+  color: var(--red);
+  font-size: .95rem;
+  transform: rotate(-1.5deg);
+}
+
+.firstTimeCard h2 {
+  margin: 0 0 16px;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 400;
+  line-height: .9;
+  letter-spacing: -.02em;
+}
+
+.firstTimeList {
+  margin: 0 0 20px;
+  padding: 0 0 0 18px;
+  color: #625f57;
+  font-size: .84rem;
+  line-height: 1.55;
+  list-style: none;
+}
+
+.firstTimeList li {
+  position: relative;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+.firstTimeList li::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+.firstTimeList strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.firstTimeAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: 1px solid rgb(32 32 29 / 22%);
+  border-radius: 6px 8px 5px 7px;
+  color: white;
+  background: var(--ink);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+
+.firstTimeAction:hover {
+  transform: translateY(-1px);
+  background: var(--red);
+}
+
 .agentNotice {
   position: absolute;
   z-index: 12;
@@ -891,35 +1000,6 @@
   text-transform: uppercase;
 }
 
-.dock {
-  position: fixed;
-  z-index: 30;
-  left: 50%;
-  bottom: 25px;
-  display: flex;
-  gap: 2px;
-  padding: 5px;
-  border: 1px solid rgb(32 32 29 / 16%);
-  border-radius: 10px;
-  background: rgb(252 250 244 / 85%);
-  box-shadow: 0 10px 35px rgb(53 45 33 / 12%);
-  transform: translateX(-50%);
-  backdrop-filter: blur(14px);
-}
-
-.dock a {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 13px;
-  border-radius: 6px;
-  color: #57544d;
-  font-size: .72rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-.dock a:hover { color: white; background: var(--ink); }
-
 @keyframes arrive {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1000,15 +1080,14 @@
 @media (max-width: 760px) {
   .shell {
     --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
-    --mobile-dock-bottom: calc(12px + var(--mobile-safe-bottom));
-    --mobile-follow-up-bottom: calc(80px + var(--mobile-safe-bottom));
+    --mobile-follow-up-bottom: calc(112px + var(--mobile-safe-bottom));
     overflow: auto;
     background: var(--paper);
   }
   .canvas { min-height: 100svh; margin: 0; border-radius: 0; overflow-y: auto; }
   .topbar { inset: 68px 14px auto; }
   .signature { padding: 6px 9px 6px 7px; font-size: 1.05rem; }
-  .presence { padding: 7px 9px; font-size: 8px; }
+
   .cornerNote { display: none; }
   .invitation {
     top: 122px;
@@ -1035,15 +1114,7 @@
   .dragHandle, .connectionLine { display: none; }
   .noteDescription { -webkit-line-clamp: 3; }
   .resetButton { position: relative; float: right; margin-top: -53px; }
-  .dock {
-    bottom: var(--mobile-dock-bottom);
-    transform: translateX(calc(-50% - 16px));
-  }
-  .dock a {
-    min-height: 44px;
-    gap: 4px;
-    padding: 9px 7px;
-  }
+
   .loading {
     right: 14px;
     bottom: calc(88px + var(--mobile-safe-bottom));
@@ -1056,7 +1127,10 @@
   .showcaseActions {
     right: 18px;
     bottom: 168px;
-    width: min(260px, calc(100% - 36px));
+    width: min(220px, calc(100% - 36px));
+    gap: 5px;
+    padding: 8px 34px 8px 8px;
+    font-size: .62rem;
   }
   .topbarActions { gap: 5px; }
   .newBoardButton { padding: 7px 8px; font-size: 8px; backdrop-filter: none; }
@@ -1074,20 +1148,38 @@
     left: 14px;
     right: auto;
     bottom: calc(var(--mobile-follow-up-bottom, 80px) + 72px + var(--keyboard-inset, 0px));
-    width: min(250px, calc(100% - 28px));
-    transform: rotate(-0.4deg);
+    width: min(220px, calc(100% - 28px));
+    gap: 5px;
+    padding: 8px 34px 8px 8px;
+    background: rgb(255 253 247 / 88%);
+    box-shadow: 3px 5px 12px rgb(61 51 34 / 10%);
+    transform: rotate(-0.3deg);
+    font-size: .62rem;
   }
-  .signature, .presence, .dock, .followUpTray, .followUpLauncher, .loading { backdrop-filter: none; }
+  .suggestionDismiss { display: grid; }
+  .showcaseActions > span.suggestionLabel { font-size: .78rem; }
+  .showcaseActions button {
+    padding: 5px 7px;
+    font-size: .64rem;
+  }
+  .signature, .followUpTray, .followUpLauncher, .loading { backdrop-filter: none; }
+  .firstTimeOverlay {
+    padding: 14px;
+    align-items: flex-start;
+    padding-top: 100px;
+  }
+  .firstTimeCard {
+    width: calc(100% - 28px);
+    padding: 22px 18px 18px;
+  }
+  .firstTimeCard h2 { font-size: 1.5rem; }
+  .firstTimeList { font-size: .78rem; }
 }
 
 @media (max-height: 500px) and (pointer: coarse) and (min-width: 761px) {
-  /*
-   * Landscape phones still show the fixed dock (~56px tall + 25px inset).
-   * Keep follow-up chrome clear of it — never park at 18px under the dock.
-   */
   .shell,
   .shellCompact {
-    --mobile-follow-up-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    --mobile-follow-up-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
   }
   .followUpTray,
   .shellCompact .followUpTray {
@@ -1110,7 +1202,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .invitation, .results, .followUpTray, .followUpLauncher, .followUpWaiting, .loadingLine::after, .orb, .thoughtBubble b, .loading {
+  .invitation, .results, .followUpTray, .followUpLauncher, .followUpWaiting, .loadingLine::after, .orb, .thoughtBubble b, .loading, .firstTimeOverlay {
     animation: none !important;
   }
   .followUpSpinner {
