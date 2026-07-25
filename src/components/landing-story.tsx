@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -58,6 +63,7 @@ export default function LandingStory() {
   const exploreRef = useRef<HTMLElement | null>(null);
   const chapterRefs = useRef<Array<HTMLElement | null>>([]);
   const progressRef = useRef<HTMLSpanElement | null>(null);
+  const pointerFrame = useRef(0);
   const [showNavigation, setShowNavigation] = useState(false);
   const [activeChapter, setActiveChapter] = useState(-1);
 
@@ -135,6 +141,41 @@ export default function LandingStory() {
     };
   }, []);
 
+  const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    if (
+      event.pointerType !== "mouse" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const scene = event.currentTarget;
+    const bounds = scene.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+
+    if (pointerFrame.current) {
+      window.cancelAnimationFrame(pointerFrame.current);
+    }
+
+    pointerFrame.current = window.requestAnimationFrame(() => {
+      scene.style.setProperty("--cursor-x", `${x * 100}%`);
+      scene.style.setProperty("--cursor-y", `${y * 100}%`);
+      scene.style.setProperty("--pointer-shift-x", `${(0.5 - x) * 16}px`);
+      scene.style.setProperty("--pointer-shift-y", `${(0.5 - y) * 12}px`);
+      pointerFrame.current = 0;
+    });
+  };
+
+  const resetPointer = (event: ReactPointerEvent<HTMLElement>) => {
+    const scene = event.currentTarget;
+
+    scene.style.setProperty("--cursor-x", "50%");
+    scene.style.setProperty("--cursor-y", "50%");
+    scene.style.setProperty("--pointer-shift-x", "0px");
+    scene.style.setProperty("--pointer-shift-y", "0px");
+  };
+
   return (
     <main
       className={`${styles.story} ${
@@ -163,13 +204,14 @@ export default function LandingStory() {
         <i>
           <b ref={progressRef} />
         </i>
-        <strong>
-          {String(activeChapter < 0 ? 1 : activeChapter + 2).padStart(2, "0")}
-          {" / 05"}
-        </strong>
       </div>
 
-      <section className={styles.hero} aria-labelledby="landing-title">
+      <section
+        className={styles.hero}
+        aria-labelledby="landing-title"
+        onPointerMove={handlePointerMove}
+        onPointerLeave={resetPointer}
+      >
         <Image
           src="/images/hawaii.jpg"
           alt=""
@@ -212,6 +254,8 @@ export default function LandingStory() {
             key={chapter.eyebrow}
             aria-labelledby={`chapter-${index}`}
             data-chapter-index={index}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={resetPointer}
             ref={(node) => {
               chapterRefs.current[index] = node;
             }}
