@@ -72,6 +72,7 @@ export default function LandingStory() {
   const pointerFrame = useRef(0);
   const [showNavigation, setShowNavigation] = useState(false);
   const [activeChapter, setActiveChapter] = useState(-1);
+  const [heroReady, setHeroReady] = useState(false);
 
   useEffect(() => {
     const exploreSection = exploreRef.current;
@@ -232,7 +233,7 @@ export default function LandingStory() {
       </div>
 
       <section
-        className={styles.hero}
+        className={`${styles.hero} ${heroReady ? styles.heroReady : ""}`}
         aria-labelledby="landing-title"
         onPointerMove={handlePointerMove}
         onPointerLeave={resetPointer}
@@ -241,9 +242,11 @@ export default function LandingStory() {
           src="/images/hawaii.jpg"
           alt=""
           fill
-          priority
+          preload
           sizes="100vw"
           className={styles.heroImage}
+          onLoad={() => setHeroReady(true)}
+          onError={() => setHeroReady(true)}
         />
         <div className={styles.heroShade} />
         <div className={styles.heroContent}>
