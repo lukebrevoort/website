@@ -300,7 +300,6 @@ export default function LandingStory() {
               <p className={styles.kicker}>{chapter.eyebrow}</p>
               <h2
                 id={`chapter-${index}`}
-                lay
                 className={`${styles.handwrittenTitle} ${lukesFont.className}`}
               >
                 {chapter.title}
