@@ -28,7 +28,7 @@ const projectHighlights: Record<string, string[]> = {
     "Runs and manages multiple long-lived coding agents—Claude, Codex, Cursor, OpenCode, or a plain terminal—without losing them when a browser disconnects.",
     "Pairs interactive xterm.js browser terminals with tmux-backed persistence, Git worktree isolation, lifecycle controls, scheduled jobs, and reusable review personas.",
     "Surfaces the context that makes parallel work usable: live status events, media sharing, browser streaming, project-scoped MCP tools, pins, notifications, and activity analytics.",
-    "My work includes the collaborative whiteboard surface, plus debugging, product development, and interaction ideas as the system evolves.",
+    "What I contributed: the collaborative whiteboard system — per-agent tldraw canvases with MCP drawing tools (whiteboard_update) and live SSE sync that let users and agents draw together. Brad at selfcontained built the core agent infrastructure.",
   ],
 };
 

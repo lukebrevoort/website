@@ -111,7 +111,7 @@ export const projects: Project[] = [
     id: "11",
     title: "Dispatch",
     description:
-      "A local-first control plane for running and managing multiple AI coding agents from one workspace. Dispatch keeps agents alive in tmux-backed sessions, pairs browser terminals with worktree isolation, media sharing, jobs, and MCP tools, and includes the collaborative whiteboard surface I helped shape.",
+      "A project I contributed to alongside Brad at selfcontained: a local-first control plane for running and managing multiple AI coding agents from one workspace. Dispatch keeps agents alive in tmux-backed sessions, pairs browser terminals with worktree isolation, media sharing, jobs, and MCP tools. I added the collaborative whiteboard system: per-agent tldraw canvases, MCP drawing tools, and live SSE sync.",
     technologies: [
       "TypeScript",
       "Bun",

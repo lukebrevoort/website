@@ -62,6 +62,7 @@ export interface KnowledgePack {
 export const knowledgePackSlugs = [
   "malcom",
   "dispatch",
+  "mytra",
   "orca-mail",
   "flowstate",
   "canvas-notion",
