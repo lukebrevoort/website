@@ -22,17 +22,17 @@ import styles from "./landing-story.module.css";
 
 const chapters = [
   {
-    composition: "experienceSky",
+    composition: "experienceMytra",
     eyebrow: "01 / now at mytra",
     title: "I build systems that help warehouses keep moving.",
     copy: "I’m building Mytra Oracle, an agentic diagnostics platform that connects Splunk telemetry, PostgreSQL data, Kubernetes logs, and live warehouse data to investigate production issues.",
     detail: "Software Engineering Intern · Brisbane, CA · June 2026—Present",
-    image: "/images/tower.jpg",
-    alt: "A view over the Hudson River and New York City skyline",
+    image: "/images/mytra-cover.jpg",
+    alt: "Golden Gate Bridge emerging from fog over San Francisco Bay",
     position: "center 31%",
   },
   {
-    composition: "experienceRiver",
+    composition: "experienceBlueprint",
     eyebrow: "02 / stevens blueprint",
     title: "Good data is a service to the people who need it.",
     copy: "As a Project Lead, I work with nonprofit partners from requirements through delivery. Recent work includes an HSDS Transformer that maps inconsistent health and human-services records into the Open Referral standard.",
@@ -42,7 +42,7 @@ const chapters = [
     position: "center 47%",
   },
   {
-    composition: "experienceNight",
+    composition: "experienceResearch",
     eyebrow: "03 / stevens nlp lab",
     title: "Research is where interfaces learn to listen.",
     copy: "At the Stevens NLP Lab, I was the only undergraduate on a multilingual news-analysis team, building a full-stack Next.js prototype and helping evaluate language models for equivalent phrases.",
@@ -57,8 +57,8 @@ const chapters = [
     title: "Long-running agent work needs a real home.",
     copy: "MALCOM is a personal execution control plane for durable coding-agent sessions: a stable CLI, session registry, recoverable workspaces, logs, and constrained adapters for GitHub, Notion, and Linear.",
     detail: "MALCOM · Python · CLI Design · Agent Orchestration",
-    image: "/images/malcom-architecture.svg",
-    alt: "MALCOM hand-drawn architecture sketch",
+    image: "/images/malcom-cover.jpg",
+    alt: "Sunset reflecting across a quiet beach",
     position: "center",
     href: "/projects/malcom",
     linkLabel: "See the MALCOM project",

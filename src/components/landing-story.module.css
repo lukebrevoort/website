@@ -320,17 +320,17 @@
   text-transform: uppercase;
 }
 
-.experienceSky .chapterShade,
-.experienceRiver .chapterShade,
-.experienceNight .chapterShade {
+.experienceMytra .chapterShade,
+.experienceBlueprint .chapterShade,
+.experienceResearch .chapterShade {
   background:
     linear-gradient(180deg, rgba(7, 15, 24, 0.38) 0%, transparent 43%, rgba(7, 15, 24, 0.68) 100%),
     linear-gradient(90deg, rgba(7, 15, 24, 0.56) 0%, transparent 62%);
 }
 
-.experienceSky .chapterCopy,
-.experienceRiver .chapterCopy,
-.experienceNight .chapterCopy {
+.experienceMytra .chapterCopy,
+.experienceBlueprint .chapterCopy,
+.experienceResearch .chapterCopy {
   align-self: start;
   margin-left: clamp(2rem, 7vw, 8rem);
   margin-top: clamp(5rem, 11vh, 8rem);
@@ -338,20 +338,41 @@
   padding: 0;
 }
 
-.experienceSky .chapterCopy > p:not(.kicker),
-.experienceRiver .chapterCopy > p:not(.kicker),
-.experienceNight .chapterCopy > p:not(.kicker) {
+.experienceMytra .chapterCopy > p:not(.kicker),
+.experienceBlueprint .chapterCopy > p:not(.kicker),
+.experienceResearch .chapterCopy > p:not(.kicker) {
   max-width: 31rem;
 }
 
-.experienceRiver .chapterCopy {
+.experienceMytra .chapterCopy {
+  justify-self: end;
+  margin-left: 0;
+  margin-right: clamp(2rem, 7vw, 8rem);
+  max-width: min(35rem, 42vw);
+  text-align: right;
+}
+
+.experienceMytra .detail {
+  border-left: 0;
+  border-right: 2px solid var(--accent);
+  margin-left: auto;
+  padding-left: 0;
+  padding-right: 0.75rem;
+}
+
+.experienceBlueprint .chapterCopy {
   align-self: end;
   margin-bottom: clamp(4rem, 8vh, 7rem);
   margin-top: 0;
 }
 
-.experienceNight .chapterCopy {
-  max-width: min(35rem, 42vw);
+.experienceResearch .chapterCopy {
+  align-self: center;
+  justify-self: end;
+  margin-left: 0;
+  margin-right: clamp(2rem, 8vw, 10rem);
+  margin-top: 0;
+  max-width: min(33rem, 38vw);
 }
 
 .chapterLink {
@@ -380,10 +401,11 @@
 }
 
 .selectedProject .chapterImage {
-  background: #fffdf6;
+  background: #18242d;
   filter: none;
   inset: clamp(4.5rem, 10vh, 7rem) clamp(2.5rem, 5vw, 6rem) clamp(4.5rem, 10vh, 7rem) 48%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   transform: translate3d(var(--pointer-shift-x), var(--pointer-shift-y), 0) scale(1.02);
 }
 
@@ -542,9 +564,9 @@
     padding-bottom: 4.5rem;
   }
 
-  .experienceSky .chapterCopy,
-  .experienceRiver .chapterCopy,
-  .experienceNight .chapterCopy,
+  .experienceMytra .chapterCopy,
+  .experienceBlueprint .chapterCopy,
+  .experienceResearch .chapterCopy,
   .selectedProject .chapterCopy {
     align-self: end;
     box-sizing: border-box;
@@ -555,16 +577,16 @@
     width: 100%;
   }
 
-  .experienceSky .chapterCopy > p:not(.kicker),
-  .experienceRiver .chapterCopy > p:not(.kicker),
-  .experienceNight .chapterCopy > p:not(.kicker),
+  .experienceMytra .chapterCopy > p:not(.kicker),
+  .experienceBlueprint .chapterCopy > p:not(.kicker),
+  .experienceResearch .chapterCopy > p:not(.kicker),
   .selectedProject .chapterCopy > p:not(.kicker) {
     max-width: 34rem;
   }
 
-  .experienceSky .chapterShade,
-  .experienceRiver .chapterShade,
-  .experienceNight .chapterShade {
+  .experienceMytra .chapterShade,
+  .experienceBlueprint .chapterShade,
+  .experienceResearch .chapterShade {
     background:
       linear-gradient(180deg, rgba(5, 15, 24, 0.06) 22%, rgba(5, 15, 24, 0.8) 100%),
       linear-gradient(90deg, rgba(5, 15, 24, 0.12), transparent);
