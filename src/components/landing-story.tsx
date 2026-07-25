@@ -22,37 +22,45 @@ import styles from "./landing-story.module.css";
 
 const chapters = [
   {
+    composition: "skyline",
     eyebrow: "01 / build with intent",
     title: "I make useful things from curious questions.",
     copy: "I’m Luke Brevoort — a computer science student, researcher, and product-minded engineer. I turn messy, human problems into software that feels clear enough to use every day.",
     detail: "Stevens Institute of Technology · B.S. Computer Science · 2028",
+    annotation: "leave room for the next idea",
     image: "/images/nycSunset.jpg",
     alt: "New York City at sunset seen from the Hoboken waterfront",
     position: "center",
   },
   {
+    composition: "slope",
     eyebrow: "02 / work in the real world",
     title: "The work has to survive outside the whiteboard.",
     copy: "At Mytra, I build AI solution software on the Interactivity team. With Blueprint, I lead nonprofit product engagements from the first ticket through delivery.",
     detail: "Software Engineering Intern · Project Lead",
+    annotation: "make the difficult part useful",
     image: "/images/Skiing.jpg",
     alt: "Skiers and chairlifts on a snowy mountain",
     position: "center",
   },
   {
+    composition: "sun",
     eyebrow: "03 / learn in public",
     title: "Research gives the next idea somewhere to go.",
     copy: "My work in the Stevens NLP Lab keeps me close to the questions underneath the interface: language, models, and how people make sense of technical systems.",
     detail: "Research Assistant · AI, NLP, and product systems",
+    annotation: "stay close to the question",
     image: "/images/sunset.jpg",
     alt: "Sunlight reflecting across the ocean at sunset",
     position: "center",
   },
   {
+    composition: "horizon",
     eyebrow: "04 / make space for people",
     title: "Good systems create more room for the humans using them.",
     copy: "From student government finance to personal tools, I care about reducing the overhead around important work so teams can spend their time on better decisions.",
     detail: "Student Government · Finance · Community",
+    annotation: "less friction, more momentum",
     image: "/images/tower.jpg",
     alt: "A view over the Hudson River and New York City skyline",
     position: "center",
@@ -250,7 +258,7 @@ export default function LandingStory() {
           <section
             className={`${styles.chapter} ${
               activeChapter === index ? styles.chapterActive : ""
-            }`}
+            } ${styles[chapter.composition]}`}
             key={chapter.eyebrow}
             aria-labelledby={`chapter-${index}`}
             data-chapter-index={index}
@@ -269,6 +277,9 @@ export default function LandingStory() {
               style={{ objectPosition: chapter.position }}
             />
             <div className={styles.chapterShade} />
+            <p className={styles.chapterAnnotation} aria-hidden="true">
+              <span>{chapter.annotation}</span>
+            </p>
             <div className={styles.chapterCopy}>
               <p className={styles.kicker}>{chapter.eyebrow}</p>
               <h2

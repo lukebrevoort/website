@@ -281,24 +281,6 @@
     scale(1.02);
 }
 
-.chapter:nth-child(2) .chapterShade {
-  background:
-    linear-gradient(180deg, rgba(17, 17, 18, 0.08) 0%, rgba(17, 17, 18, 0.8) 100%),
-    linear-gradient(90deg, rgba(7, 10, 16, 0.52) 0%, transparent 80%);
-}
-
-.chapter:nth-child(3) .chapterShade {
-  background:
-    linear-gradient(180deg, rgba(17, 20, 22, 0.16) 0%, rgba(17, 20, 22, 0.75) 100%),
-    linear-gradient(90deg, rgba(4, 15, 24, 0.57) 0%, transparent 76%);
-}
-
-.chapter:nth-child(4) .chapterShade {
-  background:
-    linear-gradient(180deg, rgba(17, 20, 22, 0.1) 0%, rgba(17, 20, 22, 0.76) 100%),
-    linear-gradient(90deg, rgba(9, 24, 40, 0.52) 0%, transparent 72%);
-}
-
 .chapterCopy {
   padding-bottom: clamp(4rem, 9vw, 7rem);
   opacity: 0.64;
@@ -335,6 +317,194 @@
   max-width: 32rem;
   padding-left: 0.75rem;
   text-transform: uppercase;
+}
+
+.chapterAnnotation {
+  color: rgba(255, 253, 247, 0.82);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: clamp(0.56rem, 0.65vw, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  text-transform: uppercase;
+  transition: opacity 700ms ease 300ms, transform 900ms cubic-bezier(0.16, 1, 0.3, 1) 150ms;
+  z-index: 1;
+}
+
+.chapterActive .chapterAnnotation {
+  opacity: 1;
+}
+
+/* The river and sky in this frame are the compositional field. */
+.skyline .chapterShade {
+  background:
+    linear-gradient(180deg, rgba(10, 17, 24, 0.35) 0%, transparent 36%),
+    linear-gradient(90deg, rgba(11, 18, 26, 0.4) 0%, transparent 48%);
+}
+
+.skyline .chapterImage {
+  object-position: center 47%;
+}
+
+.skyline .chapterCopy {
+  align-self: start;
+  margin-left: clamp(2rem, 7vw, 8rem);
+  margin-top: clamp(5rem, 12vh, 9rem);
+  max-width: min(38rem, 46vw);
+  padding: 0;
+}
+
+.skyline .chapterCopy > p:not(.kicker) {
+  max-width: 30rem;
+}
+
+.skyline .chapterAnnotation {
+  bottom: 18%;
+  right: clamp(2rem, 7vw, 8rem);
+  transform: translate3d(0, 1.5rem, 0) rotate(90deg);
+  transform-origin: right bottom;
+}
+
+.skyline .chapterActive .chapterAnnotation {
+  transform: translate3d(0, 0, 0) rotate(90deg);
+}
+
+/* The mountain is a route: type takes the uncluttered snowfield. */
+.slope {
+  color: #11233b;
+}
+
+.slope .chapterImage {
+  filter: saturate(0.78) contrast(1.03);
+  object-position: center 44%;
+}
+
+.slope .chapterShade {
+  background:
+    linear-gradient(90deg, rgba(244, 249, 252, 0.83) 0%, rgba(244, 249, 252, 0.3) 39%, transparent 69%),
+    linear-gradient(180deg, rgba(5, 20, 40, 0.04), rgba(5, 20, 40, 0.18));
+}
+
+.slope .chapterCopy {
+  align-self: center;
+  color: inherit;
+  margin-left: clamp(2rem, 8vw, 9rem);
+  max-width: min(36rem, 45vw);
+  padding: 0;
+}
+
+.slope .chapterCopy > p:not(.kicker) {
+  max-width: 28rem;
+}
+
+.slope .detail {
+  border-color: var(--accent);
+}
+
+.slope .chapterAnnotation {
+  color: #17304d;
+  left: clamp(2rem, 7vw, 8rem);
+  top: clamp(2rem, 7vh, 5rem);
+  transform: translate3d(-1.5rem, 0, 0) rotate(-8deg);
+}
+
+.slope .chapterAnnotation::after {
+  background: currentColor;
+  content: "";
+  height: 1px;
+  left: calc(100% + 0.85rem);
+  position: absolute;
+  top: 50%;
+  transform: rotate(-20deg);
+  transform-origin: left;
+  width: clamp(4rem, 9vw, 9rem);
+}
+
+.slope .chapterActive .chapterAnnotation {
+  transform: translate3d(0, 0, 0) rotate(-8deg);
+}
+
+/* The moon stays visible; the copy and note orbit its light. */
+.sun .chapterShade {
+  background:
+    linear-gradient(90deg, rgba(2, 5, 13, 0.72) 0%, rgba(2, 5, 13, 0.3) 36%, transparent 65%),
+    linear-gradient(180deg, rgba(2, 5, 13, 0.3), transparent 50%, rgba(2, 5, 13, 0.48));
+}
+
+.sun .chapterImage {
+  object-position: center 44%;
+}
+
+.sun .chapterCopy {
+  align-self: start;
+  margin-left: clamp(2rem, 7vw, 8rem);
+  margin-top: clamp(4.5rem, 10vh, 8rem);
+  max-width: min(34rem, 38vw);
+  padding: 0;
+}
+
+.sun .chapterCopy > p:not(.kicker) {
+  max-width: 25rem;
+}
+
+.sun .chapterAnnotation {
+  align-items: center;
+  border: 1px solid rgba(255, 253, 247, 0.44);
+  border-radius: 50%;
+  display: flex;
+  height: clamp(14rem, 23vw, 22rem);
+  justify-content: center;
+  left: 50%;
+  top: 47%;
+  transform: translate3d(-50%, -50%, 0) scale(0.84);
+  width: clamp(14rem, 23vw, 22rem);
+}
+
+.sun .chapterAnnotation span {
+  background: rgba(2, 5, 13, 0.45);
+  padding: 0.3rem 0.45rem;
+  transform: translateY(calc(clamp(7rem, 11.5vw, 11rem) * -1));
+}
+
+.sun .chapterActive .chapterAnnotation {
+  transform: translate3d(-50%, -50%, 0) scale(1);
+}
+
+/* The high viewpoint opens a large field of sky for an oversized thought. */
+.horizon .chapterShade {
+  background:
+    linear-gradient(180deg, rgba(8, 28, 52, 0.45) 0%, rgba(8, 28, 52, 0.08) 50%, rgba(8, 28, 52, 0.48) 100%),
+    linear-gradient(90deg, rgba(8, 28, 52, 0.34) 0%, transparent 55%);
+}
+
+.horizon .chapterImage {
+  object-position: center 31%;
+}
+
+.horizon .chapterCopy {
+  align-self: start;
+  margin-left: clamp(2rem, 8vw, 10rem);
+  margin-top: clamp(4rem, 9vh, 7rem);
+  max-width: min(42rem, 48vw);
+  padding: 0;
+}
+
+.horizon .chapterCopy > p:not(.kicker) {
+  max-width: 30rem;
+}
+
+.horizon .chapterAnnotation {
+  bottom: 16%;
+  right: clamp(2rem, 6vw, 7rem);
+  transform: translate3d(0, 1.25rem, 0);
+  writing-mode: vertical-rl;
+}
+
+.horizon .chapterActive .chapterAnnotation {
+  transform: translate3d(0, 0, 0);
 }
 
 .explore {
@@ -465,8 +635,57 @@
     padding-bottom: 4.5rem;
   }
 
+  .skyline .chapterCopy,
+  .slope .chapterCopy,
+  .sun .chapterCopy,
+  .horizon .chapterCopy {
+    align-self: end;
+    box-sizing: border-box;
+    color: #fffdf7;
+    margin: 0;
+    max-width: 100%;
+    padding: 2rem 1.5rem 4.5rem;
+    width: 100%;
+  }
+
+  .skyline .chapterCopy > p:not(.kicker),
+  .slope .chapterCopy > p:not(.kicker),
+  .sun .chapterCopy > p:not(.kicker),
+  .horizon .chapterCopy > p:not(.kicker) {
+    max-width: 34rem;
+  }
+
+  .slope .chapterShade {
+    background:
+      linear-gradient(180deg, rgba(5, 20, 40, 0.04) 25%, rgba(5, 20, 40, 0.78) 100%),
+      linear-gradient(90deg, rgba(5, 20, 40, 0.12), transparent);
+  }
+
+  .slope .chapterAnnotation {
+    color: rgba(255, 253, 247, 0.85);
+    top: 1.8rem;
+  }
+
+  .sun .chapterAnnotation {
+    height: 11rem;
+    left: 50%;
+    top: 45%;
+    width: 11rem;
+  }
+
+  .sun .chapterAnnotation span {
+    transform: translateY(-5.3rem);
+  }
+
+  .horizon .chapterAnnotation {
+    bottom: auto;
+    right: 1.25rem;
+    top: 1.7rem;
+  }
+
   .chapter h2 {
-    font-size: clamp(3.1rem, 14vw, 4.75rem);
+    font-size: clamp(2.9rem, 11.5vw, 4rem);
+    max-width: 100%;
   }
 
   .chapterCopy > p:not(.kicker) {
