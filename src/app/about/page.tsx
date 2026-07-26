@@ -12,7 +12,7 @@ const interests = [
   {
     emoji: "🎷",
     label: "Jazz & Hip Hop",
-    note: "Mac Miller, Coltrane, Miles Davis, Ryo Fukui as of recentlY.",
+    note: "Mac Miller, Coltrane, Miles Davis, Ryo Fukui as of recently.",
   },
   {
     emoji: "📖",
