@@ -280,7 +280,7 @@ Email: luke@brevoort.com
             >
               <header className="mb-6 md:mb-8">
                 <h1 className={`${lukesFont.className} text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3`}>{"Mid-Season Update 🍂"}</h1>
-                <time className="text-gray-500 text-base sm:text-lg">10/20/2025</time>
+                <time className="text-gray-500 text-base sm:text-lg">10/19/2025</time>
                 
                 {tags && tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
