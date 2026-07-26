@@ -109,41 +109,33 @@ export default function LandingStory() {
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const currentChapter = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (!currentChapter) {
-          return;
-        }
-
-        setActiveChapter(
-          Number((currentChapter.target as HTMLElement).dataset.chapterIndex),
-        );
-      },
-      { threshold: [0.35, 0.55, 0.75] },
-    );
-
-    chapterRefs.current.forEach((chapter) => {
-      if (chapter) {
-        observer.observe(chapter);
-      }
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
     let animationFrame = 0;
 
-    const updateProgress = () => {
+    const update = () => {
       animationFrame = 0;
+
+      // Active chapter by viewport-center distance (works at any viewport size)
+      const viewportCenter = window.innerHeight / 2;
+      let closestIndex = -1;
+      let closestDistance = Infinity;
+
+      chapterRefs.current.forEach((chapter, index) => {
+        if (!chapter) return;
+        const rect = chapter.getBoundingClientRect();
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+        const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      setActiveChapter(closestIndex);
+
+      // Scroll progress
       const maxScroll =
         document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-
       progressRef.current?.style.setProperty(
         "--scroll-progress",
         String(Math.min(1, Math.max(0, progress))),
@@ -152,11 +144,11 @@ export default function LandingStory() {
 
     const onScroll = () => {
       if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(updateProgress);
+        animationFrame = window.requestAnimationFrame(update);
       }
     };
 
-    updateProgress();
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
