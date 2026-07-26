@@ -28,6 +28,21 @@ import {
   isMatchingStarterPrompt,
   type CanvasStarterId,
 } from "@/lib/canvas-agent/starter-prompts";
+
+const PROMPTS_PER_ROW = 5;
+
+function shuffleArray<T>(array: readonly T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function getRandomRow(): readonly typeof CANVAS_STARTER_PROMPTS[number][] {
+  return shuffleArray(CANVAS_STARTER_PROMPTS).slice(0, PROMPTS_PER_ROW);
+}
 import { createAuthoredStarterPatch } from "@/lib/canvas-agent/fallbacks";
 import styles from "./homepage-whiteboard.module.css";
 
@@ -131,6 +146,12 @@ export default function HomepageWhiteboard({
   const [usedFollowUps, setUsedFollowUps] = useState<string[]>([]);
   const [showFirstTimeHelper, setShowFirstTimeHelper] = useState(false);
   const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
+  const [displayedPrompts, setDisplayedPrompts] = useState<readonly typeof CANVAS_STARTER_PROMPTS[number][]>([]);
+  const [rerollKey, setRerollKey] = useState(0);
+
+  useEffect(() => {
+    setDisplayedPrompts(getRandomRow());
+  }, [rerollKey]);
 
   const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
     canvasSnapshot.current = snapshot;
@@ -722,6 +743,11 @@ export default function HomepageWhiteboard({
     setAgentMessage("");
     setFollowUpOpen(false);
     setAgentState("idle");
+    setRerollKey((k) => k + 1);
+  };
+
+  const rerollPrompts = () => {
+    setRerollKey((k) => k + 1);
   };
 
   const liveUsageLabel = livePolicy?.usage
@@ -854,7 +880,7 @@ export default function HomepageWhiteboard({
             )}
 
             <div className={styles.promptList} aria-label="Suggested starting points">
-              {CANVAS_STARTER_PROMPTS.map((item, index) => (
+              {displayedPrompts.map((item, index) => (
                 <button
                   key={item.prompt}
                   type="button"
@@ -866,6 +892,15 @@ export default function HomepageWhiteboard({
                   <small>{item.note} ↗</small>
                 </button>
               ))}
+              <button
+                type="button"
+                className={styles.rerollButton}
+                onClick={rerollPrompts}
+                aria-label="Shuffle and show different prompts"
+              >
+                <RotateCcw size={14} />
+                <span>shuffle</span>
+              </button>
             </div>
           </div>
         )}

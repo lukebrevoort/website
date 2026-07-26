@@ -281,9 +281,443 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
     ],
   },
 
+  mytra: {
+    summary:
+      "Summer 2026 at Mytra: building an agentic debugging agent that works inside airgapped Fortune 500 environments using a locally trained open-source model.",
+    operations: [
+      textNode("new:title", box(55, 35, 890, 55), "Mytra — debugging agents inside the airgap", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:intern", box(55, 120, 200, 140), "Luke Brevoort\nSummer 2026\nIn-office Brisbane", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:agent", box(300, 120, 240, 140), "Debugging agent\ninternal + customer\nairgapped modes", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      note("new:airgap", box(580, 120, 360, 140), "Airgap boundary\nno external APIs\nlocal open-source model", {
+        theme: "danger",
+        fill: "hachure",
+      }),
+      note("new:k8s", box(55, 340, 220, 130), "Kubernetes\ndeployment\nboth modes", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:pipeline", box(320, 340, 260, 130), "Agent-native\ndata pipelines\nstructured for agents", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:entity", box(620, 340, 280, 130), "Entity-based\noverhaul\ncomposable model", {
+        theme: "info",
+        fill: "solid",
+      }),
+      textNode(
+        "new:aside",
+        box(55, 520, 890, 70),
+        "Two modes, one agent: connected for internal diagnostics, airgapped for Fortune 500 customers with no external network.",
+        { theme: "ink" },
+      ),
+      connect("new:l1", "new:intern", "new:agent", "builds", { theme: "info", stroke: "dashed" }),
+      connect("new:l2", "new:agent", "new:airgap", "deploy", { theme: "danger" }),
+      connect("new:l3", "new:agent", "new:k8s", "hosted on", { theme: "muted", stroke: "dashed" }),
+      connect("new:l4", "new:agent", "new:pipeline", "restructures", { theme: "success", stroke: "dashed" }),
+    ],
+  },
+
+  zen80: {
+    summary:
+      "Zen80: pick the Signal tasks, protect time on the calendar, measure whether the day matched your intent.",
+    operations: [
+      textNode("new:title", box(60, 35, 880, 55), "Zen80 — Signal vs. Noise, measured", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:signal", box(60, 120, 200, 140), "Signal tasks\npick the few\nthat matter", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:noise", box(60, 320, 200, 130), "Noise\nthe churn\nlet it fade", {
+        theme: "muted",
+        fill: "hachure",
+      }),
+      note("new:protect", box(310, 120, 220, 140), "Calendar\nprotection\nGoogle blocks", {
+        theme: "info",
+        fill: "solid",
+      }),
+      note("new:ratio", box(310, 320, 220, 130), "Day-match\nintent vs actual\nratio", {
+        theme: "warning",
+        fill: "hachure",
+      }),
+      note("new:flutter", box(580, 120, 200, 140), "Flutter + Dart\nHive local\nProvider state", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:oauth", box(580, 320, 200, 130), "OAuth2\nGoogle Calendar\nwrite access", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      textNode(
+        "new:aside",
+        box(60, 510, 880, 70),
+        "A good day is not 'did everything' — it's 'spent time on what I said mattered'. Now you can measure it.",
+        { theme: "ink" },
+      ),
+      connect("new:z1", "new:signal", "new:protect", "defend", { theme: "success" }),
+      connect("new:z2", "new:protect", "new:ratio", "measure", { theme: "warning", stroke: "dashed" }),
+      connect("new:z3", "new:signal", "new:noise", "vs", { theme: "muted", stroke: "dotted" }),
+      connect("new:z4", "new:protect", "new:oauth", "via", { theme: "info", stroke: "dashed" }),
+    ],
+  },
+
+  "canvas-notion": {
+    summary:
+      "Canvas-Notion: one-way sync from Canvas LMS to Notion so deadlines, grades, and status flow into your planning system automatically.",
+    operations: [
+      textNode("new:title", box(55, 35, 890, 55), "Canvas → Notion — academic sync that removes copy-paste", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:canvas", box(55, 120, 200, 140), "Canvas LMS\nsource of truth\nread-only", {
+        theme: "warning",
+        fill: "hachure",
+      }),
+      note("new:api", box(290, 120, 200, 140), "Canvas API\nassignments\ndue dates grades", {
+        theme: "info",
+        fill: "solid",
+      }),
+      note("new:mapper", box(530, 120, 200, 140), "Entity mapper\ntranslate to\nNotion rows", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:notion", box(760, 120, 180, 140), "Notion DB\nplanning hub\nwrite target", {
+        theme: "accent",
+        fill: "solid",
+      }),
+      note("new:schedule", box(290, 330, 200, 130), "Scheduled sync\nnot live events\nacademic pace", {
+        theme: "muted",
+        fill: "hachure",
+      }),
+      note("new:fields", box(530, 330, 410, 130), "Fields: priority, due date,\ngrade, submission status\nsemantics preserved", {
+        theme: "info",
+        fill: "solid",
+      }),
+      textNode(
+        "new:aside",
+        box(55, 510, 890, 70),
+        "Python + Canvas API + Notion API. One-way sync: Canvas is the source, Notion is where you plan.",
+        { theme: "ink" },
+      ),
+      connect("new:c1", "new:canvas", "new:api", "export", { theme: "warning", stroke: "dashed" }),
+      connect("new:c2", "new:api", "new:mapper", "map", { theme: "info" }),
+      connect("new:c3", "new:mapper", "new:notion", "sync", { theme: "accent" }),
+      connect("new:c4", "new:schedule", "new:api", "triggers", { theme: "muted", stroke: "dotted" }),
+    ],
+  },
+
+  hftc: {
+    summary:
+      "HFTC trading: market-making plus momentum strategies running on Backtrader against the SHIFT competition platform.",
+    operations: [
+      textNode("new:title", box(60, 35, 880, 55), "HFTC — market making meets momentum", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:mm", box(60, 120, 200, 140), "Market-making\ntwo-sided quotes\nspread discipline", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:mom", box(60, 320, 200, 130), "Momentum\ndirectional\nprice signals", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:shell", box(310, 120, 220, 140), "Risk shell\nshared by both\nposition limits", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      note("new:backtest", box(310, 320, 220, 130), "Backtrader\nbacktest + live\none framework", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:shift", box(570, 120, 200, 140), "SHIFT platform\ncompetition\nexchange", {
+        theme: "accent",
+        fill: "hachure",
+      }),
+      note("new:spread", box(570, 320, 200, 130), "Bid-ask\nspread capture\ninventory risk", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      textNode(
+        "new:aside",
+        box(60, 510, 880, 70),
+        "Python + Backtrader. Stability from the spread, directional upside from momentum — balanced for competition.",
+        { theme: "ink" },
+      ),
+      connect("new:h1", "new:mm", "new:shell", "feeds", { theme: "info" }),
+      connect("new:h2", "new:mom", "new:shell", "feeds", { theme: "success" }),
+      connect("new:h3", "new:shell", "new:shift", "route orders", { theme: "accent" }),
+      connect("new:h4", "new:shell", "new:backtest", "test", { theme: "muted", stroke: "dashed" }),
+    ],
+  },
+
+  "while-unemployed": {
+    summary:
+      "while_unemployed: AI mock interviewer with live code analysis and voice — earned a 100% class evaluation.",
+    operations: [
+      textNode("new:title", box(50, 35, 900, 55), "while_unemployed — AI interviewer reacts to your code in real time", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:next", box(50, 120, 200, 140), "Next.js UI\ncandidate experience\ncode editor", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:fastapi", box(290, 120, 200, 140), "FastAPI backend\ninterviewer logic\nOpenAI", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      note("new:socket", box(530, 120, 220, 140), "Socket.IO\nlive events\nas you code", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:voice", box(790, 120, 160, 140), "Voice input\nspoken answers\nrealistic practice", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:supabase", box(290, 330, 200, 130), "Supabase\nsessions\nauth", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:react", box(530, 330, 220, 130), "Live analysis\nreacts as you type\nnot after submit", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      textNode(
+        "new:aside",
+        box(50, 510, 900, 70),
+        "Next.js + FastAPI + Socket.IO + OpenAI. MVP earned 100%. Live at while-unemployed.vercel.app",
+        { theme: "ink" },
+      ),
+      connect("new:w1", "new:next", "new:socket", "code stream", { theme: "info" }),
+      connect("new:w2", "new:socket", "new:fastapi", "realtime", { theme: "warning" }),
+      connect("new:w3", "new:voice", "new:socket", "voice", { theme: "muted", stroke: "dashed" }),
+      connect("new:w4", "new:fastapi", "new:react", "analysis", { theme: "success", stroke: "dashed" }),
+      connect("new:w5", "new:next", "new:supabase", "persist", { theme: "info", stroke: "dotted" }),
+    ],
+  },
+
+  "sga-finance": {
+    summary:
+      "SGA Finance Platform: CampusGroups exports become review-ready Sheets and Senate-ready Slides — now handling over $2.5M.",
+    operations: [
+      textNode("new:title", box(50, 35, 900, 55), "SGA Finance — $2.5M automated, one export at a time", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:cg", box(50, 120, 200, 140), "CampusGroups\nSGA financial\nexports", {
+        theme: "warning",
+        fill: "hachure",
+      }),
+      note("new:model", box(290, 120, 220, 140), "Financial data\nmodel\nnormalize once", {
+        theme: "info",
+        fill: "solid",
+      }),
+      note("new:sheets", box(550, 120, 220, 140), "Google Sheets\nweekly review\nformatted", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:slides", box(810, 120, 140, 140), "Google Slides\nSenate budget\npresentations", {
+        theme: "accent",
+        fill: "solid",
+      }),
+      note("new:web", box(290, 330, 220, 130), "Next.js web app\noperator UI\nVercel hosted", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:scale", box(550, 330, 400, 130), "Production use\n$2.5M+ handled\nno more manual formatting", {
+        theme: "warning",
+        fill: "hachure",
+      }),
+      textNode(
+        "new:aside",
+        box(50, 510, 900, 70),
+        "Automate the formatting, not the judgment. Reviewers spend time on numbers, not slides.",
+        { theme: "ink" },
+      ),
+      connect("new:s1", "new:cg", "new:model", "import", { theme: "warning" }),
+      connect("new:s2", "new:model", "new:sheets", "weekly", { theme: "success" }),
+      connect("new:s3", "new:model", "new:slides", "Senate", { theme: "accent" }),
+      connect("new:s4", "new:web", "new:model", "operator", { theme: "muted", stroke: "dashed" }),
+    ],
+  },
+
+  about: {
+    summary:
+      "Luke Brevoort: software engineer at Mytra, builder of developer tools and workflow automation. Stevens CS grad.",
+    operations: [
+      textNode("new:title", box(55, 40, 890, 55), "Luke Brevoort — software engineer, builder", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:now", box(55, 130, 220, 140), "Now\nMytra (Brisbane)\nSummer 2026 internship", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:education", box(315, 130, 220, 140), "Education\nStevens CS\ngraduated 2026", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:projects", box(575, 130, 370, 140), "Projects\nMALCOM · Dispatch\nOrca Mail · FlowState\nZen80 · +more", {
+        theme: "warning",
+        fill: "hachure",
+      }),
+      note("new:focus", box(55, 350, 890, 120), "Focus: developer tools, workflow automation, and the question that runs through everything — how does software hand agency back to people instead of taking it away?",
+        { theme: "accent", fill: "solid" },
+      ),
+      textNode(
+        "new:aside",
+        box(55, 520, 890, 60),
+        "This site is a portfolio and a sketchbook. Pick a thread above, or ask anything.",
+        { theme: "ink" },
+      ),
+      connect("new:a1", "new:education", "new:projects", "leads to", { theme: "muted", stroke: "dashed" }),
+      connect("new:a2", "new:now", "new:focus", "working on", { theme: "info" }),
+      connect("new:a3", "new:projects", "new:focus", "built around", { theme: "warning", stroke: "dashed" }),
+    ],
+  },
+
+  "working-style": {
+    summary:
+      "How Luke works: MALCOM for remote execution, Dispatch for parallel agents, Obsidian for linked thinking, Excalidraw for early ideas.",
+    operations: [
+      textNode("new:title", box(50, 40, 900, 55), "Working style — tools for durable, inspectable work", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:malcom-use", box(50, 130, 200, 140), "MALCOM\nphone-to-PR\ncommute coding", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:dispatch-use", box(290, 130, 200, 140), "Dispatch\nparallel agents\nworktrees", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      note("new:obsidian", box(530, 130, 200, 140), "Obsidian\nlinked notes\nZettelkasten", {
+        theme: "muted",
+        fill: "hachure",
+      }),
+      note("new:excalidraw", box(770, 130, 180, 140), "Excalidraw\nearly ideas\ndiagrams", {
+        theme: "success",
+        fill: "solid",
+      }),
+      note("new:loop", box(170, 350, 660, 110), "Async-first: ideas in Excalidraw → fleshed in Obsidian → built with MALCOM/Dispatch → shipped.\nMobile review, desktop build.",
+        { theme: "accent", fill: "solid" },
+      ),
+      textNode(
+        "new:aside",
+        box(50, 510, 900, 60),
+        "Visible seams matter: know what the system is doing, where it's uncertain, and when to override.",
+        { theme: "ink" },
+      ),
+      connect("new:ws1", "new:excalidraw", "new:obsidian", "capture", { theme: "muted", stroke: "dashed" }),
+      connect("new:ws2", "new:obsidian", "new:malcom-use", "inform", { theme: "info", stroke: "dashed" }),
+      connect("new:ws3", "new:malcom-use", "new:dispatch-use", "execute", { theme: "warning" }),
+      connect("new:ws4", "new:dispatch-use", "new:excalidraw", "iterate", { theme: "success", stroke: "dotted" }),
+    ],
+  },
+
+  principles: {
+    summary:
+      "Six principles across Luke's work: local ownership, visible seams, recoverable state, calm interfaces, constrained automation, human approval for consequential moves.",
+    operations: [
+      textNode("new:title", box(50, 40, 900, 55), "Principles — the philosophy that runs through every project", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:p1", box(50, 130, 180, 110), "Local ownership\ntools live close\nto the person", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:p2", box(270, 130, 180, 110), "Visible seams\nknow what the\nsystem is doing", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      note("new:p3", box(490, 130, 180, 110), "Recoverable state\ndisconnect-tolerant\nnever lose work", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:p4", box(710, 130, 180, 110), "Calm interfaces\nquiet motion\nno noise", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:p5", box(120, 300, 200, 110), "Constrained\nautomation\ndo less, better", {
+        theme: "accent",
+        fill: "hachure",
+      }),
+      note("new:p6", box(370, 300, 200, 110), "Human approval\nfor consequential\nmoves", {
+        theme: "danger",
+        fill: "solid",
+      }),
+      note("new:question", box(610, 300, 300, 110), "The core question:\nhow does software hand agency back,\nnot take it away?",
+        { theme: "ink", fill: "solid" },
+      ),
+      textNode(
+        "new:aside",
+        box(50, 460, 900, 60),
+        "From Orca Mail to MALCOM to Zen80: same instinct applied to different friction points.",
+        { theme: "ink" },
+      ),
+      connect("new:pr1", "new:p1", "new:question", undefined, { theme: "info", stroke: "dashed" }),
+      connect("new:pr2", "new:p2", "new:question", undefined, { theme: "warning", stroke: "dashed" }),
+      connect("new:pr3", "new:p3", "new:question", undefined, { theme: "success", stroke: "dashed" }),
+      connect("new:pr4", "new:p4", "new:question", undefined, { theme: "muted", stroke: "dashed" }),
+    ],
+  },
+
+  website: {
+    summary:
+      "This website: a portfolio and an experiment. The Explore page is a live canvas that answers questions about Luke's work.",
+    operations: [
+      textNode("new:title", box(50, 40, 900, 55), "This website — portfolio + living sketchbook", {
+        theme: "accent",
+        weight: "bold",
+      }),
+      note("new:portfolio", box(50, 130, 200, 140), "Portfolio\nprojects\nwriting", {
+        theme: "info",
+        fill: "hachure",
+      }),
+      note("new:explore", box(290, 130, 220, 140), "Explore\nlive canvas\nask anything", {
+        theme: "warning",
+        fill: "solid",
+      }),
+      note("new:agent", box(550, 130, 200, 140), "Canvas agent\nExcalidraw\nvision AI", {
+        theme: "success",
+        fill: "hachure",
+      }),
+      note("new:tech", box(790, 130, 160, 140), "Next.js\nVercel\nWebLLM", {
+        theme: "muted",
+        fill: "solid",
+      }),
+      note("new:experiment", box(170, 340, 660, 110), "You're standing on an experiment right now. The canvas is real — it responds to questions, draws diagrams, and remembers what you explored.",
+        { theme: "accent", fill: "solid" },
+      ),
+      textNode(
+        "new:aside",
+        box(50, 500, 900, 60),
+        "Built with Next.js, deployed on Vercel. The canvas runs in your browser — no server required for drawing.",
+        { theme: "ink" },
+      ),
+      connect("new:ww1", "new:portfolio", "new:explore", "leads to", { theme: "info" }),
+      connect("new:ww2", "new:explore", "new:agent", "powered by", { theme: "warning" }),
+      connect("new:ww3", "new:agent", "new:tech", "built on", { theme: "muted", stroke: "dashed" }),
+      connect("new:ww4", "new:portfolio", "new:experiment", "is", { theme: "accent", stroke: "dotted" }),
+    ],
+  },
+
   surprise: {
     summary:
-      "A dealer’s-choice sketch of the handoff: curiosity sets direction, agents explore with bounds, artifacts return for judgment.",
+      "A dealer's-choice sketch of the handoff: curiosity sets direction, agents explore with bounds, artifacts return for judgment.",
     operations: [
       textNode("new:title", box(60, 40, 880, 55), "Surprise — the interesting part is the handoff", {
         theme: "accent",
@@ -308,7 +742,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
       textNode(
         "new:aside",
         box(70, 550, 860, 60),
-        "Dealer’s choice tonight: treat the canvas like a living sketchbook, not a chatbot transcript.",
+        "Dealer's choice tonight: treat the canvas like a living sketchbook, not a chatbot transcript.",
         { theme: "ink" },
       ),
       connect("new:s1", "new:curiosity", "new:agents", "delegate", { theme: "muted", stroke: "dashed" }),
