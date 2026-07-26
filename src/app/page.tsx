@@ -1,11 +1,11 @@
-import Sidebar from "@/app/dashboard/page";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import LandingStory from "@/components/landing-story";
 
 export default function Home() {
   return (
-    <div>
-      <Sidebar />
+    <>
+      <LandingStory />
       <SpeedInsights />
-    </div>
+    </>
   );
 }

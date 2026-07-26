@@ -1,0 +1,1129 @@
+"use client";
+
+import Link from "next/link";
+import { CSSProperties, FormEvent, KeyboardEvent, PointerEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  LoaderCircle,
+  PencilLine,
+  RotateCcw,
+  Send,
+  Sparkles,
+  X,
+} from "lucide-react";
+import { lukesFont, satoshi } from "@/app/fonts";
+import {
+  compileCanvasPatch,
+  validateCanvasPatch,
+  type CanvasPatch,
+  type CompiledCanvasPatch,
+  type PriorCanvasTurn,
+} from "@/lib/canvas-agent";
+import ExcalidrawCanvas, { type CanvasSnapshot } from "./excalidraw-canvas";
+import CanvasContractLab from "./canvas-contract-lab";
+import TurnstileChallenge from "./turnstile-challenge";
+import {
+  CANVAS_STARTER_PROMPTS,
+  getStarterFollowUps,
+  isMatchingStarterPrompt,
+  type CanvasStarterId,
+} from "@/lib/canvas-agent/starter-prompts";
+
+const PROMPTS_PER_ROW = 6;
+
+function shuffleArray<T>(array: readonly T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function getRandomRow(): readonly typeof CANVAS_STARTER_PROMPTS[number][] {
+  const nonSurprise = CANVAS_STARTER_PROMPTS.filter((p) => p.id !== "surprise");
+  const shuffled = shuffleArray(nonSurprise);
+  const picks = shuffled.slice(0, PROMPTS_PER_ROW - 1);
+  const surpriseMe = CANVAS_STARTER_PROMPTS.find((p) => p.id === "surprise")!;
+  return [...picks, surpriseMe];
+}
+import { createAuthoredStarterPatch } from "@/lib/canvas-agent/fallbacks";
+import styles from "./homepage-whiteboard.module.css";
+
+type AgentState = "loading" | "idle" | "thinking" | "active" | "error";
+
+type PendingAgentPatch = {
+  compiled: CompiledCanvasPatch;
+  patch: CanvasPatch;
+  prompt: string;
+  summary: string;
+  sceneVersion: string;
+  reason: "risk" | "quality";
+  issues?: string[];
+};
+
+type SketchFeedbackState = {
+  prompt: string;
+  summary: string;
+  patch: CanvasPatch;
+  vote: "up" | "down" | null;
+  status: "open" | "sending" | "saved" | "error";
+};
+
+async function blobToDataUrl(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function clarifyLiveRestingMessage(message: string | undefined, firstTurn: boolean) {
+  const fallback = firstTurn
+    ? "Live sketching is resting right now. Preset sketches still work—pick one of the notes above."
+    : "Live follow-ups are resting right now, so nothing new was added. Preset sketches still work—use new board, then pick a note.";
+
+  if (!message?.trim()) return fallback;
+
+  const normalized = message.toLowerCase();
+  const soundsResting =
+    normalized.includes("resting") ||
+    normalized.includes("unavailable") ||
+    normalized.includes("vision agent") ||
+    normalized.includes("live sketching");
+
+  if (!soundsResting) return message;
+
+  if (
+    normalized.includes("authored") ||
+    normalized.includes("starting point") ||
+    normalized.includes("preset")
+  ) {
+    return message;
+  }
+
+  return firstTurn
+    ? `${message.replace(/\s*$/, "")} Preset sketches still work—pick one of the notes above.`
+    : `${message.replace(/\s*$/, "")} Preset sketches still work—use new board, then pick a note.`;
+}
+
+type LivePolicy = {
+  live: {
+    available: boolean;
+    verificationRequired: boolean;
+    turnstileSiteKey: string | null;
+  };
+  limits: { sessionDaily: number; cooldownSeconds: number };
+  usage: { sessionUsed: number } | null;
+};
+
+type HomepageWhiteboardProps = {
+  canvasDebugEnabled?: boolean;
+};
+
+export default function HomepageWhiteboard({
+  canvasDebugEnabled = false,
+}: HomepageWhiteboardProps) {
+  const [agentState, setAgentState] = useState<AgentState>("loading");
+  const [prompt, setPrompt] = useState("");
+  const [question, setQuestion] = useState("");
+  const canvasSnapshot = useRef<CanvasSnapshot | null>(null);
+  const turn = useRef(0);
+  const followUpInputRef = useRef<HTMLInputElement | null>(null);
+  const followUpLauncherRef = useRef<HTMLButtonElement | null>(null);
+  const restoreLauncherFocusRef = useRef(false);
+  const shellRef = useRef<HTMLElement | null>(null);
+  const [contractLabActive, setContractLabActive] = useState(false);
+  const [agentMessage, setAgentMessage] = useState("");
+  const [pendingPatch, setPendingPatch] = useState<PendingAgentPatch | null>(null);
+  const [sketchFeedback, setSketchFeedback] = useState<SketchFeedbackState | null>(null);
+  const priorTurns = useRef<PriorCanvasTurn[]>([]);
+  const [boardHasContent, setBoardHasContent] = useState(false);
+  const [livePolicy, setLivePolicy] = useState<LivePolicy | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [followUpShouldFocus, setFollowUpShouldFocus] = useState(false);
+  const [activeStarterId, setActiveStarterId] = useState<CanvasStarterId | null>(null);
+  const [usedFollowUps, setUsedFollowUps] = useState<string[]>([]);
+  const [showFirstTimeHelper, setShowFirstTimeHelper] = useState(false);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
+  const [displayedPrompts, setDisplayedPrompts] = useState<readonly typeof CANVAS_STARTER_PROMPTS[number][]>([]);
+  const [rerollKey, setRerollKey] = useState(0);
+
+  useEffect(() => {
+    setDisplayedPrompts(getRandomRow());
+  }, [rerollKey]);
+
+  const handleSnapshot = useCallback((snapshot: CanvasSnapshot) => {
+    canvasSnapshot.current = snapshot;
+    setBoardHasContent(snapshot.sceneElements.length > 0);
+  }, []);
+
+  useEffect(() => {
+    // Narrow phones OR short coarse viewports (typical phone landscape).
+    const media = window.matchMedia(
+      "(max-width: 760px), ((max-height: 500px) and (pointer: coarse))",
+    );
+    const sync = () => setIsCompactViewport(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const dismissed = window.localStorage.getItem("explore-first-visit-dismissed");
+      if (!dismissed) setShowFirstTimeHelper(true);
+    } catch {
+      // Storage unavailable — show the helper once per session as fallback.
+      setShowFirstTimeHelper(true);
+    }
+  }, []);
+
+  const dismissFirstTimeHelper = () => {
+    setShowFirstTimeHelper(false);
+    try {
+      window.localStorage.setItem("explore-first-visit-dismissed", "1");
+    } catch {
+      // Best-effort persistence.
+    }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const preview = params.has("loadingPreview");
+    if (params.has("feedbackPreview")) {
+      setSketchFeedback({
+        prompt: "Compare MALCOM and Dispatch",
+        summary: "Side-by-side control planes",
+        patch: {
+          version: "1",
+          baseSceneVersion: "preview",
+          summary: "Side-by-side control planes",
+          operations: [{
+            op: "create",
+            ref: "new:preview",
+            element: {
+              kind: "rectangle",
+              box: { x: 100, y: 100, width: 200, height: 100 },
+              text: "preview",
+              style: { theme: "ink" },
+            },
+          }],
+        },
+        vote: null,
+        status: "open",
+      });
+      setAgentState("active");
+      turn.current = 1;
+      return;
+    }
+    if (preview) return;
+    const timer = window.setTimeout(() => setAgentState("idle"), 650);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    const viewport = window.visualViewport;
+    if (!shell || !viewport) return;
+
+    const syncKeyboardInset = () => {
+      const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      shell.style.setProperty("--keyboard-inset", `${inset}px`);
+    };
+
+    syncKeyboardInset();
+    viewport.addEventListener("resize", syncKeyboardInset);
+    viewport.addEventListener("scroll", syncKeyboardInset);
+    window.addEventListener("resize", syncKeyboardInset);
+    return () => {
+      viewport.removeEventListener("resize", syncKeyboardInset);
+      viewport.removeEventListener("scroll", syncKeyboardInset);
+      window.removeEventListener("resize", syncKeyboardInset);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isCompactViewport) {
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
+      return;
+    }
+    if (agentState === "thinking" || agentState === "error") {
+      setFollowUpOpen(true);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
+    } else if (agentState === "active") {
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      // Restore after a completed follow-up turn, not on first board activation.
+      if (turn.current > 0) {
+        restoreLauncherFocusRef.current = true;
+      }
+    }
+  }, [agentState, isCompactViewport]);
+
+  useEffect(() => {
+    if (!followUpOpen || !followUpShouldFocus || !isCompactViewport) return;
+    const frame = window.requestAnimationFrame(() => {
+      followUpInputRef.current?.focus();
+      setFollowUpShouldFocus(false);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [followUpOpen, followUpShouldFocus, isCompactViewport]);
+
+  const showFollowUpSurface =
+    agentState === "active" ||
+    ((agentState === "thinking" || agentState === "error") && turn.current > 0);
+  const showFollowUpTray = showFollowUpSurface && (!isCompactViewport || followUpOpen);
+  const showFollowUpLauncher = showFollowUpSurface && isCompactViewport && !followUpOpen;
+  const starterFollowUps = activeStarterId ? getStarterFollowUps(activeStarterId) : [];
+  const availableFollowUps = starterFollowUps.filter((item) => !usedFollowUps.includes(item));
+  const liveSketchesRemaining = livePolicy?.usage
+    ? Math.max(0, livePolicy.limits.sessionDaily - livePolicy.usage.sessionUsed)
+    : null;
+  const liveQuotaExhausted = liveSketchesRemaining === 0;
+  const liveFollowUpsAvailable = !liveQuotaExhausted && livePolicy?.live.available !== false;
+  const showFollowUpSuggestions =
+    showFollowUpSurface &&
+    !pendingPatch &&
+    agentState === "active" &&
+    availableFollowUps.length > 0 &&
+    !(isCompactViewport && followUpOpen) &&
+    !dismissedSuggestions;
+
+  useEffect(() => {
+    if (!pendingPatch) {
+      canvasSnapshot.current?.clearPatchPreview();
+      return;
+    }
+    void canvasSnapshot.current?.previewCompiledPatch(pendingPatch.compiled);
+    return () => {
+      canvasSnapshot.current?.clearPatchPreview();
+    };
+  }, [pendingPatch]);
+
+  useEffect(() => {
+    if (!showFollowUpLauncher || !restoreLauncherFocusRef.current) return;
+    restoreLauncherFocusRef.current = false;
+    const frame = window.requestAnimationFrame(() => {
+      followUpLauncherRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [showFollowUpLauncher]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/canvas-agent", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((policy: LivePolicy | null) => policy && setLivePolicy(policy))
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
+
+  const recordTurn = (prompt: string, summary: string) => {
+    priorTurns.current = [...priorTurns.current, { prompt, summary }].slice(-2);
+  };
+
+  const offerSketchFeedback = (prompt: string, patch: CanvasPatch) => {
+    // Live sketches only — authored starters are curated already.
+    setSketchFeedback({
+      prompt,
+      summary: patch.summary,
+      patch,
+      vote: null,
+      status: "open",
+    });
+  };
+
+  const submitSketchFeedback = async (vote: "up" | "down") => {
+    if (!sketchFeedback || sketchFeedback.status === "sending" || sketchFeedback.vote) return;
+    setSketchFeedback({ ...sketchFeedback, status: "sending", vote });
+    try {
+      const response = await fetch("/api/canvas-agent/feedback", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          prompt: sketchFeedback.prompt,
+          summary: sketchFeedback.summary,
+          vote,
+          patch: sketchFeedback.patch,
+        }),
+      });
+      if (!response.ok) {
+        setSketchFeedback({ ...sketchFeedback, vote: null, status: "error" });
+        return;
+      }
+      setSketchFeedback({ ...sketchFeedback, vote, status: "saved" });
+      window.setTimeout(() => {
+        setSketchFeedback((current) => current?.status === "saved" ? null : current);
+      }, 2_400);
+    } catch {
+      setSketchFeedback({ ...sketchFeedback, vote: null, status: "error" });
+    }
+  };
+
+  const explore = async (value: string, starterId?: CanvasStarterId) => {
+    const nextQuestion = value.trim();
+    if (!nextQuestion) return;
+    if (usedFollowUps.includes(nextQuestion)) return;
+    setQuestion(nextQuestion);
+    setAgentMessage("");
+    setPendingPatch(null);
+    setDismissedSuggestions(false);
+    setSketchFeedback(null);
+    canvasSnapshot.current?.clearPatchPreview();
+
+    if (starterId) {
+      setActiveStarterId(starterId);
+      setUsedFollowUps([]);
+    }
+
+    if (!navigator.onLine) {
+      setAgentMessage(
+        turn.current === 0
+          ? "You’re offline, so live sketching can’t run. Preset sketches still work once you’re back online—or keep drawing on the board."
+          : "You’re offline, so live follow-ups can’t run. Your canvas is unchanged—draw freely, or use new board for a preset sketch when you’re back online.",
+      );
+      setAgentState("error");
+      return;
+    }
+
+    if (!starterId && livePolicy?.live.verificationRequired && !turnstileToken) {
+      setAgentMessage(
+        livePolicy.live.turnstileSiteKey
+          ? "Complete the quick human check, then send that thought again."
+          : "Live verification is not configured yet. Preset notes still work—pick one above.",
+      );
+      setAgentState("error");
+      return;
+    }
+
+    setPrompt("");
+    setAgentState("thinking");
+    const snapshot = canvasSnapshot.current;
+    if (!snapshot) {
+      setAgentMessage("The canvas is still opening. Give it a moment and try again.");
+      setAgentState("error");
+      return;
+    }
+
+    // Preset notes are authored locally — never spend live quota or call the vision API.
+    if (starterId && isMatchingStarterPrompt(starterId, nextQuestion)) {
+      try {
+        const context = snapshot.getPatchContext();
+        if (!context) {
+          setAgentMessage("The canvas is still opening. Give it a moment and try again.");
+          setAgentState("error");
+          return;
+        }
+
+        const patch = createAuthoredStarterPatch(starterId, context);
+        const validation = validateCanvasPatch(patch, context);
+        if (!validation.ok) {
+          setAgentMessage("That preset sketch couldn’t be built safely. Your canvas was not changed—try another note.");
+          setAgentState("error");
+          return;
+        }
+
+        const compiled = compileCanvasPatch(
+          validation.value.patch,
+          context,
+          validation.value.risk,
+        );
+
+        if (compiled.risk.requiresConfirmation) {
+          setPendingPatch({
+            compiled,
+            patch: validation.value.patch,
+            prompt: nextQuestion,
+            summary: validation.value.patch.summary,
+            sceneVersion: context.sceneVersion,
+            reason: "risk",
+          });
+          setAgentMessage(`This change needs your approval: ${compiled.risk.reasons.join(", ")}.`);
+          setAgentState("active");
+          return;
+        }
+
+        const application = await snapshot.applyCompiledPatch(compiled);
+        if (application.status === "confirmation-required") {
+          setPendingPatch({
+            compiled,
+            patch: validation.value.patch,
+            prompt: nextQuestion,
+            summary: validation.value.patch.summary,
+            sceneVersion: context.sceneVersion,
+            reason: "risk",
+          });
+          setAgentMessage(`This change needs your approval: ${application.reasons.join(", ")}.`);
+          setAgentState("active");
+          return;
+        }
+        if (application.status !== "applied") {
+          setAgentMessage("The canvas was not ready to apply that preset. Nothing was modified.");
+          setAgentState("error");
+          return;
+        }
+
+        recordTurn(nextQuestion, validation.value.patch.summary);
+        turn.current += 1;
+        setAgentMessage("");
+        setAgentState("active");
+      } catch (error) {
+        console.error("Authored starter apply failed", error);
+        setAgentMessage("That preset sketch couldn’t be applied. Your canvas is untouched—try another note.");
+        setAgentState("error");
+      }
+      return;
+    }
+
+    if (liveQuotaExhausted) {
+      setAgentMessage(
+        "Today’s live sketch allowance is used up. Your canvas is unchanged—start a new board and pick a preset note (those stay free).",
+      );
+      setAgentState("error");
+      return;
+    }
+
+    try {
+      const capture = await snapshot.captureAgentContext();
+      if (!capture) {
+        setAgentMessage("That canvas view is too large to inspect safely. Select fewer marks and try again.");
+        setAgentState("error");
+        return;
+      }
+
+      const response = await fetch("/api/canvas-agent", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          prompt: nextQuestion,
+          scope: capture.scope,
+          context: capture.context,
+          imageDataUrl: await blobToDataUrl(capture.image),
+          priorTurns: priorTurns.current,
+          ...(!starterId && turnstileToken ? { turnstileToken } : {}),
+        }),
+      });
+      const payload = await response.json().catch(() => ({
+        ok: false,
+        message: response.status === 429
+          ? "Too many live questions from this connection. Wait a few minutes, or start a new board and use a preset sketch."
+          : "Live sketching couldn’t finish that request. Your canvas is unchanged—try a preset from a new board, or ask again in a moment.",
+      })) as {
+        ok: boolean;
+        message?: string;
+        code?: string;
+        patch?: CanvasPatch;
+        quality?: { ok: boolean; issues?: string[] };
+        usage?: { counted?: boolean; sessionUsed?: number; sessionLimit?: number };
+      };
+      if (!response.ok || !payload.ok || !payload.patch) {
+        setAgentMessage(
+          clarifyLiveRestingMessage(payload.message, turn.current === 0),
+        );
+        setAgentState("error");
+        return;
+      }
+
+      if (payload.usage?.counted) {
+        setLivePolicy((current) => current ? {
+          ...current,
+          usage: { sessionUsed: payload.usage?.sessionUsed || current.usage?.sessionUsed || 0 },
+        } : current);
+      }
+
+      if (snapshot.getPatchContext()?.sceneVersion !== capture.context.sceneVersion) {
+        setAgentMessage("The board changed while the agent was thinking, so its stale response was not applied.");
+        setAgentState("error");
+        return;
+      }
+
+      const validation = validateCanvasPatch(payload.patch, capture.context);
+      if (!validation.ok) {
+        setAgentMessage("The agent returned an unsafe canvas change, so nothing was applied.");
+        setAgentState("error");
+        return;
+      }
+      const compiled = compileCanvasPatch(
+        validation.value.patch,
+        capture.context,
+        validation.value.risk,
+      );
+
+      // Risk confirmation wins over soft quality — never skip destructive review.
+      if (compiled.risk.requiresConfirmation) {
+        setPendingPatch({
+          compiled,
+          patch: validation.value.patch,
+          prompt: nextQuestion,
+          summary: validation.value.patch.summary,
+          sceneVersion: capture.context.sceneVersion,
+          reason: "risk",
+          ...(payload.quality && !payload.quality.ok
+            ? { issues: payload.quality.issues?.filter(Boolean) ?? [] }
+            : {}),
+        });
+        setAgentMessage(`This change needs your approval: ${compiled.risk.reasons.join(", ")}.`);
+        setAgentState("active");
+        return;
+      }
+
+      // Soft quality bar: offer Apply anyway (one undoable scene update) instead of discarding.
+      if (payload.quality && !payload.quality.ok) {
+        const issues = payload.quality.issues?.filter(Boolean) ?? [];
+        setPendingPatch({
+          compiled,
+          patch: validation.value.patch,
+          prompt: nextQuestion,
+          summary: validation.value.patch.summary,
+          sceneVersion: capture.context.sceneVersion,
+          reason: "quality",
+          issues,
+        });
+        setAgentMessage(
+          issues.length > 0
+            ? `The sketch is a bit rough: ${issues.slice(0, 2).join("; ")}${issues.length > 2 ? "…" : ""}. You can apply it anyway and undo if you dislike it.`
+            : "The sketch is a bit rough. You can apply it anyway and undo if you dislike it.",
+        );
+        setAgentState("active");
+        return;
+      }
+
+      const application = await snapshot.applyCompiledPatch(compiled);
+      if (application.status === "confirmation-required") {
+        setPendingPatch({
+          compiled,
+          patch: validation.value.patch,
+          prompt: nextQuestion,
+          summary: validation.value.patch.summary,
+          sceneVersion: capture.context.sceneVersion,
+          reason: "risk",
+        });
+        setAgentMessage(`This change needs your approval: ${application.reasons.join(", ")}.`);
+        setAgentState("active");
+        return;
+      }
+      if (application.status !== "applied") {
+        setAgentMessage("The canvas was not ready to apply that change. Nothing was modified.");
+        setAgentState("error");
+        return;
+      }
+
+      recordTurn(nextQuestion, validation.value.patch.summary);
+      turn.current += 1;
+      if (
+        !starterId &&
+        activeStarterId &&
+        getStarterFollowUps(activeStarterId).includes(nextQuestion)
+      ) {
+        setUsedFollowUps((current) =>
+          current.includes(nextQuestion) ? current : [...current, nextQuestion],
+        );
+      }
+      if (!starterId) offerSketchFeedback(nextQuestion, validation.value.patch);
+      setAgentState("active");
+    } catch (error) {
+      console.error("Canvas agent request failed", error);
+      setAgentMessage(
+        clarifyLiveRestingMessage(
+          "Live sketching couldn’t finish that request. Your canvas is unchanged.",
+          Boolean(starterId) || turn.current === 0,
+        ),
+      );
+      setAgentState("error");
+    } finally {
+      if (!starterId && livePolicy?.live.verificationRequired) {
+        setTurnstileToken(null);
+        setTurnstileResetKey((current) => current + 1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (boardHasContent && turn.current === 0 && agentState === "idle") {
+      setAgentState("active");
+    }
+  }, [agentState, boardHasContent]);
+
+  const confirmPendingPatch = async () => {
+    if (!pendingPatch) return;
+    if (canvasSnapshot.current?.getPatchContext()?.sceneVersion !== pendingPatch.sceneVersion) {
+      setPendingPatch(null);
+      setAgentMessage("The board changed during review, so the pending response is now stale and was not applied.");
+      setAgentState("error");
+      return;
+    }
+    const application = await canvasSnapshot.current?.applyCompiledPatch(
+      pendingPatch.compiled,
+      { confirmed: true },
+    );
+    if (!application || application.status !== "applied") {
+      setAgentMessage("The approved change could not be applied. Your canvas was not modified.");
+      setAgentState("error");
+      return;
+    }
+    recordTurn(pendingPatch.prompt, pendingPatch.summary);
+    turn.current += 1;
+    if (
+      activeStarterId &&
+      getStarterFollowUps(activeStarterId).includes(pendingPatch.prompt)
+    ) {
+      setUsedFollowUps((current) =>
+        current.includes(pendingPatch.prompt) ? current : [...current, pendingPatch.prompt],
+      );
+    }
+    offerSketchFeedback(pendingPatch.prompt, pendingPatch.patch);
+    setPendingPatch(null);
+    canvasSnapshot.current?.clearPatchPreview();
+    setAgentMessage(
+      pendingPatch.reason === "quality"
+        ? "Applied. Undo (⌘Z / Ctrl+Z) if you want the board back."
+        : "",
+    );
+    setAgentState("active");
+  };
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    explore(prompt);
+    if (isCompactViewport) {
+      // Thinking will auto-reopen the tray; don't yank focus to the launcher.
+      setFollowUpOpen(false);
+      setFollowUpShouldFocus(false);
+      restoreLauncherFocusRef.current = false;
+      followUpInputRef.current?.blur();
+    }
+  };
+
+  const closeFollowUp = () => {
+    setFollowUpOpen(false);
+    setFollowUpShouldFocus(false);
+    followUpInputRef.current?.blur();
+    if (isCompactViewport) {
+      restoreLauncherFocusRef.current = true;
+    }
+  };
+
+  const openFollowUpComposer = () => {
+    setFollowUpOpen(true);
+    setFollowUpShouldFocus(true);
+    restoreLauncherFocusRef.current = false;
+  };
+
+  const dismissKeyboardOnCanvas = (event: PointerEvent<HTMLElement>) => {
+    if (!isCompactViewport || !followUpOpen) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("form, button, a, input, textarea, label")) return;
+    closeFollowUp();
+  };
+
+  const onFollowUpKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {
+    if (event.key !== "Escape" || !isCompactViewport) return;
+    event.preventDefault();
+    closeFollowUp();
+  };
+
+  const startNewBoard = () => {
+    if (boardHasContent && !window.confirm("Start a new board? This clears the locally saved canvas on this device.")) return;
+    canvasSnapshot.current?.clearPatchPreview();
+    canvasSnapshot.current?.resetBoard();
+    priorTurns.current = [];
+    turn.current = 0;
+    setBoardHasContent(false);
+    setPendingPatch(null);
+    setSketchFeedback(null);
+    setActiveStarterId(null);
+    setUsedFollowUps([]);
+    setDismissedSuggestions(false);
+    setQuestion("");
+    setPrompt("");
+    setAgentMessage("");
+    setFollowUpOpen(false);
+    setAgentState("idle");
+    setRerollKey((k) => k + 1);
+  };
+
+  const rerollPrompts = () => {
+    setRerollKey((k) => k + 1);
+  };
+
+  const liveUsageLabel = livePolicy?.usage
+    ? `${livePolicy.usage.sessionUsed} of ${livePolicy.limits.sessionDaily} live sketches used today · preset notes are always free`
+    : "preset notes are free · live questions use today’s allowance";
+
+  const followUpStatusLabel =
+    agentState === "thinking"
+      ? "adding to the board…"
+      : agentState === "error"
+        ? "connection lost — try again"
+        : "ask a follow-up";
+  const announceFollowUpStatus =
+    showFollowUpSurface && (agentState === "thinking" || agentState === "error");
+
+  return (
+    <main
+      ref={shellRef}
+      className={`${styles.shell} ${isCompactViewport ? styles.shellCompact : ""} ${satoshi.variable}`}
+      onPointerDown={dismissKeyboardOnCanvas}
+    >
+      <header className={styles.topbar}>
+        <Link href="/?return=work" className={`${styles.signature} ${lukesFont.className}`}>
+          <ArrowLeft size={15} strokeWidth={1.8} />
+          <span>luke.brev</span>
+        </Link>
+        <div className={styles.topbarActions}>
+          <button type="button" className={styles.newBoardButton} onClick={startNewBoard}>
+            <RotateCcw size={13} /> new board
+          </button>
+        </div>
+      </header>
+
+      <section className={styles.canvas} aria-label="Luke's project exploration canvas">
+        <ExcalidrawCanvas onSnapshot={handleSnapshot} />
+
+        {canvasDebugEnabled && (
+          <CanvasContractLab
+            getSnapshot={() => canvasSnapshot.current}
+            onPatchApplied={() => setContractLabActive(true)}
+          />
+        )}
+
+        {agentState === "loading" && (
+          <div className={styles.loading} role="status">
+            <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+            <span>unrolling the canvas…</span>
+            <span className={styles.loadingLine} aria-hidden="true" />
+          </div>
+        )}
+
+        {showFirstTimeHelper && agentState === "idle" && turn.current === 0 && (
+          <div className={styles.firstTimeOverlay} role="dialog" aria-label="Welcome to Explore" aria-modal="true">
+            <div className={styles.firstTimeCard}>
+              <button
+                type="button"
+                className={styles.firstTimeClose}
+                onClick={dismissFirstTimeHelper}
+                aria-label="Dismiss welcome message"
+              >
+                <X size={16} strokeWidth={2} />
+              </button>
+              <div className={`${styles.firstTimeEyebrow} ${lukesFont.className}`}>
+                <Sparkles size={16} /> Welcome to Explore
+              </div>
+              <h2 className={lukesFont.className}>How this works</h2>
+              <ul className={styles.firstTimeList}>
+                <li>
+                  <strong>Pick a note</strong> below to see a sketch about Luke’s work.
+                </li>
+                <li>
+                  <strong>Ask anything</strong> — the agent draws answers directly on the canvas.
+                </li>
+                <li>
+                  <strong>Draw freely</strong> — this space is yours to mark up.
+                </li>
+              </ul>
+              <button
+                type="button"
+                className={styles.firstTimeAction}
+                onClick={dismissFirstTimeHelper}
+              >
+                Start exploring
+              </button>
+            </div>
+          </div>
+        )}
+
+        {(agentState === "idle" || agentState === "error") &&
+          turn.current === 0 &&
+          !contractLabActive && (
+          <div className={styles.invitation}>
+            <div className={`${styles.eyebrow} ${lukesFont.className}`}>
+              <PencilLine size={17} /> pick a thread or write your own
+            </div>
+            <h1 className={lukesFont.className}>
+              What do you want
+              <br />
+              <span>to explore?</span>
+            </h1>
+            <p>
+              Choose a note for a quick sketch, or ask for a different path
+              through Luke’s work.
+            </p>
+
+            <form className={styles.promptForm} onSubmit={submit}>
+              <label htmlFor="vision-prompt" className="sr-only">
+                What would you like to explore?
+              </label>
+              <input
+                id="vision-prompt"
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                placeholder="Ask Luke's canvas anything…"
+                autoComplete="off"
+                enterKeyHint="go"
+                inputMode="text"
+              />
+              <button type="submit" disabled={!prompt.trim()} aria-label="Explore">
+                <Send size={18} />
+              </button>
+            </form>
+
+            <div className={styles.usageNote}>{liveUsageLabel}</div>
+
+            {agentState === "error" && (
+              <div className={styles.errorNote} role="alert">
+                {agentMessage || "Something went wrong with live sketching. Your canvas is still here—try a preset note, or ask again."}
+              </div>
+            )}
+
+            <div className={styles.promptList} aria-label="Suggested starting points">
+              {displayedPrompts.map((item, index) => (
+                <button
+                  key={item.prompt}
+                  type="button"
+                  onClick={() => explore(item.prompt, item.id)}
+                  style={{ "--prompt-tilt": item.tilt } as CSSProperties}
+                >
+                  <span className={styles.promptNumber}>0{index + 1}</span>
+                  <strong>{item.prompt}</strong>
+                  <small>{item.note} ↗</small>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className={styles.shuffleButton}
+              onClick={rerollPrompts}
+              aria-label="Show different prompts"
+            >
+              <RotateCcw size={13} />
+            </button>
+          </div>
+        )}
+
+        {agentState === "thinking" && turn.current === 0 && (
+          <div className={styles.thoughtWrap} role="status" aria-live="polite">
+            <div className={styles.orb}><Sparkles size={22} /></div>
+            <div className={styles.thoughtBubble}>
+              <span>Following that thread…</span>
+              <strong>“{question}”</strong>
+              <i><b /> <b /> <b /></i>
+            </div>
+          </div>
+        )}
+
+        {pendingPatch && (
+          <div className={`${styles.agentNotice} ${styles.changePreviewNotice}`} role="alert">
+            <strong>
+              {pendingPatch.reason === "quality"
+                ? "Preview — sketch looks imperfect"
+                : "Preview — review before changing the board"}
+            </strong>
+            <span>{agentMessage}</span>
+            <span className={styles.previewHint}>Ghost marks show the proposed change.</span>
+            <div>
+              <button type="button" onClick={confirmPendingPatch}>
+                {pendingPatch.reason === "quality" ? "apply anyway" : "apply change"}
+              </button>
+              <button type="button" onClick={() => {
+                canvasSnapshot.current?.clearPatchPreview();
+                setPendingPatch(null);
+                setAgentMessage("");
+              }}>
+                {pendingPatch.reason === "quality" ? "discard sketch" : "keep canvas as-is"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {sketchFeedback && !pendingPatch && (
+          <div className={styles.sketchFeedback} role="group" aria-label="Sketch format feedback">
+            {sketchFeedback.status === "saved" ? (
+              <span className={styles.sketchFeedbackThanks}>
+                {sketchFeedback.vote === "up" ? "noted — thanks" : "noted — we’ll try a different layout next time"}
+              </span>
+            ) : (
+              <>
+                <span className={styles.sketchFeedbackLabel}>
+                  Did this layout work?
+                </span>
+                <button
+                  type="button"
+                  className={styles.sketchFeedbackButton}
+                  aria-label="Thumbs up this layout"
+                  disabled={sketchFeedback.status === "sending"}
+                  onClick={() => submitSketchFeedback("up")}
+                >
+                  👍
+                </button>
+                <button
+                  type="button"
+                  className={styles.sketchFeedbackButton}
+                  aria-label="Thumbs down this layout"
+                  disabled={sketchFeedback.status === "sending"}
+                  onClick={() => submitSketchFeedback("down")}
+                >
+                  👎
+                </button>
+                {sketchFeedback.status === "error" && (
+                  <span className={styles.sketchFeedbackError}>couldn’t save — try once more</span>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {agentState === "active" && !pendingPatch && agentMessage && turn.current > 0 && (
+          <div className={styles.agentNotice} role="status">
+            <strong>On the board</strong>
+            <span>{agentMessage}</span>
+          </div>
+        )}
+
+        {agentState === "error" && turn.current > 0 && agentMessage && (
+          <div className={`${styles.agentNotice} ${styles.agentNoticeError}`} role="alert">
+            <strong>Nothing changed</strong>
+            <span>{agentMessage}</span>
+          </div>
+        )}
+
+        {showFollowUpSuggestions && (
+          <div className={styles.showcaseActions} aria-label="Suggested follow-ups">
+            {isCompactViewport && (
+              <button
+                type="button"
+                className={styles.suggestionDismiss}
+                onClick={() => setDismissedSuggestions(true)}
+                aria-label="Dismiss suggestions"
+              >
+                <X size={14} strokeWidth={2} />
+              </button>
+            )}
+            <span className={`${styles.suggestionLabel} ${lukesFont.className}`}>Try a visual follow-up:</span>
+            {liveFollowUpsAvailable ? (
+              availableFollowUps.map((followUp) => (
+                <button key={followUp} type="button" onClick={() => explore(followUp)}>
+                  {followUp}
+                </button>
+              ))
+            ) : (
+              <p className={styles.followUpUnavailable}>
+                {liveQuotaExhausted
+                  ? "Live follow-ups are out for today. Preset sketches on a new board are still free."
+                  : "Live follow-ups are resting. Preset sketches on a new board are still free."}
+              </p>
+            )}
+          </div>
+        )}
+
+        {livePolicy?.live.verificationRequired && livePolicy.live.turnstileSiteKey &&
+          prompt.trim() && agentState !== "thinking" && (
+          <div className={styles.verificationNote}>
+            <span>quick human check for live prompts</span>
+            <TurnstileChallenge
+              siteKey={livePolicy.live.turnstileSiteKey}
+              resetKey={turnstileResetKey}
+              onToken={setTurnstileToken}
+            />
+          </div>
+        )}
+
+        {announceFollowUpStatus && !showFollowUpTray && (
+          <div className="sr-only" role="status" aria-live="polite">
+            {agentState === "thinking"
+              ? `Adding to the board: ${question}`
+              : agentMessage || "Connection lost — try again"}
+          </div>
+        )}
+
+        {agentState === "thinking" && turn.current > 0 && (
+          <div className={styles.followUpWaiting} role="status" aria-live="polite">
+            <LoaderCircle className={styles.followUpSpinner} size={18} aria-hidden="true" />
+            <div>
+              <strong>Sketching on the board…</strong>
+              <span>“{question}”</span>
+            </div>
+          </div>
+        )}
+
+        {showFollowUpLauncher && (
+          <button
+            ref={followUpLauncherRef}
+            type="button"
+            className={styles.followUpLauncher}
+            onClick={openFollowUpComposer}
+          >
+            <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+            ask a follow-up
+          </button>
+        )}
+
+        {showFollowUpTray && (
+          <form
+            className={`${styles.followUpTray} ${agentState === "thinking" ? styles.followUpTrayThinking : ""}`}
+            onSubmit={submit}
+            onKeyDown={onFollowUpKeyDown}
+          >
+            <div
+              role={announceFollowUpStatus ? "status" : undefined}
+              aria-live={announceFollowUpStatus ? "polite" : undefined}
+            >
+              {agentState === "thinking" ? (
+                <LoaderCircle className={styles.followUpSpinner} size={16} aria-hidden="true" />
+              ) : (
+                <span className={styles.agentGlyph} aria-hidden="true">✦</span>
+              )}
+              <label htmlFor="follow-up-prompt">
+                {followUpStatusLabel}
+              </label>
+            </div>
+            <input
+              ref={followUpInputRef}
+              id="follow-up-prompt"
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              placeholder="What should we explore next?"
+              autoComplete="off"
+              enterKeyHint="send"
+              inputMode="text"
+              disabled={agentState === "thinking"}
+            />
+            <button
+              type="submit"
+              disabled={agentState === "thinking" || !prompt.trim()}
+              aria-label="Add follow-up to canvas"
+            >
+              <Send size={17} />
+            </button>
+            {isCompactViewport && (
+              <button
+                type="button"
+                className={styles.followUpDismiss}
+                onClick={closeFollowUp}
+                aria-label="Close follow-up"
+              >
+                <X size={17} strokeWidth={2} />
+              </button>
+            )}
+          </form>
+        )}
+
+        <aside
+          className={`${styles.cornerNote} ${showFollowUpSurface ? styles.cornerNoteHidden : ""}`}
+          aria-hidden="true"
+        >
+          <span>this space is yours</span>
+          <span>draw, type, and move things around ↗</span>
+        </aside>
+      </section>
+
+    </main>
+  );
+}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Canvas sketch feedback memory · handoff</title>
+  <style>
+    :root { --ink:#20201d; --paper:#f4f0e7; --deep:#ddd5c7; --red:#c83f2f; --green:#35705a; --muted:#6f6a61; --line:#20201d22; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--deep); font:16px/1.55 ui-sans-serif,system-ui,sans-serif; }
+    main { width:min(980px,calc(100% - 28px)); margin:18px auto; padding:clamp(24px,5vw,52px); border:1px solid var(--line); border-radius:18px; background:var(--paper); box-shadow:0 20px 60px #392f2322; }
+    h1,h2 { line-height:1.08; letter-spacing:-.025em; }
+    h1 { max-width:820px; margin:8px 0 18px; font:500 clamp(2.2rem,6vw,4.2rem)/.98 Georgia,serif; }
+    h1 em { color:var(--red); font-style:normal; }
+    h2 { margin:42px 0 12px; font:500 clamp(1.4rem,3vw,2.1rem)/1.1 Georgia,serif; }
+    p,li { color:var(--muted); }
+    code { padding:.1em .35em; border-radius:4px; color:var(--ink); background:#20201d0c; font-family:ui-monospace,Menlo,monospace; font-size:.9em; }
+    .eyebrow { color:var(--red); font-size:.75rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+    .lede { max-width:720px; font-size:1.12rem; }
+    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .card { padding:18px; border:1px solid var(--line); background:#fff9; }
+    .card.good { border-top:4px solid var(--green); }
+    .card.stop { border-top:4px solid var(--red); }
+    .card h3 { margin:0 0 6px; font-size:1rem; color:var(--ink); }
+    .card p { margin:0; }
+    table { width:100%; border-collapse:collapse; background:#fff8; }
+    th,td { padding:11px 12px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; }
+    td:first-child { color:var(--ink); font-weight:700; }
+    .note { margin:22px 0; padding:16px 18px; border-left:4px solid var(--red); background:#fee2e25c; }
+    footer { margin-top:40px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:.84rem; }
+    @media(max-width:760px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">Explore canvas · format memory v1 · Jul 2026</div>
+  <h1>Remember good layouts as <em>priors</em>, not facts.</h1>
+  <p class="lede">After a live sketch is applied (including Apply anyway), visitors can thumbs-up / thumbs-down the layout. Upvoted compact recipes are stored by prompt fingerprint and later injected as <code>approvedFormats</code> — layout guidance only. Knowledge packs remain the factual source. No blind board replay.</p>
+
+  <h2>What shipped</h2>
+  <section class="grid">
+    <article class="card good"><h3>Compact 👍 / 👎 UI</h3><p>Sketchbook chip on <code>/explore</code> after a live apply. Authored starters skip feedback.</p></article>
+    <article class="card good"><h3>Feedback API</h3><p><code>POST /api/canvas-agent/feedback</code> accepts prompt, summary, vote, optional note, recipe or patch. Rate-limited per session/IP digest.</p></article>
+    <article class="card good"><h3>Redis rollup + local fallback</h3><p>Keyed by fingerprint; capped list; ranked by net score + recency. Memory store outside production when Redis is absent.</p></article>
+    <article class="card good"><h3>Director priors</h3><p>Live generate retrieves top 1–2 approved formats and injects them with an explicit “priors only” prompt rule.</p></article>
+  </section>
+
+  <h2>Fingerprint</h2>
+  <p>Built from knowledge-matched project ids (same alias/keyword scoring as packs) plus one primary intent bucket (<code>compare</code>, <code>how</code>, <code>architecture</code>, …). Near-paraphrases like “Compare MALCOM and Dispatch” and “How do Dispatch and MALCOM differ?” share a key.</p>
+
+  <h2>v1 product choices</h2>
+  <table>
+    <thead><tr><th>Question</th><th>Decision</th></tr></thead>
+    <tbody>
+      <tr><td>Downvotes</td><td>Decrement score; entries with <code>netScore ≤ 0</code> are excluded from retrieval (kept in rollup until pruned).</td></tr>
+      <tr><td>Retention</td><td>Redis TTL ~90 days; list capped at 12 per fingerprint.</td></tr>
+      <tr><td>What’s stored</td><td>Compact recipe (shape mix, coarse grid, themes, truncated roles) — not a full board snapshot.</td></tr>
+      <tr><td>Out of scope</td><td>Blind replay, auto-promote to authored starters, Turnstile / usage-lease / safety hard-fail changes.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">If product wants hard-delete on downvote, shorter retention, or opt-out of cross-visitor sharing, say so on the PR — v1 prefers a tight demotion model.</div>
+
+  <h2>Key files</h2>
+  <ul>
+    <li><code>src/lib/canvas-agent/format-memory.ts</code> (+ tests)</li>
+    <li><code>src/app/api/canvas-agent/feedback/route.ts</code></li>
+    <li><code>src/app/api/canvas-agent/route.ts</code> — retrieve on live generate</li>
+    <li><code>src/lib/canvas-agent/providers/prompt.ts</code> — priors wording + context field</li>
+    <li><code>src/components/homepage-whiteboard.tsx</code> (+ CSS)</li>
+  </ul>
+
+  <h2>Verify</h2>
+  <ul>
+    <li><code>npm test</code> — fingerprint + store/retrieve</li>
+    <li><code>npm run build</code></li>
+    <li>Local play: after a thumbs-up, open <code>GET /api/canvas-agent/feedback?prompt=…</code> — expect <code>approvedCount ≥ 1</code> (disabled in production unless <code>CANVAS_FORMAT_MEMORY_INSPECT=true</code>)</li>
+    <li>Network tab on the next live generate: response includes <code>formatMemory.approvedCount</code> and summaries</li>
+    <li>Manual: live prompt → apply → thumbs → similar prompt should receive priors</li>
+  </ul>
+
+  <footer>Branch: <code>luke/canvas-sketch-feedback-memory</code> · base: <code>homepage-canvas</code> (draft PR)</footer>
+</main></body>
+</html>

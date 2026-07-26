@@ -31,3 +31,6 @@ public/image-cache/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Dispatch / session logs
+logs/

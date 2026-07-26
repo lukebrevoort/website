@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BRE-144 · Vision agent handoff</title>
+  <style>
+    :root { color-scheme: light; --ink:#20201d; --paper:#f4f0e7; --red:#e4573e; --muted:#6b675f; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#ddd7ca; font:16px/1.55 ui-sans-serif,system-ui,sans-serif; }
+    main { width:min(980px,calc(100% - 32px)); margin:24px auto; padding:clamp(24px,5vw,56px); border:1px solid #0002; border-radius:14px; background:var(--paper); box-shadow:0 18px 55px #392f231c; }
+    h1,h2 { line-height:1.05; letter-spacing:-.025em; }
+    h1 { margin:0 0 12px; font-size:clamp(2.2rem,6vw,4.8rem); }
+    h1 span { color:var(--red); }
+    h2 { margin-top:40px; }
+    p,li { color:var(--muted); }
+    code { padding:.12em .35em; border-radius:4px; background:#20201d0d; color:var(--ink); }
+    .flow { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:28px 0; }
+    .flow div { min-height:96px; padding:13px; border:1px solid #0002; border-top:3px solid var(--red); background:#fff9; font-size:.82rem; }
+    .flow b { display:block; margin-bottom:6px; color:var(--ink); }
+    table { width:100%; border-collapse:collapse; }
+    th,td { padding:10px 12px; border-bottom:1px solid #0002; text-align:left; vertical-align:top; }
+    th { font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; }
+    .checklist li { margin:8px 0; }
+    .note { padding:14px 16px; border-left:3px solid var(--red); background:#fee2e280; }
+    @media (max-width:760px) { .flow { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <p>BRE-144 · Vision Agent</p>
+  <h1>Scoped canvas context,<br><span>validated end to end.</span></h1>
+  <p>The live Explore canvas now sends one bounded structural snapshot and its matching PNG to a server-only OpenAI adapter after an explicit visitor submission.</p>
+
+  <section class="flow" aria-label="Request flow">
+    <div><b>1 · Capture</b>Selection, otherwise the visible viewport.</div>
+    <div><b>2 · Bound</b>Elements, PNG size, prompt, history, and request bytes.</div>
+    <div><b>3 · Generate</b>OpenAI returns a typed CanvasPatchV1.</div>
+    <div><b>4 · Validate</b>Server and client both run semantic validation.</div>
+    <div><b>5 · Apply</b>One undoable transaction; risky changes pause for approval.</div>
+  </section>
+
+  <h2>Server configuration</h2>
+  <p>Set <code>OPENAI_API_KEY</code> in the gitignored local <code>.env</code> and in Vercel environments. The existing <code>OpenAIKey</code> name is accepted as a compatibility alias. Optional overrides are <code>CANVAS_VISION_PROVIDER=openai</code> and <code>CANVAS_OPENAI_MODEL=gpt-4o-mini</code>. The key never enters the browser bundle or API response.</p>
+  <p class="note">Add a Vercel Firewall rate-limit rule for <code>POST /api/canvas-agent</code>: fixed window, 600 seconds, limit 5, key <code>ip</code>, action <code>deny</code>. The API also fails closed when its credential or provider is unavailable.</p>
+
+  <h2>Hard limits</h2>
+  <table>
+    <thead><tr><th>Boundary</th><th>Limit</th></tr></thead>
+    <tbody>
+      <tr><td>HTTP request</td><td>1.9 MB</td></tr>
+      <tr><td>PNG</td><td>1.5 MB, 768 px maximum edge, low-detail vision</td></tr>
+      <tr><td>Structural elements</td><td>40</td></tr>
+      <tr><td>Prior board turns</td><td>2</td></tr>
+      <tr><td>Model output</td><td>1,400 tokens and 25 CanvasPatch operations</td></tr>
+      <tr><td>Provider duration</td><td>20 seconds, no automatic retry</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Manual preview checklist</h2>
+  <ol class="checklist">
+    <li>Open <code>/explore</code>, submit a starter prompt, and confirm native editable Excalidraw objects appear.</li>
+    <li>Draw two marks, select one, submit a prompt, and confirm the response is scoped to the selection.</li>
+    <li>Submit without a selection and confirm the visible viewport is used.</li>
+    <li>Edit the board while a request is running; confirm the stale response is rejected without mutation.</li>
+    <li>Trigger a large or destructive patch; confirm the board does not change before approval.</li>
+    <li>Remove the preview credential and confirm the resting message appears while the mark count stays unchanged.</li>
+    <li>Use Excalidraw Undo after an accepted patch and confirm the entire patch reverses as one action.</li>
+  </ol>
+</main>
+</body>
+</html>

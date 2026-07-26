@@ -1,0 +1,95 @@
+- generic [active] [ref=f3e1]:
+  - main [ref=f3e3]:
+    - generic:
+      - link "luke.brev" [ref=f3e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f3e8]:
+        - button "new board" [ref=f3e9] [cursor=pointer]
+        - generic "Vision agent status" [ref=f3e13]: vision agent
+    - region "Luke's project exploration canvas" [ref=f3e15]:
+      - generic [ref=f3e16]:
+        - generic [ref=f3e42]:
+          - region [ref=f3e43]:
+            - generic [ref=f3e45]:
+              - generic [ref=f3e46]:
+                - heading "Shapes" [level=2] [ref=f3e47]
+                - generic [ref=f3e48]:
+                  - generic "Selection — V or 1" [ref=f3e49] [cursor=pointer]:
+                    - radio "Selection" [checked]
+                  - generic "Rectangle — R or 2" [ref=f3e56] [cursor=pointer]:
+                    - radio "Rectangle"
+                  - generic "Diamond — D or 3" [ref=f3e62] [cursor=pointer]:
+                    - radio "Diamond"
+                  - generic "Ellipse — O or 4" [ref=f3e68] [cursor=pointer]:
+                    - radio "Ellipse"
+                  - generic "Arrow — A or 5" [ref=f3e74] [cursor=pointer]:
+                    - radio "Arrow"
+                  - generic "Line — L or 6" [ref=f3e81] [cursor=pointer]:
+                    - radio "Line"
+                  - generic "Draw — P or 7" [ref=f3e84] [cursor=pointer]:
+                    - radio "Draw"
+                  - generic "Text — T or 8" [ref=f3e90] [cursor=pointer]:
+                    - radio "Text"
+                  - generic "Insert image — 9" [ref=f3e97] [cursor=pointer]:
+                    - radio "Insert image"
+                  - generic "Eraser — E or 0" [ref=f3e104] [cursor=pointer]:
+                    - radio "Eraser"
+                  - button "More tools" [ref=f3e112] [cursor=pointer]
+              - generic [ref=f3e119]:
+                - generic "Library" [ref=f3e120]:
+                  - checkbox "Library"
+                - generic "Keep selected tool active after drawing — Q" [ref=f3e128] [cursor=pointer]:
+                  - checkbox "Keep selected tool active after drawing"
+                - generic "Hand (panning tool) — H" [ref=f3e136] [cursor=pointer]:
+                  - radio "Hand (panning tool) — H"
+          - generic [ref=f3e147]:
+            - button [ref=f3e148] [cursor=pointer]
+            - generic [ref=f3e152]:
+              - button "Undo" [disabled] [ref=f3e153]
+              - button "Redo" [disabled] [ref=f3e157]
+          - generic [ref=f3e161]: Drawing canvas
+        - generic: 0 marks · 0 selected · saved locally
+      - generic:
+        - generic: pick a thread or write your own
+        - heading "What do you want to explore?" [level=1]: What do you wantto explore?
+        - paragraph: Choose a note for a quick sketch, or ask for a different path through Luke’s work.
+        - generic [ref=f3e162]:
+          - generic [ref=f3e163]: What would you like to explore?
+          - textbox "What would you like to explore?" [ref=f3e164]:
+            - /placeholder: Ask Luke's canvas anything…
+          - button "Explore" [disabled] [ref=f3e165]
+        - generic: 0 of 6 live sketches used today · preset notes are always free
+        - generic "Suggested starting points" [ref=f3e169]:
+          - button "01 Sketch how MALCOM works controller + sessions ↗" [ref=f3e170] [cursor=pointer]:
+            - generic [ref=f3e171]: "01"
+            - strong [ref=f3e172]: Sketch how MALCOM works
+            - generic [ref=f3e173]: controller + sessions ↗
+          - button "02 Show me the architecture of Dispatch agents + worktrees ↗" [ref=f3e174] [cursor=pointer]:
+            - generic [ref=f3e175]: "02"
+            - strong [ref=f3e176]: Show me the architecture of Dispatch
+            - generic [ref=f3e177]: agents + worktrees ↗
+          - button "03 How does Orca Mail decide what matters? signal, not noise ↗" [ref=f3e178] [cursor=pointer]:
+            - generic [ref=f3e179]: "03"
+            - strong [ref=f3e180]: How does Orca Mail decide what matters?
+            - generic [ref=f3e181]: signal, not noise ↗
+          - button "04 Explain FlowState visually context + action ↗" [ref=f3e182] [cursor=pointer]:
+            - generic [ref=f3e183]: "04"
+            - strong [ref=f3e184]: Explain FlowState visually
+            - generic [ref=f3e185]: context + action ↗
+          - button "05 What connects Luke's projects? follow the thread ↗" [ref=f3e186] [cursor=pointer]:
+            - generic [ref=f3e187]: "05"
+            - strong [ref=f3e188]: What connects Luke's projects?
+            - generic [ref=f3e189]: follow the thread ↗
+          - button "06 Surprise me dealer's choice ↗" [ref=f3e190] [cursor=pointer]:
+            - generic [ref=f3e191]: "06"
+            - strong [ref=f3e192]: Surprise me
+            - generic [ref=f3e193]: dealer's choice ↗
+    - navigation "Primary navigation" [ref=f3e18]:
+      - link "About" [ref=f3e19] [cursor=pointer]:
+        - /url: /about
+      - link "Projects" [ref=f3e24] [cursor=pointer]:
+        - /url: /projects
+      - link "Blog" [ref=f3e28] [cursor=pointer]:
+        - /url: /blog/posts
+  - button "Open Next.js Dev Tools" [ref=f3e37] [cursor=pointer]
+  - alert [ref=f3e41]

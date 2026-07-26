@@ -29,6 +29,7 @@ import {
   FileUser,
   Mail,
   PanelsTopLeft,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { lukesFont } from "@/app/fonts";
@@ -110,9 +111,9 @@ const navSections: NavSection[] = [
     title: "Information",
     items: [
       { title: "About Me", icon: User, href: "/about" },
-      { title: "Models", icon: Bot, href: "/models" },
-      { title: "Documentation", icon: BookOpen, href: "/documentation" },
+      { title: "Explore", icon: Sparkles, href: "/explore" },
       { title: "Blog", icon: NotebookPen, href: "/blog/posts" },
+      { title: "Resume", icon: FileText, href: "/resume" },
     ],
   },
   {
@@ -126,7 +127,7 @@ interface ModernSidebarProps {
 }
 
 export function ModernSidebar({
-  currentPath = "/dashboard",
+  currentPath = "/",
 }: ModernSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [activeItem, setActiveItem] = useState(currentPath);
@@ -165,7 +166,7 @@ export function ModernSidebar({
               className={`relative p-0 bg-transparent hover:bg-white/10 border-0 transition-all duration-300 ${
                 isCollapsed ? "w-8 h-8" : "w-8 h-8"
               }`}
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => (window.location.href = "/?return=work")}
             >
               <Avatar
                 className={`ring-white/20 transition-all duration-300 ${

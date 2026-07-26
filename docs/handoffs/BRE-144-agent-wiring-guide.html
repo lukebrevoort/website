@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BRE-144 · Exact agent wiring guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20201d;
+      --paper: #f4f0e7;
+      --paper-2: #ebe5d9;
+      --red: #c83f2f;
+      --green: #2f6b4f;
+      --muted: #6f6a61;
+      --line: #20201d24;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #d9d3c7;
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(1120px, calc(100% - 28px));
+      margin: 20px auto;
+      padding: clamp(24px, 5vw, 64px);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 22px 60px #33291c20;
+    }
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.025em; }
+    h1 { max-width: 900px; margin: 8px 0 18px; font-size: clamp(2.5rem, 7vw, 5.8rem); }
+    h1 em { color: var(--red); font-style: normal; }
+    h2 { margin: 56px 0 18px; font-size: clamp(1.8rem, 4vw, 3rem); }
+    h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    p, li, td { color: var(--muted); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    code { padding: .1em .34em; border-radius: 4px; color: var(--ink); background: #20201d0d; }
+    pre { overflow: auto; margin: 12px 0 0; padding: 16px; border-radius: 9px; color: #f7f1e6; background: var(--ink); font-size: .82rem; }
+    .eyebrow { color: var(--red); font-size: .76rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .lede { max-width: 800px; font-size: 1.15rem; }
+    .status {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 28px 0;
+    }
+    .status article, .step, .owner {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff9;
+    }
+    .status article { min-height: 112px; padding: 16px; border-top: 4px solid var(--green); }
+    .status article:last-child { border-top-color: var(--red); }
+    .status strong { display: block; margin-bottom: 5px; }
+    .status p { margin: 0; font-size: .9rem; }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 24px 0;
+    }
+    .flow div { position: relative; min-height: 126px; padding: 14px; border: 1px solid var(--line); background: var(--paper-2); }
+    .flow div:not(:last-child)::after { content: "→"; position: absolute; top: 46%; right: -13px; z-index: 2; color: var(--red); font-weight: 900; }
+    .flow b { display: block; margin-bottom: 8px; color: var(--ink); }
+    .flow span { font-size: .82rem; color: var(--muted); }
+    .owners { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .owner { padding: 16px; }
+    .owner p { margin: 6px 0 0; font-size: .9rem; }
+    .owner code { display: block; width: fit-content; margin-bottom: 10px; color: var(--red); }
+    .steps { display: grid; gap: 12px; counter-reset: wire; }
+    .step { position: relative; padding: 22px 22px 22px 76px; counter-increment: wire; }
+    .step::before {
+      content: counter(wire, decimal-leading-zero);
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      color: var(--red);
+      font: 800 1.15rem/1 ui-monospace, monospace;
+    }
+    .step p { margin: 4px 0; }
+    .step ul { margin-bottom: 0; padding-left: 20px; }
+    .callout { margin: 24px 0; padding: 16px 18px; border-left: 4px solid var(--red); background: #fee2e26b; }
+    .callout strong { color: var(--ink); }
+    table { width: 100%; border-collapse: collapse; background: #fff7; }
+    th, td { padding: 11px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; }
+    .checklist { columns: 2; column-gap: 32px; padding-left: 22px; }
+    .checklist li { break-inside: avoid; margin: 0 0 10px; }
+    footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+    @media (max-width: 820px) {
+      .status, .owners { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .flow div { min-height: auto; }
+      .flow div:not(:last-child)::after { content: "↓"; top: auto; right: 50%; bottom: -18px; }
+      .checklist { columns: 1; }
+      .step { padding-left: 62px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">BRE-144 · implementation handoff · 18 July 2026</div>
+  <h1>Wire the canvas agent <em>end to end.</em></h1>
+  <p class="lede">The code path is already connected on <code>agt_0ad3cc385281/scoped-canvas-context-model</code>. This guide shows exactly where every responsibility belongs, what must be configured during transfer, and what still blocks an unrestricted public rollout.</p>
+
+  <section class="status" aria-label="Readiness status">
+    <article><strong>Contract tests · ready</strong><p>20 tests pass across request bounds, focused retrieval, geometry normalization, pseudonymous abuse IDs, schema validation, risk classification, deterministic compilation, and application.</p></article>
+    <article><strong>Production build · ready</strong><p>Next.js compiles, TypeScript passes, and <code>/api/canvas-agent</code> is emitted as a dynamic server route.</p></article>
+    <article><strong>Public hardening · deploy step</strong><p>Enable the documented Vercel Firewall rule before public traffic. Broader bot and abuse controls remain follow-up work.</p></article>
+  </section>
+
+  <h2>The complete wire</h2>
+  <section class="flow" aria-label="Canvas agent data flow">
+    <div><b>1 · Visitor</b><span>Submits a prompt from <code>/explore</code>.</span></div>
+    <div><b>2 · Canvas gateway</b><span>Captures selection or viewport as structure + PNG.</span></div>
+    <div><b>3 · Server boundary</b><span>Checks size/schema, adds knowledge, calls OpenAI.</span></div>
+    <div><b>4 · Safe patch</b><span>Validates refs, coordinates, text budget, and risk.</span></div>
+    <div><b>5 · Scene transaction</b><span>Compiles to Excalidraw and applies as one undo step.</span></div>
+  </section>
+
+  <h2>Where each piece belongs</h2>
+  <section class="owners">
+    <article class="owner"><code>src/app/explore/page.tsx</code><h3>Route shell</h3><p>Renders the Explore experience and enables the contract lab only for development or Vercel Preview.</p></article>
+    <article class="owner"><code>src/components/homepage-whiteboard.tsx</code><h3>Client orchestrator</h3><p>Owns prompts, request lifecycle, error/resting UI, prior turns, stale-response rejection, and confirmation UI.</p></article>
+    <article class="owner"><code>src/components/excalidraw-canvas.tsx</code><h3>Only scene gateway</h3><p>Reads live Excalidraw state, chooses selection versus viewport, exports the matching PNG, and performs the atomic scene update.</p></article>
+    <article class="owner"><code>src/app/api/canvas-agent/route.ts</code><h3>Server trust boundary</h3><p>Rejects oversized or invalid requests, keeps credentials server-only, invokes the provider, and validates model output before returning it.</p></article>
+    <article class="owner"><code>src/lib/canvas-agent/providers/openai.ts</code><h3>Provider adapter</h3><p>Sends one structural snapshot and one matching low-detail PNG to OpenAI and requires structured <code>CanvasPatchV1</code> output.</p></article>
+    <article class="owner"><code>src/lib/canvas-agent/{contract,validation,compiler,apply}.ts</code><h3>Provider-neutral core</h3><p>Defines allowed operations, validates semantics, maps normalized coordinates, and applies immutable Excalidraw changes.</p></article>
+  </section>
+
+  <h2>Exact step-by-step wiring</h2>
+  <section class="steps">
+    <article class="step"><h3>Keep the feature branch based on <code>homepage-canvas</code></h3><p>The current branch is two commits ahead of <code>origin/homepage-canvas</code>. Transfer it through a focused PR whose base is <code>homepage-canvas</code>, not <code>main</code>.</p><pre>git push origin agt_0ad3cc385281/scoped-canvas-context-model
+# Create a draft PR:
+# base: homepage-canvas
+# head: agt_0ad3cc385281/scoped-canvas-context-model</pre></article>
+
+    <article class="step"><h3>Install the locked dependencies</h3><p>The provider uses Vercel AI SDK 6, the Google adapter, and Zod 4 structured output. Use the committed lockfile.</p><pre>npm ci</pre></article>
+
+    <article class="step"><h3>Configure the server-only OpenAI credential</h3><p>Put the key in the gitignored local <code>.env</code> and in Vercel Project Settings for Preview and Production. The existing <code>OpenAIKey</code> name is accepted as a compatibility alias. Never prefix either name with <code>NEXT_PUBLIC_</code>.</p><pre>OPENAI_API_KEY=your_openai_project_key
+CANVAS_VISION_PROVIDER=openai
+CANVAS_OPENAI_MODEL=gpt-4o-mini</pre><p>Only the first variable is required. The provider and model variables are explicit, optional overrides.</p></article>
+
+    <article class="step"><h3>Capture one bounded scene</h3><p><code>captureAgentContext()</code> checks Excalidraw selection state. A non-empty selection becomes the scope; otherwise the visible viewport does. The same bounds produce both the semantic element list and its PNG.</p><ul><li>Maximum 40 semantic elements.</li><li>Maximum PNG edge 768 px; OpenAI receives it at low detail.</li><li>Maximum PNG payload 1.5 MB.</li><li>Coordinates normalized to integers from 0 through 1000.</li></ul></article>
+
+    <article class="step"><h3>Submit the matching request</h3><p><code>homepage-whiteboard.tsx</code> posts only after an explicit visitor action. Keep all five fields together; do not capture the image and structure at different moments.</p><pre>{
+  prompt,
+  scope: "selection" | "viewport",
+  context: { sceneVersion, bounds, elements },
+  imageDataUrl: "data:image/png;base64,...",
+  priorTurns: [{ prompt, summary }]
+}</pre></article>
+
+    <article class="step"><h3>Validate before calling OpenAI</h3><p>The route enforces the 1.9 MB HTTP budget, parses with <code>canvasAgentRequestSchema</code>, and fails closed if configuration is absent. Keep this in the server route; do not move provider calls into the browser.</p></article>
+
+    <article class="step"><h3>Require semantic <code>CanvasPatchV1</code> output</h3><p>The OpenAI adapter receives at most four knowledge snippets, two prior-turn summaries, 40 elements, and one low-detail PNG. Output is capped at 1,400 tokens with no retries or response storage. It must return contract operations—never raw Excalidraw objects.</p></article>
+
+    <article class="step"><h3>Enable the distributed per-IP limit in Vercel</h3><p>Open the project’s <strong>Firewall → Configure → Custom Rules</strong> screen and create one rule with these exact values. This runs before the function and prevents rejected requests from spending OpenAI tokens.</p><pre>Name: Canvas Q&amp;A — 5 requests per IP per 10 minutes
+Conditions: path equals /api/canvas-agent
+            AND method equals POST
+Action: rate_limit
+Algorithm: fixed_window
+Window: 600 seconds
+Limit: 5
+Key: ip
+When exceeded: deny</pre><p>Vercel returns HTTP 429 and rate-limit headers. The client converts that response into a wait-and-retry message.</p></article>
+
+    <article class="step"><h3>Validate on both sides of the network</h3><p>The server validates before responding. The client validates again before compilation. This catches invalid references, duplicate aliases, excessive text, out-of-bounds geometry, and unsupported fields.</p></article>
+
+    <article class="step"><h3>Reject stale work and pause risky work</h3><p>Before applying, compare the current scene version with the captured version. If the board changed, discard the response. Deletes, changes to visitor-authored marks, large moves, large created area, or unusually large patches must stop at the approval UI.</p></article>
+
+    <article class="step"><h3>Compile and apply exactly once</h3><p><code>compileCanvasPatch()</code> resolves semantic refs into deterministic IDs and scene coordinates. <code>applyCompiledPatch()</code> converts created skeletons, applies all mutations, and calls <code>updateScene</code> once with <code>CaptureUpdateAction.IMMEDIATELY</code>, making the accepted patch one Undo action.</p></article>
+
+    <article class="step"><h3>Promote only after preview verification</h3><p>Run the automated checks, exercise the real OpenAI path and the fourth-request 429 path on desktop and mobile, inspect the screenshots, and wait for the exact Vercel Preview commit to pass. Merge the ticket PR into <code>homepage-canvas</code>.</p></article>
+  </section>
+
+  <div class="callout"><strong>Critical invariant:</strong> the provider proposes a semantic patch; it never mutates Excalidraw. Validation, risk approval, compilation, and the single scene transaction remain outside the model adapter.</div>
+
+  <h2>Failure behavior</h2>
+  <table>
+    <thead><tr><th>Condition</th><th>Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>No credential or unsupported provider</td><td>503 resting response; board unchanged.</td></tr>
+      <tr><td>Vercel IP limit or OpenAI quota response</td><td>429 resting response; board unchanged.</td></tr>
+      <tr><td>Malformed or oversized request</td><td>400/413 response; provider is not called.</td></tr>
+      <tr><td>Invalid model patch</td><td>422 response; client has nothing to compile.</td></tr>
+      <tr><td>Scene changes during inference</td><td>Client rejects the stale response; board unchanged.</td></tr>
+      <tr><td>Risky but valid patch</td><td>Explicit approval appears before any mutation.</td></tr>
+      <tr><td>Offline/browser error</td><td>Human-readable recovery note; existing canvas survives.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Transfer checklist</h2>
+  <ol class="checklist">
+    <li>Set the OpenAI key locally and in Vercel Preview.</li>
+    <li>Enable the 5-request/600-second per-IP Vercel Firewall rule.</li>
+    <li>Run <code>npm ci</code>, <code>npm test</code>, and <code>npm run build</code>.</li>
+    <li>Open <code>/explore</code> and submit a starter prompt.</li>
+    <li>Confirm generated items are native, editable objects.</li>
+    <li>Select one mark and verify selection-scoped behavior.</li>
+    <li>Submit with no selection and verify viewport scope.</li>
+    <li>Edit during inference and verify stale rejection.</li>
+    <li>Exercise the approval and cancel paths.</li>
+    <li>Verify one Undo removes one accepted patch.</li>
+    <li>Test offline and missing-credential recovery.</li>
+    <li>Check desktop and mobile viewport behavior.</li>
+    <li>Inspect the console and all captured screenshots.</li>
+    <li>Confirm the preview deployment references the head SHA.</li>
+    <li>Open/retain one draft PR into <code>homepage-canvas</code>.</li>
+    <li>Set an OpenAI project budget and spend alert.</li>
+  </ol>
+
+  <footer>Source branch: <code>agt_0ad3cc385281/scoped-canvas-context-model</code> · Verified locally with 20 passing tests, a successful Next.js production build, and a live OpenAI-key canvas response.</footer>
+</main>
+</body>
+</html>

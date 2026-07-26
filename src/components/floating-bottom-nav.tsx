@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Home, User, NotebookPen, FolderKanban, Bot } from "lucide-react";
+import { Home, User, NotebookPen, FolderKanban, Sparkles } from "lucide-react";
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -11,11 +11,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: Home, href: "/dashboard", label: "Home" },
+  { icon: Home, href: "/?return=work", label: "Home" },
   { icon: User, href: "/about", label: "About" },
   { icon: NotebookPen, href: "/blog/posts", label: "Blog" },
   { icon: FolderKanban, href: "/projects", label: "Projects" },
-  { icon: Bot, href: "/models", label: "Models" },
+  { icon: Sparkles, href: "/explore", label: "Explore" },
 ];
 
 interface FloatingBottomNavProps {
@@ -23,11 +23,11 @@ interface FloatingBottomNavProps {
 }
 
 export function FloatingBottomNav({
-  currentPath = "/dashboard",
+  currentPath = "/",
 }: FloatingBottomNavProps) {
   const isActive = (href: string) => {
-    if (href === "/dashboard") {
-      return currentPath === "/dashboard" || currentPath === "/";
+    if (href === "/?return=work") {
+      return currentPath === "/";
     }
     return currentPath.startsWith(href);
   };
