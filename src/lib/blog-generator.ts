@@ -10,25 +10,37 @@ const BLOG_DIR = path.join(process.cwd(), 'src/app/blog');
 const POSTS_DIR = path.join(BLOG_DIR, 'posts');
 const DATA_DIR = path.join(process.cwd(), 'src/data');
 
-// Helper function to extract original filename from URL
+const REGISTRY_PATH = path.join(process.cwd(), '.private', 'blob-registry.json');
+
+function loadBlobRegistry(): Record<string, string> {
+  try {
+    if (fs.existsSync(REGISTRY_PATH)) {
+      return JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8'));
+    }
+  } catch { /* ignore corrupt file */ }
+  return {};
+}
+
+function saveBlobRegistry(registry: Record<string, string>): void {
+  const dir = path.dirname(REGISTRY_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(REGISTRY_PATH, JSON.stringify(registry, null, 2));
+}
+
 function extractFilename(url: string): string {
   try {
-    // Extract last path segment from URL
     const urlPath = new URL(url).pathname;
     const parts = urlPath.split('/');
     let filename = parts[parts.length - 1];
     
-    // Remove any query parameters
     filename = filename.split('?')[0];
     
-    // If no filename found or it's an empty string, fall back to hash
     if (!filename) {
       return createConsistentHash(url);
     }
     
     return filename;
   } catch {
-    // If URL parsing fails, fall back to hash-based approach
     return createConsistentHash(url);
   }
 }
@@ -379,53 +391,57 @@ function createConsistentHash(url: string): string {
 // UPDATED: Preload image to blob storage using filename
 async function preloadImageToBlobStorage(url: string, filename: string): Promise<string | null> {
   try {
-    console.log(`📸 Preloading image to blob storage: ${url.substring(0, 30)}...`);
-    
-    // Check if filename already has an extension
+    console.log(`📸 Preloading image: ${url.substring(0, 30)}...`);
+
     const hasExtension = /\.(jpg|jpeg|png|gif|webp|svg|avif)$/i.test(filename);
-    
-    // Define blob name - use filename as is if it has an extension, otherwise add .jpg
     const blobName = hasExtension ? filename : `${filename}.jpg`;
-    
-    // Check if the blob already exists before fetching
+
+    const { default: fetch } = await import('node-fetch');
+
+    const imageResponse = await fetch(url);
+    if (!imageResponse.ok) throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+
+    const imageBuffer = await imageResponse.buffer();
+
+    // Content-hash dedup
+    const contentHash = crypto
+      .createHash('sha256')
+      .update(imageBuffer)
+      .digest('hex');
+
+    const registry = loadBlobRegistry();
+    const existing = registry[contentHash];
+    if (existing) {
+      console.log(`✅ Content-hash match (${contentHash.substring(0, 12)}…) → ${existing}`);
+      return existing;
+    }
+
     const { blobs } = await list();
-    const existingBlob = blobs.find(blob => 
-      blob.url?.includes(filename)
-    );
-    
+    const existingBlob = blobs.find(blob => blob.url?.includes(filename));
     if (existingBlob) {
-      console.log(`✅ Image already exists in blob storage: ${existingBlob.url}`);
+      console.log(`✅ Found existing blob: ${existingBlob.url}`);
+      registry[contentHash] = existingBlob.url;
+      saveBlobRegistry(registry);
       return existingBlob.url;
     }
-    
-    // Dynamically import fetch
-    const { default: fetch } = await import('node-fetch');
-    
-    // Fetch the image from the original URL
-    const imageResponse = await fetch(url);
-    
-    if (!imageResponse.ok) {
-      throw new Error(`Failed to fetch image: ${imageResponse.status}`);
-    }
-    
-    // Get the image buffer
-    const imageBuffer = await imageResponse.buffer();
-    
-    // Store the image in Vercel Blob Storage with filename
+
     const { url: blobUrl } = await put(blobName, imageBuffer, {
       access: 'public',
       contentType: imageResponse.headers.get('content-type') || 'image/jpeg',
     });
-    
-    console.log(`✅ Successfully uploaded to blob storage: ${blobUrl}`);
+
+    registry[contentHash] = blobUrl;
+    saveBlobRegistry(registry);
+
+    console.log(`✅ Uploaded: ${blobUrl}`);
     return blobUrl;
   } catch (error) {
-    console.error('❌ Error preloading image to blob storage:', error);
+    console.error('❌ Error preloading image:', error);
     return null;
   }
 }
 
-// MODIFIED: Create image mapping using filenames instead of hashes
+
 async function createImageMapping(postId: string, markdown: string) {
   // Extract image URLs from markdown
   const imageMap: Record<string, string> = {};
@@ -488,9 +504,10 @@ async function createImageMapping(postId: string, markdown: string) {
   // After all preloading is finished, ensure we're saving the final map with blob URLs
   if (preloadPromises.length > 0) {
     console.log(`🔄 Preloading ${preloadPromises.length} images to blob storage...`);
-    await Promise.all(preloadPromises);
+    for (const preload of preloadPromises) {
+      await preload;
+    }
     
-    // Explicitly log the final state of the imageMap
     console.log('Final image map after preloading:');
     Object.entries(imageMap).forEach(([key, value]) => {
       console.log(`  ${key} -> ${value.substring(0, 30)}...`);
