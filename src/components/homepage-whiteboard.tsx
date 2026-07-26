@@ -41,7 +41,11 @@ function shuffleArray<T>(array: readonly T[]): T[] {
 }
 
 function getRandomRow(): readonly typeof CANVAS_STARTER_PROMPTS[number][] {
-  return shuffleArray(CANVAS_STARTER_PROMPTS).slice(0, PROMPTS_PER_ROW);
+  const nonSurprise = CANVAS_STARTER_PROMPTS.filter((p) => p.id !== "surprise");
+  const shuffled = shuffleArray(nonSurprise);
+  const picks = shuffled.slice(0, PROMPTS_PER_ROW - 1);
+  const surpriseMe = CANVAS_STARTER_PROMPTS.find((p) => p.id === "surprise")!;
+  return [...picks, surpriseMe];
 }
 import { createAuthoredStarterPatch } from "@/lib/canvas-agent/fallbacks";
 import styles from "./homepage-whiteboard.module.css";
@@ -892,16 +896,15 @@ export default function HomepageWhiteboard({
                   <small>{item.note} ↗</small>
                 </button>
               ))}
-              <button
-                type="button"
-                className={styles.rerollButton}
-                onClick={rerollPrompts}
-                aria-label="Shuffle and show different prompts"
-              >
-                <RotateCcw size={14} />
-                <span>shuffle</span>
-              </button>
             </div>
+            <button
+              type="button"
+              className={styles.shuffleButton}
+              onClick={rerollPrompts}
+              aria-label="Show different prompts"
+            >
+              <RotateCcw size={13} />
+            </button>
           </div>
         )}
 

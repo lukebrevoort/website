@@ -215,23 +215,37 @@
   margin: 22px auto 0;
 }
 
-.promptList > *:nth-child(4),
-.promptList > *:nth-child(5) {
-  grid-column: span 1;
+.shuffleButton {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 12px auto 0;
+  padding: 0;
+  border: 1px dashed rgb(32 32 29 / 20%);
+  border-radius: 50%;
+  color: #918c82;
+  background: transparent;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease, transform .2s ease;
 }
 
-.promptList > .rerollButton {
-  grid-column: 2 / 4;
-  border-style: dashed !important;
+.shuffleButton:hover,
+.shuffleButton:focus-visible {
+  outline: none;
+  color: var(--red);
+  border-color: var(--red);
+  transform: rotate(180deg);
+}
+
+.shuffleButton:active {
+  transform: rotate(360deg);
 }
 
 @media (max-width: 600px) {
   .promptList {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .promptList > .rerollButton {
-    grid-column: 1 / 3;
+    grid-template-columns: 1fr;
+    width: min(340px, 100%);
   }
 }
 
@@ -295,49 +309,6 @@
   font-size: .61rem;
   font-weight: 800;
   letter-spacing: .08em;
-}
-
-.rerollButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 78px;
-  padding: 15px 17px;
-  border: 1px dashed rgb(32 32 29 / 24%) !important;
-  border-top: 2px dashed var(--red) !important;
-  border-radius: 2px 5px 3px 4px !important;
-  color: #777168;
-  background: transparent !important;
-  font-size: .72rem;
-  font-weight: 600;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: color .18s ease, border-color .18s ease, background .18s ease, transform .18s ease;
-}
-
-.rerollButton:hover,
-.rerollButton:focus-visible {
-  z-index: 2;
-  outline: none;
-  color: var(--red);
-  border-color: var(--red) !important;
-  border-top-style: solid !important;
-  background: rgb(228 87 62 / 5%) !important;
-  transform: scale(1.03);
-}
-
-.rerollButton:active {
-  transform: scale(0.97);
-}
-
-.rerollButton svg {
-  transition: transform .3s ease;
-}
-
-.rerollButton:hover svg {
-  transform: rotate(180deg);
 }
 
 .errorNote {
