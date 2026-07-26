@@ -141,7 +141,7 @@ The first phase of this step is getting our trigger from Notion and requesting t
 Now that if statement is essential, as some platforms (Workday) choose to render all of their HTML is extrapolated with scripts after the URL is called, giving us a SOAP Redirect. But, after investigating the network, I found Workday uses a very simple calling mechanism to extract this HTML.
 
 \`\`\`javascript
-\\`https://\\${tenant}.wd5.myworkdayjobs.com/wday/cxs/\\${tenant}/\\${siteId}/job/\\${tail}\\`
+\`https://\${tenant}.wd5.myworkdayjobs.com/wday/cxs/\${tenant}/\${siteId}/job/\${tail}\`
 \`\`\`
 
 
