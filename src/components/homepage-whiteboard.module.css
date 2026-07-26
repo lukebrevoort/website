@@ -12,11 +12,10 @@
 .topbar {
   position: fixed;
   z-index: 30;
-  inset: 76px 22px auto;
+  inset: 76px 22px auto 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  pointer-events: none;
 }
 
 .signature {
@@ -31,7 +30,6 @@
   box-shadow: 0 4px 20px rgb(60 53 41 / 8%);
   font-size: 1.18rem;
   text-decoration: none;
-  pointer-events: auto;
   backdrop-filter: blur(12px);
   transition: color .18s ease, border-color .18s ease, transform .18s ease;
 }
@@ -46,7 +44,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  pointer-events: auto;
 }
 
 .newBoardButton {
