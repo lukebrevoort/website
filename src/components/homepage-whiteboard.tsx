@@ -29,7 +29,7 @@ import {
   type CanvasStarterId,
 } from "@/lib/canvas-agent/starter-prompts";
 
-const PROMPTS_PER_ROW = 5;
+const PROMPTS_PER_ROW = 6;
 
 function shuffleArray<T>(array: readonly T[]): T[] {
   const shuffled = [...array];

@@ -227,6 +227,7 @@
   color: #918c82;
   background: transparent;
   cursor: pointer;
+  pointer-events: auto;
   transition: color .2s ease, border-color .2s ease, transform .2s ease;
 }
 
