@@ -564,7 +564,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
         theme: "info",
         fill: "hachure",
       }),
-      note("new:education", box(315, 130, 220, 140), "Education\nStevens CS\ngraduated 2026", {
+      note("new:education", box(315, 130, 220, 140), "Education\nStevens CS\nClass of 2028", {
         theme: "muted",
         fill: "solid",
       }),
