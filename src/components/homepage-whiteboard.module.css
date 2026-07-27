@@ -1049,7 +1049,9 @@
 /* Compact follow-up chrome: keep in sync with matchMedia in homepage-whiteboard.tsx */
 @media (max-width: 760px), ((max-height: 500px) and (pointer: coarse)) {
   .shell {
-    touch-action: manipulation;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
   }
   .promptForm input,
   .followUpTray input {
@@ -1082,7 +1084,9 @@
  * phones still get Done/16px when pointer:coarse media evaluation differs.
  */
 .shellCompact {
-  touch-action: manipulation;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .shellCompact .promptForm input,
 .shellCompact .followUpTray input {

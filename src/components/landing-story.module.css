@@ -5,6 +5,9 @@
   color: var(--ink);
   background: #101212;
   overflow: clip;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .desktopNavigation,
