@@ -613,6 +613,24 @@
     background: linear-gradient(180deg, transparent 0%, transparent 20%, #10171e 48%);
   }
 
+  /* Disable active-chapter highlight on mobile — IntersectionObserver
+     viewport calculations don't align well with negativemargins and
+     mask on small screens, making the highlight feel off. */
+  .chapterActive .chapterImage {
+    filter: saturate(0.68) contrast(1.05);
+    transform: translate3d(
+        var(--pointer-shift-x),
+        calc(var(--pointer-shift-y) + 1.5%),
+        0
+      )
+      scale(1.12);
+  }
+
+  .chapterActive .chapterCopy {
+    opacity: 0.64;
+    transform: translate3d(0, 2.5rem, 0);
+  }
+
   .chapter h2 {
     font-size: clamp(2.9rem, 11.5vw, 4rem);
     max-width: 100%;
