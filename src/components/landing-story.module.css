@@ -5,6 +5,9 @@
   color: var(--ink);
   background: #101212;
   overflow: clip;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .desktopNavigation,
@@ -608,6 +611,25 @@
 
   .selectedProject .chapterShade {
     background: linear-gradient(180deg, transparent 0%, transparent 20%, #10171e 48%);
+  }
+
+  /* Disable active-chapter highlight on mobile — IntersectionObserver
+     viewport calculations don't align well with negativemargins and
+     mask on small screens, making the highlight feel off.
+     Keep chapter text fully visible by default (no inactive fade). */
+  .chapterActive .chapterImage {
+    filter: saturate(0.68) contrast(1.05);
+    transform: translate3d(
+        var(--pointer-shift-x),
+        calc(var(--pointer-shift-y) + 1.5%),
+        0
+      )
+      scale(1.12);
+  }
+
+  .chapterCopy {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 
   .chapter h2 {
