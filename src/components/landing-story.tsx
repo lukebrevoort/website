@@ -334,10 +334,6 @@ export default function LandingStory() {
           >
             The work keeps going.
           </h2>
-          <p>
-            The resume is the outline. Projects, notes, and unfinished ideas
-            make the systems tangible.
-          </p>
           <div className={styles.actions}>
             <Link className={styles.exploreAction} href="/explore">
               <Sparkles aria-hidden="true" size={19} />
