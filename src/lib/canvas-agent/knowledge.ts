@@ -17,7 +17,7 @@ const PROJECT_ALIAS_MAP: Record<string, readonly string[]> = {
   malcom: ["malcom"],
   dispatch: ["dispatch"],
   mytra: ["mytra", "interactivity", "debugging agent", "airgapped", "brisbane"],
-  "orca-mail": ["orca", "orca mail", "email client", "orca-mail"],
+  "orca-mail": ["orca", "orca mail", "email client", "orca-mail", "human-first email"],
   flowstate: ["flowstate", "flow state"],
   "canvas-notion": ["canvas notion", "canvas to notion", "canvas-notion"],
   hftc: ["hftc", "trading", "trading competition", "shift"],
@@ -42,8 +42,10 @@ const PROJECT_KEYWORD_MAP: Record<string, readonly string[]> = {
     "data pipeline", "entity-based", "multi-source",
   ],
   "orca-mail": [
-    "email", "gmail", "inbox", "human signal", "attention", "contact signature",
-    "zen mode", "oauth", "drizzle", "sqlite", "hono",
+    "email", "gmail", "outlook", "inbox", "tidal", "human signal", "machine mail",
+    "classification", "attention", "contact signature", "zen mode", "compose",
+    "draft", "send", "oauth", "push", "pubsub", "pub/sub", "drizzle", "sqlite",
+    "hono", "feedback", "bun",
   ],
   flowstate: [
     "student", "study", "academic", "assignment", "calendar", "notion", "gmail",
@@ -86,7 +88,7 @@ const GENERAL_DOCUMENT: CanvasKnowledgeDocument = {
     "philosophy", "principle", "principles", "surprise",
   ],
   facts: [
-    "Luke builds tools from workflow friction: MALCOM and Dispatch make agent work inspectable, Orca Mail protects human attention, FlowState coordinates student context, and Zen80 separates signal from noise.",
+    "Luke builds tools from workflow friction: MALCOM and Dispatch make agent work inspectable, Orca protects human attention, FlowState coordinates student context, and Zen80 separates signal from noise.",
     "The recurring design principles are local ownership, visible system seams, recoverable state, calm interfaces, constrained automation, and human approval where actions carry risk.",
     "The common product question is not how to automate everything, but how software can surface the right context and let a person make the consequential choice.",
   ],

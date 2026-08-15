@@ -19,10 +19,10 @@ const projectHighlights: Record<string, string[]> = {
     "Connects services such as GitHub, Notion, and Linear through adapters, keeping credentials and recurring automation deliberately constrained.",
   ],
   "orca-mail": [
-    "Connects to Gmail through read-only OAuth and normalizes provider-specific messages into a clean internal model designed to support Gmail now and Outlook later.",
-    "Uses Human Signal to foreground messages written by people, filtering marketing automation and inbox clutter out of the core reading experience.",
-    "Makes conversations scannable with contact signatures and configurable attention views, then gives writing a dedicated full-screen Zen Mode.",
-    "Runs as an active Bun monorepo with a React/Vite web app, Hono API, shared Zod schemas, and SQLite persistence through Drizzle.",
+    "Connects Gmail and Outlook through read-first OAuth — read-only by default, with a narrow gmail.compose grant requested only through an explicit consent upgrade when you send, reply, or forward.",
+    "Normalizes provider mail into one clean local model on SQLite — threads, labels, contacts, drafts, pins, and reminders — kept current by a cursor-based sync engine with Gmail Pub/Sub push notifications.",
+    "Separates human from machine mail with Human Signal: a deterministic local classifier with evidence, user overrides, and correction surfaces, presented in a tidal inbox with collections and contact signatures.",
+    "Ships as a Bun monorepo — React 19/Vite web app, Hono API, shared Zod schemas — with a vendored feedback kit that files issues to Linear, deployed on Vercel with a Hono bridge.",
   ],
   dispatch: [
     "Runs and manages multiple long-lived coding agents—Claude, Codex, Cursor, OpenCode, or a plain terminal—without losing them when a browser disconnects.",
@@ -39,9 +39,9 @@ const projectMedia: Record<string, { src: string; alt: string; caption: string }
     caption: "Hermes coordinates the conversation; MALCOM controls the remote execution layer, adapters, and Mac runtime.",
   },
   "orca-mail": {
-    src: "/images/orca-mail-login.png",
-    alt: "Orca Mail Google sign-in screen",
-    caption: "A live capture of Orca's read-only Gmail connection flow, taken from the local project.",
+    src: "/images/orca-tidal-inbox.png",
+    alt: "Orca's tidal inbox separating human-written mail from machine mail",
+    caption: "Orca's tidal inbox: Human Signal separates human-written threads from machine mail, with an attention queue built for the conversations that matter.",
   },
 };
 

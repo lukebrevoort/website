@@ -150,13 +150,13 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
 
   orca: {
     summary:
-      "Orca Mail pipelines read-only Gmail through Human Signal so attention and Zen writing stay on human conversations.",
+      "Orca pipelines read-first Gmail and Outlook through Human Signal so attention and Zen writing stay on human conversations.",
     operations: [
-      textNode("new:title", box(60, 35, 880, 55), "Orca Mail — signal first, then calm attention", {
+      textNode("new:title", box(60, 35, 880, 55), "Orca — signal first, then calm attention", {
         theme: "accent",
         weight: "bold",
       }),
-      note("new:gmail", box(50, 130, 200, 140), "Gmail\nread-only OAuth\nno send rights", {
+      note("new:gmail", box(50, 130, 200, 140), "Gmail + Outlook\nread-first OAuth\nconsent-gated send", {
         theme: "muted",
         fill: "hachure",
       }),
@@ -164,7 +164,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
         theme: "info",
         fill: "solid",
       }),
-      note("new:signal", box(530, 130, 220, 140), "Human Signal\npeople vs\nautomation", {
+      note("new:signal", box(530, 130, 220, 140), "Human Signal\npeople vs\nmachine mail", {
         theme: "warning",
         fill: "hachure",
       }),
@@ -172,7 +172,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
         theme: "success",
         fill: "solid",
       }),
-      note("new:noise", box(530, 360, 200, 140), "Automation\nfiltered off\nthe main path", {
+      note("new:noise", box(530, 360, 200, 140), "Machine mail\nsubmerged off\nthe main path", {
         theme: "danger",
         fill: "hachure",
       }),
@@ -183,7 +183,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
       textNode(
         "new:aside",
         box(50, 550, 900, 65),
-        "Privacy by design: Orca can read and help you draft — it cannot send or alter mail on your behalf.",
+        "Privacy by design: Orca holds read-only by default — sending is an explicit, narrow consent upgrade, never full mailbox access.",
         { theme: "ink" },
       ),
       connect("new:in", "new:gmail", "new:normalize", "ingest", { theme: "muted", stroke: "dashed" }),
@@ -254,7 +254,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
         theme: "warning",
         fill: "hachure",
       }),
-      note("new:orca", box(515, 130, 200, 140), "Orca Mail\nhuman signal\nover noise", {
+      note("new:orca", box(515, 130, 200, 140), "Orca\nhuman signal\nover noise", {
         theme: "success",
         fill: "hachure",
       }),
@@ -568,7 +568,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
         theme: "muted",
         fill: "solid",
       }),
-      note("new:projects", box(575, 130, 370, 140), "Projects\nMALCOM · Dispatch\nOrca Mail · FlowState\nZen80 · +more", {
+      note("new:projects", box(575, 130, 370, 140), "Projects\nMALCOM · Dispatch\nOrca · FlowState\nZen80 · +more", {
         theme: "warning",
         fill: "hachure",
       }),
@@ -665,7 +665,7 @@ const STORIES: Record<CanvasStarterId, StoryPatch> = {
       textNode(
         "new:aside",
         box(50, 460, 900, 60),
-        "From Orca Mail to MALCOM to Zen80: same instinct applied to different friction points.",
+        "From Orca to MALCOM to Zen80: same instinct applied to different friction points.",
         { theme: "ink" },
       ),
       connect("new:pr1", "new:p1", "new:question", undefined, { theme: "info", stroke: "dashed" }),

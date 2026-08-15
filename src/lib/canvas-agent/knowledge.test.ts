@@ -7,7 +7,7 @@ test("sends only knowledge that matches a focused project question", () => {
 
   assert.equal(snippets.length, 1);
   assert.match(snippets[0], /MALCOM/);
-  assert.equal(snippets.some((snippet) => /Orca Mail|FlowState/.test(snippet)), false);
+  assert.equal(snippets.some((snippet) => /\[Orca\]|\[FlowState\]/.test(snippet)), false);
 });
 
 test("uses one general fallback for an open-ended question", () => {
@@ -30,6 +30,6 @@ test("matches a project from domain language without its name", () => {
   const snippets = selectKnowledgeSnippets("How does the email client filter inbox noise?");
 
   assert.equal(snippets.length, 1);
-  assert.match(snippets[0], /\[Orca Mail\]/);
+  assert.match(snippets[0], /\[Orca\]/);
   assert.match(snippets[0], /Human Signal/);
 });

@@ -87,13 +87,16 @@ export const projects: Project[] = [
   },
   {
     id: "10",
-    title: "Orca Mail",
+    title: "Orca",
     description:
-      "A human-first email client in progress for the conversations that matter. Orca connects to Gmail through read-only OAuth, normalizes mail into a clean local model, and uses Human Signal, attention views, contact signatures, and a distraction-free Zen writer to cut through automated noise.",
+      "A human-first email client for the conversations that matter. Orca connects Gmail and Outlook through read-first OAuth, normalizes mail into a clean local model, and separates human-written mail from machine mail with Human Signal — pairing a tidal inbox, collections, and reminders with a consent-gated composer and a full-screen Zen writer.",
     technologies: [
       "TypeScript",
+      "Bun",
       "React",
+      "Hono",
       "Gmail API",
+      "Outlook API",
       "OAuth 2.0",
       "SQLite",
       "Drizzle",
@@ -104,6 +107,7 @@ export const projects: Project[] = [
     category: "Web Development",
     featured: true,
     logo: "/icons/orca-mail.svg",
+    githubUrl: "https://github.com/lukebrevoort/orca",
     primaryColor: "#0f766e",
     secondaryColor: "#0369a1",
   },

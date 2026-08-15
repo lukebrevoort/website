@@ -21,12 +21,12 @@ export const CANVAS_STARTER_PROMPTS = [
   },
   {
     id: "orca",
-    prompt: "How does Orca Mail decide what matters?",
+    prompt: "How does Orca decide what matters?",
     note: "signal, not noise",
     tilt: "-0.5deg",
     followUps: [
-      "Split human threads from automation more clearly",
-      "Show Zen Mode beside the attention queue",
+      "Split human threads from machine mail more clearly",
+      "Show how sending stays consent-gated",
     ],
   },
   {
