@@ -60,13 +60,13 @@ export const mytraPack: KnowledgePack = {
     },
   ],
   relationships: [
-    { toProject: "MALCOM", relation: "During the Mytra internship Luke also ran MALCOM at work for personal projects (website, Orca Mail) — kicked off PRs from his phone on the commute, reviewed from notes, checked runs mobile throughout the day." },
+    { toProject: "MALCOM", relation: "During the Mytra internship Luke also ran MALCOM at work for personal projects (website, Orca) — kicked off PRs from his phone on the commute, reviewed from notes, checked runs mobile throughout the day." },
   ],
   followUpQA: [
     { question: "What does the debugging agent do?", answer: "It's an agentic tool for diagnosing system issues — used both internally at Mytra and deployed inside airgapped Fortune 500 customer environments." },
     { question: "How does the airgap work?", answer: "Luke trained a local open-source model so the agent never needs to call an external API. The whole service runs on Kubernetes inside the airgapped boundary." },
     { question: "What else did Luke work on beyond the agent?", answer: "Multi-source debugging (correlating signals across system sources), an entity-based architectural overhaul, and restructuring data pipelines so agents consume data natively without extraction passes." },
-    { question: "Was this done remotely?", answer: "No — in-office in Brisbane. He also ran MALCOM at work for personal projects (website, Orca Mail)." },
+    { question: "Was this done remotely?", answer: "No — in-office in Brisbane. He also ran MALCOM at work for personal projects (website, Orca)." },
     { question: "What are airgapped deployments?", answer: "Fortune 500 customer environments with no external network access. The agent must be self-contained — local model, local compute, no outbound calls." },
   ],
   brandColor: "#1e293b",

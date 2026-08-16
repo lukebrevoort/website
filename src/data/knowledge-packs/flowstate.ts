@@ -67,7 +67,7 @@ export const flowstatePack: KnowledgePack = {
   ],
   relationships: [
     { toProject: "MALCOM", relation: "Conceptual predecessor: FlowState explored agent context, autonomy, and approval-gating; MALCOM applies similar control/inspection thinking to a durable execution layer." },
-    { toProject: "Orca Mail", relation: "Shared theme of reducing noise and protecting focus via connected-app integrations (Gmail/Calendar); FlowState planned across tools, Orca owns email." },
+    { toProject: "Orca", relation: "Shared theme of reducing noise and protecting focus via connected-app integrations (Gmail/Calendar); FlowState planned across tools, Orca owns email." },
     { toProject: "Dispatch", relation: "Thematic continuity in local-first control and context surfacing; Dispatch generalizes agent management where FlowState focused on study workflows." },
   ],
   followUpQA: [

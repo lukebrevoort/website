@@ -65,7 +65,7 @@ export const zen80Pack: KnowledgePack = {
   ],
   relationships: [
     { toProject: "FlowState", relation: "Shared theme of focus and reducing noise; FlowState orchestrated study context broadly, Zen80 narrows the same instinct to daily Signal-vs-Noise time protection." },
-    { toProject: "Orca Mail", relation: "Thematic kin: both cut through noise (automated mail / daily churn) to protect the human, important thing." },
+    { toProject: "Orca", relation: "Thematic kin: both cut through noise (automated mail / daily churn) to protect the human, important thing." },
   ],
   followUpQA: [
     { question: "Is Zen80 still being developed?", answer: "It is complete and Luke uses it as a personal app today; it is not a maintained/shipped product." },

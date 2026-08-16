@@ -69,7 +69,7 @@ export const personalWebsitePack: KnowledgePack = {
   relationships: [
     { toProject: "MALCOM", relation: "The site documents MALCOM at the portfolio level; the knowledge-packs system on this site carries the richer authored agent context for MALCOM." },
     { toProject: "Dispatch", relation: "Dispatch is documented on this site as a featured project; the site's knowledge-pack for Dispatch carries the authored agent context alongside the portfolio page." },
-    { toProject: "Orca Mail", relation: "Orca Mail is documented on this site as a featured project; the site's knowledge-pack mirrors and deepens that portfolio content for agent use." },
+    { toProject: "Orca", relation: "Orca is documented on this site as a featured project; the site's knowledge-pack mirrors and deepens that portfolio content for agent use." },
     { toProject: "FlowState", relation: "FlowState has a dedicated rich page on this site; its knowledge-pack reflects that same authored content for the visual agent." },
   ],
   followUpQA: [
